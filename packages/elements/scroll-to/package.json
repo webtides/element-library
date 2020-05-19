@@ -1,0 +1,45 @@
+{
+  "name": "@currentjs/element-library_elments_scroll-to",
+  "version": "0.1.0",
+  "description": "An element that enables you to smoothly scroll to anchor elements or any other selector",
+  "author": "@currentjs",
+  "homepage": "https://github.com/currentjs/element-library",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/currentjs/element-library.git",
+    "directory": "packages/elements/scroll-to"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/",
+    "access": "restricted"
+  },
+  "scripts": {
+    "test": "karma start ../../../karma.conf.js --grep \"packages/elements/scroll-to/tests/**/*.test.js\"",
+    "test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/elements/scroll-to/tests/**/*.test.js\""
+  },
+  "keywords": [
+    "maya-element",
+    "maya-elements",
+    "web-components",
+    "custom-elements",
+    "scroll-to"
+  ],
+  "main": "index.js",
+  "module": "index.js",
+  "files": [
+    "docs",
+    "src",
+    "stories",
+    "tests",
+    "translations",
+    "*.js"
+  ],
+  "dependencies": {
+	  "@currentjs/element": "^0.1.0-2"
+  },
+  "devDependencies": {
+    "@open-wc/demoing-storybook": "^1.13.3",
+    "@open-wc/testing": "^2.5.0"
+  }
+}
