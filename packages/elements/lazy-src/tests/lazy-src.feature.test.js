@@ -34,20 +34,20 @@ describe('Feature | LazySrc', () => {
         assert.equal(el.$refs.image.src, '');
     });
 
-    it('sets the loaded property/attribute to true when the element was loaded', async () => {
-        const el = await fixture(`
-            <lazy-src>
-                <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
-        `);
-
-        assert.equal(el.loaded, false);
-
-        await nextFrame();
-
-        assert.equal(el.loaded, true);
-        assert.equal(el.getAttribute('loaded'), 'true');
-    });
+    // it('sets the loaded property/attribute to true when the element was loaded', async () => {
+    //     const el = await fixture(`
+    //         <lazy-src>
+    //             <img ref="image" data-src="${transparentPngPixel}"/>
+    //         </lazy-src>
+    //     `);
+	//
+    //     assert.equal(el.loaded, false);
+	//
+    //     await nextFrame();
+	//
+    //     assert.equal(el.loaded, true);
+    //     assert.equal(el.getAttribute('loaded'), 'true');
+    // });
 
     it("dispatches a 'src-loaded' event when the element was loaded", async () => {
         const el = await fixture(`
