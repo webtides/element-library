@@ -3,7 +3,7 @@ to: packages/<%= packageName %>/<%= elementName %>/README.md
 ---
 # <%= className %>
 
-`<%= name %>` enables you to...
+`<%= elementName %>` enables you to...
 
 ## How to use
 
