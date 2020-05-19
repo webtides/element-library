@@ -24,6 +24,7 @@
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/plugin-proposal-export-default-from": "^7.8.3",
     "@open-wc/demoing-storybook": "^1.13.3",
     "@open-wc/karma-esm": "^2.13.16",
     "@open-wc/semantic-dom-diff": "^0.16.0",
