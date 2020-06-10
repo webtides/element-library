@@ -37,7 +37,7 @@ export default class FormField extends TemplateElement {
 
 	watch() {
 		return {
-			value: value => {
+			value: (value) => {
 				this.dispatch(FormFieldEvents.INPUT_CHANGE, value, true);
 			},
 		};
@@ -52,7 +52,7 @@ export default class FormField extends TemplateElement {
 				blur: () => {
 					this.onBlur();
 				},
-				keyup: event => {
+				keyup: (event) => {
 					// don't trigger change when tabbing through inputs
 					if (event.keyCode !== 9) {
 						this.onChange();
@@ -99,47 +99,51 @@ export default class FormField extends TemplateElement {
 		this.touched = false;
 	}
 
+	classes() {
+		return {
+			field: classMap({ 'is-valid': !!this.valid, 'is-invalid': !this.valid, 'is-touched': !!this.touched }),
+			label: classMap({ 'sr-only': this.labelScreenReaderOnly }),
+		};
+	}
+
 	template() {
-		const classes = { 'is-valid': !!this.valid, 'is-invalid': !this.valid, 'is-touched': !!this.touched };
 		return html`
-            ${this.labelTemplate()}
-            <div class="field ${classMap(classes)}">
-                ${this.fieldTemplate()}
-            </div>
-            ${this.helpTemplate()} ${this.errorTemplate()}
-        `;
+			${this.labelTemplate()}
+			<div class="field ${this.classes().field}">
+				${this.fieldTemplate()}
+			</div>
+			${this.helpTemplate()} ${this.errorTemplate()}
+		`;
 	}
 
 	labelTemplate() {
 		if (!this.label) return null;
-		const classes = { 'sr-only': this.labelScreenReaderOnly };
 		return html`
-            <label ref="label" for="input-${this.name}" class="${classMap(classes)}">
-                ${this.label}
-            </label>
-        `;
+			<label ref="label" for="input-${this.name}" class="${this.classes().label}">
+				${this.label}
+			</label>
+		`;
 	}
 
 	fieldTemplate() {
-		const classes = { 'is-valid': !!this.valid, 'is-invalid': !this.valid };
 		return html`
-            <!-- IMPLEMENT FIELD -->
-        `;
+			<!-- IMPLEMENT FIELD -->
+		`;
 	}
 
 	helpTemplate() {
 		if (!(this.helpMessage && (!this.touched || this.valid))) return null;
 
 		return html`
-            <span id="${this.name}-help" class="message help-message">${this.helpMessage}</span>
-        `;
+			<span id="${this.name}-help" class="message help-message">${this.helpMessage}</span>
+		`;
 	}
 
 	errorTemplate() {
 		if (!(this.touched && this.errorMessage && !this.valid)) return null;
 
 		return html`
-            <span id="${this.name}-help" class="message error-message">${this.errorMessage}</span>
-        `;
+			<span id="${this.name}-help" class="message error-message">${this.errorMessage}</span>
+		`;
 	}
 }
