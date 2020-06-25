@@ -1,5 +1,5 @@
 {
-	"name": "@webtides/element-js-library_elments_lazy-src",
+	"name": "@webtides/element-library_elments_lazy-src",
 	"version": "0.1.0",
 	"description": "An element that will lazy load any data-src attribute on the first child element",
 	"author": "@webtides",
