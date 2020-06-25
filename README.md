@@ -1,10 +1,10 @@
 # element-library
 
-A set of web components built with `@currentjs/element`
+A set of web components built with `@webtides/element-js`
 
 ## Introduction
 
-`@currentjs/element-library` provides a set of pre-built custom elements based on `@currentjs/element` with performance and accessibility in mind. They provide a starting point for rapidly building UIs without having to re-implement the same elements over and over again.
+`@webtides/element-js-library` provides a set of pre-built custom elements based on `@webtides/element-js` with performance and accessibility in mind. They provide a starting point for rapidly building UIs without having to re-implement the same elements over and over again.
 
 ## Documentation
 
@@ -83,4 +83,4 @@ We use `lerna` to version and publish new releases for packages automatically wh
 
 ## License
 
-`@currentjs/element-library` is open-sourced software licensed under the MIT [license](LICENSE).
+`@webtides/element-js-library` is open-sourced software licensed under the MIT [license](LICENSE).

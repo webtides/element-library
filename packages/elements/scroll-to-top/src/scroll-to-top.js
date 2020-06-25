@@ -1,4 +1,4 @@
-import { StyledElement } from '@currentjs/element';
+import { StyledElement } from '@webtides/element-js';
 import style from './scroll-to-top.css';
 
 export default class ScrollToTop extends StyledElement {

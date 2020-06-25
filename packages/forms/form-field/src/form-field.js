@@ -1,4 +1,4 @@
-import { TemplateElement, html } from '@currentjs/element';
+import { TemplateElement, html } from '@webtides/element-js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import FormFieldEvents from './form-fields.events';
 import style from './form-field.css';

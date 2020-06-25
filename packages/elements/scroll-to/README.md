@@ -9,13 +9,13 @@ Use any regular DOM query selector to point to targeting elements. Any `click` e
 #### Install
 
 ```sh
-npm i --save @currentjs/element-library_elments_scroll-to
+npm i --save @webtides/element-js-library_elments_scroll-to
 ```
 
 #### Use
 
 ```js
-import '@currentjs/element-library_elments_scroll-to';
+import '@webtides/element-js-library_elments_scroll-to';
 ```
 
 ```html

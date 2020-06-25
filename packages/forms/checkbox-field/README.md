@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @currentjs/element-library_elments_checkbox-field
+npm i --save @webtides/element-js-library_elments_checkbox-field
 ```
 
 ```js
-import '@currentjs/element-library_elments_checkbox-field';
+import '@webtides/element-js-library_elments_checkbox-field';
 ```
 
 ### Example

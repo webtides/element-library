@@ -1,5 +1,5 @@
-import { html } from '@currentjs/element';
-import { FormField, FormFieldEvents } from '@currentjs/element-library_forms_form-field';
+import { html } from '@webtides/element-js';
+import { FormField, FormFieldEvents } from '@webtides/element-js-library_forms_form-field';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 import { classMap } from 'lit-html/directives/class-map';
 import style from './checkbox-field.css';

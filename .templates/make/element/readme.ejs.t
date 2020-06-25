@@ -10,11 +10,11 @@ to: packages/<%= packageName %>/<%= elementName %>/README.md
 ### Installation
 
 ```sh
-npm i --save @currentjs/element-library_elments_<%= elementName %>
+npm i --save @webtides/element-js-library_elments_<%= elementName %>
 ```
 
 ```js
-import '@currentjs/element-library_elments_<%= elementName %>';
+import '@webtides/element-js-library_elments_<%= elementName %>';
 ```
 
 ### Example

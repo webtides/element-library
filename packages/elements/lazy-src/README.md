@@ -9,13 +9,13 @@ Place any `<img>`, `<picture>`, `<iframe>`, or `<video>` element inside with a `
 #### Installation
 
 ```sh
-npm i --save @currentjs/element-library_elments_lazy-src
+npm i --save @webtides/element-js-library_elments_lazy-src
 ```
 
 #### Use
 
 ```js
-import '@currentjs/element-library_elments_lazy-src';
+import '@webtides/element-js-library_elments_lazy-src';
 ```
 
 ```html

@@ -1,4 +1,4 @@
-import { BaseElement } from '@currentjs/element';
+import { BaseElement } from '@webtides/element-js';
 
 export default class ScrollTo extends BaseElement {
     properties() {

@@ -1,4 +1,4 @@
-import { BaseElement } from '@currentjs/element';
+import { BaseElement } from '@webtides/element-js';
 
 function load(element) {
     if (element.nodeName.toLowerCase() === 'picture') {

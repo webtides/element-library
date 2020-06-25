@@ -1,13 +1,13 @@
 {
-	"name": "@currentjs/element-library_forms_form-field",
-	"version": "0.1.0-2",
+	"name": "@webtides/element-js-library_forms_form-field",
+	"version": "0.1.0-3",
 	"description": "An element that...",
-	"author": "@currentjs",
-	"homepage": "https://github.com/currentjs/element-library",
+	"author": "@webtides",
+	"homepage": "https://github.com/webtides/element-library",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/currentjs/element-library.git",
+		"url": "https://github.com/webtides/element-library.git",
 		"directory": "packages/forms/form-field"
 	},
 	"scripts": {
@@ -32,7 +32,7 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@currentjs/element": "^0.1.0-2"
+		"@webtides/element-js": "^0.1.0-7"
 	},
 	"devDependencies": {
 		"@open-wc/demoing-storybook": "^1.13.3",

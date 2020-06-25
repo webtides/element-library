@@ -1,5 +1,5 @@
-import { html } from '@currentjs/element';
-import { FormField } from '@currentjs/element-library_forms_form-field';
+import { html } from '@webtides/element-js';
+import { FormField } from '@webtides/element-js-library_forms_form-field';
 import { ifDefined } from 'lit-html/directives/if-defined';
 import { classMap } from 'lit-html/directives/class-map';
 import style from './input-field.css';

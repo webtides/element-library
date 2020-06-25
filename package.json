@@ -1,15 +1,15 @@
 {
-  "name": "@currentjs/element-library",
+  "name": "@webtides/element-js-library",
   "version": "0.1.0",
-  "description": "A set of web components built with @currentjs/element",
+  "description": "A set of web components built with @webtides/element-js",
   "main": "index.js",
   "module": "index.js",
-  "repository": "https://github.com/currentjs/element-library",
+  "repository": "https://github.com/webtides/element-library",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
   },
-  "author": "@currentjs",
+  "author": "@webtides",
   "license": "MIT",
   "private": true,
   "workspaces": [
@@ -18,7 +18,7 @@
     "packages/interactions/*"
   ],
   "dependencies": {
-    "@currentjs/element": "^0.1.0-2"
+    "@webtides/element-js": "^0.1.0-7"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",

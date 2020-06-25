@@ -944,13 +944,6 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@currentjs/element@^0.1.0-2":
-  version "0.1.0-2"
-  resolved "https://npm.pkg.github.com/download/@currentjs/element/0.1.0-2/62060f58363d481a7c29c7a8faf96ff79c36f6a41bb470f20dc3f37fb1916907#8d88d29b307bee30fdd3f5021487b7c1fa79a255"
-  integrity sha512-walLZuIKXqIxyqLzF1TursesAfEjgS6LubgDbeyrTOlXzfJIuB0DUdNiwF2jDqsRiFn/ntcahFV/KNUDufS7Mg==
-  dependencies:
-    lit-html "^1.2.1"
-
 "@egoist/vue-to-react@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@egoist/vue-to-react/-/vue-to-react-1.1.0.tgz#83c884b8608e8ee62e76c03e91ce9c26063a91ad"
@@ -3023,6 +3016,13 @@
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.4.3.tgz#384f4f6d54563ba465fb4df21fe89e78a76fc530"
   integrity sha512-cV4+sAmshf8ysU2USutrSRYQkJzEYKHsRCGa0CkMElGpG5747VHtkfsW3NdVIBV/m2MDKXTDydT4lkrysH7IFA==
+
+"@webtides/element-js@^0.1.0-7":
+  version "0.1.0-7"
+  resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.1.0-7/a416e166064415710170edf45e724ac2796b7c5f9e2ec91c99963d6cd3c5893c#27b68879a4610f5d598154479fe5e81d6b51b12b"
+  integrity sha512-+cw9wS7/TVGDq275Yiw+ucxl9co+2IpRDdSIwxfbBDsAnndnV6VSFQQKOG2/tsiOQhzhv3nF3jrYcZoDFDi/5w==
+  dependencies:
+    lit-html "^1.2.1"
 
 "@zkochan/cmd-shim@^3.1.0":
   version "3.1.0"
