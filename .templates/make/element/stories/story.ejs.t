@@ -2,7 +2,8 @@
 to: packages/<%= packageName %>/<%= elementName %>/stories/<%= elementName %>.stories.js
 ---
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import '../element';
+import { define } from '@webtides/<%= elementName %>';
+define();
 
 export default {
     title: 'Elements|<%= className %>',
