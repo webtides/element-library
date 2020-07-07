@@ -20,3 +20,7 @@ export default class <%= className %> extends TemplateElement {
     }
 }
 
+export function define() {
+	defineElement('<%= elementName %>', <%= className %>);
+}
+

@@ -3,7 +3,8 @@ to: packages/<%= packageName %>/<%= elementName %>/tests/<%= elementName %>.feat
 ---
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import '../element';
+import { define } from '@webtides/<%= elementName %>';
+define();
 
 describe('Feature | <%= className %>', () => {
     it('can connect without errors', async () => {

@@ -2,12 +2,15 @@
 to: packages/<%= packageName %>/<%= elementName %>/package.json
 ---
 {
-  "name": "@webtides/element-js-library_<%= packageName %>_<%= elementName %>",
+  "name": "@webtides/<%= elementName %>",
   "version": "0.1.0",
   "description": "An element that...",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",
   "license": "MIT",
+  "type": "module",
+  "main": "src/<%= elementName %>.js",
+  "module": "src/<%= elementName %>.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webtides/element-library.git",
@@ -18,14 +21,10 @@ to: packages/<%= packageName %>/<%= elementName %>/package.json
     "test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/<%= packageName %>/<%= elementName %>/tests/**/*.test.js\""
   },
   "keywords": [
-    "maya-element",
-    "maya-elements",
     "web-components",
     "custom-elements",
     "<%= elementName %>"
   ],
-  "main": "index.js",
-  "module": "index.js",
   "files": [
     "docs",
     "src",
@@ -35,7 +34,7 @@ to: packages/<%= packageName %>/<%= elementName %>/package.json
     "*.js"
   ],
   "dependencies": {
-    "@webtides/element-js": "^0.1.0"
+    "@webtides/element-js": "0.2.0"
   },
   "devDependencies": {
     "@open-wc/demoing-storybook": "^1.13.3",
