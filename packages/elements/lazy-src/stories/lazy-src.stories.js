@@ -4,7 +4,7 @@ import { define } from '@webtides/lazy-src';
 define();
 
 export default {
-    title: 'Elements|LazySrc',
+    title: 'Elements/LazySrc',
     component: 'lazy-src',
 };
 

@@ -3,7 +3,7 @@ import { define } from '@webtides/form-field';
 define();
 
 export default {
-    title: 'Elements|FormField',
+    title: 'Form Fields/FormField',
     component: 'form-field',
 };
 

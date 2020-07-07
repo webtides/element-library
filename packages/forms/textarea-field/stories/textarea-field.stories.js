@@ -3,7 +3,7 @@ import { define } from '@webtides/textarea-field';
 define();
 
 export default {
-    title: 'Elements|TextareaField',
+    title: 'Form Fields/TextareaField',
     component: 'textarea-field',
 };
 

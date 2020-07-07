@@ -3,7 +3,7 @@ import { define } from '@webtides/checkbox-field';
 define();
 
 export default {
-    title: 'Elements|CheckboxField',
+    title: 'Form Fields/CheckboxField',
     component: 'checkbox-field',
 };
 

@@ -3,7 +3,7 @@ import { define } from '@webtides/scroll-to-top';
 define();
 
 export default {
-    title: 'Elements|ScrollToTop',
+    title: 'Elements/ScrollToTop',
     component: 'scroll-to-top',
 };
 
