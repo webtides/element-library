@@ -48,11 +48,11 @@ Elements are divided into 3 categories.
 | lazy-src           |               | `0.1.0` | free |
 | scroll-to          |               | `0.1.0` | free |
 | scroll-to-top      |               | `0.1.0` | free |
+| sticky-element     |               | `0.1.0`     | free |
 | svg-icon           |               | TBD     | free |
 | line-through       |               | TBD v2  | free |
 | divider-element ?! |               | TBD v2  | free |
 | scroll-entrance    |               | TBD v2  | free |
-| sticky-element     |               | TBD     | free |
 | chip-element       | Tag, Label ?! | TBD     | free |
 | read-time ?!       |               | TBD v2  | free |
 | code-tabs          |               | TBD v2  | free |
