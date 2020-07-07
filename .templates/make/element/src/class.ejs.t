@@ -1,7 +1,7 @@
 ---
 to: packages/<%= packageName %>/<%= elementName %>/src/<%= elementName %>.js
 ---
-import { TemplateElement } from '@webtides/element-js';
+import { TemplateElement, defineElement } from '@webtides/element-js';
 import style from './<%= elementName %>.css';
 
 export default class <%= className %> extends TemplateElement {

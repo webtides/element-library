@@ -1,4 +1,4 @@
-const packages = ['layouts', 'elements', 'forms'];
+const packages = ['interactions', 'elements', 'forms'];
 
 function dashToCamel(string) {
     if (string.indexOf('-') === -1) return string;
