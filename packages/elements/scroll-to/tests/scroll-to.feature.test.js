@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame, fixtureSync, aTimeout } from '@open-wc/testing';
-import '../element';
+import { define } from '@webtides/scroll-to';
+define();
 
 describe('Feature | ScrollTo', () => {
     it('scrolls to the element with the attributed selector', async () => {

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import '../element';
+import { define } from '@webtides/textarea-field';
+define();
 
 describe('Feature | TextareaField', () => {
     it('can connect without errors', async () => {

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, fixtureSync, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import '../element';
+import { define } from '@webtides/scroll-to-top';
+define();
 
 describe('Feature | ScrollToTop', () => {
     it('scrolls back to the top when a click event is fired inside the element', async () => {

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import '../element';
+import { define } from '@webtides/lazy-src';
+define();
 
 const transparentPngPixel =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
