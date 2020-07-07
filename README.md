@@ -18,6 +18,7 @@ Elements are divided into 3 categories.
 
 | Package              | Description     | Version | Type |
 | -------------------- | --------------- | ------- | ---- |
+| transition-classes    |                 | `0.1.0`     | free |
 | accordion-element    |                 | TBD     | free |
 | modal-element        |                 | TBD     | free |
 | bottom-sheet         |                 | TBD     | pro  |
