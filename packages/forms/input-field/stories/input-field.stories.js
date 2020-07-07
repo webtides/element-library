@@ -1,5 +1,6 @@
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import '../element';
+import { define } from '@webtides/input-field';
+define();
 
 export default {
     title: 'Elements|InputField',

@@ -12,12 +12,11 @@ const defaultPostCssOptions = {
     plugins: defaultPostCSSPlugins({}),
     inject: false,
     minimize: false,
-    sourceMap: true,
+    sourceMap: false,
 };
 
 module.exports = {
     stories: [
-        // '../packages/**/**/stories/*.stories.md',
         '../packages/**/**/stories/*.stories.js',
     ],
     addons: [
@@ -40,21 +39,23 @@ module.exports = {
                     {
                         modules: false,
                         targets: {
-                            browsers: ['Chrome >= 76', 'Safari >= 12', 'iOS >= 12', 'Firefox >= 68', 'Edge >= 17'],
+                            browsers: ['Chrome >= 76', 'Safari >= 12', 'iOS >= 12', 'Firefox >= 68', 'Edge >= 79'],
                         },
                     },
                 ],
             ],
             plugins: [
-                ['@babel/plugin-proposal-class-properties', { loose: true }],
-                '@babel/plugin-proposal-nullish-coalescing-operator',
-                '@babel/plugin-proposal-optional-chaining',
+				['@babel/plugin-proposal-nullish-coalescing-operator', { loose: true }],
+				['@babel/plugin-proposal-optional-chaining', { loose: true }],
+				['@babel/plugin-proposal-class-properties', { loose: true }],
+				'@babel/plugin-proposal-export-default-from',
                 [
                     'transform-postcss',
                     {
                         config: './.storybook/postcss.config.js',
                     },
                 ],
+				['module-resolver', { root: ['./'] }],
             ],
         },
     },

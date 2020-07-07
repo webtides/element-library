@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import '../element';
+import { define } from '@webtides/lazy-src';
+define();
 
 export default {
     title: 'Elements|LazySrc',
