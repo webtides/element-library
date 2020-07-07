@@ -49,7 +49,7 @@ Elements are divided into 3 categories.
 | scroll-to          |               | `0.1.0` | free |
 | scroll-to-top      |               | `0.1.0` | free |
 | sticky-element     |               | `0.1.0`     | free |
-| svg-icon           |               | TBD     | free |
+| svg-use           |               | `0.1.0`     | free |
 | line-through       |               | TBD v2  | free |
 | divider-element ?! |               | TBD v2  | free |
 | scroll-entrance    |               | TBD v2  | free |
