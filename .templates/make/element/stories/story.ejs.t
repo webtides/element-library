@@ -6,7 +6,7 @@ import { define } from '@webtides/<%= elementName %>';
 define();
 
 export default {
-    title: 'Elements|<%= className %>',
+    title: 'Elements/<%= className %>',
     component: '<%= elementName %>',
 };
 
