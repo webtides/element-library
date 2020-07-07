@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/element-js-library_elments_textarea-field
+npm i --save @webtides/textarea-field
 ```
 
 ```js
-import '@webtides/element-js-library_elments_textarea-field';
+import '@webtides/textarea-field';
 ```
 
 ### Example

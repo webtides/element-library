@@ -3024,6 +3024,13 @@
   dependencies:
     "@webtides/element-js" "^0.1.0-7"
 
+"@webtides/element-js@0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.2.0/87733784b3d7a9183d35120c840365b707b34effd6b601b1adbe565b6955532c#bdc216c5f8b61230873bc2c77eef5665f012d4ca"
+  integrity sha512-TmUqR30ylaTXSo+L1FY7NsgJOYd95V1XXJzJp4/cJNlj47i+qkrQQmLy1mIMZ1yJJ8m83kdUJfn5tg765F4TRQ==
+  dependencies:
+    lit-html "^1.2.1"
+
 "@webtides/element-js@^0.1.0-7":
   version "0.1.0-7"
   resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.1.0-7/a416e166064415710170edf45e724ac2796b7c5f9e2ec91c99963d6cd3c5893c#27b68879a4610f5d598154479fe5e81d6b51b12b"

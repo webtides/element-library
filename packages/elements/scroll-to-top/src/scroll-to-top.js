@@ -1,4 +1,4 @@
-import { StyledElement } from '@webtides/element-js';
+import { StyledElement, defineElement } from '@webtides/element-js';
 import style from './scroll-to-top.css';
 
 export default class ScrollToTop extends StyledElement {
@@ -53,4 +53,8 @@ export default class ScrollToTop extends StyledElement {
             window.requestAnimationFrame(step);
         }
     }
+}
+
+export function define() {
+	defineElement('scroll-to-top', ScrollToTop);
 }

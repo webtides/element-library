@@ -1,5 +1,5 @@
-import { html } from '@webtides/element-js';
-import { FormField } from '@webtides/element-js-library_forms_form-field';
+import { html, defineElement } from '@webtides/element-js';
+import FormField from '@webtides/form-field';
 import { classMap } from 'lit-html/directives/class-map';
 import style from './textarea-field.css';
 
@@ -46,4 +46,8 @@ ${this.value}</textarea
 				: ''}
 		`;
 	}
+}
+
+export function define() {
+	defineElement('textarea-field', TextareaField);
 }

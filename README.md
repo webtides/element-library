@@ -4,7 +4,7 @@ A set of web components built with `@webtides/element-js`
 
 ## Introduction
 
-`@webtides/element-js-library` provides a set of pre-built custom elements based on `@webtides/element-js` with performance and accessibility in mind. They provide a starting point for rapidly building UIs without having to re-implement the same elements over and over again.
+`@webtides/element-library` provides a set of pre-built custom elements based on `@webtides/element-js` with performance and accessibility in mind. They provide a starting point for rapidly building UIs without having to re-implement the same elements over and over again.
 
 ## Documentation
 
@@ -44,12 +44,12 @@ Elements are divided into 3 categories.
 
 | Package            | Description   | Version | Type |
 | ------------------ | ------------- | ------- | ---- |
-| svg-icon           |               | TBD     | free |
 | lazy-src           |               | `0.1.0` | free |
-| line-through       |               | TBD v2  | free |
-| divider-element ?! |               | TBD v2  | free |
 | scroll-to          |               | `0.1.0` | free |
 | scroll-to-top      |               | `0.1.0` | free |
+| svg-icon           |               | TBD     | free |
+| line-through       |               | TBD v2  | free |
+| divider-element ?! |               | TBD v2  | free |
 | scroll-entrance    |               | TBD v2  | free |
 | sticky-element     |               | TBD     | free |
 | chip-element       | Tag, Label ?! | TBD     | free |
@@ -64,9 +64,11 @@ Elements are divided into 3 categories.
 
 | Package            | Description | Version | Type |
 | ------------------ | ----------- | ------- | ---- |
-| input-field        |             | TBD     | free |
+| checkbox-field     |             | `0.1.0`     | free |
+| form-field        |             | `0.1.0`     | free |
+| input-field        |             | `0.1.0`     | free |
+| textarea-field        |             | `0.1.0`     | free |
 | password-field     |             | TBD     | free |
-| checkbox-field     |             | TBD     | free |
 | radio-field        |             | TBD     | free |
 | switch-field       |             | TBD     | free |
 | dropdown-field     |             | TBD     | free |
@@ -83,4 +85,4 @@ We use `lerna` to version and publish new releases for packages automatically wh
 
 ## License
 
-`@webtides/element-js-library` is open-sourced software licensed under the MIT [license](LICENSE).
+`@webtides/element-library` is open-sourced software licensed under the MIT [license](LICENSE).

@@ -1,10 +1,13 @@
 {
-  "name": "@webtides/element-library_elments_scroll-to",
+  "name": "@webtides/scroll-to",
   "version": "0.1.0",
   "description": "An element that enables you to smoothly scroll to anchor elements or any other selector",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",
   "license": "MIT",
+	"type": "module",
+	"main": "src/scroll-to.js",
+	"module": "src/scroll-to.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webtides/element-library.git",
@@ -19,14 +22,10 @@
     "test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/elements/scroll-to/tests/**/*.test.js\""
   },
   "keywords": [
-    "maya-element",
-    "maya-elements",
     "web-components",
     "custom-elements",
     "scroll-to"
   ],
-  "main": "index.js",
-  "module": "index.js",
   "files": [
     "docs",
     "src",
@@ -36,7 +35,7 @@
     "*.js"
   ],
   "dependencies": {
-	  "@webtides/element-js": "^0.1.0-7"
+	  "@webtides/element-js": "0.2.0"
   },
   "devDependencies": {
     "@open-wc/demoing-storybook": "^1.13.3",

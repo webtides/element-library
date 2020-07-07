@@ -1,4 +1,4 @@
-import { BaseElement } from '@webtides/element-js';
+import { BaseElement, defineElement } from '@webtides/element-js';
 
 function load(element) {
     if (element.nodeName.toLowerCase() === 'picture') {
@@ -93,4 +93,8 @@ export default class LazySrc extends BaseElement {
         this.loaded = true;
         this.dispatch('src-loaded', {}, true);
     }
+}
+
+export function define() {
+	defineElement('lazy-src', LazySrc);
 }

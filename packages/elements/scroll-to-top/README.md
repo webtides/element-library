@@ -9,13 +9,13 @@ Place any `click` event emitting child element inside such as `<a>`, `<button>`,
 #### Installation
 
 ```sh
-npm i --save @webtides/element-js-library_elments_scroll-to-top
+npm i --save @webtides/scroll-to-top
 ```
 
 #### use
 
 ```js
-import '@webtides/element-js-library_elments_scroll-to-top';
+import '@webtides/scroll-to-top';
 ```
 
 ```html

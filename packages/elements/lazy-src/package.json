@@ -1,10 +1,13 @@
 {
-	"name": "@webtides/element-library_elments_lazy-src",
+	"name": "@webtides/lazy-src",
 	"version": "0.1.0",
 	"description": "An element that will lazy load any data-src attribute on the first child element",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",
 	"license": "MIT",
+	"type": "module",
+	"main": "src/lazy-src.js",
+	"module": "src/lazy-src.js",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/webtides/element-library.git",
@@ -19,14 +22,10 @@
 		"test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/elements/lazy-src/tests/**/*.test.js\""
 	},
 	"keywords": [
-		"maya-element",
-		"maya-elements",
 		"web-components",
 		"custom-elements",
 		"lazy-src"
 	],
-	"main": "index.js",
-	"module": "index.js",
 	"files": [
 		"docs",
 		"src",
@@ -36,7 +35,7 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@webtides/element-js": "^0.1.0-7"
+		"@webtides/element-js": "0.2.0"
 	},
 	"devDependencies": {
 		"@open-wc/demoing-storybook": "^1.13.3",

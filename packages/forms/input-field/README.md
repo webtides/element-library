@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/element-js-library_elments_input-field
+npm i --save @webtides/input-field
 ```
 
 ```js
-import '@webtides/element-js-library_elments_input-field';
+import '@webtides/input-field';
 ```
 
 ### Example

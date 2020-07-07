@@ -1,10 +1,13 @@
 {
-	"name": "@webtides/element-library_forms_checkbox-field",
-	"version": "0.1.0-2",
+	"name": "@webtides/checkbox-field",
+	"version": "0.1.0",
 	"description": "An element that...",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",
 	"license": "MIT",
+	"type": "module",
+	"main": "src/checkbox-field.js",
+	"module": "src/checkbox-field.js",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/webtides/element-library.git",
@@ -15,14 +18,10 @@
 		"test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/forms/checkbox-field/tests/**/*.test.js\""
 	},
 	"keywords": [
-		"maya-element",
-		"maya-elements",
 		"web-components",
 		"custom-elements",
 		"checkbox-field"
 	],
-	"main": "index.js",
-	"module": "index.js",
 	"files": [
 		"docs",
 		"src",
@@ -32,7 +31,7 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@webtides/element-js": "^0.1.0-7",
+		"@webtides/element-js": "0.2.0",
 		"@webtides/element-js-library_forms_form-field": "^0.1.0-2"
 	},
 	"devDependencies": {

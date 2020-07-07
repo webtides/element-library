@@ -1,4 +1,4 @@
-import { TemplateElement, html } from '@webtides/element-js';
+import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import FormFieldEvents from './form-fields.events';
 import style from './form-field.css';
@@ -147,3 +147,9 @@ export default class FormField extends TemplateElement {
 		`;
 	}
 }
+
+export function define() {
+	defineElement('form-field', FormField);
+}
+
+export { FormField, FormFieldEvents }

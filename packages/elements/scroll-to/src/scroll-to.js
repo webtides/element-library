@@ -1,4 +1,4 @@
-import { BaseElement } from '@webtides/element-js';
+import { BaseElement, defineElement } from '@webtides/element-js';
 
 export default class ScrollTo extends BaseElement {
     properties() {
@@ -21,4 +21,8 @@ export default class ScrollTo extends BaseElement {
             },
         };
     }
+}
+
+export function define() {
+	defineElement('scroll-to', ScrollTo);
 }
