@@ -1,60 +1,7 @@
 import { BaseElement, defineElement } from '@webtides/element-js';
+import lozad from 'lozad';
+import Events from './lazy-src.events';
 
-function load(element) {
-    if (element.nodeName.toLowerCase() === 'picture') {
-        const img = document.createElement('img');
-        if (element.getAttribute('data-alt')) {
-            img.alt = element.getAttribute('data-alt');
-        }
-        element.appendChild(img);
-    }
-    if (element.nodeName.toLowerCase() === 'video' && !element.getAttribute('data-src')) {
-        if (element.children) {
-            const childs = element.children;
-            let childSrc;
-            for (let i = 0; i <= childs.length - 1; i++) {
-                childSrc = childs[i].getAttribute('data-src');
-                if (childSrc) {
-                    childs[i].src = childSrc;
-                }
-            }
-            element.load();
-        }
-    }
-    if (element.getAttribute('data-src')) {
-        element.src = element.getAttribute('data-src');
-    }
-    if (element.getAttribute('data-srcset')) {
-        element.setAttribute('srcset', element.getAttribute('data-srcset'));
-    }
-    if (element.getAttribute('data-background-image')) {
-        element.style.backgroundImage = `url('${element.getAttribute('data-background-image')}')`;
-    }
-    if (element.getAttribute('data-toggle-class')) {
-        element.classList.toggle(element.getAttribute('data-toggle-class'));
-    }
-}
-
-function markAsLoaded(element) {
-    element.setAttribute('data-loaded', true);
-    element.removeAttribute('data-src');
-}
-
-const isLoaded = element => element.getAttribute('data-loaded') === 'true';
-
-const onIntersection = (after = () => {}) => (entries, observer) => {
-    entries.forEach(entry => {
-        if (entry.intersectionRatio > 0 || entry.isIntersecting) {
-            observer.unobserve(entry.target);
-
-            if (!isLoaded(entry.target)) {
-                load(entry.target);
-                markAsLoaded(entry.target);
-                after();
-            }
-        }
-    });
-};
 
 export default class LazySrc extends BaseElement {
     #observer = null;
@@ -74,27 +21,48 @@ export default class LazySrc extends BaseElement {
             rootMargin: '0px',
             threshold: 0.01,
             loaded: false,
+			imgClass: '',
+			imgAlt: '',
         };
     }
 
     connected() {
-        this.#observer = new IntersectionObserver(onIntersection(this.afterIntersection.bind(this)), {
-            document,
-            rootMargin: this.rootMargin,
-            threshold: this.threshold,
-        });
 
-        const element = this.firstElementChild;
+		this.#observer = lozad(this.firstElementChild, {
+			rootMargin: this.rootMargin,
+			threshold: this.threshold,
+			loaded: this.afterIntersection.bind(this),
+		});
 
-        this.#observer.observe(element);
+		this.#observer.observe();
     }
 
-    afterIntersection() {
-        this.loaded = true;
-        this.dispatch('src-loaded', {}, true);
+    afterIntersection(target) {
+		this.dispatch(Events.LOAD, this, true);
+		this.loaded = true;
+
+		const img = target.querySelector('img');;
+		if(img) {
+			//pass classes to generated img element
+			if (this.imgClass !== '') {
+				img.setAttribute('class', this.imgClass);
+			}
+			if (this.imgAlt !== '') {
+				img.setAttribute('alt', this.imgAlt);
+			}
+			img.onload = () => {
+				this.dispatch(Events.IMG_LOAD, this, true);
+			};
+			img.onerror = () => {
+				this.dispatch(Events.IMG_ERROR, this, true);
+			};
+		}
+
     }
 }
 
 export function define() {
 	defineElement('lazy-src', LazySrc);
 }
+
+export {Events};
