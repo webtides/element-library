@@ -1,6 +1,6 @@
 {
 	"name": "@webtides/lazy-src",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "An element that will lazy load any data-src attribute on the first child element",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",
@@ -35,7 +35,8 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@webtides/element-js": "0.2.0"
+		"@webtides/element-js": "0.2.0",
+		"lozad": "^1.15.0"
 	},
 	"devDependencies": {
 		"@open-wc/demoing-storybook": "^1.13.3",
