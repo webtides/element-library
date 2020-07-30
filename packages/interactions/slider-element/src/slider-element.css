@@ -1,14 +1,15 @@
 :host {
 	display: block;
+	position: relative;
 }
 
-ol, li {
+ol, ul, li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
-.scroll {
+.scroller {
 	display: flex;
 	overflow-x: scroll;
 	-webkit-overflow-scrolling: touch;
@@ -16,11 +17,16 @@ ol, li {
 	counter-reset: item;
 	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
-	--per-view: 2;
+	z-index: 100;
+	--per-view: 1;
 	--item-width: calc(100% / var(--per-view, 1));
 }
 
-.scroll::-webkit-scrollbar {
+.scroller slot {
+	z-index: 100;
+}
+
+.scroller::-webkit-scrollbar {
 	display: none;
 }
 
@@ -30,64 +36,71 @@ ol, li {
 	width: var(--item-width);
 	counter-increment: item;
 	scroll-snap-align: center;
+	z-index: 101;
 }
-.indicators {
+
+[part~=dots] {
 	display: flex;
 	justify-content: center;
+	z-index: 102;
+
+	[part~=dot] {
+		cursor: pointer;
+		background: none;
+		border: none;
+		color: #333;
+		padding: 4px;
+		font-size: 18px;
+	}
+
+	[part~=dot]:after {
+		content: '○';
+		padding: 4px;
+	}
+
+	[part~=dot]:hover {
+		color: #666
+	}
+
+	[part~=dot]:active {
+		color: #999;
+	}
+
+	[part~=dot][aria-pressed="true"]:after {
+		content: '●';
+	}
 }
 
-.controls {
+[part~=arrows] {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	display: flex;
-	width: 100%;
 	justify-content: space-between;
-}
+	align-items: center;
+	pointer-events: none;
+	z-index: 102;
 
-.arrows {
-	display: flex;
-}
+	[part~=arrow] {
+		pointer-events: all;
+		padding: 4px;
+		font-size: 18px;
 
-.arrow {
-	margin: 0 4px;
-	padding: 4px;
-}
+		button {
+			cursor: pointer;
+			background: white;
+			border: none;
+			padding: 8px 16px;
+		}
+	}
 
-ul.indicators {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
+	[part~=arrow-left] {
+		left: 0;
+	}
 
-.indicator {
-	padding: 10px;
+	[part~=arrow-right] {
+		right: 0;
+	}
 }
-
-.indicator-button {
-	cursor: pointer;
-	background: none;
-	border: none;
-	color: #333;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	padding: 0;
-}
-
-.indicator-button:after {
-	content: '○';
-	font-size: 1.4em;
-	padding: 12px 15px 17px;
-}
-
-.indicator-button:hover {
-	color: #666
-}
-
-.indicator-button:active {
-	color: #999;
-	padding: 0;
-}
-
-.indicator-button[aria-pressed="true"]:after {
-	content: '●';
-}
-
