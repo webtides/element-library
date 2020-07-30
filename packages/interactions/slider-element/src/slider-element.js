@@ -13,6 +13,8 @@ export default class SliderElement extends TemplateElement {
 	properties() {
 		return {
 			itemSelector: '.item',
+			itemsToShow: 1,
+			itemsToScroll: 1,
 			rewind: false,
 			selectedIndex: 0,
 		};
@@ -51,14 +53,14 @@ export default class SliderElement extends TemplateElement {
 			},
 			'.arrow-left': {
 				'click': () => {
-					const newIndex = this.selectedIndex - 1;
+					const newIndex = this.selectedIndex - this.itemsToScroll;
 					const lastIndex = this.itemsCount - 1;
 					this.selectedIndex = this.rewind && newIndex < 0 ? lastIndex : Math.max(newIndex, 0);
 				},
 			},
 			'.arrow-right': {
 				'click': () => {
-					const newIndex = this.selectedIndex + 1;
+					const newIndex = this.selectedIndex + this.itemsToScroll;
 					const lastIndex = this.itemsCount - 1;
 					this.selectedIndex = this.rewind && newIndex > lastIndex ? 0 : Math.min(lastIndex, newIndex);
 				},
@@ -76,12 +78,12 @@ export default class SliderElement extends TemplateElement {
 
 	template() {
 		return html`
-			<ol ref="scroller" class="scroll">
+			<ol ref="scroller" class="scroll" style="--per-view: ${this.itemsToShow}">
 				<slot></slot>
 			</ol>
 			<div class="controls">
 				<ul class="indicators">
-					${repeat(Array.from(Array(3).keys()), (i) => i, (i, index) => html`
+					${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
 						<li class="indicator">
 							<button class="indicator-button" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
 						</li>
