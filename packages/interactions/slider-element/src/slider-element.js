@@ -7,7 +7,7 @@ export default class SliderElement extends TemplateElement {
 	itemsCount = 0;
 
     constructor() {
-        super({ shadowRender: true, deferRender: true, styles: [style] });
+        super({ shadowRender: true, deferRender: true, adoptGlobalStyles:false, styles: [style] });
     }
 
 	properties() {
@@ -35,7 +35,7 @@ export default class SliderElement extends TemplateElement {
 
     events() {
 		return {
-			'.scroll': {
+			'.scroller': {
 				'scroll': () => {
 					clearTimeout(this.scrollTimer);
 					// wait for scroll end
@@ -45,9 +45,9 @@ export default class SliderElement extends TemplateElement {
 					}, 100);
 				},
 			},
-			'.indicator': {
+			'.dot': {
 				'click': (e) => {
-					const indicator = e.target.closest('.indicator');
+					const indicator = e.target.closest('.dot');
 					this.selectedIndex = Array.from(indicator.parentNode.children).indexOf(indicator);
 				}
 			},
@@ -78,21 +78,17 @@ export default class SliderElement extends TemplateElement {
 
 	template() {
 		return html`
-			<ol ref="scroller" class="scroll" style="--per-view: ${this.itemsToShow}">
-				<slot></slot>
+			<ol ref="scroller" part="scroller" class="scroller" style="--per-view: ${this.itemsToShow}">
+				<slot class="foo"></slot>
 			</ol>
-			<div class="controls">
-				<ul class="indicators">
-					${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
-						<li class="indicator">
-							<button class="indicator-button" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
-						</li>
-					`)}
-				</ul>
-				<div class="arrows">
-					<div class="arrow arrow-left"><button ?disabled=${!this.rewind && this.selectedIndex === 0}><</button></div>
-					<div class="arrow arrow-right"><button ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}>></button></div>
-				</div>
+			<div part="controls dots">
+				${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
+					<button part="dot" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
+				`)}
+			</div>
+			<div part="controls arrows">
+				<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && this.selectedIndex === 0}>&lang;</button>
+				<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}>&rang;</button>
 			</div>
 		`;
 	}
