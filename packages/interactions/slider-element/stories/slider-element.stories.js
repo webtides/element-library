@@ -7,8 +7,16 @@ export default {
     component: 'slider-element',
 };
 
-export const singleComponent = () => html`
+export const defaultVariant = () => html`
     <slider-element>
+    	<li class="item bg-red-500 p-4 h-64">1</li>
+    	<li class="item bg-blue-500 p-4  h-64">2</li>
+    	<li class="item bg-green-500 p-4 h-64">3</li>
+	</slider-element>
+`;
+
+export const rewindVariant = () => html`
+    <slider-element rewind="true">
     	<li class="item bg-red-500 p-4 h-64">1</li>
     	<li class="item bg-blue-500 p-4  h-64">2</li>
     	<li class="item bg-green-500 p-4 h-64">3</li>
