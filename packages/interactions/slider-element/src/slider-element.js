@@ -4,7 +4,7 @@ import style from './slider-element.css';
 
 export default class SliderElement extends TemplateElement {
 	scrollTimer = null;
-	indicators = 0;
+	itemsCount = 0;
 
     constructor() {
         super({ shadowRender: true, deferRender: true, styles: [style] });
@@ -13,13 +13,13 @@ export default class SliderElement extends TemplateElement {
 	properties() {
 		return {
 			itemSelector: '.item',
+			rewind: false,
 			selectedIndex: 0,
 		};
 	}
 
     connected() {
-		const items = this.querySelectorAll(this.itemSelector);
-		this.indicators = items.length || 0;
+		this.itemsCount = this.querySelectorAll(this.itemSelector).length || 0;
 		this.requestUpdate();
     }
 
@@ -38,7 +38,7 @@ export default class SliderElement extends TemplateElement {
 					clearTimeout(this.scrollTimer);
 					// wait for scroll end
 					this.scrollTimer = setTimeout(() => {
-						let index = Math.round((this.$refs.scroller.scrollLeft / this.$refs.scroller.scrollWidth) * this.indicators);
+						let index = Math.round((this.$refs.scroller.scrollLeft / this.$refs.scroller.scrollWidth) * this.itemsCount);
 						this.selectedIndex = index;
 					}, 100);
 				},
@@ -51,19 +51,23 @@ export default class SliderElement extends TemplateElement {
 			},
 			'.arrow-left': {
 				'click': () => {
-					this.selectedIndex = Math.max((this.selectedIndex - 1), 0);
+					const newIndex = this.selectedIndex - 1;
+					const lastIndex = this.itemsCount - 1;
+					this.selectedIndex = this.rewind && newIndex < 0 ? lastIndex : Math.max(newIndex, 0);
 				},
 			},
 			'.arrow-right': {
 				'click': () => {
-					this.selectedIndex = Math.min((this.indicators - 1), (this.selectedIndex + 1));
+					const newIndex = this.selectedIndex + 1;
+					const lastIndex = this.itemsCount - 1;
+					this.selectedIndex = this.rewind && newIndex > lastIndex ? 0 : Math.min(lastIndex, newIndex);
 				},
 			},
 		}
 	}
 
 	scrollToIndex() {
-		const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.indicators));
+		const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.itemsCount));
 		this.$refs.scroller.scrollTo({
 			'left': scrollLeft,
 			behavior: 'smooth'
@@ -84,8 +88,8 @@ export default class SliderElement extends TemplateElement {
 					`)}
 				</ul>
 				<div class="arrows">
-					<div class="arrow arrow-left"><button ?disabled=${this.selectedIndex === 0}><</button></div>
-					<div class="arrow arrow-right"><button ?disabled=${this.selectedIndex >= (this.indicators - 1)}>></button></div>
+					<div class="arrow arrow-left"><button ?disabled=${!this.rewind && this.selectedIndex === 0}><</button></div>
+					<div class="arrow arrow-right"><button ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}>></button></div>
 				</div>
 			</div>
 		`;
