@@ -1,19 +1,4 @@
-const postcss = require('rollup-plugin-postcss');
-
-const defaultPostCSSPlugins = options => [
-    require('postcss-import')(options.postCssImport || {}),
-    require('postcss-nested')(),
-    require('autoprefixer')({
-        grid: false,
-    }),
-];
-
-const defaultPostCssOptions = {
-    plugins: defaultPostCSSPlugins({}),
-    inject: false,
-    minimize: false,
-    sourceMap: false,
-};
+const postcss = require('postcss');
 
 module.exports = {
     stories: [
@@ -31,40 +16,28 @@ module.exports = {
         watch: true,
         open: false,
         babel: true,
-        babelConfig: {
-            babelrc: false,
-            presets: [
-                [
-                    '@babel/preset-env',
-                    {
-                        modules: false,
-                        targets: {
-                            browsers: ['Chrome >= 76', 'Safari >= 12', 'iOS >= 12', 'Firefox >= 68', 'Edge >= 79'],
-                        },
-                    },
-                ],
-            ],
-            plugins: [
-				['@babel/plugin-proposal-nullish-coalescing-operator', { loose: true }],
-				['@babel/plugin-proposal-optional-chaining', { loose: true }],
-				['@babel/plugin-proposal-class-properties', { loose: true }],
-				'@babel/plugin-proposal-export-default-from',
-                [
-                    'transform-postcss',
-                    {
-                        config: './.storybook/postcss.config.js',
-                    },
-                ],
-				['module-resolver', { root: ['./'] }],
-            ],
-        },
-    },
-    rollup: config => {
-        // add PostCSS plugin for importing .css files
-        config.plugins.push(
-            postcss({
-                ...defaultPostCssOptions,
-            }),
-        );
+		plugins: [
+			// create an inline plugin
+			{
+				resolveMimeType(context) {
+					// change all CSS files to JS
+					if (context.response.is('css')) {
+						return 'js';
+					}
+				},
+				async transform(context) {
+					if (context.response.is('css') || context.path.includes('.css')) {
+						let css = context.body;
+						const plugins = require('./postcss.config')().plugins;
+						await postcss(plugins)
+							.process(css, {})
+							.then(result => {
+								css = result.css;
+							})
+						return { body: `export default \`${css}\`;` };
+					}
+				},
+			},
+		],
     },
 };
