@@ -10,17 +10,17 @@ export default class SliderElement extends TemplateElement {
         super({ shadowRender: true, deferRender: true, styles: [style] });
     }
 
+	properties() {
+		return {
+			itemSelector: '.item',
+			selectedIndex: 0,
+		};
+	}
+
     connected() {
 		const items = this.querySelectorAll(this.itemSelector);
 		this.indicators = items.length || 0;
 		this.requestUpdate();
-    }
-
-    properties() {
-        return {
-        	itemSelector: '.item',
-			selectedIndex: 0,
-		};
     }
 
     watch() {
@@ -84,8 +84,8 @@ export default class SliderElement extends TemplateElement {
 					`)}
 				</ul>
 				<div class="arrows">
-					<div class="arrow arrow-left"><button><</button></div>
-					<div class="arrow arrow-right"><button>></button></div>
+					<div class="arrow arrow-left"><button ?disabled=${this.selectedIndex === 0}><</button></div>
+					<div class="arrow arrow-right"><button ?disabled=${this.selectedIndex >= (this.indicators - 1)}>></button></div>
 				</div>
 			</div>
 		`;
