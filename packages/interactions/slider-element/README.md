@@ -1,6 +1,6 @@
 # SliderElement
 
-`slider-element` enables you to...
+`slider-element` lets you slide child elements
 
 ## How to use
 
@@ -17,5 +17,9 @@ import '@webtides/slider-element';
 ### Example
 
 ```html
-<slider-element></slider-element>
+<slider-element>
+    <li class="item">1</li>
+    <li class="item">2</li>
+    <li class="item">3</li>
+</slider-element>
 ```
