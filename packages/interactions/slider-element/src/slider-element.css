@@ -16,6 +16,8 @@ ol, li {
 	counter-reset: item;
 	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
+	--per-view: 2;
+	--item-width: calc(100% / var(--per-view, 1));
 }
 
 .scroll::-webkit-scrollbar {
@@ -24,8 +26,8 @@ ol, li {
 
 ::slotted(.item) {
 	position: relative;
-	flex: 0 0 100%;
-	width: 100%;
+	flex: 0 0 var(--item-width);
+	width: var(--item-width);
 	counter-increment: item;
 	scroll-snap-align: center;
 }
