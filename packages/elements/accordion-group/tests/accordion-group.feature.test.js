@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import { define } from 'packages/elements/accordion-group/src/accordion-group';
+import { define } from '@webtides/accordion-group';
 define();
 
 describe('Feature | AccordionGroupe', () => {
