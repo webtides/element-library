@@ -18,7 +18,7 @@ export default class AccordionGroup extends BaseElement {
 		return {
 			document: {
 				['AccordionElementOpen']: (event) => {
-					this._children.map((details) => {
+					this._children?.map((details) => {
 						details.open = event.target === details;
 					});
 				},
