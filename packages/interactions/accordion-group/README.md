@@ -11,7 +11,7 @@ npm i --save @webtides/accordion-groupe
 ```
 
 ```js
-import 'packages/elements/accordion-group/src/accordion-group';
+import 'packages/interactions/accordion-groupon-group';
 ```
 
 ### Example

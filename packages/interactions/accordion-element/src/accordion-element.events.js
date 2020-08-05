@@ -1,3 +1,3 @@
 export default {
-	OPEN: 'AccordionElementOpen',
+	TOGGLE: 'AccordionElementToggle',
 };
