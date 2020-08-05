@@ -6,18 +6,14 @@ export default class AccordionGroup extends BaseElement {
 		this._children = [];
 	}
 
-	hooks() {
-		return {
-			connected: () => {
-				this._children = Array.from(this.children);
-			},
-		};
+	connected() {
+		this._children = Array.from(this.children);
 	}
 
 	events() {
 		return {
 			document: {
-				['AccordionElementOpen']: (event) => {
+				['AccordionElementToggle']: (event) => {
 					this._children?.map((details) => {
 						details.open = event.target === details;
 					});

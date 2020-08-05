@@ -21,6 +21,7 @@ export default class AccordionElement extends TemplateElement {
 		return {
 			open: (open) => {
 				open === true ? this.expand() : this.collapse();
+				this.dispatch(Events.TOGGLE, { open: this.open }, true);
 			},
 		};
 	}
@@ -30,7 +31,6 @@ export default class AccordionElement extends TemplateElement {
 			'[data-toggle]': {
 				click: () => {
 					this.toggle();
-					this.dispatch(Events.OPEN, { open: this.open }, true);
 				},
 			},
 		};
@@ -89,3 +89,5 @@ export default class AccordionElement extends TemplateElement {
 export function define() {
 	defineElement('accordion-element', AccordionElement);
 }
+
+export { html, defineElement }
