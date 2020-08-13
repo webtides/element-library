@@ -3188,13 +3188,6 @@
   resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.4.3.tgz#384f4f6d54563ba465fb4df21fe89e78a76fc530"
   integrity sha512-cV4+sAmshf8ysU2USutrSRYQkJzEYKHsRCGa0CkMElGpG5747VHtkfsW3NdVIBV/m2MDKXTDydT4lkrysH7IFA==
 
-"@webtides/element-js-library_forms_form-field@^0.1.0-2":
-  version "0.1.0-3"
-  resolved "https://npm.pkg.github.com/download/@webtides/element-js-library_forms_form-field/0.1.0-3/3af5bd82333ca27c365b1dc5195c3bb897a59617ad264af5affc9f7631d3ae3c#eb724325f07b685f117e25b892f057caaaa844af"
-  integrity sha512-Kyy42WKEvQ71Torr/FxHiVIoJ/Ug0Ma9sgTP7mzj+B4m/e/OxqA7xUotQiwllN9eYl34F+PrD/InFhTljG6XuA==
-  dependencies:
-    "@webtides/element-js" "^0.1.0-7"
-
 "@webtides/element-js@0.2.0":
   version "0.2.0"
   resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.2.0/87733784b3d7a9183d35120c840365b707b34effd6b601b1adbe565b6955532c#bdc216c5f8b61230873bc2c77eef5665f012d4ca"
@@ -3206,13 +3199,6 @@
   version "0.3.0"
   resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.3.0/7c263fcd17e7fdf6eb4ea59c529a2fb1426a00072efa8b9b710e1805e641323b#3d0046c3d6e83b9361c00b62c42b73e4d8f36077"
   integrity sha512-1xPTNEfuSLocT5G6boLjJC6y9LZyggsA147WJszWN/E5Es5pGtLG8ruzagZZy+NcF2sHJWh/ThOoKhDBi0D2Og==
-  dependencies:
-    lit-html "^1.2.1"
-
-"@webtides/element-js@^0.1.0-7":
-  version "0.1.0"
-  resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.1.0/a763e32d9e379179f1078769cf7bc4fcdd6a932b7d5fd3586ef6cfeb6a8d90e6#d37a79435f70ccf5988e2a74f1b689b94778eb77"
-  integrity sha512-vzwCp//NQWH+AKc4ZdIOgdip1e7FdZY33mzr/CuG3KLxceJAtlCcQ8daXzGxvkjY353+5Nq6e6Zc5G2gfjtLQQ==
   dependencies:
     lit-html "^1.2.1"
 

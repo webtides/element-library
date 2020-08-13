@@ -1,6 +1,6 @@
 {
 	"name": "@webtides/checkbox-field",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "An element that...",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",
@@ -32,7 +32,7 @@
 	],
 	"dependencies": {
 		"@webtides/element-js": "0.2.0",
-		"@webtides/element-js-library_forms_form-field": "^0.1.0-2"
+		"@webtides/form-field": "^0.1.0"
 	},
 	"devDependencies": {
 		"@open-wc/demoing-storybook": "^1.13.3",
