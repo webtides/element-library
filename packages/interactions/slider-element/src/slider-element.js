@@ -93,15 +93,15 @@ export default class SliderElement extends TemplateElement {
 	dotsTemplate() {
     	return html`
     		${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
-				<button part="dot" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
+				<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
 			`)}
     	`;
 	}
 
 	arrowsTemplate() {
     	return html`
-    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && this.selectedIndex === 0}>&lang;</button>
-			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}>&rang;</button>
+    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && this.selectedIndex === 0}><slot name="arrow-left">&lang;</slot></button>
+			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}><slot name="arrow-right">&rang;</slot></button>
     	`;
 	}
 }
