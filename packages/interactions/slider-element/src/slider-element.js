@@ -1,4 +1,4 @@
-import { defineElement, html, TemplateElement } from '@webtides/element-js';
+import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import { repeat } from 'lit-html/directives/repeat';
 import style from './slider-element.css';
 
@@ -79,18 +79,30 @@ export default class SliderElement extends TemplateElement {
 	template() {
 		return html`
 			<ol ref="scroller" part="scroller" class="scroller" style="--per-view: ${this.itemsToShow}">
-				<slot class="foo"></slot>
+				<slot></slot>
 			</ol>
 			<div part="controls dots">
-				${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
-					<button part="dot" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
-				`)}
+				${this.dotsTemplate()}
 			</div>
 			<div part="controls arrows">
-				<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && this.selectedIndex === 0}>&lang;</button>
-				<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}>&rang;</button>
+				${this.arrowsTemplate()}
 			</div>
 		`;
+	}
+
+	dotsTemplate() {
+    	return html`
+    		${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
+				<button part="dot" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
+			`)}
+    	`;
+	}
+
+	arrowsTemplate() {
+    	return html`
+    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && this.selectedIndex === 0}>&lang;</button>
+			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}>&rang;</button>
+    	`;
 	}
 }
 
@@ -98,3 +110,4 @@ export function define() {
 	defineElement('slider-element', SliderElement);
 }
 
+export { html, defineElement }
