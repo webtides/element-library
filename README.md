@@ -18,8 +18,10 @@ Elements are divided into 3 categories.
 
 | Package              | Description     | Version | Type |
 | -------------------- | --------------- | ------- | ---- |
+| accordion-element    |                 | `0.1.0`     | free |
+| accordion-group    |                 | `0.1.0`     | free |
+| slider-element       |                 | `0.1.0`  | free  |
 | transition-classes    |                 | `0.1.0`     | free |
-| accordion-element    |                 | TBD     | free |
 | modal-element        |                 | TBD     | free |
 | bottom-sheet         |                 | TBD     | pro  |
 | side-sheet           |                 | TBD     | pro  |
@@ -35,7 +37,6 @@ Elements are divided into 3 categories.
 | navigation-drawer ?! |                 | TBD v2  | free |
 | hover-indicator      |                 | TBD v2  | pro  |
 | pinch-zoom           |                 | TBD v2  | pro  |
-| slider-element       |                 | TBD v2  | pro  |
 | cookie-consent       |                 | TBD     | pro  |
 | rich-text            |                 | TBD v2  | pro  |
 | code-block           |                 | TBD v2  | pro  |
