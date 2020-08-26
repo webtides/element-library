@@ -78,9 +78,9 @@ export default class SliderElement extends TemplateElement {
 
 	template() {
 		return html`
-			<ol ref="scroller" part="scroller" class="scroller" style="--per-view: ${this.itemsToShow}">
+			<div ref="scroller" part="scroller" class="scroller" style="--per-view: ${this.itemsToShow}">
 				<slot></slot>
-			</ol>
+			</div>
 			<div part="controls dots">
 				${this.dotsTemplate()}
 			</div>
