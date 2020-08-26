@@ -34,8 +34,7 @@ ol, ul, li {
 	position: relative;
 	flex: 0 0 var(--item-width);
 	width: var(--item-width);
-	counter-increment: item;
-	scroll-snap-align: center;
+	scroll-snap-align: var(--snap-align, center);
 	z-index: 101;
 }
 

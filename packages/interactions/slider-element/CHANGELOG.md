@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.1.1] - 2020-08-26
+
+### Added
+* `--snap-align` custom property for changing the scroll-snap-align value for the scroller
+
 ## [0.1.0] - 2020-07-30
 
 ### Added
