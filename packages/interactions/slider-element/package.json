@@ -1,6 +1,6 @@
 {
   "name": "@webtides/slider-element",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A slider element that lets you slide child elements",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",

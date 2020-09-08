@@ -20,7 +20,15 @@ export default class SliderElement extends TemplateElement {
 		};
 	}
 
-    connected() {
+	get canSlideLeft() {
+		return this.selectedIndex > 0;
+	}
+
+	get canSlideRight() {
+		return (this.selectedIndex + this.itemsToShow) < this.itemsCount;
+	}
+
+	connected() {
 		this.itemsCount = this.querySelectorAll(this.itemSelector).length || 0;
 		this.requestUpdate();
     }
@@ -100,8 +108,8 @@ export default class SliderElement extends TemplateElement {
 
 	arrowsTemplate() {
     	return html`
-    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && this.selectedIndex === 0}><slot name="arrow-left">&lang;</slot></button>
-			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && this.selectedIndex >= (this.itemsCount - 1)}><slot name="arrow-right">&rang;</slot></button>
+    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && !this.canSlideLeft}><slot name="arrow-left">&lang;</slot></button>
+			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && !this.canSlideRight}><slot name="arrow-right">&rang;</slot></button>
     	`;
 	}
 }

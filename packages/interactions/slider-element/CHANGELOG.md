@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.2.0] - 2020-09-08
+
+### Added
+* `canSlideLeft` and `canSlideRight` getter to check if arrow buttons should be shown in template
+
 ## [0.1.1] - 2020-08-26
 
 ### Added
