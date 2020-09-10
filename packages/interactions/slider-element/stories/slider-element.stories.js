@@ -33,6 +33,21 @@ export const rewindVariant = () => html`
 	</slider-element>
 `;
 
+export const paddingVariant = () => html`
+    <slider-element items-to-show="3">
+    	<div class="item bg-red-500 p-4 h-64 mr-2">1</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-green-500 p-4 h-64 ml-2">3</div>
+	</slider-element>
+`;
+
 export const itemsToShowVariant = () => html`
     <slider-element items-to-show="3">
     	<div class="item bg-red-100 p-4 h-64">1</div>
