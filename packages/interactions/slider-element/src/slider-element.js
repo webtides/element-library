@@ -9,7 +9,7 @@ export default class SliderElement extends TemplateElement {
 	#scrollToIndex = false;
 
     constructor() {
-        super({ shadowRender: true, deferRender: true, adoptGlobalStyles:false, styles: [style] });
+        super({ shadowRender: true, deferUpdate: true, adoptGlobalStyles:false, styles: [style] });
     }
 
 	properties() {
@@ -19,7 +19,6 @@ export default class SliderElement extends TemplateElement {
 			itemsToScroll: 1,
 			rewind: false,
 			selectedIndex: 0,
-			snapAlign: 'center',
 		};
 	}
 
@@ -35,10 +34,7 @@ export default class SliderElement extends TemplateElement {
     	this.items = Array.from(this.querySelectorAll(this.itemSelector));
     	this.itemsCount = this.items.length > 1 ? (this.items.length -1) : 0;
 
-		this.style.setProperty('--snap-align', this.snapAlign)
-		if(this.itemsToShow > 1){
-			this.style.setProperty('--item-width', `${100/this.itemsToShow}%`)
-		}
+		this.style.setProperty('--item-width', `${100/this.itemsToShow}%`)
 		this.requestUpdate();
     }
 
@@ -79,17 +75,18 @@ export default class SliderElement extends TemplateElement {
 
 	scrollToIndex() {
 		//const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.itemsCount));
-
 		this.#scrollToIndex = true;
 		const target = this.items[this.selectedIndex];
 		const parent = this.$refs.scroller;
 		const parentWidth = parent.offsetWidth;
 
 		let targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth) / 2 ;
-		if (this.snapAlign === ('start')) {
+
+		const snapAlign = window.getComputedStyle(target).scrollSnapAlign;
+		if (snapAlign === 'start') {
 			targetLeft = target.offsetLeft;
 		}
-		else if(this.snapAlign === ('end')) {
+		else if(snapAlign === 'end') {
 			targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth)  ;
 		}
 
@@ -120,7 +117,7 @@ export default class SliderElement extends TemplateElement {
 
 	template() {
 		return html`
-			<div ref="scroller" part="scroller" class="scroller" style="--per-view: ${this.itemsToShow}">
+			<div ref="scroller" part="scroller" class="scroller" >
 				<slot></slot>
 			</div>
 			<div part="controls dots">
@@ -133,14 +130,9 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	dotsTemplate() {
-    	if(!this.items) {
-    		return;
-		}
-
     	return this.items.map((item, index) => {
     		return html`<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>`
 		})
-
 	}
 
 	arrowsTemplate() {
