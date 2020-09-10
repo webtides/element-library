@@ -19,8 +19,8 @@ ol, ul, li {
 	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
 	z-index: 100;
-	--per-view: 1;
-	--item-width: calc(100% / var(--per-view, 1));
+
+
 }
 
 .scroller slot {
@@ -33,7 +33,6 @@ ol, ul, li {
 
 ::slotted(.item) {
 	position: relative;
-	/*flex: 0 0 var(--item-width);*/
 	flex-grow: 0;
 	flex-shrink: 0;
 	scroll-snap-align: var(--snap-align, center);
