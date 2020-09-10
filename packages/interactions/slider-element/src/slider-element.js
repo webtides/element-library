@@ -3,9 +3,9 @@ import { repeat } from 'lit-html/directives/repeat';
 import style from './slider-element.css';
 
 export default class SliderElement extends TemplateElement {
-	scrollTimer = null;
-	itemsCount = 0;
-	items = null;
+	#itemsCount = 0;
+	#scrollTimer = null;
+	#items = null;
 	#scrollToIndex = false;
 
     constructor() {
@@ -27,12 +27,12 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	get canSlideRight() {
-		return this.selectedIndex < this.itemsCount;
+		return this.selectedIndex < this.#itemsCount;
 	}
 
 	connected() {
-    	this.items = Array.from(this.querySelectorAll(this.itemSelector));
-    	this.itemsCount = this.items.length > 1 ? (this.items.length -1) : 0;
+    	this.#items = Array.from(this.querySelectorAll(this.itemSelector));
+    	this.#itemsCount = this.#items.length > 1 ? (this.#items.length -1) : 0;
 
 		this.style.setProperty('--item-width', `${100/this.itemsToShow}%`)
 		this.requestUpdate();
@@ -42,11 +42,11 @@ export default class SliderElement extends TemplateElement {
 		return {
 			'.scroller': {
 				'scroll': () => {
-					clearTimeout(this.scrollTimer);
+					clearTimeout(this.#scrollTimer);
 					if(this.#scrollToIndex === true) {
 						return;
 					}
-					this.scrollTimer = setTimeout(() => this.onManualScrollEnd(), 100);
+					this.#scrollTimer = setTimeout(() => this.onManualScrollEnd(), 100);
 				},
 			},
 			'.dot': {
@@ -59,14 +59,14 @@ export default class SliderElement extends TemplateElement {
 			'.arrow-left': {
 				'click': () => {
 					const newIndex = this.selectedIndex - this.itemsToScroll;
-					this.selectedIndex = this.rewind && newIndex < 0 ? this.itemsCount : Math.max(newIndex, 0);
+					this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
 					this.scrollToIndex();
 				},
 			},
 			'.arrow-right': {
 				'click': () => {
 					const newIndex = this.selectedIndex + this.itemsToScroll;
-					this.selectedIndex = this.rewind && newIndex > this.itemsCount ? 0 : Math.min(this.itemsCount, newIndex);
+					this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
 					this.scrollToIndex();
 				},
 			},
@@ -74,9 +74,9 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	scrollToIndex() {
-		//const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.itemsCount));
+		//const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.#itemsCount));
 		this.#scrollToIndex = true;
-		const target = this.items[this.selectedIndex];
+		const target = this.#items[this.selectedIndex];
 		const parent = this.$refs.scroller;
 		const parentWidth = parent.offsetWidth;
 
@@ -106,11 +106,11 @@ export default class SliderElement extends TemplateElement {
 			this.selectedIndex = 0;
 		}
 		else if(scrollPercentage === 1) {
-			this.selectedIndex = this.itemsCount;
+			this.selectedIndex = this.#itemsCount;
 		}
 		else {
 			//aprox or guess selectedIndex to fix UI state
-			this.selectedIndex = Math.ceil(this.itemsCount * scrollPercentage)
+			this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage)
 		}
 
 	}
@@ -130,7 +130,7 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	dotsTemplate() {
-    	return this.items.map((item, index) => {
+    	return this.#items.map((item, index) => {
     		return html`<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>`
 		})
 	}
