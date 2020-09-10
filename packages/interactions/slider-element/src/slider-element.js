@@ -5,6 +5,8 @@ import style from './slider-element.css';
 export default class SliderElement extends TemplateElement {
 	scrollTimer = null;
 	itemsCount = 0;
+	items = null;
+	#scrollToIndex = false;
 
     constructor() {
         super({ shadowRender: true, deferRender: true, adoptGlobalStyles:false, styles: [style] });
@@ -17,28 +19,27 @@ export default class SliderElement extends TemplateElement {
 			itemsToScroll: 1,
 			rewind: false,
 			selectedIndex: 0,
+			snapAlign: 'center',
 		};
 	}
 
 	get canSlideLeft() {
-		return this.selectedIndex > 0;
+    	return this.selectedIndex > 0;
 	}
 
 	get canSlideRight() {
-		return (this.selectedIndex + this.itemsToShow) < this.itemsCount;
+		return this.selectedIndex < this.itemsCount;
 	}
 
 	connected() {
-		this.itemsCount = this.querySelectorAll(this.itemSelector).length || 0;
-		this.requestUpdate();
-    }
+    	this.items = Array.from(this.querySelectorAll(this.itemSelector));
+    	this.itemsCount = this.items.length > 1 ? (this.items.length -1) : 0;
 
-    watch() {
-        return {
-			selectedIndex: (index) => {
-				this.scrollToIndex(index);
-			},
-		};
+		this.style.setProperty('--snap-align', this.snapAlign)
+		if(this.itemsToShow > 1){
+			this.style.setProperty('--item-width', `${100/this.itemsToShow}%`)
+		}
+		this.requestUpdate();
     }
 
     events() {
@@ -46,42 +47,75 @@ export default class SliderElement extends TemplateElement {
 			'.scroller': {
 				'scroll': () => {
 					clearTimeout(this.scrollTimer);
-					// wait for scroll end
-					this.scrollTimer = setTimeout(() => {
-						let index = Math.round((this.$refs.scroller.scrollLeft / this.$refs.scroller.scrollWidth) * this.itemsCount);
-						this.selectedIndex = index;
-					}, 100);
+					if(this.#scrollToIndex === true) {
+						return;
+					}
+					this.scrollTimer = setTimeout(() => this.onManualScrollEnd(), 100);
 				},
 			},
 			'.dot': {
 				'click': (e) => {
 					const indicator = e.target.closest('.dot');
 					this.selectedIndex = Array.from(indicator.parentNode.children).indexOf(indicator);
+					this.scrollToIndex();
 				}
 			},
 			'.arrow-left': {
 				'click': () => {
 					const newIndex = this.selectedIndex - this.itemsToScroll;
-					const lastIndex = this.itemsCount - 1;
-					this.selectedIndex = this.rewind && newIndex < 0 ? lastIndex : Math.max(newIndex, 0);
+					this.selectedIndex = this.rewind && newIndex < 0 ? this.itemsCount : Math.max(newIndex, 0);
+					this.scrollToIndex();
 				},
 			},
 			'.arrow-right': {
 				'click': () => {
 					const newIndex = this.selectedIndex + this.itemsToScroll;
-					const lastIndex = this.itemsCount - 1;
-					this.selectedIndex = this.rewind && newIndex > lastIndex ? 0 : Math.min(lastIndex, newIndex);
+					this.selectedIndex = this.rewind && newIndex > this.itemsCount ? 0 : Math.min(this.itemsCount, newIndex);
+					this.scrollToIndex();
 				},
 			},
 		}
 	}
 
 	scrollToIndex() {
-		const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.itemsCount));
+		//const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.itemsCount));
+
+		this.#scrollToIndex = true;
+		const target = this.items[this.selectedIndex];
+		const parent = this.$refs.scroller;
+		const parentWidth = parent.offsetWidth;
+
+		let targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth) / 2 ;
+		if (this.snapAlign === ('start')) {
+			targetLeft = target.offsetLeft;
+		}
+		else if(this.snapAlign === ('end')) {
+			targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth)  ;
+		}
+
 		this.$refs.scroller.scrollTo({
-			'left': scrollLeft,
+			'left': targetLeft,
 			behavior: 'smooth'
 		})
+	}
+
+	onManualScrollEnd() {
+		this.#scrollToIndex = false;
+		const scroller = this.$refs.scroller;
+		const scrollLeft = scroller.scrollLeft;
+		const scrollPercentage = scrollLeft / ( scroller.scrollWidth - scroller.offsetWidth)
+
+		if(scrollPercentage === 0) {
+			this.selectedIndex = 0;
+		}
+		else if(scrollPercentage === 1) {
+			this.selectedIndex = this.itemsCount;
+		}
+		else {
+			//aprox or guess selectedIndex to fix UI state
+			this.selectedIndex = Math.ceil(this.itemsCount * scrollPercentage)
+		}
+
 	}
 
 	template() {
@@ -99,11 +133,14 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	dotsTemplate() {
-    	return html`
-    		${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
-				<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
-			`)}
-    	`;
+    	if(!this.items) {
+    		return;
+		}
+
+    	return this.items.map((item, index) => {
+    		return html`<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>`
+		})
+
 	}
 
 	arrowsTemplate() {
