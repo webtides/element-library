@@ -73,8 +73,14 @@ export default class SliderElement extends TemplateElement {
 		}
 	}
 
+	goTo(index){
+		if(index !== this.selectedIndex){
+			this.selectedIndex = index;
+			this.scrollToIndex();
+		}
+	}
+
 	scrollToIndex() {
-		//const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.#itemsCount));
 		this.#scrollToIndex = true;
 		const target = this.#items[this.selectedIndex];
 		const parent = this.$refs.scroller;
