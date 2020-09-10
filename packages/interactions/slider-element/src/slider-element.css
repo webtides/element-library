@@ -12,6 +12,7 @@ ol, ul, li {
 .scroller {
 	display: flex;
 	overflow-x: scroll;
+	position: relative;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-width: none;
 	counter-reset: item;
@@ -32,9 +33,11 @@ ol, ul, li {
 
 ::slotted(.item) {
 	position: relative;
-	flex: 0 0 var(--item-width);
-	width: var(--item-width);
+	/*flex: 0 0 var(--item-width);*/
+	flex-grow: 0;
+	flex-shrink: 0;
 	scroll-snap-align: var(--snap-align, center);
+	width: var(--item-width, 100%);
 	z-index: 101;
 }
 
