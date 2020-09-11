@@ -1,5 +1,4 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
-import { repeat } from 'lit-html/directives/repeat';
 import style from './slider-element.css';
 
 export default class SliderElement extends TemplateElement {
@@ -118,7 +117,6 @@ export default class SliderElement extends TemplateElement {
 			//aprox or guess selectedIndex to fix UI state
 			this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage)
 		}
-
 	}
 
 	template() {
