@@ -10,20 +10,10 @@ export default {
 export const defaultVariant = () => html`
     <slider-element>
     	<div class="item bg-red-500 p-4 h-64">1</div>
-    	<div class="item bg-blue-500 p-4  h-64">2</div>
-    	<div class="item bg-green-500 p-4 h-64">3</div>
-    	    	<div class="item bg-red-500 p-4 h-64">1</div>
-    	<div class="item bg-blue-500 p-4  h-64">2</div>
-    	<div class="item bg-green-500 p-4 h-64">3</div>
-    	    	<div class="item bg-red-500 p-4 h-64">1</div>
-    	<div class="item bg-blue-500 p-4  h-64">2</div>
-    	<div class="item bg-green-500 p-4 h-64">3</div>
-    	    	<div class="item bg-red-500 p-4 h-64">1</div>
-    	<div class="item bg-blue-500 p-4  h-64">2</div>
+    	<div class="item bg-blue-500 p-4 h-64">2</div>
     	<div class="item bg-green-500 p-4 h-64">3</div>
 	</slider-element>
 `;
-
 
 export const rewindVariant = () => html`
     <slider-element rewind="true">
@@ -35,16 +25,15 @@ export const rewindVariant = () => html`
 
 export const paddingVariant = () => html`
     <slider-element items-to-show="3">
-    	<div class="item bg-red-500 p-4 h-64 mr-2">1</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-blue-500 p-4 h-64 mx-2">2</div>
-    	<div class="item bg-green-500 p-4 h-64 ml-2">3</div>
+    	<div class="item bg-red-100 p-4 h-64 mr-2">1</div>
+    	<div class="item bg-red-200 p-4 h-64 mx-2">2</div>
+    	<div class="item bg-red-300 p-4 h-64 mx-2">3</div>
+    	<div class="item bg-red-400 p-4 h-64 mx-2">4</div>
+    	<div class="item bg-red-500 p-4 h-64 mx-2">5</div>
+    	<div class="item bg-red-600 p-4 h-64 mx-2">6</div>
+    	<div class="item bg-red-700 p-4 h-64 mx-2">7</div>
+    	<div class="item bg-red-800 p-4 h-64 mx-2">8</div>
+    	<div class="item bg-red-900 p-4 h-64 ml-2">9</div>
 	</slider-element>
 `;
 
@@ -75,6 +64,7 @@ export const itemsToShowStartVariant = () => html`
     	<div class="item bg-red-900 p-4 h-64">9</div>
 	</slider-element>
 `;
+
 export const itemsToShowEndVariant = () => html`
     <slider-element items-to-show="3" snap-align="end">
     	<div class="item bg-red-100 p-4 h-64">1</div>
@@ -102,7 +92,6 @@ export const itemsToScrollVariant = () => html`
     	<div class="item bg-red-900 p-4 h-64">9</div>
 	</slider-element>
 `;
-
 
 export const itemsToScrollStartVariant = () => html`
     <slider-element items-to-show="3" items-to-scroll="3" snap-align="start">
