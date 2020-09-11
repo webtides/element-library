@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.3.0] - 2020-09-11
+
+### Added
+* `goTo(index)` public method to control the slider from outside
+
+### Changed
+* refactored all calculations inside the slider to be more resilient
+* the slider now can handle items of different widths
+
 ## [0.2.0] - 2020-09-08
 
 ### Added
