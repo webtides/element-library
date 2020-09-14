@@ -51,64 +51,8 @@ export const itemsToShowVariant = () => html`
 	</slider-element>
 `;
 
-export const itemsToShowStartVariant = () => html`
-    <slider-element items-to-show="3" snap-align="start">
-    	<div class="item bg-red-100 p-4 h-64">1</div>
-    	<div class="item bg-red-200 p-4 h-64">2</div>
-    	<div class="item bg-red-300 p-4 h-64">3</div>
-    	<div class="item bg-red-400 p-4 h-64">4</div>
-    	<div class="item bg-red-500 p-4 h-64">5</div>
-    	<div class="item bg-red-600 p-4 h-64">6</div>
-    	<div class="item bg-red-700 p-4 h-64">7</div>
-    	<div class="item bg-red-800 p-4 h-64">8</div>
-    	<div class="item bg-red-900 p-4 h-64">9</div>
-	</slider-element>
-`;
-
-export const itemsToShowEndVariant = () => html`
-    <slider-element items-to-show="3" snap-align="end">
-    	<div class="item bg-red-100 p-4 h-64">1</div>
-    	<div class="item bg-red-200 p-4 h-64">2</div>
-    	<div class="item bg-red-300 p-4 h-64">3</div>
-    	<div class="item bg-red-400 p-4 h-64">4</div>
-    	<div class="item bg-red-500 p-4 h-64">5</div>
-    	<div class="item bg-red-600 p-4 h-64">6</div>
-    	<div class="item bg-red-700 p-4 h-64">7</div>
-    	<div class="item bg-red-800 p-4 h-64">8</div>
-    	<div class="item bg-red-900 p-4 h-64">9</div>
-	</slider-element>
-`;
-
 export const itemsToScrollVariant = () => html`
     <slider-element items-to-show="3" items-to-scroll="3">
-    	<div class="item bg-red-100 p-4 h-64">1</div>
-    	<div class="item bg-red-200 p-4 h-64">2</div>
-    	<div class="item bg-red-300 p-4 h-64">3</div>
-    	<div class="item bg-red-400 p-4 h-64">4</div>
-    	<div class="item bg-red-500 p-4 h-64">5</div>
-    	<div class="item bg-red-600 p-4 h-64">6</div>
-    	<div class="item bg-red-700 p-4 h-64">7</div>
-    	<div class="item bg-red-800 p-4 h-64">8</div>
-    	<div class="item bg-red-900 p-4 h-64">9</div>
-	</slider-element>
-`;
-
-export const itemsToScrollStartVariant = () => html`
-    <slider-element items-to-show="3" items-to-scroll="3" snap-align="start">
-    	<div class="item bg-red-100 p-4 h-64">1</div>
-    	<div class="item bg-red-200 p-4 h-64">2</div>
-    	<div class="item bg-red-300 p-4 h-64">3</div>
-    	<div class="item bg-red-400 p-4 h-64">4</div>
-    	<div class="item bg-red-500 p-4 h-64">5</div>
-    	<div class="item bg-red-600 p-4 h-64">6</div>
-    	<div class="item bg-red-700 p-4 h-64">7</div>
-    	<div class="item bg-red-800 p-4 h-64">8</div>
-    	<div class="item bg-red-900 p-4 h-64">9</div>
-	</slider-element>
-`;
-
-export const itemsToScrollEndVariant = () => html`
-    <slider-element items-to-show="3" items-to-scroll="3" snap-align="end">
     	<div class="item bg-red-100 p-4 h-64">1</div>
     	<div class="item bg-red-200 p-4 h-64">2</div>
     	<div class="item bg-red-300 p-4 h-64">3</div>
@@ -132,5 +76,19 @@ export const variableWidthVariant = () => html`
     	<div class="item bg-red-700 p-4 h-64">7</div>
     	<div class="item bg-red-800 p-4 h-64 w-1/12">8</div>
     	<div class="item bg-red-900 p-4 h-64">9</div>
+	</slider-element>
+`;
+
+export const autoFocusVariant = () => html`
+    <slider-element autofocus="true" >
+    	<div class="item bg-red-100 p-4 h-64 w-1/2">1</div>
+    	<div class="item bg-red-200 p-4 h-64 w-1/5">2</div>
+    	<div class="item bg-red-300 p-4 h-64 w-1/5">3</div>
+    	<div class="item bg-red-400 p-4 h-64 w-1/5">4</div>
+    	<div class="item bg-red-500 p-4 h-64 w-1/5">5</div>
+    	<div class="item bg-red-600 p-4 h-64 w-1/5">6</div>
+    	<div class="item bg-red-700 p-4 h-64 w-1/5">7</div>
+    	<div class="item bg-red-800 p-4 h-64 w-1/5">8</div>
+    	<div class="item bg-red-900 p-4 h-64 w-1/5">9</div>
 	</slider-element>
 `;

@@ -18,6 +18,7 @@ export default class SliderElement extends TemplateElement {
 			itemsToScroll: 1,
 			rewind: false,
 			selectedIndex: 0,
+			autofocus: false,
 		};
 	}
 
@@ -56,20 +57,47 @@ export default class SliderElement extends TemplateElement {
 				}
 			},
 			'.arrow-left': {
-				'click': () => {
-					const newIndex = this.selectedIndex - this.itemsToScroll;
-					this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
-					this.scrollToIndex();
-				},
+				'click': () => this.previous(),
 			},
 			'.arrow-right': {
-				'click': () => {
-					const newIndex = this.selectedIndex + this.itemsToScroll;
-					this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
-					this.scrollToIndex();
-				},
+				'click': () => this.next(),
 			},
 		}
+	}
+
+	next() {
+		const newIndex = this.selectedIndex + this.itemsToScroll;
+		this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
+		if(this.autofocus){
+			//check if element is already visible
+			const target = this.#items[this.selectedIndex];
+			const parent = this.$refs.scroller;
+			if(target.offsetLeft + target.offsetWidth <= (parent.scrollLeft + parent.offsetWidth)) {
+				// means is out of bounds
+				this.next();
+				return;
+			}
+		}
+		this.scrollToIndex();
+	}
+
+	previous() {
+		const newIndex = this.selectedIndex - this.itemsToScroll;
+		this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
+
+		if(this.autofocus){
+			//check if element is already visible
+			const target = this.#items[this.selectedIndex];
+			const parent = this.$refs.scroller;
+			if(target.offsetLeft > parent.scrollLeft) {
+				// means is still in viewport
+				this.previous();
+				return;
+			}
+		}
+
+
+		this.scrollToIndex();
 	}
 
 	goTo(index){
