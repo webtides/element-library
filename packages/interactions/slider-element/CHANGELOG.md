@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.0] - 2020-09-15
+
+### Added
+* `autoSelect` property. When set to `true` the slider will scroll to the next partially visible item in the direction the user wanted to go instead of only increasing/decreasing the index by one.
+
 ## [0.3.0] - 2020-09-11
 
 ### Added
