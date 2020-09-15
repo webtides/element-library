@@ -50,6 +50,19 @@ export const itemsToShowVariant = () => html`
     	<div class="item bg-red-900 p-4 h-64">9</div>
 	</slider-element>
 `;
+export const itemsToShowSnapPointVariant = () => html`
+    <slider-element items-to-show="3">
+    	<div class="item bg-red-100 p-4 h-64" >1</div>
+    	<div class="item bg-red-200 p-4 h-64">2</div>
+    	<div class="item bg-red-300 p-4 h-64" style="--snap-align: start;">4, start</div>
+    	<div class="item bg-red-400 p-4 h-64" style="--snap-align: end;">5, end</div>
+    	<div class="item bg-red-500 p-4 h-64">5</div>
+    	<div class="item bg-red-600 p-4 h-64" style="--snap-align: start;">6, start</div>
+    	<div class="item bg-red-700 p-4 h-64">7</div>
+    	<div class="item bg-red-800 p-4 h-64" style="--snap-align: end;">8, end</div>
+    	<div class="item bg-red-900 p-4 h-64">9</div>
+	</slider-element>
+`;
 
 export const itemsToScrollVariant = () => html`
     <slider-element items-to-show="3" items-to-scroll="3">
@@ -69,26 +82,26 @@ export const variableWidthVariant = () => html`
     <slider-element >
     	<div class="item bg-red-100 p-4 h-64 w-1/2">1</div>
     	<div class="item bg-red-200 p-4 h-64 w-6/12">2</div>
-    	<div class="item bg-red-300 p-4 h-64 w-8/12">3</div>
-    	<div class="item bg-red-400 p-4 h-64 w-4/12">4</div>
-    	<div class="item bg-red-500 p-4 h-64 w-2/12">5</div>
-    	<div class="item bg-red-600 p-4 h-64w-12/12">6</div>
+    	<div class="item bg-red-300 p-4 h-64" style="--snap-align: start;">3, start</div>
+    	<div class="item bg-red-400 p-4 h-64" style="--snap-align: end;">4, end</div>
+    	<div class="item bg-red-500 p-4 h-64">5</div>
+    	<div class="item bg-red-600 p-4 h-64" style="--snap-align: start;">6, start</div>
     	<div class="item bg-red-700 p-4 h-64">7</div>
-    	<div class="item bg-red-800 p-4 h-64 w-1/12">8</div>
+    	<div class="item bg-red-800 p-4 h-64" style="--snap-align: end;">8, end</div>
     	<div class="item bg-red-900 p-4 h-64">9</div>
 	</slider-element>
 `;
 
-export const autoFocusVariant = () => html`
-    <slider-element autofocus="true" >
+export const variableWidthEdgeFocusVariant = () => html`
+    <slider-element auto-select="true" >
     	<div class="item bg-red-100 p-4 h-64 w-1/2">1</div>
     	<div class="item bg-red-200 p-4 h-64 w-1/5">2</div>
-    	<div class="item bg-red-300 p-4 h-64 w-1/5">3</div>
-    	<div class="item bg-red-400 p-4 h-64 w-1/5">4</div>
+    	<div class="item bg-red-300 p-4 h-64 w-1/2" style="--snap-align: start;">3, start</div>
+    	<div class="item bg-red-400 p-4 h-64 w-1/5" style="--snap-align: end;">4, end</div>
     	<div class="item bg-red-500 p-4 h-64 w-1/5">5</div>
-    	<div class="item bg-red-600 p-4 h-64 w-1/5">6</div>
-    	<div class="item bg-red-700 p-4 h-64 w-1/5">7</div>
-    	<div class="item bg-red-800 p-4 h-64 w-1/5">8</div>
+    	<div class="item bg-red-600 p-4 h-64 w-1/5" style="--snap-align: start;">6, start</div>
+    	<div class="item bg-red-700 p-4 h-64 w-1/2">7</div>
+    	<div class="item bg-red-800 p-4 h-64 w-1/5" style="--snap-align: end;">8, end</div>
     	<div class="item bg-red-900 p-4 h-64 w-1/5">9</div>
 	</slider-element>
 `;
