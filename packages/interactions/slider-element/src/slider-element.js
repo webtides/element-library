@@ -18,7 +18,7 @@ export default class SliderElement extends TemplateElement {
 			itemsToScroll: 1,
 			rewind: false,
 			selectedIndex: 0,
-			autofocus: false,
+			autoSelect: false,
 		};
 	}
 
@@ -68,12 +68,12 @@ export default class SliderElement extends TemplateElement {
 	next() {
 		const newIndex = this.selectedIndex + this.itemsToScroll;
 		this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
-		if(this.autofocus){
+		if(this.autoSelect){
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const parent = this.$refs.scroller;
 			if(target.offsetLeft + target.offsetWidth <= (parent.scrollLeft + parent.offsetWidth)) {
-				// means is out of bounds
+				// means is in bounds
 				this.next();
 				return;
 			}
@@ -85,7 +85,7 @@ export default class SliderElement extends TemplateElement {
 		const newIndex = this.selectedIndex - this.itemsToScroll;
 		this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
 
-		if(this.autofocus){
+		if(this.autoSelect){
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const parent = this.$refs.scroller;
