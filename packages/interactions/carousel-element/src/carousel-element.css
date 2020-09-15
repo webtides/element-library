@@ -1,0 +1,105 @@
+:host {
+	display: block;
+	position: relative;
+}
+
+ol, ul, li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.scroller {
+	display: flex;
+	overflow-x: scroll;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+	counter-reset: item;
+	scroll-behavior: smooth;
+	scroll-snap-type: x mandatory;
+	z-index: 100;
+	--per-view: 1;
+	--item-width: calc(100% / var(--per-view, 1));
+}
+
+.scroller slot {
+	z-index: 100;
+}
+
+.scroller::-webkit-scrollbar {
+	display: none;
+}
+
+::slotted(.item) {
+	position: relative;
+	flex: 0 0 var(--item-width);
+	width: var(--item-width);
+	scroll-snap-align: var(--snap-align, center);
+	z-index: 101;
+}
+
+[part~=dots] {
+	display: flex;
+	justify-content: center;
+	z-index: 102;
+
+	[part~=dot] {
+		cursor: pointer;
+		background: none;
+		border: none;
+		color: #333;
+		padding: 4px;
+		font-size: 18px;
+	}
+
+	[part~=dot]:after {
+		content: '○';
+		padding: 4px;
+	}
+
+	[part~=dot]:hover {
+		color: #666
+	}
+
+	[part~=dot]:active {
+		color: #999;
+	}
+
+	[part~=dot][aria-pressed="true"]:after {
+		content: '●';
+	}
+}
+
+[part~=arrows] {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	pointer-events: none;
+	z-index: 102;
+
+	[part~=arrow] {
+		pointer-events: all;
+		padding: 4px;
+		font-size: 18px;
+
+		button {
+			cursor: pointer;
+			background: white;
+			border: none;
+			padding: 8px 16px;
+		}
+	}
+
+	[part~=arrow-left] {
+		left: 0;
+	}
+
+	[part~=arrow-right] {
+		right: 0;
+	}
+}
