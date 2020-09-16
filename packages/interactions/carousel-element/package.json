@@ -31,8 +31,8 @@
     "*.js"
   ],
   "dependencies": {
-    "@webtides/element-js": "0.3.0",
-    "swiper": "^6.2.0"
+    "@glidejs/glide": "^3.4.1",
+    "@webtides/element-js": "0.3.0"
   },
   "devDependencies": {
     "@open-wc/demoing-storybook": "^1.13.3",

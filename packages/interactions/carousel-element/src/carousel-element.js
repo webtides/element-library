@@ -1,121 +1,153 @@
-import { TemplateElement, defineElement, html } from '@webtides/element-js';
-import { repeat } from 'lit-html/directives/repeat';
-import style from './slider-element.css';
+import { TemplateElement, html, defineElement } from '@webtides/element-js';
+import Glide from '@glidejs/glide';
+import style from './carousel-element.css'
+import CarouselElementEvents from './CarouselElementEvents';
 
-export default class CarouselElement extends TemplateElement {
-	scrollTimer = null;
-	itemsCount = 0;
+import ShadowHtml from './glide/components/ShadowHtml'
+import ShadowAnchors from './glide/components/ShadowAnchors'
+import ShadowGaps from './glide/components/ShadowGaps'
+import ShadowClones from './glide/components/ShadowClones'
 
-    constructor() {
-        super({ shadowRender: true, deferRender: true, adoptGlobalStyles:false, styles: [style] });
-    }
 
+/*
+ * example:
+ * <carousel-element>
+ *    <img src="http://localhost:8080/author/dam/jcr:2fe596f2-1ad5-4cce-b32b-4e2ec458f994/photo-1536244881128-90b1d3d2549f.jpeg" alt="">
+ *    <img src="https://images.unsplash.com/photo-1458372810370-daad23adb565?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2088&q=80" alt="">
+ *    <img src="http://localhost:8080/author/dam/jcr:2fe596f2-1ad5-4cce-b32b-4e2ec458f994/photo-1536244881128-90b1d3d2549f.jpeg" alt="">
+ * </carousel-element>
+ */
+
+export default class GlideElement extends TemplateElement {
 	properties() {
 		return {
-			itemSelector: '.item',
-			itemsToShow: 1,
-			itemsToScroll: 1,
-			rewind: false,
-			selectedIndex: 0,
+			options: {
+				type: 'carousel',
+				perView: 1,
+				startAt: 0,
+				keyboard: false,
+			},
+			disabled: false,
+			slidePrefix: 'slide',
+			bullets: true,
+			arrows: true,
 		};
 	}
 
-	get canSlideLeft() {
-		return this.selectedIndex > 0;
-	}
-
-	get canSlideRight() {
-		return (this.selectedIndex + this.itemsToShow) < this.itemsCount;
+	constructor() {
+		super({ styles: [style], shadowRender: true, deferUpdate: true , mutationObserverOptions: {childList: false}});
+		this._glide = null;
+		this._children = [];
 	}
 
 	connected() {
-		this.itemsCount = this.querySelectorAll(this.itemSelector).length || 0;
+		this._children = Array.from(this.children);
 		this.requestUpdate();
-    }
+	}
+	afterUpdate() {
+		this.destroyGlide();
+		this.mountGlide();
+	}
+	disconnected() {
+		this.destroyGlide();
+	}
 
-    watch() {
-        return {
-			selectedIndex: (index) => {
-				this.scrollToIndex(index);
-			},
-		};
-    }
+	mountGlide() {
+		const el = this.getRoot().querySelector('.glide');
+		this._glide = new Glide(el, this.options).mount({'Html': ShadowHtml, 'Clones': ShadowClones, 'Gaps': ShadowGaps, 'Anchors': ShadowAnchors});
+		this._bullets = Array.from(this.getRoot().querySelectorAll('.glide__bullet'));
+		this._glide.on('run', () => {
+			this.dispatch(CarouselElementEvents.GLIDE_RUN, this._glide.index);
+			this.setBulletClasses();
+		});
+		this.setBulletClasses();
+	}
 
-    events() {
-		return {
-			'.scroller': {
-				'scroll': () => {
-					clearTimeout(this.scrollTimer);
-					// wait for scroll end
-					this.scrollTimer = setTimeout(() => {
-						let index = Math.round((this.$refs.scroller.scrollLeft / this.$refs.scroller.scrollWidth) * this.itemsCount);
-						this.selectedIndex = index;
-					}, 100);
-				},
-			},
-			'.dot': {
-				'click': (e) => {
-					const indicator = e.target.closest('.dot');
-					this.selectedIndex = Array.from(indicator.parentNode.children).indexOf(indicator);
-				}
-			},
-			'.arrow-left': {
-				'click': () => {
-					const newIndex = this.selectedIndex - this.itemsToScroll;
-					const lastIndex = this.itemsCount - 1;
-					this.selectedIndex = this.rewind && newIndex < 0 ? lastIndex : Math.max(newIndex, 0);
-				},
-			},
-			'.arrow-right': {
-				'click': () => {
-					const newIndex = this.selectedIndex + this.itemsToScroll;
-					const lastIndex = this.itemsCount - 1;
-					this.selectedIndex = this.rewind && newIndex > lastIndex ? 0 : Math.min(lastIndex, newIndex);
-				},
-			},
+	setBulletClasses() {
+		this._bullets.forEach((bullet, index) => {
+			if (index === this._glide.index) {
+				bullet.classList.add('glide-element-bullet-active');
+			} else {
+				bullet.classList.remove('glide-element-bullet-active');
+			}
+		});
+	}
+
+	renderBullets() {
+		let bullets = [];
+		for (let i = 0; i < this._children.length; i++) {
+			bullets.push(
+				html`
+                    <div class="glide__bullet" data-glide-dir="=${i}"></div>
+                `,
+			);
+		}
+		return bullets;
+	}
+
+	renderSlides() {
+		let slides = [];
+		for (let i = 0; i < this._children.length; i++) {
+			slides.push(
+				html`
+                    ${this._children[i]}
+                `,
+			);
+		}
+		return slides;
+	}
+
+	destroyGlide() {
+		if (this._glide) {
+			this._glide.destroy();
+			this._glide = null;
 		}
 	}
 
-	scrollToIndex() {
-		const scrollLeft = Math.floor(this.$refs.scroller.scrollWidth * (this.selectedIndex / this.itemsCount));
-		this.$refs.scroller.scrollTo({
-			'left': scrollLeft,
-			behavior: 'smooth'
-		})
+	get api() {
+		// returns interface for external navigation or configuration
+		return this._glide || { go: () => {} };
+	}
+
+	next() {
+		this.api.go('>');
+	}
+
+	prev() {
+		this.api.go('<');
 	}
 
 	template() {
 		return html`
-			<div ref="scroller" part="scroller" class="scroller" style="--per-view: ${this.itemsToShow}">
-				<slot></slot>
-			</div>
-			<div part="controls dots">
-				${this.dotsTemplate()}
-			</div>
-			<div part="controls arrows">
-				${this.arrowsTemplate()}
-			</div>
-		`;
-	}
-
-	dotsTemplate() {
-    	return html`
-    		${repeat(Array.from(Array(this.itemsCount).keys()), (i) => i, (i, index) => html`
-				<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>
-			`)}
-    	`;
-	}
-
-	arrowsTemplate() {
-    	return html`
-    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && !this.canSlideLeft}><slot name="arrow-left">&lang;</slot></button>
-			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && !this.canSlideRight}><slot name="arrow-right">&rang;</slot></button>
-    	`;
+            <div class="glide">
+                <div class="glide__track" data-glide-el="track">
+                	<div class="glide__slides">
+						${this._options.shadowRender ? html`<slot></slot>` : this.renderSlides()}
+					</div>
+                </div>
+                ${this.arrows
+			? html`
+                          <div class="glide__arrows" data-glide-el="controls">
+                              <button class="glide__arrow glide__arrow--left" data-glide-dir="<"></button>
+                              <button class="glide__arrow glide__arrow--right" data-glide-dir=">"></button>
+                          </div>
+                      `
+			: ''}
+                ${this.bullets ? html`
+					  <div class="glide__bullets" data-glide-el="controls[nav]">
+						  ${this.renderBullets()}
+					  </div>
+                      `
+			: ''}
+            </div>
+        `;
 	}
 }
 
+
+
 export function define() {
-	defineElement('slider-element', CarouselElement);
+	defineElement('carousel-element', GlideElement);
 }
 
 export { html, defineElement }
