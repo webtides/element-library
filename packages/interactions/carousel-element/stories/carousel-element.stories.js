@@ -20,8 +20,7 @@ export const defaultVariant = () => html`
 `;
 
 export const multiCenterVariant = () => html`
-
-    <carousel-element options='{"perView": 5, "focusAt": "center", "type": "carousel"}'>
+    <carousel-element options='{"perView": 5, "focusAt": "center"}'>
 		<div class="item bg-red-500 p-4 h-64 ">1</div>
 		<div class="item bg-blue-500 p-4  h-64">2</div>
 		<div class="item bg-green-500 p-4 h-64">3</div>
