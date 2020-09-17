@@ -7,19 +7,19 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/slider-element
+npm i --save @webtides/carousel-element
 ```
 
 ```js
-import '@webtides/slider-element';
+import '@webtides/carousel-element';
 ```
 
 ### Example
 
 ```html
-<slider-element>
-    <li class="item">1</li>
-    <li class="item">2</li>
-    <li class="item">3</li>
-</slider-element>
+<carousel-element>
+    <div>1</div>
+    <div>2</div>
+    <div>3</li>
+</carousel-element>
 ```

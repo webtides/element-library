@@ -1,3 +1,3 @@
 export default {
-    GLIDE_RUN: 'GlideRun',
+    CAROUSEL_RUN: 'CarouselRun',
 };

@@ -24,12 +24,26 @@ const DEFAULT_OPTIONS = {
 	keyboard: false,
 }
 
-export default class GlideElement extends TemplateElement {
+export default class CarouselElement extends TemplateElement {
 	#glide = null;
 	#uniqueChildren = [];
 
 	constructor() {
-		super({styles: [style], shadowRender: true, deferUpdate: true, autoUpdate: false, mutationObserverOptions: {childList: false}});
+		super({
+			styles: [style],
+			shadowRender: true,
+			deferUpdate: true,
+			autoUpdate: false,
+			mutationObserverOptions: {childList: false}
+		});
+	}
+
+	get api() {
+		// returns interface for external navigation or configuration
+		return this.#glide || {
+			go: () => {
+			}
+		};
 	}
 
 	properties() {
@@ -61,7 +75,7 @@ export default class GlideElement extends TemplateElement {
 	}
 
 	getUniqueChildren() {
-		return Array.from(this.children).filter(item => !item.classList.contains('glide__slide--clone'));
+		return Array.from(this.children).filter(item => !item.classList.contains('glide__slide--clone') && !item.hasAttribute('slot'));
 	}
 
 	mountGlide() {
@@ -72,7 +86,7 @@ export default class GlideElement extends TemplateElement {
 			'Anchors': ShadowAnchors
 		});
 		this.#glide.on('run', () => {
-			this.dispatch(CarouselElementEvents.GLIDE_RUN, this.#glide.index);
+			this.dispatch(CarouselElementEvents.CAROUSEL_RUN, this.#glide.index);
 			this.updateBulletClasses();
 		});
 		this.updateBulletClasses();
@@ -83,14 +97,6 @@ export default class GlideElement extends TemplateElement {
 			this.#glide.destroy();
 			this.#glide = null;
 		}
-	}
-
-	get api() {
-		// returns interface for external navigation or configuration
-		return this.#glide || {
-			go: () => {
-			}
-		};
 	}
 
 	next() {
@@ -106,9 +112,9 @@ export default class GlideElement extends TemplateElement {
 		const bullets = Array.from(this.getRoot().querySelectorAll('.glide__bullet'));
 		bullets.forEach((bullet, index) => {
 			if (index === this.#glide.index) {
-				bullet.classList.add('carousel-element-bullet-active');
+				bullet.part.add('selected-dot');
 			} else {
-				bullet.classList.remove('carousel-element-bullet-active');
+				bullet.part.remove('selected-dot');
 			}
 		});
 	}
@@ -118,7 +124,7 @@ export default class GlideElement extends TemplateElement {
 		for (let i = 0; i < this.#uniqueChildren.length; i++) {
 			bullets.push(
 				html`
-                    <div class="glide__bullet" data-glide-dir="=${i}"></div>
+                    <div part="dot" class="glide__bullet" data-glide-dir="=${i}"></div>
                 `,
 			);
 		}
@@ -147,14 +153,18 @@ export default class GlideElement extends TemplateElement {
 					</div>
                 </div>
                 ${this.arrows ? html`
-                          <div class="glide__arrows" data-glide-el="controls">
-                              <button class="glide__arrow glide__arrow--left" data-glide-dir="<"></button>
-                              <button class="glide__arrow glide__arrow--right" data-glide-dir=">"></button>
+						 <div part="arrows" class="glide__arrows" data-glide-el="controls">
+                              	<button part="arrow arrow-left"  class="glide__arrow glide__arrow--left" data-glide-dir="<">
+                                	<slot name="arrow-left"></slot>
+								</button>
+								<button part="arrow arrow-right"  class="glide__arrow glide__arrow--right" data-glide-dir=">">
+                                	<slot name="arrow-right"></slot>
+								</button>
                           </div>
                       `
 			: ''}
                 ${this.bullets ? html`
-					  <div class="glide__bullets" data-glide-el="controls[nav]">
+					  <div part="dots"  class="glide__bullets" data-glide-el="controls[nav]">
 						  ${this.renderBullets()}
 					  </div>
                       `
@@ -166,7 +176,7 @@ export default class GlideElement extends TemplateElement {
 
 
 export function define() {
-	defineElement('carousel-element', GlideElement);
+	defineElement('carousel-element', CarouselElement);
 }
 
 export {html, defineElement}
