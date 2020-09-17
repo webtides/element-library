@@ -32,7 +32,9 @@ export default function (Glide, Components, Events) {
 		let {items} = glideClones;
 
 		for (let i = 0; i < items.length; i++) {
-			wrapper.removeChild(items[i])
+			try {
+				wrapper.removeChild(items[i])
+			} catch (e) {}
 		}
 	}
 

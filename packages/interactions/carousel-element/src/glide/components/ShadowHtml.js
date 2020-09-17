@@ -23,7 +23,7 @@ export default function (Glide, Components) {
 		this.track = this.root.querySelector(TRACK_SELECTOR)
 
 		this.slides = Array.prototype.slice.call(this.host.children).filter((slide) => {
-			return !slide.classList.contains(Glide.settings.classes.cloneSlide)
+			return !slide.classList.contains(Glide.settings.classes.cloneSlide) && !slide.hasAttribute('slot')
 		})
 	}
 
