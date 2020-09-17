@@ -1,4 +1,4 @@
-import { TemplateElement, html, defineElement } from '@webtides/element-js';
+import {TemplateElement, html, defineElement} from '@webtides/element-js';
 import Glide from '@glidejs/glide';
 import style from './carousel-element.css'
 import CarouselElementEvents from './CarouselElementEvents';
@@ -7,7 +7,6 @@ import ShadowHtml from './glide/components/ShadowHtml'
 import ShadowAnchors from './glide/components/ShadowAnchors'
 import ShadowGaps from './glide/components/ShadowGaps'
 import ShadowClones from './glide/components/ShadowClones'
-
 
 /*
  * example:
@@ -18,15 +17,24 @@ import ShadowClones from './glide/components/ShadowClones'
  * </carousel-element>
  */
 
+const DEFAULT_OPTIONS = {
+	type: 'carousel',
+	perView: 1,
+	startAt: 0,
+	keyboard: false,
+}
+
 export default class GlideElement extends TemplateElement {
+	#glide = null;
+	#uniqueChildren = [];
+
+	constructor() {
+		super({styles: [style], shadowRender: true, deferUpdate: true, autoUpdate: false, mutationObserverOptions: {childList: false}});
+	}
+
 	properties() {
 		return {
-			options: {
-				type: 'carousel',
-				perView: 1,
-				startAt: 0,
-				keyboard: false,
-			},
+			options: {},
 			disabled: false,
 			slidePrefix: 'slide',
 			bullets: true,
@@ -34,48 +42,80 @@ export default class GlideElement extends TemplateElement {
 		};
 	}
 
-	constructor() {
-		super({ styles: [style], shadowRender: true, deferUpdate: true , mutationObserverOptions: {childList: false}});
-		this._glide = null;
-		this._children = [];
-	}
-
 	connected() {
-		this._children = Array.from(this.children);
 		this.requestUpdate();
 	}
-	afterUpdate() {
+
+	beforeUpdate() {
 		this.destroyGlide();
+		//this assumes that childrens are always added as direct children
+		this.#uniqueChildren = this.getUniqueChildren();
+	}
+
+	afterUpdate() {
 		this.mountGlide();
 	}
+
 	disconnected() {
 		this.destroyGlide();
 	}
 
-	mountGlide() {
-		const el = this.getRoot().querySelector('.glide');
-		this._glide = new Glide(el, this.options).mount({'Html': ShadowHtml, 'Clones': ShadowClones, 'Gaps': ShadowGaps, 'Anchors': ShadowAnchors});
-		this._bullets = Array.from(this.getRoot().querySelectorAll('.glide__bullet'));
-		this._glide.on('run', () => {
-			this.dispatch(CarouselElementEvents.GLIDE_RUN, this._glide.index);
-			this.setBulletClasses();
-		});
-		this.setBulletClasses();
+	getUniqueChildren() {
+		return Array.from(this.children).filter(item => !item.classList.contains('glide__slide--clone'));
 	}
 
-	setBulletClasses() {
-		this._bullets.forEach((bullet, index) => {
-			if (index === this._glide.index) {
-				bullet.classList.add('glide-element-bullet-active');
+	mountGlide() {
+		this.#glide = new Glide(this.$refs.glide, {...DEFAULT_OPTIONS, ...this.options}).mount({
+			'Html': ShadowHtml,
+			'Clones': ShadowClones,
+			'Gaps': ShadowGaps,
+			'Anchors': ShadowAnchors
+		});
+		this.#glide.on('run', () => {
+			this.dispatch(CarouselElementEvents.GLIDE_RUN, this.#glide.index);
+			this.updateBulletClasses();
+		});
+		this.updateBulletClasses();
+	}
+
+	destroyGlide() {
+		if (this.#glide) {
+			this.#glide.destroy();
+			this.#glide = null;
+		}
+	}
+
+	get api() {
+		// returns interface for external navigation or configuration
+		return this.#glide || {
+			go: () => {
+			}
+		};
+	}
+
+	next() {
+		this.api.go('>');
+	}
+
+	prev() {
+		this.api.go('<');
+	}
+
+
+	updateBulletClasses() {
+		const bullets = Array.from(this.getRoot().querySelectorAll('.glide__bullet'));
+		bullets.forEach((bullet, index) => {
+			if (index === this.#glide.index) {
+				bullet.classList.add('carousel-element-bullet-active');
 			} else {
-				bullet.classList.remove('glide-element-bullet-active');
+				bullet.classList.remove('carousel-element-bullet-active');
 			}
 		});
 	}
 
 	renderBullets() {
 		let bullets = [];
-		for (let i = 0; i < this._children.length; i++) {
+		for (let i = 0; i < this.#uniqueChildren.length; i++) {
 			bullets.push(
 				html`
                     <div class="glide__bullet" data-glide-dir="=${i}"></div>
@@ -87,46 +127,26 @@ export default class GlideElement extends TemplateElement {
 
 	renderSlides() {
 		let slides = [];
-		for (let i = 0; i < this._children.length; i++) {
+		for (let i = 0; i < this.#uniqueChildren.length; i++) {
 			slides.push(
 				html`
-                    ${this._children[i]}
+                    ${this.#uniqueChildren[i]}
                 `,
 			);
 		}
 		return slides;
 	}
 
-	destroyGlide() {
-		if (this._glide) {
-			this._glide.destroy();
-			this._glide = null;
-		}
-	}
-
-	get api() {
-		// returns interface for external navigation or configuration
-		return this._glide || { go: () => {} };
-	}
-
-	next() {
-		this.api.go('>');
-	}
-
-	prev() {
-		this.api.go('<');
-	}
 
 	template() {
 		return html`
-            <div class="glide">
+            <div class="glide" ref="glide">
                 <div class="glide__track" data-glide-el="track">
                 	<div class="glide__slides">
 						${this._options.shadowRender ? html`<slot></slot>` : this.renderSlides()}
 					</div>
                 </div>
-                ${this.arrows
-			? html`
+                ${this.arrows ? html`
                           <div class="glide__arrows" data-glide-el="controls">
                               <button class="glide__arrow glide__arrow--left" data-glide-dir="<"></button>
                               <button class="glide__arrow glide__arrow--right" data-glide-dir=">"></button>
@@ -145,9 +165,8 @@ export default class GlideElement extends TemplateElement {
 }
 
 
-
 export function define() {
 	defineElement('carousel-element', GlideElement);
 }
 
-export { html, defineElement }
+export {html, defineElement}
