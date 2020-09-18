@@ -5,7 +5,7 @@ define();
 
 describe('Feature | SliderElement', () => {
     it('can connect without errors', async () => {
-        const el = await fixture(`<slider-element></slider-element>`);
+        const el = await fixture(`<carousel-element></carousel-element>`);
         await nextFrame();
     });
 });
