@@ -8,15 +8,6 @@ import ShadowAnchors from './glide/components/ShadowAnchors'
 import ShadowGaps from './glide/components/ShadowGaps'
 import ShadowClones from './glide/components/ShadowClones'
 
-/*
- * example:
- * <carousel-element>
- *    <img src="http://localhost:8080/author/dam/jcr:2fe596f2-1ad5-4cce-b32b-4e2ec458f994/photo-1536244881128-90b1d3d2549f.jpeg" alt="">
- *    <img src="https://images.unsplash.com/photo-1458372810370-daad23adb565?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2088&q=80" alt="">
- *    <img src="http://localhost:8080/author/dam/jcr:2fe596f2-1ad5-4cce-b32b-4e2ec458f994/photo-1536244881128-90b1d3d2549f.jpeg" alt="">
- * </carousel-element>
- */
-
 const DEFAULT_OPTIONS = {
 	type: 'carousel',
 	perView: 1,
