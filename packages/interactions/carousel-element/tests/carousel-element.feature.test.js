@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import { define } from '@webtides/slider-element';
+import { define } from '@webtides/carousel-element';
 define();
 
 describe('Feature | SliderElement', () => {
@@ -9,4 +9,3 @@ describe('Feature | SliderElement', () => {
         await nextFrame();
     });
 });
-
