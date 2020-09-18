@@ -1,6 +1,6 @@
 # SliderElement
 
-`slider-element` lets you slide child elements
+`carousel-element` lets you slide child elements
 
 ## How to use
 
