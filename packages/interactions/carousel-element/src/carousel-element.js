@@ -170,4 +170,4 @@ export function define() {
 	defineElement('carousel-element', CarouselElement);
 }
 
-export {html, defineElement}
+export {html, defineElement, CarouselElementEvents}
