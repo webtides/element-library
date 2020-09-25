@@ -4,9 +4,8 @@ import { define } from '@webtides/transition-classes';
 define();
 
 describe('Feature | TransitionClasses', () => {
-    it('can connect without errors', async () => {
-        const el = await fixture(`<transition-classes></transition-classes>`);
-        await nextFrame();
-    });
+	it('can connect without errors', async () => {
+		const el = await fixture(`<transition-classes></transition-classes>`);
+		await nextFrame();
+	});
 });
-

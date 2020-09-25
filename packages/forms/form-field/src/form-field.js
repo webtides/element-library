@@ -109,9 +109,7 @@ export default class FormField extends TemplateElement {
 	template() {
 		return html`
 			${this.labelTemplate()}
-			<div class="field ${this.classes().field}">
-				${this.fieldTemplate()}
-			</div>
+			<div class="field ${this.classes().field}">${this.fieldTemplate()}</div>
 			${this.helpTemplate()} ${this.errorTemplate()}
 		`;
 	}
@@ -119,32 +117,24 @@ export default class FormField extends TemplateElement {
 	labelTemplate() {
 		if (!this.label) return null;
 		return html`
-			<label ref="label" for="input-${this.name}" class="${this.classes().label}">
-				${this.label}
-			</label>
+			<label ref="label" for="input-${this.name}" class="${this.classes().label}"> ${this.label} </label>
 		`;
 	}
 
 	fieldTemplate() {
-		return html`
-			<!-- IMPLEMENT FIELD -->
-		`;
+		return html` <!-- IMPLEMENT FIELD --> `;
 	}
 
 	helpTemplate() {
 		if (!(this.helpMessage && (!this.touched || this.valid))) return null;
 
-		return html`
-			<span id="${this.name}-help" class="message help-message">${this.helpMessage}</span>
-		`;
+		return html` <span id="${this.name}-help" class="message help-message">${this.helpMessage}</span> `;
 	}
 
 	errorTemplate() {
 		if (!(this.touched && this.errorMessage && !this.valid)) return null;
 
-		return html`
-			<span id="${this.name}-help" class="message error-message">${this.errorMessage}</span>
-		`;
+		return html` <span id="${this.name}-help" class="message error-message">${this.errorMessage}</span> `;
 	}
 }
 
@@ -152,4 +142,4 @@ export function define() {
 	defineElement('form-field', FormField);
 }
 
-export { FormField, FormFieldEvents }
+export { FormField, FormFieldEvents };

@@ -1,10 +1,9 @@
 import GlideHTMLComponent from '@glidejs/glide/src/components/html';
-import {define} from "@glidejs/glide/src/utils/object";
+import { define } from '@glidejs/glide/src/utils/object';
 
-const TRACK_SELECTOR = '[data-glide-el="track"]'
+const TRACK_SELECTOR = '[data-glide-el="track"]';
 
 export default function (Glide, Components) {
-
 	const glideHtml = GlideHTMLComponent(Glide, Components);
 
 	define(glideHtml, 'host', {
@@ -13,19 +12,19 @@ export default function (Glide, Components) {
 		 *
 		 * @return {Object}
 		 */
-		get () {
+		get() {
 			return glideHtml.root.getRootNode().host ? glideHtml.root.getRootNode().host : glideHtml.wrapper;
-		}
+		},
 	});
 
-	glideHtml.mount = function() {
-		this.root = Glide.selector
-		this.track = this.root.querySelector(TRACK_SELECTOR)
+	glideHtml.mount = function () {
+		this.root = Glide.selector;
+		this.track = this.root.querySelector(TRACK_SELECTOR);
 
 		this.slides = Array.prototype.slice.call(this.host.children).filter((slide) => {
-			return !slide.classList.contains(Glide.settings.classes.cloneSlide) && !slide.hasAttribute('slot')
-		})
-	}
+			return !slide.classList.contains(Glide.settings.classes.cloneSlide) && !slide.hasAttribute('slot');
+		});
+	};
 
 	return glideHtml;
 }

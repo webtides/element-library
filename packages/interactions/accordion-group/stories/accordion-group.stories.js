@@ -11,9 +11,7 @@ export const singleElement = () => html`
 	<div class="max-w-2xl">
 		<accordion-group show-multiple="false">
 			<accordion-element open="false">
-				<div slot="header" class="">
-					Accordion Header
-				</div>
+				<div slot="header" class="">Accordion Header</div>
 				<div slot="content">
 					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
 					eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
@@ -24,9 +22,7 @@ export const singleElement = () => html`
 			</accordion-element>
 
 			<accordion-element open="false">
-				<div slot="header" class="">
-					Accordion Header
-				</div>
+				<div slot="header" class="">Accordion Header</div>
 				<div slot="content">
 					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
 					eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
@@ -35,9 +31,7 @@ export const singleElement = () => html`
 			</accordion-element>
 
 			<accordion-element open="false">
-				<div slot="header" class="">
-					Accordion Header
-				</div>
+				<div slot="header" class="">Accordion Header</div>
 				<div slot="content">
 					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
 					eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
@@ -56,9 +50,7 @@ export const multipleElement = () => html`
 	<div class="max-w-2xl">
 		<accordion-group>
 			<accordion-element open="false">
-				<div slot="header" class="">
-					Accordion Header
-				</div>
+				<div slot="header" class="">Accordion Header</div>
 				<div slot="content">
 					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
 					eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
@@ -69,9 +61,7 @@ export const multipleElement = () => html`
 			</accordion-element>
 
 			<accordion-element open="false">
-				<div slot="header" class="">
-					Accordion Header
-				</div>
+				<div slot="header" class="">Accordion Header</div>
 				<div slot="content">
 					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
 					eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
@@ -80,9 +70,7 @@ export const multipleElement = () => html`
 			</accordion-element>
 
 			<accordion-element open="false">
-				<div slot="header" class="">
-					Accordion Header
-				</div>
+				<div slot="header" class="">Accordion Header</div>
 				<div slot="content">
 					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
 					eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia

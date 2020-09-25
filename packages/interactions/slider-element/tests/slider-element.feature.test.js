@@ -4,9 +4,8 @@ import { define } from '@webtides/slider-element';
 define();
 
 describe('Feature | SliderElement', () => {
-    it('can connect without errors', async () => {
-        const el = await fixture(`<slider-element></slider-element>`);
-        await nextFrame();
-    });
+	it('can connect without errors', async () => {
+		const el = await fixture(`<slider-element></slider-element>`);
+		await nextFrame();
+	});
 });
-

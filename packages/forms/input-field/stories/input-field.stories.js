@@ -3,11 +3,8 @@ import { define } from '@webtides/input-field';
 define();
 
 export default {
-    title: 'Form Fields/InputField',
-    component: 'input-field',
+	title: 'Form Fields/InputField',
+	component: 'input-field',
 };
 
-export const singleComponent = () => html`
-    <input-field></input-field>
-`;
-
+export const singleComponent = () => html` <input-field></input-field> `;

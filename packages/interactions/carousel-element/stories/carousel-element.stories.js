@@ -1,5 +1,5 @@
-import {Story, Meta, html} from '@open-wc/demoing-storybook';
-import {define} from '@webtides/carousel-element';
+import { Story, Meta, html } from '@open-wc/demoing-storybook';
+import { define } from '@webtides/carousel-element';
 
 define();
 
@@ -9,8 +9,7 @@ export default {
 };
 
 export const defaultVariant = () => html`
-
-    <carousel-element>
+	<carousel-element>
 		<div class="bg-red-500 p-4 h-64 ">1</div>
 		<div class="bg-blue-500 p-4  h-64">2</div>
 		<div class="bg-green-500 p-4 h-64">3</div>
@@ -21,7 +20,7 @@ export const defaultVariant = () => html`
 `;
 
 export const multiCenterVariant = () => html`
-    <carousel-element options='{"perView": 5, "focusAt": "center"}'>
+	<carousel-element options='{"perView": 5, "focusAt": "center"}'>
 		<div class="bg-red-500 p-4 h-64 ">1</div>
 		<div class="bg-blue-500 p-4  h-64">2</div>
 		<div class="bg-green-500 p-4 h-64">3</div>
@@ -38,7 +37,7 @@ export const multiCenterVariant = () => html`
 `;
 
 export const arrowSlotVariant = () => html`
-    <carousel-element>
+	<carousel-element>
 		<div class="bg-red-500 p-4 h-64 ">1</div>
 		<div class="bg-blue-500 p-4  h-64">2</div>
 		<div class="bg-green-500 p-4 h-64">3</div>

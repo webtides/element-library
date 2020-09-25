@@ -29,7 +29,7 @@ export default class CheckboxField extends FormField {
 	watch() {
 		return {
 			...super.watch(),
-			checked: checked => {
+			checked: (checked) => {
 				this.setAttribute('checked', checked ? 'true' : 'false');
 				this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value, true);
 			},
@@ -62,9 +62,7 @@ export default class CheckboxField extends FormField {
 					?checked="${this.checked}"
 					?required="${this.required}"
 				/>
-				<div class="checked-indicator ${classMap(classes)}">
-					${this.selectedIndicatorTemplate()}
-				</div>
+				<div class="checked-indicator ${classMap(classes)}">${this.selectedIndicatorTemplate()}</div>
 				<div class="label">${unsafeHTML(this.label)}</div>
 			</label>
 		`;
@@ -78,4 +76,3 @@ export default class CheckboxField extends FormField {
 export function define() {
 	defineElement('checkbox-field', CheckboxField);
 }
-

@@ -90,4 +90,4 @@ export function define() {
 	defineElement('accordion-element', AccordionElement);
 }
 
-export { html, defineElement, Events }
+export { html, defineElement, Events };

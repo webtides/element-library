@@ -7,9 +7,9 @@ export default class SliderElement extends TemplateElement {
 	#items = null;
 	#scrollToIndex = false;
 
-    constructor() {
-        super({ shadowRender: true, deferUpdate: true, adoptGlobalStyles:false, styles: [style] });
-    }
+	constructor() {
+		super({ shadowRender: true, deferUpdate: true, adoptGlobalStyles: false, styles: [style] });
+	}
 
 	properties() {
 		return {
@@ -23,7 +23,7 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	get canSlideLeft() {
-    	return this.selectedIndex > 0;
+		return this.selectedIndex > 0;
 	}
 
 	get canSlideRight() {
@@ -31,48 +31,48 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	connected() {
-    	this.#items = Array.from(this.querySelectorAll(this.itemSelector));
-    	this.#itemsCount = this.#items.length > 1 ? (this.#items.length -1) : 0;
+		this.#items = Array.from(this.querySelectorAll(this.itemSelector));
+		this.#itemsCount = this.#items.length > 1 ? this.#items.length - 1 : 0;
 
-		this.style.setProperty('--item-width', `${100/this.itemsToShow}%`)
+		this.style.setProperty('--item-width', `${100 / this.itemsToShow}%`);
 		this.requestUpdate();
-    }
+	}
 
-    events() {
+	events() {
 		return {
 			'.scroller': {
-				'scroll': () => {
+				scroll: () => {
 					clearTimeout(this.#scrollTimer);
-					if(this.#scrollToIndex === true) {
+					if (this.#scrollToIndex === true) {
 						return;
 					}
 					this.#scrollTimer = setTimeout(() => this.onManualScrollEnd(), 100);
 				},
 			},
 			'.dot': {
-				'click': (e) => {
+				click: (e) => {
 					const indicator = e.target.closest('.dot');
 					this.selectedIndex = Array.from(indicator.parentNode.children).indexOf(indicator);
 					this.scrollToIndex();
-				}
+				},
 			},
 			'.arrow-left': {
-				'click': () => this.previous(),
+				click: () => this.previous(),
 			},
 			'.arrow-right': {
-				'click': () => this.next(),
+				click: () => this.next(),
 			},
-		}
+		};
 	}
 
 	next() {
 		const newIndex = this.selectedIndex + this.itemsToScroll;
 		this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
-		if(this.autoSelect){
+		if (this.autoSelect) {
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const parent = this.$refs.scroller;
-			if(target.offsetLeft + target.offsetWidth <= (parent.scrollLeft + parent.offsetWidth)) {
+			if (target.offsetLeft + target.offsetWidth <= parent.scrollLeft + parent.offsetWidth) {
 				// means is in bounds
 				this.next();
 				return;
@@ -85,23 +85,22 @@ export default class SliderElement extends TemplateElement {
 		const newIndex = this.selectedIndex - this.itemsToScroll;
 		this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
 
-		if(this.autoSelect){
+		if (this.autoSelect) {
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const parent = this.$refs.scroller;
-			if(target.offsetLeft > parent.scrollLeft) {
+			if (target.offsetLeft > parent.scrollLeft) {
 				// means is still in viewport
 				this.previous();
 				return;
 			}
 		}
 
-
 		this.scrollToIndex();
 	}
 
-	goTo(index){
-		if(index !== this.selectedIndex){
+	goTo(index) {
+		if (index !== this.selectedIndex) {
 			this.selectedIndex = index;
 			this.scrollToIndex();
 		}
@@ -113,65 +112,66 @@ export default class SliderElement extends TemplateElement {
 		const parent = this.$refs.scroller;
 		const parentWidth = parent.offsetWidth;
 
-		let targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth) / 2 ;
+		let targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth) / 2;
 
 		const snapAlign = window.getComputedStyle(target).scrollSnapAlign;
 		if (snapAlign === 'start') {
 			targetLeft = target.offsetLeft;
-		}
-		else if(snapAlign === 'end') {
-			targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth)  ;
+		} else if (snapAlign === 'end') {
+			targetLeft = target.offsetLeft - (parentWidth - target.offsetWidth);
 		}
 
 		this.$refs.scroller.scrollTo({
-			'left': targetLeft,
-			behavior: 'smooth'
-		})
+			left: targetLeft,
+			behavior: 'smooth',
+		});
 	}
 
 	onManualScrollEnd() {
 		this.#scrollToIndex = false;
 		const scroller = this.$refs.scroller;
 		const scrollLeft = scroller.scrollLeft;
-		const scrollPercentage = scrollLeft / ( scroller.scrollWidth - scroller.offsetWidth)
+		const scrollPercentage = scrollLeft / (scroller.scrollWidth - scroller.offsetWidth);
 
-		if(scrollPercentage === 0) {
+		if (scrollPercentage === 0) {
 			this.selectedIndex = 0;
-		}
-		else if(scrollPercentage === 1) {
+		} else if (scrollPercentage === 1) {
 			this.selectedIndex = this.#itemsCount;
-		}
-		else {
+		} else {
 			//aprox or guess selectedIndex to fix UI state
-			this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage)
+			this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage);
 		}
 	}
 
 	template() {
 		return html`
-			<div ref="scroller" part="scroller" class="scroller" >
+			<div ref="scroller" part="scroller" class="scroller">
 				<slot></slot>
 			</div>
-			<div part="controls dots">
-				${this.dotsTemplate()}
-			</div>
-			<div part="controls arrows">
-				${this.arrowsTemplate()}
-			</div>
+			<div part="controls dots">${this.dotsTemplate()}</div>
+			<div part="controls arrows">${this.arrowsTemplate()}</div>
 		`;
 	}
 
 	dotsTemplate() {
-    	return this.#items.map((item, index) => {
-    		return html`<button part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}" class="dot" aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"></button>`
-		})
+		return this.#items.map((item, index) => {
+			return html`<button
+				part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}"
+				class="dot"
+				aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"
+			></button>`;
+		});
 	}
 
 	arrowsTemplate() {
-    	return html`
-    		<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && !this.canSlideLeft}><slot name="arrow-left">&lang;</slot></button>
-			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && !this.canSlideRight}><slot name="arrow-right">&rang;</slot></button>
-    	`;
+		return html`
+			<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && !this.canSlideLeft}>
+				<slot name="arrow-left">&lang;</slot>
+			</button>
+			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && !this.canSlideRight}>
+				<slot name="arrow-right">&rang;</slot>
+			</button>
+		`;
 	}
 }
 
@@ -179,4 +179,4 @@ export function define() {
 	defineElement('slider-element', SliderElement);
 }
 
-export { html, defineElement }
+export { html, defineElement };

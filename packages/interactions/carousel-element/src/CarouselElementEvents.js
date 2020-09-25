@@ -1,3 +1,3 @@
 export default {
-    CAROUSEL_RUN: 'CarouselRun',
+	CAROUSEL_RUN: 'CarouselRun',
 };

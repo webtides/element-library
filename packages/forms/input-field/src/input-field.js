@@ -37,12 +37,8 @@ export default class InputField extends FormField {
 				? html`
 						<div class="validity ${classMap(classes)}">
 							${this.valid
-								? html`
-										<span class="valid h-4 w-4">&checkmark;</span>
-								  `
-								: html`
-										<span class="invalid h-4 w-4" data-clear-input>&cross;</span>
-								  `}
+								? html` <span class="valid h-4 w-4">&checkmark;</span> `
+								: html` <span class="invalid h-4 w-4" data-clear-input>&cross;</span> `}
 						</div>
 				  `
 				: ''}
