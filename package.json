@@ -62,6 +62,9 @@
 		"make:element": "hygen make element",
 		"lerna:publish": "lerna publish from-package",
 		"storybook": "start-storybook -p 9001",
+		"lint": "eslint ./packages/**/*.js && stylelint ./packages/**/*.css",
+		"lint:js": "eslint ./packages/**/*.js",
+		"lint:css": "stylelint ./packages/**/*.css",
 		"test": "karma start",
 		"test:coverage": "karma start --coverage",
 		"test:watch": "karma start --auto-watch=true --single-run=false"
