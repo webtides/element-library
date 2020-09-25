@@ -4,9 +4,9 @@ import style from './svg-use.css';
 // TODO: think about setting spritePath globally ?!
 
 export default class SvgUse extends TemplateElement {
-    constructor() {
-        super({ styles: [style] });
-    }
+	constructor() {
+		super({ styles: [style] });
+	}
 
 	properties() {
 		return {
@@ -27,4 +27,3 @@ export default class SvgUse extends TemplateElement {
 export function define() {
 	defineElement('svg-use', SvgUse);
 }
-

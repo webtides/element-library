@@ -3,7 +3,9 @@
 	position: relative;
 }
 
-ol, ul, li {
+ol,
+ul,
+li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -19,8 +21,6 @@ ol, ul, li {
 	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
 	z-index: 100;
-
-
 }
 
 .scroller slot {
@@ -40,12 +40,12 @@ ol, ul, li {
 	z-index: 101;
 }
 
-[part~=dots] {
+[part~='dots'] {
 	display: flex;
 	justify-content: center;
 	z-index: 102;
 
-	[part~=dot] {
+	[part~='dot'] {
 		cursor: pointer;
 		background: none;
 		border: none;
@@ -54,25 +54,25 @@ ol, ul, li {
 		font-size: 18px;
 	}
 
-	[part~=dot]:after {
+	[part~='dot']:after {
 		content: '○';
 		padding: 4px;
 	}
 
-	[part~=dot]:hover {
-		color: #666
+	[part~='dot']:hover {
+		color: #666;
 	}
 
-	[part~=dot]:active {
+	[part~='dot']:active {
 		color: #999;
 	}
 
-	[part~=dot][aria-pressed="true"]:after {
+	[part~='dot'][aria-pressed='true']:after {
 		content: '●';
 	}
 }
 
-[part~=arrows] {
+[part~='arrows'] {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -84,7 +84,7 @@ ol, ul, li {
 	pointer-events: none;
 	z-index: 102;
 
-	[part~=arrow] {
+	[part~='arrow'] {
 		pointer-events: all;
 		padding: 4px;
 		font-size: 18px;
@@ -97,11 +97,11 @@ ol, ul, li {
 		}
 	}
 
-	[part~=arrow-left] {
+	[part~='arrow-left'] {
 		left: 0;
 	}
 
-	[part~=arrow-right] {
+	[part~='arrow-right'] {
 		right: 0;
 	}
 }

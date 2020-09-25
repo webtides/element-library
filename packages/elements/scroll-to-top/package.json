@@ -1,44 +1,44 @@
 {
-  "name": "@webtides/scroll-to-top",
-  "version": "0.1.0",
-  "description": "An element that enables you to smoothly scroll back to top",
-  "author": "@webtides",
-  "homepage": "https://github.com/webtides/element-library",
-  "license": "MIT",
+	"name": "@webtides/scroll-to-top",
+	"version": "0.1.0",
+	"description": "An element that enables you to smoothly scroll back to top",
+	"author": "@webtides",
+	"homepage": "https://github.com/webtides/element-library",
+	"license": "MIT",
 	"type": "module",
 	"main": "src/scroll-to-top.js",
 	"module": "src/scroll-to-top.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webtides/element-library.git",
-    "directory": "packages/elements/scroll-to-top"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/",
-    "access": "restricted"
-  },
-  "scripts": {
-    "test": "karma start ../../../karma.conf.js --grep \"packages/elements/scroll-to-top/tests/**/*.test.js\"",
-    "test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/elements/scroll-to-top/tests/**/*.test.js\""
-  },
-  "keywords": [
-    "web-components",
-    "custom-elements",
-    "scroll-to"
-  ],
-  "files": [
-    "docs",
-    "src",
-    "stories",
-    "tests",
-    "translations",
-    "*.js"
-  ],
-  "dependencies": {
-	  "@webtides/element-js": "0.2.0"
-  },
-  "devDependencies": {
-    "@open-wc/demoing-storybook": "^1.13.3",
-    "@open-wc/testing": "^2.5.0"
-  }
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webtides/element-library.git",
+		"directory": "packages/elements/scroll-to-top"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/",
+		"access": "restricted"
+	},
+	"scripts": {
+		"test": "karma start ../../../karma.conf.js --grep \"packages/elements/scroll-to-top/tests/**/*.test.js\"",
+		"test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/elements/scroll-to-top/tests/**/*.test.js\""
+	},
+	"keywords": [
+		"web-components",
+		"custom-elements",
+		"scroll-to"
+	],
+	"files": [
+		"docs",
+		"src",
+		"stories",
+		"tests",
+		"translations",
+		"*.js"
+	],
+	"dependencies": {
+		"@webtides/element-js": "0.2.0"
+	},
+	"devDependencies": {
+		"@open-wc/demoing-storybook": "^1.13.3",
+		"@open-wc/testing": "^2.5.0"
+	}
 }

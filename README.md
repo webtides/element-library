@@ -18,10 +18,10 @@ Elements are divided into 3 categories.
 
 | Package              | Description     | Version | Type |
 | -------------------- | --------------- | ------- | ---- |
-| accordion-element    |                 | `0.1.0`     | free |
-| accordion-group    |                 | `0.1.0`     | free |
-| slider-element       |                 | `0.1.0`  | free  |
-| transition-classes    |                 | `0.1.0`     | free |
+| accordion-element    |                 | `0.1.0` | free |
+| accordion-group      |                 | `0.1.0` | free |
+| slider-element       |                 | `0.1.0` | free |
+| transition-classes   |                 | `0.1.0` | free |
 | modal-element        |                 | TBD     | free |
 | bottom-sheet         |                 | TBD     | pro  |
 | side-sheet           |                 | TBD     | pro  |
@@ -49,8 +49,8 @@ Elements are divided into 3 categories.
 | lazy-src           |               | `0.1.0` | free |
 | scroll-to          |               | `0.1.0` | free |
 | scroll-to-top      |               | `0.1.0` | free |
-| sticky-element     |               | `0.1.0`     | free |
-| svg-use           |               | `0.1.0`     | free |
+| sticky-element     |               | `0.1.0` | free |
+| svg-use            |               | `0.1.0` | free |
 | line-through       |               | TBD v2  | free |
 | divider-element ?! |               | TBD v2  | free |
 | scroll-entrance    |               | TBD v2  | free |
@@ -66,10 +66,10 @@ Elements are divided into 3 categories.
 
 | Package            | Description | Version | Type |
 | ------------------ | ----------- | ------- | ---- |
-| checkbox-field     |             | `0.1.0`     | free |
-| form-field        |             | `0.1.0`     | free |
-| input-field        |             | `0.1.0`     | free |
-| textarea-field        |             | `0.1.0`     | free |
+| checkbox-field     |             | `0.1.0` | free |
+| form-field         |             | `0.1.0` | free |
+| input-field        |             | `0.1.0` | free |
+| textarea-field     |             | `0.1.0` | free |
 | password-field     |             | TBD     | free |
 | radio-field        |             | TBD     | free |
 | switch-field       |             | TBD     | free |
