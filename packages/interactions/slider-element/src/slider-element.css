@@ -54,7 +54,7 @@ li {
 		font-size: 18px;
 	}
 
-	[part~='dot']:after {
+	[part~='dot']::after {
 		content: '○';
 		padding: 4px;
 	}
@@ -67,7 +67,7 @@ li {
 		color: #999;
 	}
 
-	[part~='dot'][aria-pressed='true']:after {
+	[part~='dot'][aria-pressed='true']::after {
 		content: '●';
 	}
 }

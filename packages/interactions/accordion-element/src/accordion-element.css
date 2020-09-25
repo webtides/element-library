@@ -6,7 +6,7 @@
 	}
 }
 
-[part~=title-wrapper]{
+[part~=title-wrapper] {
 	display: flex;
 }
 

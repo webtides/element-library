@@ -2,13 +2,11 @@
 @import '@glidejs/glide/dist/css/glide.core.css';
 @import '@glidejs/glide/dist/css/glide.theme.css';
 
-
 :host {
 	display: block;
 }
 
-
-::slotted(*){
+::slotted(*) {
 	width: 100%;
 	height: 100%;
 	flex-shrink: 0;
@@ -20,5 +18,4 @@
 
 .glide__slides {
 	display: flex;
-
 }
