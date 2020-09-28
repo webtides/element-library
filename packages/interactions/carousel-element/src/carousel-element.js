@@ -70,6 +70,9 @@ export default class CarouselElement extends TemplateElement {
 	}
 
 	mountGlide() {
+		if(this.disabled){
+			return;
+		}
 		this.#glide = new Glide(this.$refs.glide, {...DEFAULT_OPTIONS, ...this.options}).mount({
 			'Html': ShadowHtml,
 			'Clones': ShadowClones,
@@ -136,6 +139,9 @@ export default class CarouselElement extends TemplateElement {
 
 
 	template() {
+		if(this.disabled) {
+			return this._options.shadowRender ? html`<slot></slot>` : this.renderSlides();
+		}
 		return html`
             <div class="glide" ref="glide">
                 <div class="glide__track" data-glide-el="track">

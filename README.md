@@ -20,6 +20,7 @@ Elements are divided into 3 categories.
 | -------------------- | --------------- | ------- | ---- |
 | accordion-element    |                 | `0.1.0`     | free |
 | accordion-group    |                 | `0.1.0`     | free |
+| carousel-element    |                 | `0.1.0`     | free |
 | slider-element       |                 | `0.1.0`  | free  |
 | transition-classes    |                 | `0.1.0`     | free |
 | modal-element        |                 | TBD     | free |
