@@ -1,6 +1,6 @@
 {
 	"name": "@webtides/carousel-element",
-	"version": "0.1.2",
+	"version": "0.1.1",
 	"description": "A carousel element that wraps the glidejs library for sliding elements",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",
