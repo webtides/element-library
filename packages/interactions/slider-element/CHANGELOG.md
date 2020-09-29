@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+
+## [0.4.3] - 2020-09-29
+
+### Fixed 
+- js error when scrollTo were called before render (externally) 
+
 ## [0.4.2] - 2020-09-29
 
 ### Fixed 
