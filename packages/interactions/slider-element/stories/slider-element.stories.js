@@ -37,6 +37,20 @@ export const paddingVariant = () => html`
 	</slider-element>
 `;
 
+export const selectedIndexVariant = () => html`
+	<slider-element selected-index="3">
+		<div class="item bg-red-100 p-4 h-64">1</div>
+		<div class="item bg-red-200 p-4 h-64">2</div>
+		<div class="item bg-red-300 p-4 h-64">3</div>
+		<div class="item bg-red-400 p-4 h-64">4</div>
+		<div class="item bg-red-500 p-4 h-64">5</div>
+		<div class="item bg-red-600 p-4 h-64">6</div>
+		<div class="item bg-red-700 p-4 h-64">7</div>
+		<div class="item bg-red-800 p-4 h-64">8</div>
+		<div class="item bg-red-900 p-4 h-64">9</div>
+	</slider-element>
+`;
+
 export const itemsToShowVariant = () => html`
 	<slider-element items-to-show="3">
 		<div class="item bg-red-100 p-4 h-64">1</div>

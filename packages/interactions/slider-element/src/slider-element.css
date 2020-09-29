@@ -18,7 +18,6 @@ li {
 	-webkit-overflow-scrolling: touch;
 	scrollbar-width: none;
 	counter-reset: item;
-	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
 }
 

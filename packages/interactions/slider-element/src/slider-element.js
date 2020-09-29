@@ -38,7 +38,8 @@ export default class SliderElement extends TemplateElement {
 		this.#itemsCount = this.#items.length > 1 ? this.#items.length - 1 : 0;
 
 		this.style.setProperty('--item-width', `${100 / this.itemsToShow}%`);
-		this.requestUpdate();
+		//scroll to initial slide
+		this.requestUpdate().then(() => this.scrollToIndex(false));
 	}
 
 	events() {
@@ -110,15 +111,17 @@ export default class SliderElement extends TemplateElement {
 		this.scrollToIndex();
 	}
 
-	goTo(index) {
+	goTo(index, smooth = true) {
 		if (index !== this.selectedIndex) {
 			this.selectedIndex = index;
-			this.scrollToIndex();
+			this.scrollToIndex(smooth);
 		}
 	}
 
-	scrollToIndex() {
-		this.#scrollToIndex = true;
+	scrollToIndex(smooth = true) {
+		if (smooth) {
+			this.#scrollToIndex = true;
+		}
 		const target = this.#items[this.selectedIndex];
 		const parent = this.$refs.scroller;
 		const parentWidth = parent.offsetWidth;
@@ -134,7 +137,7 @@ export default class SliderElement extends TemplateElement {
 
 		this.$refs.scroller.scrollTo({
 			left: targetLeft,
-			behavior: 'smooth',
+			behavior: smooth ? 'smooth' : 'auto',
 		});
 	}
 
