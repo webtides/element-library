@@ -15,6 +15,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.2] - 2020-09-29
+
+### Fixed 
+- initial selected index 
+### Added
+- smooth flag to goto and scrollTo Method
+
+
 ## [0.4.1] - 2020-09-29
 
 ### Added
