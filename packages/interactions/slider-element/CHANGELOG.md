@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.1] - 2020-09-29
+
+### Added
+-   feature flags for `dots` and `arrows`
+-   simple RUN to update external UI
+
+
 ## [0.4.0] - 2020-09-15
 
 ### Added

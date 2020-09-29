@@ -1,4 +1,5 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
+import SliderElementEvents from './SliderElementEvents';
 import style from './slider-element.css';
 
 export default class SliderElement extends TemplateElement {
@@ -19,6 +20,8 @@ export default class SliderElement extends TemplateElement {
 			rewind: false,
 			selectedIndex: 0,
 			autoSelect: false,
+			dots: true,
+			arrows: true,
 		};
 	}
 
@@ -61,6 +64,14 @@ export default class SliderElement extends TemplateElement {
 			},
 			'.arrow-right': {
 				click: () => this.next(),
+			},
+		};
+	}
+
+	watch() {
+		return {
+			selectedIndex: () => {
+				this.dispatch(SliderElementEvents.SLIDER_RUN, this.selectedIndex);
 			},
 		};
 	}
@@ -148,18 +159,28 @@ export default class SliderElement extends TemplateElement {
 			<div ref="scroller" part="scroller" class="scroller">
 				<slot></slot>
 			</div>
-			<div part="controls dots">${this.dotsTemplate()}</div>
-			<div part="controls arrows">${this.arrowsTemplate()}</div>
+			${this.dots
+				? html`
+						<div part="controls dots">${this.dotsTemplate()}</div>
+				  `
+				: ''}
+			${this.arrows
+				? html`
+						<div part="controls arrows">${this.arrowsTemplate()}</div>
+				  `
+				: ''}
 		`;
 	}
 
 	dotsTemplate() {
 		return this.#items.map((item, index) => {
-			return html`<button
-				part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}"
-				class="dot"
-				aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"
-			></button>`;
+			return html`
+				<button
+					part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}"
+					class="dot"
+					aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"
+				></button>
+			`;
 		});
 	}
 
@@ -179,4 +200,4 @@ export function define() {
 	defineElement('slider-element', SliderElement);
 }
 
-export { html, defineElement };
+export { html, defineElement, SliderElementEvents };
