@@ -20,11 +20,6 @@ li {
 	counter-reset: item;
 	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
-	z-index: 100;
-}
-
-.scroller slot {
-	z-index: 100;
 }
 
 .scroller::-webkit-scrollbar {
@@ -37,13 +32,12 @@ li {
 	flex-shrink: 0;
 	scroll-snap-align: var(--snap-align, center);
 	width: var(--item-width, 100%);
-	z-index: 101;
 }
 
 [part~='dots'] {
 	display: flex;
+	position: relative;
 	justify-content: center;
-	z-index: 102;
 
 	[part~='dot'] {
 		cursor: pointer;
@@ -82,7 +76,6 @@ li {
 	justify-content: space-between;
 	align-items: center;
 	pointer-events: none;
-	z-index: 102;
 
 	[part~='arrow'] {
 		pointer-events: all;

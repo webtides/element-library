@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 -   feature flags for `dots` and `arrows`
 -   simple RUN to update external UI
+### Fixed / Removed 
+- z-index from slider and ::slotted(item) css as it was bleeding into global style scope 
 
 
 ## [0.4.0] - 2020-09-15
