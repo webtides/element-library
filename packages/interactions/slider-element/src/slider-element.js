@@ -119,6 +119,10 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	scrollToIndex(smooth = true) {
+		if (!this.$refs.scroller) {
+			//external call before render
+			return;
+		}
 		if (smooth) {
 			this.#scrollToIndex = true;
 		}
