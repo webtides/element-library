@@ -1,6 +1,6 @@
 # element-library
 
-> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release. Until then we would encourage everyone to use pinned versions for any package and not rely on semantic versioning.
+> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release. Until then, we would encourage everyone to use pinned versions for any package and not rely on semantic versioning.
 
 A set of web components built with `@webtides/element-js`
 
