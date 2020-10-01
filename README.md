@@ -1,7 +1,6 @@
 # element-library
 
-> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release.
-> Until then we would encourage everyone to use pinned versions for any package and not rely on semantic versioning.
+> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release. Until then we would encourage everyone to use pinned versions for any package and not rely on semantic versioning.
 
 A set of web components built with `@webtides/element-js`
 
@@ -15,70 +14,80 @@ Elements are divided into 3 categories.
 
 ### Interactions
 
-| Package              | Description     | Version | Type |
-| -------------------- | --------------- | ------- | ---- |
-| accordion-element    |                 | `0.1.0` | free |
-| accordion-group      |                 | `0.1.0` | free |
-| slider-element       |                 | `0.1.0` | free |
-| transition-classes   |                 | `0.1.0` | free |
-| modal-element        |                 | TBD     | free |
-| bottom-sheet         |                 | TBD     | pro  |
-| side-sheet           |                 | TBD     | pro  |
-| dialog-element       |                 | TBD     | free |
-| notification-element | Toast, Alert ?! | TBD     | free |
-| tabs-element         |                 | TBD     | free |
-| breadcrumb-element   |                 | TBD     | free |
-| horizontal-scroll    |                 | TBD     | free |
-| load-more            | show/load more  | TBD     | free |
-| show-hide            |                 | TBD     | free |
-| progress-bar         |                 | TBD v2  | free |
-| star-rating          |                 | TBD v2  | free |
-| navigation-drawer ?! |                 | TBD v2  | free |
-| hover-indicator      |                 | TBD v2  | pro  |
-| pinch-zoom           |                 | TBD v2  | pro  |
-| cookie-consent       |                 | TBD     | pro  |
-| rich-text            |                 | TBD v2  | pro  |
-| code-block           |                 | TBD v2  | pro  |
-| spread-sheet         |                 | TBD v2  | pro  |
+| Package            | Description                                                             | Version |
+| ------------------ | ----------------------------------------------------------------------- | ------- |
+| accordion-element  | Single Accordion element                                                | `0.1.0` |
+| accordion-group    | Accordion group to hold multiple elements                               | `0.1.0` |
+| carousel-element   | A carousel element that wraps the glide.js library for sliding elements | `0.1.1` |
+| slider-element     | CSS only slider element to slide child elements                         | `0.4.3` |
+| transition-classes | An element that applies classes for various stages of a transition      | `0.1.0` |
+
+<!-- Please move these up once they are implemented
+| modal-element        |                                                 | TBD  |
+| bottom-sheet         |                                                 | TBD  |
+| side-sheet           |                                                 | TBD  |
+| dialog-element       |                                                 | TBD  |
+| notification-element | Toast, Alert ?!                                 | TBD  |
+| tabs-element         |                                                 | TBD  |
+| breadcrumb-element   |                                                 | TBD  |
+| horizontal-scroll    |                                                 | TBD  |
+| load-more            | show/load more                                  | TBD  |
+| show-hide            |                                                 | TBD  |
+| progress-bar         |                                                 | TBD  |
+| star-rating          |                                                 | TBD  |
+| navigation-drawer ?! |                                                 | TBD  |
+| hover-indicator      |                                                 | TBD  |
+| pinch-zoom           |                                                 | TBD  |
+| cookie-consent       |                                                 | TBD  |
+| rich-text            |                                                 | TBD  |
+| code-block           |                                                 | TBD  |
+| spread-sheet         |                                                 | TBD  |
+-->
 
 ### Elements
 
-| Package            | Description   | Version | Type |
-| ------------------ | ------------- | ------- | ---- |
-| lazy-src           |               | `0.1.0` | free |
-| scroll-to          |               | `0.1.0` | free |
-| scroll-to-top      |               | `0.1.0` | free |
-| sticky-element     |               | `0.1.0` | free |
-| svg-use            |               | `0.1.0` | free |
-| line-through       |               | TBD v2  | free |
-| divider-element ?! |               | TBD v2  | free |
-| scroll-entrance    |               | TBD v2  | free |
-| chip-element       | Tag, Label ?! | TBD     | free |
-| read-time ?!       |               | TBD v2  | free |
-| code-tabs          |               | TBD v2  | free |
-| empty-state ?!     |               | TBD v2  | free |
-| compare-images     |               | TBD v2  | pro  |
-| text-highlight     |               | TBD v2  | pro  |
-| tooltip-element    | Popover ?!    | TBD     | pro  |
+| Package        | Description | Version |
+| -------------- | ----------- | ------- |
+| lazy-src       |             | `0.2.0` |
+| scroll-to      |             | `0.1.0` |
+| scroll-to-top  |             | `0.1.0` |
+| sticky-element |             | `0.1.0` |
+| svg-use        |             | `0.1.0` |
+
+<!-- Please move these up once they are implemented
+| line-through       |               | TBD |
+| divider-element ?! |               | TBD |
+| scroll-entrance    |               | TBD |
+| chip-element       | Tag, Label ?! | TBD |
+| read-time ?!       |               | TBD |
+| code-tabs          |               | TBD |
+| empty-state ?!     |               | TBD |
+| compare-images     |               | TBD |
+| text-highlight     |               | TBD |
+| tooltip-element    | Popover ?!    | TBD |
+-->
 
 ### Form Fields
 
-| Package            | Description | Version | Type |
-| ------------------ | ----------- | ------- | ---- |
-| checkbox-field     |             | `0.1.0` | free |
-| form-field         |             | `0.1.0` | free |
-| input-field        |             | `0.1.0` | free |
-| textarea-field     |             | `0.1.0` | free |
-| password-field     |             | TBD     | free |
-| radio-field        |             | TBD     | free |
-| switch-field       |             | TBD     | free |
-| dropdown-field     |             | TBD     | free |
-| range-field        |             | TBD     | free |
-| input-group        |             | TBD     | free |
-| tag-field          | multiple    | TBD     | pro  |
-| autocomplete-field |             | TBD     | pro  |
-| date-picker        |             | TBD v2  | pro  |
-| multi-range-field  |             | TBD v2  | pro  |
+| Package        | Description | Version |
+| -------------- | ----------- | ------- |
+| checkbox-field |             | `0.1.1` |
+| form-field     |             | `0.1.0` |
+| input-field    |             | `0.1.0` |
+| textarea-field |             | `0.1.0` |
+
+<!-- Please move these up once they are implemented
+| password-field     |             | TBD  |
+| radio-field        |             | TBD  |
+| switch-field       |             | TBD  |
+| dropdown-field     |             | TBD  |
+| range-field        |             | TBD  |
+| input-group        |             | TBD  |
+| tag-field          | multiple    | TBD  |
+| autocomplete-field |             | TBD  |
+| date-picker        |             | TBD  |
+| multi-range-field  |             | TBD  |
+-->
 
 <!--
 ## Documentation
