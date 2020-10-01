@@ -1,14 +1,13 @@
 # element-library
 
+> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release.
+> Until then we would encourage everyone to use pinned versions for any package and not rely on semantic versioning.
+
 A set of web components built with `@webtides/element-js`
 
 ## Introduction
 
 `@webtides/element-library` provides a set of pre-built custom elements based on `@webtides/element-js` with performance and accessibility in mind. They provide a starting point for rapidly building UIs without having to re-implement the same elements over and over again.
-
-## Documentation
-
-For detailed documentation see the [Docs](docs/README.md).
 
 ## Elements
 
@@ -81,9 +80,15 @@ Elements are divided into 3 categories.
 | date-picker        |             | TBD v2  | pro  |
 | multi-range-field  |             | TBD v2  | pro  |
 
-## Versioning
+<!--
+## Documentation
 
-We use `lerna` to version and publish new releases for packages automatically when pushing changes to the `master` branch. To trigger a new release simply change the version in a package.json of an element or a package. The CI will pick it up and publish it.
+For detailed documentation see the [Docs](docs/README.md).
+-->
+
+## Contributing & Development
+
+For contributions and development see [contributing docs](.github/CONTRIBUTING.md)
 
 ## License
 
