@@ -15,28 +15,38 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.4] - 2020-10-05
+
+### Added
+
+-   part for disabled arrow
 
 ## [0.4.3] - 2020-09-29
 
-### Fixed 
-- js error when scrollTo were called before render (externally) 
+### Fixed
+
+-   js error when scrollTo were called before render (externally)
 
 ## [0.4.2] - 2020-09-29
 
-### Fixed 
-- initial selected index 
-### Added
-- smooth flag to goto and scrollTo Method
+### Fixed
 
+-   initial selected index
+
+### Added
+
+-   smooth flag to goto and scrollTo Method
 
 ## [0.4.1] - 2020-09-29
 
 ### Added
+
 -   feature flags for `dots` and `arrows`
 -   simple RUN to update external UI
-### Fixed / Removed 
-- z-index from slider and ::slotted(item) css as it was bleeding into global style scope 
 
+### Fixed / Removed
+
+-   z-index from slider and ::slotted(item) css as it was bleeding into global style scope
 
 ## [0.4.0] - 2020-09-15
 
