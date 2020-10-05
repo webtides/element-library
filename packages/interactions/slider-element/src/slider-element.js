@@ -166,16 +166,8 @@ export default class SliderElement extends TemplateElement {
 			<div ref="scroller" part="scroller" class="scroller">
 				<slot></slot>
 			</div>
-			${this.dots
-				? html`
-						<div part="controls dots">${this.dotsTemplate()}</div>
-				  `
-				: ''}
-			${this.arrows
-				? html`
-						<div part="controls arrows">${this.arrowsTemplate()}</div>
-				  `
-				: ''}
+			${this.dots ? html` <div part="controls dots">${this.dotsTemplate()}</div> ` : ''}
+			${this.arrows ? html` <div part="controls arrows">${this.arrowsTemplate()}</div> ` : ''}
 		`;
 	}
 
@@ -192,11 +184,22 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	arrowsTemplate() {
+		const disabledLeft = !this.rewind && !this.canSlideLeft;
+		const disabledRight = !this.rewind && !this.canSlideRight;
+
 		return html`
-			<button part="arrow arrow-left" class="arrow-left" ?disabled=${!this.rewind && !this.canSlideLeft}>
+			<button
+				part="arrow arrow-left ${disabledLeft ? 'arrow-disabled' : ''}"
+				class="arrow-left"
+				?disabled=${disabledLeft}
+			>
 				<slot name="arrow-left">&lang;</slot>
 			</button>
-			<button part="arrow arrow-right" class="arrow-right" ?disabled=${!this.rewind && !this.canSlideRight}>
+			<button
+				part="arrow arrow-right ${disabledRight ? 'arrow-disabled' : ''}"
+				class="arrow-right"
+				?disabled=${disabledRight}
+			>
 				<slot name="arrow-right">&rang;</slot>
 			</button>
 		`;
