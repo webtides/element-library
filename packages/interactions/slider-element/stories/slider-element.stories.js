@@ -15,6 +15,30 @@ export const defaultVariant = () => html`
 	</slider-element>
 `;
 
+export const noArrowVariant = () => html`
+	<slider-element arrows="false">
+		<div class="item bg-red-500 p-4 h-64">1</div>
+		<div class="item bg-blue-500 p-4 h-64">2</div>
+		<div class="item bg-green-500 p-4 h-64">3</div>
+	</slider-element>
+`;
+
+export const noDotsVariant = () => html`
+	<slider-element dots="false">
+		<div class="item bg-red-500 p-4 h-64">1</div>
+		<div class="item bg-blue-500 p-4 h-64">2</div>
+		<div class="item bg-green-500 p-4 h-64">3</div>
+	</slider-element>
+`;
+
+export const noDotsNoArrowsVariant = () => html`
+	<slider-element dots="false" arrows="false">
+		<div class="item bg-red-500 p-4 h-64">1</div>
+		<div class="item bg-blue-500 p-4 h-64">2</div>
+		<div class="item bg-green-500 p-4 h-64">3</div>
+	</slider-element>
+`;
+
 export const rewindVariant = () => html`
 	<slider-element rewind="true">
 		<div class="item bg-red-500 p-4 h-64">1</div>

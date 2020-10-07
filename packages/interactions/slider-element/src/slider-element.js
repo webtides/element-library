@@ -166,8 +166,8 @@ export default class SliderElement extends TemplateElement {
 			<div ref="scroller" part="scroller" class="scroller">
 				<slot></slot>
 			</div>
-			${this.dots ? html` <div part="controls dots">${this.dotsTemplate()}</div> ` : ''}
-			${this.arrows ? html` <div part="controls arrows">${this.arrowsTemplate()}</div> ` : ''}
+			${this.dots ? html` <div part="controls dots">${this.dotsTemplate()}</div> ` : null}
+			${this.arrows ? html` <div part="controls arrows">${this.arrowsTemplate()}</div> ` : null}
 		`;
 	}
 
