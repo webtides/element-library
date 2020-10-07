@@ -15,8 +15,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
-## [0.1.0] - 2020-03-15
+## [0.1.0] - 2020-10-07
 
 ### Added
 
+-   Basic amount-field
 -   initial release

@@ -1,6 +1,6 @@
 # AmountField
 
-`amount-field` enables you to...
+`amount-field` is a simple base element to create amount stepping input fields
 
 ## How to use
 
