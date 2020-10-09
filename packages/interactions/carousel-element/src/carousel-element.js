@@ -118,11 +118,7 @@ export default class CarouselElement extends TemplateElement {
 	renderBullets() {
 		let bullets = [];
 		for (let i = 0; i < this.#uniqueChildren.length; i++) {
-			bullets.push(
-				html`
-					<div part="dot" class="glide__bullet" data-glide-dir="=${i}"></div>
-				`,
-			);
+			bullets.push(html` <div part="dot" class="glide__bullet" data-glide-dir="=${i}"></div> `);
 		}
 		return bullets;
 	}
@@ -130,32 +126,20 @@ export default class CarouselElement extends TemplateElement {
 	renderSlides() {
 		let slides = [];
 		for (let i = 0; i < this.#uniqueChildren.length; i++) {
-			slides.push(
-				html`
-					${this.#uniqueChildren[i]}
-				`,
-			);
+			slides.push(html` ${this.#uniqueChildren[i]} `);
 		}
 		return slides;
 	}
 
 	template() {
 		if (this.disabled) {
-			return this._options.shadowRender
-				? html`
-						<slot></slot>
-				  `
-				: this.renderSlides();
+			return this._options.shadowRender ? html` <slot></slot> ` : this.renderSlides();
 		}
 		return html`
 			<div class="glide" ref="glide">
-				<div class="glide__track" data-glide-el="track">
-					<div class="glide__slides">
-						${this._options.shadowRender
-							? html`
-									<slot></slot>
-							  `
-							: this.renderSlides()}
+				<div class="glide__track" data-glide-el="track" part="track">
+					<div class="glide__slides" part="slides">
+						${this._options.shadowRender ? html` <slot></slot> ` : this.renderSlides()}
 					</div>
 				</div>
 				${this.arrows

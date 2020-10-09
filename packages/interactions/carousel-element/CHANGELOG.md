@@ -15,14 +15,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.1.2] - 2020-10-09
+
+### Added
+
+-   part marker to glide template for better themability
+
 ## [0.1.1] - 2020-09-28
 
 ### Fixed
-* disabled state
 
+-   disabled state
 
 ## [0.1.0] - 2020-09-17
 
 ### Added
-* initial release
 
+-   initial release
