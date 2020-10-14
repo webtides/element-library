@@ -17,6 +17,8 @@ jobs:
 #          yarn install --frozen-lockfile
 #          npm run storybook:build
       - run: yarn install --frozen-lockfile
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: yarn run storybook:build
