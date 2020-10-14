@@ -8,6 +8,10 @@ A set of web components built with `@webtides/element-js`
 
 `@webtides/element-library` provides a set of pre-built custom elements based on `@webtides/element-js` with performance and accessibility in mind. They provide a starting point for rapidly building UIs without having to re-implement the same elements over and over again.
 
+## Demo
+
+See our [live Storybook](https://webtides.github.io/element-library) to preview examples of all our elements.
+
 ## Elements
 
 Elements are divided into 3 categories.
