@@ -18,6 +18,8 @@ jobs:
           npm run storybook:build
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
