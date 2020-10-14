@@ -2,7 +2,7 @@ name: NPM run storybook:build
 
 on:
   push:
-    paths: ["packages/**/stories/**", "packages/**/src/**"] # Trigger the action only when files change in the folders defined here
+    paths: ['packages/**/stories/**', 'packages/**/src/**'] # Trigger the action only when files change in the folders defined here
 
 jobs:
   build-and-deploy:
@@ -12,16 +12,6 @@ jobs:
         uses: actions/checkout@v2.3.1
         with:
           persist-credentials: false
-      - name: Get yarn cache directory path
-          id: yarn-cache-dir-path
-          run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
-          id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-          with:
-            path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-yarn-
       - name: Install and Build 🔧
         run: | # Install npm packages and build the Storybook files
           yarn install --frozen-lockfile
