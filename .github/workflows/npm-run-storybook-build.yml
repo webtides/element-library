@@ -14,10 +14,10 @@ jobs:
 #          persist-credentials: false
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-          with:
-            node-version: 12
-            registry-url: https://npm.pkg.github.com/
-            scope: "@webtides"
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+          scope: "@webtides"
 #      - name: Install and Build 🔧
 #        run: | # Install npm packages and build the Storybook files
 #          yarn install --frozen-lockfile
