@@ -2,6 +2,8 @@ name: NPM run storybook:build
 
 on:
   push:
+    branches:
+      - master
     paths: ['packages/**/stories/**', 'packages/**/src/**'] # Trigger the action only when files change in the folders defined here
 
 jobs:
