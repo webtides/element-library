@@ -1,4 +1,5 @@
-const postcss = require('rollup-plugin-postcss');
+const postcss = require('postcss');
+const rollupPostcss = require('rollup-plugin-postcss');
 
 module.exports = {
 	stories: ['../packages/**/**/stories/*.stories.js'],
@@ -44,7 +45,7 @@ module.exports = {
 	// Configuration for rollup (build-storybook only)
 	rollup: (config) => {
 		config.plugins = [
-			postcss({
+			rollupPostcss({
 				plugins: [
 					require('postcss-import')(),
 					require('postcss-nested')(),
