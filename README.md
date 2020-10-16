@@ -18,13 +18,14 @@ Elements are divided into 3 categories.
 
 ### Interactions
 
-| Package            | Description                                                             | Version |
-| ------------------ | ----------------------------------------------------------------------- | ------- |
-| accordion-element  | Single Accordion element                                                | `0.1.0` |
-| accordion-group    | Accordion group to hold multiple elements                               | `0.1.0` |
-| carousel-element   | A carousel element that wraps the glide.js library for sliding elements | `0.1.1` |
-| slider-element     | CSS only slider element to slide child elements                         | `0.4.3` |
-| transition-classes | An element that applies classes for various stages of a transition      | `0.1.0` |
+| Package                  | Description                                                             | Version |
+| ------------------------ | ----------------------------------------------------------------------- | ------- |
+| accordion-element        | Single Accordion element                                                | `0.1.0` |
+| accordion-group          | Accordion group to hold multiple elements                               | `0.1.0` |
+| carousel-element         | A carousel element that wraps the glide.js library for sliding elements | `0.1.1` |
+| mobile-accordion-element | Desktop accordion element only, falls back to two blocks on mobile      | `0.1.0` |
+| slider-element           | CSS only slider element to slide child elements                         | `0.4.3` |
+| transition-classes       | An element that applies classes for various stages of a transition      | `0.1.0` |
 
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |

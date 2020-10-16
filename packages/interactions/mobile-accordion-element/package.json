@@ -1,0 +1,43 @@
+{
+  "name": "@webtides/mobile-accordion-element",
+  "version": "0.1.0",
+  "description": "An element that...",
+  "author": "@webtides",
+  "homepage": "https://github.com/webtides/element-library",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/mobile-accordion-element.js",
+  "module": "src/mobile-accordion-element.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webtides/element-library.git",
+    "directory": "packages/interactions/mobile-accordion-element"
+  },
+  "scripts": {
+    "test": "karma start ../../../karma.conf.js --grep \"packages/interactions/mobile-accordion-element/tests/**/*.test.js\"",
+    "test:watch": "karma start ../../../karma.conf.js --auto-watch=true --single-run=false --grep \"packages/interactions/mobile-accordion-element/tests/**/*.test.js\""
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "mobile-accordion-element"
+  ],
+  "files": [
+    "docs",
+    "src",
+    "stories",
+    "tests",
+    "translations",
+    "*.js"
+  ],
+  "dependencies": {
+    "@webtides/accordion-element": "0.1.0",
+    "@webtides/element-js": "0.3.0"
+  },
+  "devDependencies": {
+    "@open-wc/demoing-storybook": "^1.13.3",
+    "@open-wc/testing": "^2.5.0"
+  }
+}
+
+
