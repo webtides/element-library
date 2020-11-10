@@ -18,13 +18,16 @@ Elements are divided into 3 categories.
 
 ### Interactions
 
-| Package            | Description                                                             | Version |
-| ------------------ | ----------------------------------------------------------------------- | ------- |
-| accordion-element  | Single Accordion element                                                | `0.1.0` |
-| accordion-group    | Accordion group to hold multiple elements                               | `0.1.0` |
-| carousel-element   | A carousel element that wraps the glide.js library for sliding elements | `0.1.1` |
-| slider-element     | CSS only slider element to slide child elements                         | `0.4.3` |
-| transition-classes | An element that applies classes for various stages of a transition      | `0.1.0` |
+| Package            | Description                                                                   | Version |
+| ------------------ | ----------------------------------------------------------------------------- | ------- |
+| accordion-element  | Single Accordion element                                                      | `0.1.0` |
+| accordion-group    | Accordion group to hold multiple elements                                     | `0.1.0` |
+| carousel-element   | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
+| slider-element     | CSS only slider element to slide child elements                               | `0.4.3` |
+| transition-classes | An element that applies classes for various stages of a transition            | `0.1.0` |
+| tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
+| tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
+| tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
 
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |
@@ -32,7 +35,6 @@ Elements are divided into 3 categories.
 | side-sheet           |                                                 | TBD  |
 | dialog-element       |                                                 | TBD  |
 | notification-element | Toast, Alert ?!                                 | TBD  |
-| tabs-element         |                                                 | TBD  |
 | breadcrumb-element   |                                                 | TBD  |
 | horizontal-scroll    |                                                 | TBD  |
 | load-more            | show/load more                                  | TBD  |
