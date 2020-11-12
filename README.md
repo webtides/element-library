@@ -23,7 +23,7 @@ Elements are divided into 3 categories.
 | accordion-element  | Single Accordion element                                                      | `0.1.0` |
 | accordion-group    | Accordion group to hold multiple elements                                     | `0.1.0` |
 | carousel-element   | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
-| dropdown-element   | A dropdown element                                                      | `0.1.0` |
+| dropdown-element   | A dropdown element                                                            | `0.1.0` |
 | slider-element     | CSS only slider element to slide child elements                               | `0.4.3` |
 | transition-classes | An element that applies classes for various stages of a transition            | `0.1.0` |
 | tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
