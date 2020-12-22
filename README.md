@@ -58,7 +58,7 @@ Elements are divided into 3 categories.
 | lazy-src       |             | `0.2.0` |
 | scroll-to      |             | `0.1.0` |
 | scroll-to-top  |             | `0.1.0` |
-| sticky-element |             | `0.1.0` |
+| sticky-element |             | `0.2.0` |
 | svg-use        |             | `0.1.0` |
 
 <!-- Please move these up once they are implemented
