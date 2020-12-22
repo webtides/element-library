@@ -4,6 +4,7 @@ import style from './sticky-element.css';
 export default class StickyElement extends StyledElement {
 	height = 0;
 	lastScrollTop = 0;
+	resizeObserver = undefined;
 
 	constructor() {
 		super({ styles: [style] });
@@ -17,9 +18,17 @@ export default class StickyElement extends StyledElement {
 
 	connected() {
 		this.height = this.offsetHeight;
-		this.requestUpdate().then(() => {
-			this.calcCSSProperties();
-		});
+		this.calcCSSProperties();
+		try {
+			this.resizeObserver = new ResizeObserver(() => {
+				this.calcCSSProperties();
+			});
+			this.resizeObserver.observe(this);
+		} catch (e) {}
+	}
+
+	disconnected() {
+		if (this.resizeObserver) this.resizeObserver.disconnect();
 	}
 
 	events() {
