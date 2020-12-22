@@ -15,8 +15,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.2.0] - 2020-12-22
+
+### Fixed
+
+- Added `ResizeOberver` to listen for when the size of the `sticky-element` changes. With this it will now correctly calculate
+the height of the element even if it contains other custom elements that render after the connected callback. 
+
 ## [0.1.0] - 2020-07-07
 
 ### Added
 
--   initial release
+- initial release
