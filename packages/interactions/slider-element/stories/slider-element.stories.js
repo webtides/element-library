@@ -1,6 +1,7 @@
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
 import { define } from '@webtides/slider-element';
 define();
+import { defineElement, TemplateElement } from '@webtides/element-js';
 
 export default {
 	title: 'Interactions/SliderElement',
@@ -141,5 +142,58 @@ export const variableWidthEdgeFocusVariant = () => html`
 		<div class="item bg-red-700 p-4 h-64 w-1/2">7</div>
 		<div class="item bg-red-800 p-4 h-64 w-1/5" style="--snap-align: end;">8, end</div>
 		<div class="item bg-red-900 p-4 h-64 w-1/5">9</div>
+	</slider-element>
+`;
+
+class RenderingElement extends TemplateElement {
+	constructor() {
+		super({ shadowRender: false, deferUpdate: true });
+	}
+
+	properties() {
+		return {
+			index: 0,
+		};
+	}
+	connected() {
+		window.setTimeout(() => this.requestUpdate(), Math.random() * 1500);
+	}
+
+	template() {
+		return `<div style="min-width: 50px; width:${
+			100 + Math.random() * 300
+		}px; height: 150px; background-color: red;">${this.index}</div>`;
+	}
+}
+
+defineElement('rendering-element', RenderingElement);
+
+export const itemsToScrollRenderVariant = () => html`
+	<slider-element items-to-scroll="1" style="--snap-align: start;">
+		<rendering-element class="item mx-2 w-auto" index="1"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="2"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="3"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="4"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="5"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="6"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="7"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="8"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="9"></rendering-element>
+		<rendering-element class="item mx-2 w-auto" index="10"></rendering-element>
+	</slider-element>
+`;
+
+export const autoSelectVariant = () => html`
+	<slider-element items-to-scroll="1" auto-select="true" items-to-show="4">
+		<rendering-element class="item mx-2 " index="1"></rendering-element>
+		<rendering-element class="item mx-2 " index="2"></rendering-element>
+		<rendering-element class="item mx-2" index="3"></rendering-element>
+		<rendering-element class="item mx-2" index="4"></rendering-element>
+		<rendering-element class="item mx-2" index="5"></rendering-element>
+		<rendering-element class="item mx-2" index="6"></rendering-element>
+		<rendering-element class="item mx-2" index="7"></rendering-element>
+		<rendering-element class="item mx-2" index="8"></rendering-element>
+		<rendering-element class="item mx-2" index="9"></rendering-element>
+		<rendering-element class="item mx-2" index="10"></rendering-element>
 	</slider-element>
 `;

@@ -84,7 +84,9 @@ export default class SliderElement extends TemplateElement {
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const parent = this.$refs.scroller;
-			if (target.offsetLeft + target.offsetWidth <= parent.scrollLeft + parent.offsetWidth) {
+			const { marginLeft, marginRight } = getComputedStyle(target);
+			const targetWidth = target.offsetWidth + parseInt(marginLeft) + parseInt(marginRight);
+			if (target.offsetLeft + targetWidth <= parent.scrollLeft + parent.offsetWidth) {
 				// means is in bounds
 				this.next();
 				return;
@@ -100,8 +102,9 @@ export default class SliderElement extends TemplateElement {
 		if (this.autoSelect) {
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
+			const { marginLeft } = getComputedStyle(target);
 			const parent = this.$refs.scroller;
-			if (target.offsetLeft > parent.scrollLeft) {
+			if (target.offsetLeft - parseInt(marginLeft) > parent.scrollLeft) {
 				// means is still in viewport
 				this.previous();
 				return;

@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.5] - 2021-07-01
+
+### FIXED
+
+-   maximum call stack error on autoselect when using margins for spacing
+
+### Added
+
+-   stories for rendering slide items that wil get random dimensions after a timeout as a challenging test
+
 ## [0.4.4] - 2020-10-05
 
 ### Added
