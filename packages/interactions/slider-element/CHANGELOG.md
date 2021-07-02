@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.6] - 2021-07-02
+
+### Added
+
+-   adds initial check if initial scrollto is actually needed
+
 ## [0.4.5] - 2021-07-01
 
 ### FIXED

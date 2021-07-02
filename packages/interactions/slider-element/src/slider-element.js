@@ -38,8 +38,12 @@ export default class SliderElement extends TemplateElement {
 		this.#itemsCount = this.#items.length > 1 ? this.#items.length - 1 : 0;
 
 		this.style.setProperty('--item-width', `${100 / this.itemsToShow}%`);
-		//scroll to initial slide
-		this.requestUpdate().then(() => this.scrollToIndex(false));
+		this.requestUpdate().then(() => {
+			if (this.selectedIndex > 0) {
+				//scroll to initial slide if set
+				this.scrollToIndex(false);
+			}
+		});
 	}
 
 	events() {
