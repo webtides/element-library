@@ -8,8 +8,8 @@ export default class SliderElement extends TemplateElement {
 	#items = null;
 	#scrollToIndex = false;
 
-	constructor() {
-		super({ shadowRender: true, deferUpdate: true, adoptGlobalStyles: false, styles: [style] });
+	constructor(options) {
+		super({ shadowRender: true, deferUpdate: true, adoptGlobalStyles: false, styles: [style], ...options });
 	}
 
 	properties() {
@@ -34,16 +34,19 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	connected() {
-		this.#items = Array.from(this.querySelectorAll(this.itemSelector));
-		this.#itemsCount = this.#items.length > 1 ? this.#items.length - 1 : 0;
-
-		this.style.setProperty('--item-width', `${100 / this.itemsToShow}%`);
+		this.indexItems();
 		this.requestUpdate().then(() => {
 			if (this.selectedIndex > 0) {
 				//scroll to initial slide if set
 				this.scrollToIndex(false);
 			}
 		});
+	}
+
+	indexItems() {
+		this.#items = Array.from(this.querySelectorAll(this.itemSelector));
+		this.#itemsCount = this.#items.length > 1 ? this.#items.length - 1 : 0;
+		this.style.setProperty('--item-width', `${100 / this.itemsToShow}%`);
 	}
 
 	events() {

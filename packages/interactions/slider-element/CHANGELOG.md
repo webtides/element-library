@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.7] - 2021-07-02
+
+### Added
+
+-   constructor options to overwrite default
+-   public method to (re)index children as items
+
 ## [0.4.6] - 2021-07-02
 
 ### Added
