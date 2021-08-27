@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.8] - 2021-08-27
+
+### Fixed
+
+-   scrollToIndex flag was bever reset as there was an early return in scroll listener. This Bug broke manualScrollEnd callback which was never executed once a button was pressed.
+
 ## [0.4.7] - 2021-07-02
 
 ### Added

@@ -54,9 +54,6 @@ export default class SliderElement extends TemplateElement {
 			'.scroller': {
 				scroll: () => {
 					clearTimeout(this.#scrollTimer);
-					if (this.#scrollToIndex === true) {
-						return;
-					}
 					this.#scrollTimer = setTimeout(() => this.onManualScrollEnd(), 100);
 				},
 			},
@@ -156,19 +153,21 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	onManualScrollEnd() {
-		this.#scrollToIndex = false;
-		const scroller = this.$refs.scroller;
-		const scrollLeft = scroller.scrollLeft;
-		const scrollPercentage = scrollLeft / (scroller.scrollWidth - scroller.offsetWidth);
+		if (!this.#scrollToIndex) {
+			const scroller = this.$refs.scroller;
+			const scrollLeft = scroller.scrollLeft;
+			const scrollPercentage = scrollLeft / (scroller.scrollWidth - scroller.offsetWidth);
 
-		if (scrollPercentage === 0) {
-			this.selectedIndex = 0;
-		} else if (scrollPercentage === 1) {
-			this.selectedIndex = this.#itemsCount;
-		} else {
-			//aprox or guess selectedIndex to fix UI state
-			this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage);
+			if (scrollPercentage === 0) {
+				this.selectedIndex = 0;
+			} else if (scrollPercentage === 1) {
+				this.selectedIndex = this.#itemsCount;
+			} else {
+				//aprox or guess selectedIndex to fix UI state
+				this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage);
+			}
 		}
+		this.#scrollToIndex = false;
 	}
 
 	template() {
