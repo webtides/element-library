@@ -22,7 +22,7 @@ export default class SliderElement extends TemplateElement {
 			autoSelect: false,
 			dots: true,
 			arrows: true,
-			setIndexAfterResize: false,
+			setIndexAfterResize: true,
 			manualScrollEndDelay: 200,
 		};
 	}
@@ -42,7 +42,7 @@ export default class SliderElement extends TemplateElement {
 				//scroll to initial slide if set
 				this.scrollToIndex(false);
 			}
-			if (this.setIndexAfterResize === false) {
+			if (this.setIndexAfterResize) {
 				this.addResizeListener();
 			}
 		});
