@@ -92,7 +92,7 @@ export default class SliderElement extends TemplateElement {
 			const parent = this.$refs.scroller;
 			const { marginLeft, marginRight } = getComputedStyle(target);
 			const targetWidth = target.offsetWidth + parseInt(marginLeft) + parseInt(marginRight);
-			if (target.offsetLeft + targetWidth <= parent.scrollLeft + parent.offsetWidth) {
+			if (target.offsetLeft + targetWidth < parent.scrollLeft + parent.offsetWidth) {
 				// means is in bounds
 				this.next();
 				return;

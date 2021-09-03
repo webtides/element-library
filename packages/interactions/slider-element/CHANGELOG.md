@@ -15,7 +15,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
-## [0.4.9] - 2021-08-27
+## [0.4.10] - 2021-09-03
+
+### Fixed
+
+-   infintie loop on next & autoselect
+
+## [0.4.9] - 2021-09-02
 
 ### ADDED
 
