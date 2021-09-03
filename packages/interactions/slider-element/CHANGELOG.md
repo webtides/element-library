@@ -15,11 +15,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.9] - 2021-08-27
+
+### ADDED
+
+-   ResizeObserver to correct scroll positions after resize for Browsers with Scroll Snap Bugs (enabled by default)
+-   setIndexAfterResize Option to disable the above
+-   manualScrollEndDelay Option
+
+### CHANGED
+
+-   manualScrollEnd Default Delay from 100ms to 200ms to prevent races with smooth scrolling
+
+### Fixed
+
+-   Firefox / Safari Browser BUG after Layout SHIFT
+
 ## [0.4.8] - 2021-08-27
 
 ### Fixed
 
--   scrollToIndex flag was bever reset as there was an early return in scroll listener. This Bug broke manualScrollEnd callback which was never executed once a button was pressed.
+-   scrollToIndex flag was never reseted as there was an early return in scroll listener. This Bug broke manualScrollEnd callback which was never executed once a button was pressed.
 
 ## [0.4.7] - 2021-07-02
 
