@@ -22,6 +22,8 @@ export default class SliderElement extends TemplateElement {
 			autoSelect: false,
 			dots: true,
 			arrows: true,
+			setIndexAfterResize: false,
+			manualScrollEndDelay: 200,
 		};
 	}
 
@@ -40,6 +42,9 @@ export default class SliderElement extends TemplateElement {
 				//scroll to initial slide if set
 				this.scrollToIndex(false);
 			}
+			if (this.setIndexAfterResize === false) {
+				this.addResizeListener();
+			}
 		});
 	}
 
@@ -52,10 +57,7 @@ export default class SliderElement extends TemplateElement {
 	events() {
 		return {
 			'.scroller': {
-				scroll: () => {
-					clearTimeout(this.#scrollTimer);
-					this.#scrollTimer = setTimeout(() => this.onManualScrollEnd(), 100);
-				},
+				scroll: () => this.startScrollEndTimer(),
 			},
 			'.dot': {
 				click: (e) => {
@@ -125,6 +127,11 @@ export default class SliderElement extends TemplateElement {
 		}
 	}
 
+	startScrollEndTimer() {
+		clearTimeout(this.#scrollTimer);
+		this.#scrollTimer = setTimeout(() => this.onManualScrollEnd(), this.manualScrollEndDelay);
+	}
+
 	scrollToIndex(smooth = true) {
 		if (!this.$refs.scroller) {
 			//external call before render
@@ -132,6 +139,8 @@ export default class SliderElement extends TemplateElement {
 		}
 		if (smooth) {
 			this.#scrollToIndex = true;
+			// start timer just in case the slider is not scrolling add all
+			this.startScrollEndTimer();
 		}
 		const target = this.#items[this.selectedIndex];
 		const parent = this.$refs.scroller;
@@ -168,6 +177,23 @@ export default class SliderElement extends TemplateElement {
 			}
 		}
 		this.#scrollToIndex = false;
+	}
+
+	addResizeListener() {
+		try {
+			const resizeObserver = new ResizeObserver(() => {
+				/*
+				 * https://web.dev/snap-after-layout/
+				 * this codes attempts to fix scrollsnap Position after layout changes
+				 * */
+				this.#scrollToIndex = true;
+				this.scrollToIndex(false);
+				this.startScrollEndTimer();
+			});
+			resizeObserver.observe(this);
+		} catch (e) {
+			/* no ResizeOberserver no fix */
+		}
 	}
 
 	template() {
