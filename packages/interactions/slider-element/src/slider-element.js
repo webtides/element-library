@@ -139,7 +139,7 @@ export default class SliderElement extends TemplateElement {
 		}
 		if (smooth) {
 			this.#scrollToIndex = true;
-			// start timer just in case the slider is not scrolling add all
+			// start timer just in case the slider is not scrolling at all
 			this.startScrollEndTimer();
 		}
 		const target = this.#items[this.selectedIndex];
