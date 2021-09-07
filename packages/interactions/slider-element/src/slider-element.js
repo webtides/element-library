@@ -187,6 +187,7 @@ export default class SliderElement extends TemplateElement {
 				 * this codes attempts to fix scrollsnap Position after layout changes
 				 * */
 				this.#scrollToIndex = true;
+				this.dispatch(SliderElementEvents.SLIDER_RESIZE, this.selectedIndex);
 				this.scrollToIndex(false);
 				this.startScrollEndTimer();
 			});

@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.11] - 2021-09-07
+
+### ADDED
+
+-   Resize Event for better Observation
+
 ## [0.4.10] - 2021-09-03
 
 ### Fixed
