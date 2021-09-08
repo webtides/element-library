@@ -27,6 +27,10 @@ export default class SliderElement extends TemplateElement {
 		};
 	}
 
+	get canSlide() {
+		return this.$refs.scroller.scrollWidth > this.$refs.scroller.offsetWidth;
+	}
+
 	get canSlideLeft() {
 		return this.selectedIndex > 0;
 	}
@@ -86,7 +90,7 @@ export default class SliderElement extends TemplateElement {
 	next() {
 		const newIndex = this.selectedIndex + this.itemsToScroll;
 		this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
-		if (this.autoSelect) {
+		if (this.autoSelect && this.canSlide) {
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const parent = this.$refs.scroller;
@@ -105,7 +109,7 @@ export default class SliderElement extends TemplateElement {
 		const newIndex = this.selectedIndex - this.itemsToScroll;
 		this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
 
-		if (this.autoSelect) {
+		if (this.autoSelect && this.canSlide) {
 			//check if element is already visible
 			const target = this.#items[this.selectedIndex];
 			const { marginLeft } = getComputedStyle(target);

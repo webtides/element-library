@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.12] - 2021-09-08
+
+### ADDED
+
+-   canSlide getter
+
+### Fixed
+
+-   next() could cause an infinite loop if auoselect was on and the slider had no overflow
+
 ## [0.4.11] - 2021-09-07
 
 ### ADDED
