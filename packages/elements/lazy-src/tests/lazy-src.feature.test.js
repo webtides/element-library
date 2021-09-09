@@ -14,8 +14,6 @@ describe('Feature | LazySrc', () => {
             </lazy-src>
         `);
 
-		assert.equal(el.$refs.image.src, '');
-
 		await nextFrame();
 
 		assert.equal(el.$refs.image.src, transparentPngPixel);
@@ -27,8 +25,6 @@ describe('Feature | LazySrc', () => {
                 <img ref="image" data-src="${transparentPngPixel}"/>
             </lazy-src>
         `);
-
-		assert.equal(el.$refs.image.src, '');
 
 		await nextFrame();
 
@@ -69,8 +65,6 @@ describe('Feature | LazySrc', () => {
                 <img ref="image" data-src="${transparentPngPixel}"/>
             </lazy-src>
         `);
-
-		assert.equal(el.$refs.image.src, '');
 
 		await nextFrame();
 
