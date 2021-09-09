@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.13] - 2021-09-09
+
+### Fixed
+
+-   canSlide getter was throwing error when called before first update
+
 ## [0.4.12] - 2021-09-08
 
 ### ADDED

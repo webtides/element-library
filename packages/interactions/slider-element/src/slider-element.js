@@ -28,6 +28,9 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	get canSlide() {
+		if (!this.$refs.scroller) {
+			return false;
+		}
 		return this.$refs.scroller.scrollWidth > this.$refs.scroller.offsetWidth;
 	}
 
