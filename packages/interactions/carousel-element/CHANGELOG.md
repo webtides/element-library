@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.1.3] - 2020-10-09
+
+### FIXED
+
+-   fix glide dependecy
+
 ## [0.1.2] - 2020-10-09
 
 ### Added
