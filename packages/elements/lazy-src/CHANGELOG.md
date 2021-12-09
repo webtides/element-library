@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## 0.2.1 (2021-12-9)
+
+<!-- ### Added -->
+
+api getter to return lozad instance
+
 ## 0.2.0 (2020-03-15)
 
 <!-- ### Added -->

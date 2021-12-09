@@ -71,6 +71,17 @@ describe('Feature | LazySrc', () => {
 		assert.equal(el.$refs.image.src, transparentPngPixel);
 	});
 
+	it('getter returns api', async () => {
+		const el = await fixture(`
+            <lazy-src>
+                <img ref="image" data-src="${transparentPngPixel}"/>
+            </lazy-src>
+        `);
+		await nextFrame();
+		const api = el.api;
+		assert.ok(api);
+	});
+
 	it('lazy loads picture elements by adding an img element to the picture', async () => {
 		const el = await fixture(`
             <lazy-src>

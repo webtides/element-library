@@ -35,6 +35,10 @@ export default class LazySrc extends BaseElement {
 		this.#observer.observe();
 	}
 
+	get api() {
+		return this.#observer;
+	}
+
 	afterIntersection(target) {
 		this.dispatch(Events.LOAD, this, true);
 		this.loaded = true;
