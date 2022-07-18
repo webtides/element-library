@@ -3,9 +3,9 @@ import SliderElementEvents from './SliderElementEvents';
 import style from './slider-element.css';
 
 export default class SliderElement extends TemplateElement {
-	#itemsCount = 0;
+	itemsCount = 0;
 	#scrollTimer = null;
-	#items = null;
+	items = null;
 	#scrollToIndex = false;
 
 	constructor(options) {
@@ -39,7 +39,7 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	get canSlideRight() {
-		return this.selectedIndex < this.#itemsCount;
+		return this.selectedIndex < this.itemsCount;
 	}
 
 	connected() {
@@ -56,8 +56,8 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	indexItems() {
-		this.#items = Array.from(this.querySelectorAll(this.itemSelector));
-		this.#itemsCount = this.#items.length > 1 ? this.#items.length - 1 : 0;
+		this.items = Array.from(this.querySelectorAll(this.itemSelector));
+		this.itemsCount = this.items.length > 1 ? this.items.length - 1 : 0;
 		this.style.setProperty('--item-width', `${100 / this.itemsToShow}%`);
 	}
 
@@ -92,10 +92,10 @@ export default class SliderElement extends TemplateElement {
 
 	next() {
 		const newIndex = this.selectedIndex + this.itemsToScroll;
-		this.selectedIndex = this.rewind && newIndex > this.#itemsCount ? 0 : Math.min(this.#itemsCount, newIndex);
+		this.selectedIndex = this.rewind && newIndex > this.itemsCount ? 0 : Math.min(this.itemsCount, newIndex);
 		if (this.autoSelect && this.canSlide) {
 			//check if element is already visible
-			const target = this.#items[this.selectedIndex];
+			const target = this.items[this.selectedIndex];
 			const parent = this.$refs.scroller;
 			const { marginLeft, marginRight } = getComputedStyle(target);
 			const targetWidth = target.offsetWidth + parseInt(marginLeft) + parseInt(marginRight);
@@ -110,11 +110,11 @@ export default class SliderElement extends TemplateElement {
 
 	previous() {
 		const newIndex = this.selectedIndex - this.itemsToScroll;
-		this.selectedIndex = this.rewind && newIndex < 0 ? this.#itemsCount : Math.max(newIndex, 0);
+		this.selectedIndex = this.rewind && newIndex < 0 ? this.itemsCount : Math.max(newIndex, 0);
 
 		if (this.autoSelect && this.canSlide) {
 			//check if element is already visible
-			const target = this.#items[this.selectedIndex];
+			const target = this.items[this.selectedIndex];
 			const { marginLeft } = getComputedStyle(target);
 			const parent = this.$refs.scroller;
 			if (target.offsetLeft - parseInt(marginLeft) > parent.scrollLeft) {
@@ -149,7 +149,7 @@ export default class SliderElement extends TemplateElement {
 			// start timer just in case the slider is not scrolling at all
 			this.startScrollEndTimer();
 		}
-		const target = this.#items[this.selectedIndex];
+		const target = this.items[this.selectedIndex];
 		const parent = this.$refs.scroller;
 		const parentWidth = parent.offsetWidth;
 
@@ -177,10 +177,10 @@ export default class SliderElement extends TemplateElement {
 			if (scrollPercentage === 0) {
 				this.selectedIndex = 0;
 			} else if (scrollPercentage === 1) {
-				this.selectedIndex = this.#itemsCount;
+				this.selectedIndex = this.itemsCount;
 			} else {
 				//aprox or guess selectedIndex to fix UI state
-				this.selectedIndex = Math.ceil(this.#itemsCount * scrollPercentage);
+				this.selectedIndex = Math.ceil(this.itemsCount * scrollPercentage);
 			}
 		}
 		this.#scrollToIndex = false;
@@ -215,7 +215,7 @@ export default class SliderElement extends TemplateElement {
 	}
 
 	dotsTemplate() {
-		return this.#items.map((item, index) => {
+		return this.items.map((item, index) => {
 			return html`
 				<button
 					part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}"
