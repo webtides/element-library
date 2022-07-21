@@ -21,5 +21,6 @@ import '@webtides/carousel-element';
     <div>1</div>
     <div>2</div>
     <div>3</li>
+    <div>4</li>
 </carousel-element>
 ```
