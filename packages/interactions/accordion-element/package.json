@@ -31,7 +31,7 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@webtides/element-js": "0.3.0"
+		"@webtides/element-js": "0.4.3"
 	},
 	"devDependencies": {
 		"@open-wc/demoing-storybook": "^1.13.3",

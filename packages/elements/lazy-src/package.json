@@ -35,7 +35,7 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@webtides/element-js": "0.3.0",
+		"@webtides/element-js": "0.4.3",
 		"lozad": "^1.15.0"
 	},
 	"devDependencies": {

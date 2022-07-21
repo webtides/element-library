@@ -31,7 +31,7 @@
 		"*.js"
 	],
 	"dependencies": {
-		"@webtides/element-js": "0.3.0",
+		"@webtides/element-js": "0.4.3",
 		"@webtides/accordion-element": "0.1.0"
 	},
 	"devDependencies": {
