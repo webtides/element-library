@@ -1,6 +1,6 @@
 {
 	"name": "@webtides/transition-classes",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "An element that applies classes for various stages of a transition",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",

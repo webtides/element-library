@@ -1,6 +1,6 @@
 {
   "name": "@webtides/tab-group",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A tab group wraps a list of tab-links and tab-panels and shows one at a time",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",

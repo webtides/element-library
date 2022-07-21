@@ -1,6 +1,6 @@
 {
   "name": "@webtides/tab-link",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A link that serves as a label for one of the tab panels to display that panel",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",

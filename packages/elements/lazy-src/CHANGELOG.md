@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## 0.2.2 (2021-07-21)
+
+### Changed
+
+update element-js version
+
 ## 0.2.1 (2021-12-9)
 
 <!-- ### Added -->

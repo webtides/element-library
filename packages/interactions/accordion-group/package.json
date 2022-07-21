@@ -1,6 +1,6 @@
 {
 	"name": "@webtides/accordion-group",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "An element that group accordion-elements where only one is shown at a time",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",

@@ -1,6 +1,6 @@
 {
 	"name": "@webtides/scroll-to-top",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "An element that enables you to smoothly scroll back to top",
 	"author": "@webtides",
 	"homepage": "https://github.com/webtides/element-library",

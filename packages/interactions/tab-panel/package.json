@@ -1,6 +1,6 @@
 {
   "name": "@webtides/tab-panel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The element that contains the content associated with a tab",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",

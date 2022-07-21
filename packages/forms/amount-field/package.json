@@ -1,6 +1,6 @@
 {
   "name": "@webtides/amount-field",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An element ads plus and minus buttons to an input[type=number]",
   "author": "@webtides",
   "homepage": "https://github.com/webtides/element-library",
