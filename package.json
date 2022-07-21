@@ -18,7 +18,7 @@
 		"packages/interactions/*"
 	],
 	"dependencies": {
-		"@webtides/element-js": "0.3.0"
+		"@webtides/element-js": "0.4.3"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.10.4",

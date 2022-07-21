@@ -3372,17 +3372,10 @@
   resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.4.3.tgz#384f4f6d54563ba465fb4df21fe89e78a76fc530"
   integrity sha512-cV4+sAmshf8ysU2USutrSRYQkJzEYKHsRCGa0CkMElGpG5747VHtkfsW3NdVIBV/m2MDKXTDydT4lkrysH7IFA==
 
-"@webtides/element-js@0.2.0":
-  version "0.2.0"
-  resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.2.0/87733784b3d7a9183d35120c840365b707b34effd6b601b1adbe565b6955532c#bdc216c5f8b61230873bc2c77eef5665f012d4ca"
-  integrity sha512-TmUqR30ylaTXSo+L1FY7NsgJOYd95V1XXJzJp4/cJNlj47i+qkrQQmLy1mIMZ1yJJ8m83kdUJfn5tg765F4TRQ==
-  dependencies:
-    lit-html "^1.2.1"
-
-"@webtides/element-js@0.3.0":
-  version "0.3.0"
-  resolved "https://npm.pkg.github.com/download/@webtides/element-js/0.3.0/7c263fcd17e7fdf6eb4ea59c529a2fb1426a00072efa8b9b710e1805e641323b#3d0046c3d6e83b9361c00b62c42b73e4d8f36077"
-  integrity sha512-1xPTNEfuSLocT5G6boLjJC6y9LZyggsA147WJszWN/E5Es5pGtLG8ruzagZZy+NcF2sHJWh/ThOoKhDBi0D2Og==
+"@webtides/element-js@0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@webtides/element-js/-/element-js-0.4.3.tgz#18f492569aef260f41a69b1ae69c337ef934ad2b"
+  integrity sha512-+z3eosEsTCT14kPHMEgaXTy+F07qZN13QrkZCvAaoxEgQ9op13++k70XGms5piK1kblXHngerX4K586q53KRVw==
   dependencies:
     lit-html "^1.2.1"
 
