@@ -15,11 +15,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.15] - 2022-07-21
+
+### Changed
+
+-   update element-js
+
 ## [0.4.14] - 2022-07-18
 
 ### Changed
 
--   mak private fields #items & #itemsCount public
+-   make private fields #items & #itemsCount public
 
 ## [0.4.13] - 2021-09-09
 
