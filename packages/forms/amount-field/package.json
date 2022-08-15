@@ -32,7 +32,7 @@
   ],
   "dependencies": {
   	"@webtides/element-js": "0.4.3",
-    "@webtides/form-field": "^0.1.0"
+    "@webtides/form-field": "^0.1.1"
   },
   "devDependencies": {
     "@open-wc/demoing-storybook": "^1.13.3",
