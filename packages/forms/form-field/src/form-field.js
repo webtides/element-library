@@ -8,14 +8,10 @@ export default class FormField extends TemplateElement {
 		super({ shadowRender: false, styles: [style], ...options });
 	}
 
-	hooks() {
-		return {
-			connected: () => {
-				if (!!this.$refs.input.value || this.valid === false) {
-					this.touched = true;
-				}
-			},
-		};
+	connected() {
+		if (!!this.$refs.input.value || this.valid === false) {
+			this.touched = true;
+		}
 	}
 
 	properties() {

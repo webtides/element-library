@@ -17,13 +17,8 @@ export default class CheckboxField extends FormField {
 			checked: false,
 		};
 	}
-
-	hooks() {
-		return {
-			connected: () => {
-				this.setAttribute('checked', this.checked === true ? 'true' : 'false');
-			},
-		};
+	connected() {
+		this.setAttribute('checked', this.checked === true ? 'true' : 'false');
 	}
 
 	watch() {
