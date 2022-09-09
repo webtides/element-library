@@ -5,18 +5,9 @@
 	"main": "index.js",
 	"module": "index.js",
 	"repository": "https://github.com/webtides/element-library",
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/",
-		"access": "restricted"
-	},
 	"author": "@webtides",
 	"license": "MIT",
 	"private": true,
-	"workspaces": [
-		"packages/elements/*",
-		"packages/forms/*",
-		"packages/interactions/*"
-	],
 	"dependencies": {
 		"@webtides/element-js": "0.4.3"
 	},
@@ -60,7 +51,6 @@
 	},
 	"scripts": {
 		"make:element": "hygen make element",
-		"lerna:publish": "lerna publish from-package",
 		"storybook": "start-storybook -p 9001",
 		"storybook:build": "build-storybook -o docs-build",
 		"lint": "eslint ./packages/**/*.js && stylelint ./packages/**/*.css",

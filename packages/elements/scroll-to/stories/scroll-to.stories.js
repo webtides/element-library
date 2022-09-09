@@ -1,5 +1,5 @@
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '@webtides/scroll-to';
+import { define } from '../src/scroll-to.js';
 define();
 
 export default {

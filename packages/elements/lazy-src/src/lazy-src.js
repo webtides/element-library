@@ -66,4 +66,4 @@ export function define() {
 	defineElement('lazy-src', LazySrc);
 }
 
-export { Events };
+export { LazySrc, Events };

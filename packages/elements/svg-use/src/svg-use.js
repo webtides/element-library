@@ -24,6 +24,7 @@ export default class SvgUse extends TemplateElement {
 	}
 }
 
+export { SvgUse };
 export function define() {
 	defineElement('svg-use', SvgUse);
 }

@@ -1,5 +1,5 @@
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '@webtides/svg-use';
+import { define } from '../src/svg-use';
 define();
 
 export default {

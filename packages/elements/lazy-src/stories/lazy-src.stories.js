@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '@webtides/lazy-src';
+import { define } from '../src/lazy-src.js';
 define();
 
 export default {
