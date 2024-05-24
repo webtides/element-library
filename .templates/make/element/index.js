@@ -3,7 +3,7 @@ const packages = ['elements', 'forms', 'interactions'];
 function dashToCamel(string) {
     if (string.indexOf('-') === -1) return string;
 
-    return string.replace(/-[a-z]/g, matches => matches[1].toUpperCase());
+    return string.replace(/-[a-z]/g, (matches) => matches[1].toUpperCase());
 }
 
 function camelToDash(string) {
@@ -18,7 +18,7 @@ function capitalize(string) {
 
 function makeElementName(string) {
     const name = camelToDash(string);
-    return name.includes('-') ? name : `${name}-element` ;
+    return name.includes('-') ? name : `${name}-element`;
 }
 
 function makeClassName(string) {
@@ -32,7 +32,11 @@ module.exports = {
     // },
     prompt: ({ prompter, args }) => {
         if (args.name && packages.includes(args.package)) {
-            return { packageName: args.package, elementName: makeElementName(args.name), className: makeClassName(args.name) };
+            return {
+                packageName: args.package,
+                elementName: makeElementName(args.name),
+                className: makeClassName(args.name),
+            };
         }
 
         if (args.name && !packages.includes(args.package)) {
@@ -43,8 +47,12 @@ module.exports = {
                     message: 'What package does the element belong to?',
                     choices: packages,
                 })
-                .then(args => {
-                    return { packageName: args.package, elementName: makeElementName(args.name), className: makeClassName(args.name) };
+                .then((args) => {
+                    return {
+                        packageName: args.package,
+                        elementName: makeElementName(args.name),
+                        className: makeClassName(args.name),
+                    };
                 });
         }
 
@@ -55,8 +63,12 @@ module.exports = {
                     name: 'name',
                     message: 'What is the name of the element?',
                 })
-                .then(result => {
-                    return { packageName: args.package, elementName: makeElementName(result.name), className: makeClassName(result.name) };
+                .then((result) => {
+                    return {
+                        packageName: args.package,
+                        elementName: makeElementName(result.name),
+                        className: makeClassName(result.name),
+                    };
                 });
         }
 
@@ -67,7 +79,7 @@ module.exports = {
                     name: 'name',
                     message: 'What is the name of the element?',
                 })
-                .then(inputResult => {
+                .then((inputResult) => {
                     return prompter
                         .prompt({
                             type: 'select',
@@ -75,8 +87,12 @@ module.exports = {
                             message: 'What package does the element belong to?',
                             choices: packages,
                         })
-                        .then(selectResult => {
-                            return { packageName: selectResult.package, elementName: makeElementName(inputResult.name), className: makeClassName(inputResult.name) };
+                        .then((selectResult) => {
+                            return {
+                                packageName: selectResult.package,
+                                elementName: makeElementName(inputResult.name),
+                                className: makeClassName(inputResult.name),
+                            };
                         });
                 });
         }

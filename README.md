@@ -1,6 +1,6 @@
 # element-library
 
-> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release. Until then, we would encourage everyone to use pinned versions for any package and not rely on semantic versioning.
+> IMPORTANT: The elements are work in progress and subject to major (& breaking) changes until the 1.0 release. Until then, we would encourage everyone to use pinned versions and not rely on semantic versioning.
 
 A set of web components built with `@webtides/element-js`
 
@@ -12,11 +12,7 @@ A set of web components built with `@webtides/element-js`
 
 See our [live Storybook](https://webtides.github.io/element-library) to preview examples of all our elements.
 
-## Elements
-
-Elements are divided into 3 categories.
-
-### Interactions
+## Components
 
 | Package            | Description                                                                   | Version |
 | ------------------ | ----------------------------------------------------------------------------- | ------- |
@@ -29,6 +25,15 @@ Elements are divided into 3 categories.
 | tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
 | tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
 | tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
+| lazy-src           |                                                                               | `0.2.0` |
+| scroll-to          |                                                                               | `0.1.0` |
+| scroll-to-top      |                                                                               | `0.1.0` |
+| sticky-element     |                                                                               | `0.2.0` |
+| svg-use            |                                                                               | `0.1.0` |
+| checkbox-field     |                                                                               | `0.1.1` |
+| form-field         |                                                                               | `0.1.0` |
+| input-field        |                                                                               | `0.1.0` |
+| textarea-field     |                                                                               | `0.1.0` |
 
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |
@@ -49,19 +54,6 @@ Elements are divided into 3 categories.
 | rich-text            |                                                 | TBD  |
 | code-block           |                                                 | TBD  |
 | spread-sheet         |                                                 | TBD  |
--->
-
-### Elements
-
-| Package        | Description | Version |
-| -------------- | ----------- | ------- |
-| lazy-src       |             | `0.2.0` |
-| scroll-to      |             | `0.1.0` |
-| scroll-to-top  |             | `0.1.0` |
-| sticky-element |             | `0.2.0` |
-| svg-use        |             | `0.1.0` |
-
-<!-- Please move these up once they are implemented
 | line-through       |               | TBD |
 | divider-element ?! |               | TBD |
 | scroll-entrance    |               | TBD |
@@ -72,18 +64,6 @@ Elements are divided into 3 categories.
 | compare-images     |               | TBD |
 | text-highlight     |               | TBD |
 | tooltip-element    | Popover ?!    | TBD |
--->
-
-### Form Fields
-
-| Package        | Description | Version |
-| -------------- | ----------- | ------- |
-| checkbox-field |             | `0.1.1` |
-| form-field     |             | `0.1.0` |
-| input-field    |             | `0.1.0` |
-| textarea-field |             | `0.1.0` |
-
-<!-- Please move these up once they are implemented
 | password-field     |             | TBD  |
 | radio-field        |             | TBD  |
 | switch-field       |             | TBD  |
