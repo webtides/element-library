@@ -7,6 +7,14 @@ export default {
     title: 'Components/InputField',
     component: 'el-input-field',
     tags: ['autodocs'],
+    parameters: {
+        docs: {
+            description: {
+                component:
+                    'The InputField wraps the native `input` form field and includes lots of boilerplate like label, error messages and validation',
+            },
+        },
+    },
     args: {
         name: 'name',
         value: '',
@@ -26,10 +34,15 @@ export default {
     },
 };
 
-export const inputFieldDefault = {
-    name: 'default',
-    description: 'Set the placement attribute to top to show the tooltip on top from the element.',
-    parameters: {},
+export const inputField = {
+    name: 'Input Field',
+    parameters: {
+        docs: {
+            description: {
+                story: 'Set the placement attribute to top to show the tooltip on top from the element.',
+            },
+        },
+    },
     decorators: [],
     render: ({ name, type, value, placeholder, required, disabled, label, helpMessage, errorMessage }) => html`
         <el-input-field
@@ -46,10 +59,15 @@ export const inputFieldDefault = {
     `,
 };
 
-export const inputFieldBrowser = {
-    name: 'browser',
-    description: 'Set the placement attribute to top to show the tooltip on top from the element.',
-    parameters: {},
+export const browserInputField = {
+    name: 'Vanilla input field',
+    parameters: {
+        docs: {
+            description: {
+                story: 'This is the regular simple vanilla `input` field for comparison',
+            },
+        },
+    },
     decorators: [],
-    render: ({ content }) => html`<input type="text" />`,
+    render: ({ label, placeholder }) => html`<label>${label}<br><input type="text" placeholder="${placeholder}" /></label>`,
 };
