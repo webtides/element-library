@@ -24,7 +24,6 @@ export default css`
 
         .message {
             font-size: 14px;
-            color: gray;
 
             &.error-message {
                 color: red;
