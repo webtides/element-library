@@ -3,3 +3,5 @@ node_modules/
 # public directory
 dist/*
 docs-build
+
+*storybook.log

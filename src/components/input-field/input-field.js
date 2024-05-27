@@ -28,8 +28,10 @@ export default class InputField extends FormField {
                 placeholder="${this.placeholder}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
-                aria-describedby="${this.name}-help"
                 pattern=${this.pattern ? this.pattern : '[sS]*'}
+                aria-describedby="${this.name}-help-message"
+                aria-invalid="${this.valid ? 'false' : 'true'}"
+                aria-errormessage="${this.name}-error-message"
             />
             ${when(
                 this.touched,
@@ -48,5 +50,5 @@ export default class InputField extends FormField {
 }
 
 export function define() {
-    defineElement('input-field', InputField);
+    defineElement('el-input-field', InputField);
 }

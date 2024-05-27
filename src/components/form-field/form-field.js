@@ -1,7 +1,7 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
-import { classMap } from 'lit-html/directives/class-map.js';
+import { classMap } from '@webtides/element-js/src/dom-parts/directives.js';
 import FormFieldEvents from './form-fields.events';
-import style from './form-field.css';
+import style from './form-field.style.js';
 
 export default class FormField extends TemplateElement {
     constructor(options) {
@@ -56,7 +56,7 @@ export default class FormField extends TemplateElement {
                 },
                 change: () => {
                     this.onChange();
-                    this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value, true);
+                    this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value);
                 },
             },
             '.is-invalid': {
@@ -104,9 +104,9 @@ export default class FormField extends TemplateElement {
 
     template() {
         return html`
-            ${this.labelTemplate()}
+            ${this.labelTemplate()} ${this.helpTemplate()}
             <div class="field ${this.classes().field}">${this.fieldTemplate()}</div>
-            ${this.helpTemplate()} ${this.errorTemplate()}
+            ${this.errorTemplate()}
         `;
     }
 
@@ -122,20 +122,18 @@ export default class FormField extends TemplateElement {
     }
 
     helpTemplate() {
-        if (!(this.helpMessage && (!this.touched || this.valid))) return null;
-
-        return html` <span id="${this.name}-help" class="message help-message">${this.helpMessage}</span> `;
+        return html` <span id="${this.name}-help-message" class="message help-message">${this.helpMessage}</span> `;
     }
 
     errorTemplate() {
         if (!(this.touched && this.errorMessage && !this.valid)) return null;
 
-        return html` <span id="${this.name}-help" class="message error-message">${this.errorMessage}</span> `;
+        return html` <span id="${this.name}-error-message" class="message error-message">${this.errorMessage}</span> `;
     }
 }
 
 export function define() {
-    defineElement('form-field', FormField);
+    defineElement('el-form-field', FormField);
 }
 
 export { FormField, FormFieldEvents };
