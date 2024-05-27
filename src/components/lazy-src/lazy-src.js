@@ -63,7 +63,7 @@ export default class LazySrc extends BaseElement {
 }
 
 export function define() {
-    defineElement('lazy-src', LazySrc);
+    defineElement('el-lazy-src', LazySrc);
 }
 
 export { Events };
