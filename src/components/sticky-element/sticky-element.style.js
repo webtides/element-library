@@ -1,0 +1,21 @@
+const css = String.raw;
+
+export default css`
+    el-sticky-element {
+        position: sticky;
+        display: block;
+        transition: transform 0.3s ease;
+
+        --sticky-height: 100%;
+
+        &.is-sticky {
+            &.is-up:not([force-down]) {
+                transform: translateY(-100%);
+            }
+
+            &.is-down {
+                transform: translateY(calc(-100% + var(--sticky-height)));
+            }
+        }
+    }
+`;

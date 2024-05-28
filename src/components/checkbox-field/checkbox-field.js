@@ -1,8 +1,7 @@
 import { html, defineElement } from '@webtides/element-js';
-import FormField, { FormFieldEvents } from '@webtides/form-field';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-import { classMap } from 'lit-html/directives/class-map';
-import style from './checkbox-field.css';
+import { classMap, unsafeHTML } from '@webtides/element-js/src/dom-parts/directives.js';
+import FormField, { FormFieldEvents } from '../form-field/form-field.js';
+import style from './checkbox-field.style.js';
 
 export default class CheckboxField extends FormField {
     uuid = Math.random().toString(36).substr(2, 5);
@@ -69,5 +68,5 @@ export default class CheckboxField extends FormField {
 }
 
 export function define() {
-    defineElement('checkbox-field', CheckboxField);
+    defineElement('el-checkbox-field', CheckboxField);
 }

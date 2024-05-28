@@ -1,5 +1,5 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
-import style from './dropdown-element.css';
+import style from './dropdown-element.style.js';
 
 export default class DropdownElement extends TemplateElement {
     constructor() {
@@ -61,5 +61,5 @@ export default class DropdownElement extends TemplateElement {
 }
 
 export function define() {
-    defineElement('dropdown-element', DropdownElement);
+    defineElement('el-dropdown-element', DropdownElement);
 }

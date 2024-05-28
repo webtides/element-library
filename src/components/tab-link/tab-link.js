@@ -1,5 +1,5 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
-import style from './tab-link.css';
+import style from './tab-link.style.js';
 
 export default class TabLink extends StyledElement {
     constructor() {
@@ -27,5 +27,5 @@ export default class TabLink extends StyledElement {
 }
 
 export function define() {
-    defineElement('tab-link', TabLink);
+    defineElement('el-tab-link', TabLink);
 }

@@ -1,5 +1,5 @@
 import { TemplateElement, defineElement } from '@webtides/element-js';
-import style from './svg-use.css';
+import style from './svg-use.style.js';
 
 // TODO: think about setting spritePath globally ?!
 
@@ -18,12 +18,12 @@ export default class SvgUse extends TemplateElement {
     template() {
         return `
             <svg>
-                <use xlink:href="${this.spritePath}#${this.name}"></use>
+                <use href="${this.spritePath}#${this.name}"></use>
             </svg>
         `;
     }
 }
 
 export function define() {
-    defineElement('svg-use', SvgUse);
+    defineElement('el-svg-use', SvgUse);
 }

@@ -1,6 +1,6 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import SliderElementEvents from './SliderElementEvents';
-import style from './slider-element.css';
+import style from './slider-element.style.js';
 
 export default class SliderElement extends TemplateElement {
     itemsCount = 0;
@@ -250,7 +250,7 @@ export default class SliderElement extends TemplateElement {
 }
 
 export function define() {
-    defineElement('slider-element', SliderElement);
+    defineElement('el-slider-element', SliderElement);
 }
 
 export { html, defineElement, SliderElementEvents };

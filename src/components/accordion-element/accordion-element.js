@@ -1,5 +1,5 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
-import style from './accordion-element.css';
+import style from './accordion-element.style.js';
 import Events from './accordion-element.events';
 
 export default class AccordionElement extends TemplateElement {
@@ -87,7 +87,7 @@ export default class AccordionElement extends TemplateElement {
 }
 
 export function define() {
-    defineElement('accordion-element', AccordionElement);
+    defineElement('el-accordion-element', AccordionElement);
 }
 
 export { html, defineElement, Events };

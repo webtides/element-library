@@ -1,14 +1,36 @@
-import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '../src/amount-field';
+const html = String.raw;
+import readme from './amount-field.readme.md?raw';
+import { define } from './amount-field.js';
 define();
 
 export default {
-    title: 'Form Fields/AmountField',
-    component: 'amount-field',
+    title: 'Components/AmountField',
+    component: 'el-amount-field',
+    tags: ['autodocs'],
+    parameters: {
+        docs: {
+            description: {
+                component: readme,
+            },
+        },
+    },
+    args: {
+        value: 0,
+        min: Number.MIN_VALUE,
+        max: Number.MAX_VALUE,
+    },
 };
 
-export const amountComponent = () => html` <amount-field></amount-field> `;
-export const valueComponent = () => html` <amount-field value="5"></amount-field> `;
-export const maxComponent = () => html` <amount-field value="5" max="6"></amount-field> `;
-export const minMaxComponent = () => html` <amount-field min="2" value="5" max="6"></amount-field> `;
-export const noLimitComponent = () => html` <amount-field min="false" max="false"></amount-field> `;
+export const AmountField = {
+    name: 'AmountField',
+    parameters: {
+        docs: {
+            description: {
+                story: 'enables you to...',
+            },
+        },
+    },
+    decorators: [],
+    render: ({ value, min, max }) =>
+        html`<el-amount-field value="${value}" min="${min}" max="${max}"></el-amount-field>`,
+};

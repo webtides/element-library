@@ -1,5 +1,5 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
-import style from './sticky-element.css';
+import style from './sticky-element.style.js';
 
 export default class StickyElement extends StyledElement {
     height = 0;
@@ -76,5 +76,5 @@ export default class StickyElement extends StyledElement {
 }
 
 export function define() {
-    defineElement('sticky-element', StickyElement);
+    defineElement('el-sticky-element', StickyElement);
 }

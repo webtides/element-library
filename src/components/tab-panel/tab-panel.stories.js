@@ -1,10 +1,30 @@
-import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '@webtides/tab-panel';
+const html = String.raw;
+import readme from './tab-panel.readme.md?raw';
+import { define } from './tab-panel.js';
 define();
 
 export default {
-    title: 'Interactions/TabPanel',
-    component: 'tab-panel',
+    title: 'Components/TabPanel',
+    component: 'el-tab-panel',
+    tags: ['autodocs'],
+    parameters: {
+        docs: {
+            description: {
+                component: readme,
+            },
+        },
+    },
 };
 
-export const singleComponent = () => html` <tab-panel></tab-panel> `;
+export const TabPanel = {
+    name: 'TabPanel',
+    parameters: {
+        docs: {
+            description: {
+                story: 'enables you to...',
+            },
+        },
+    },
+    decorators: [],
+    render: ({}) => html`<el-tab-panel></el-tab-panel>`,
+};

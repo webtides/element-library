@@ -1,7 +1,7 @@
 import { html, defineElement } from '@webtides/element-js';
-import FormField from '@webtides/form-field';
-import { classMap } from 'lit-html/directives/class-map';
-import style from './textarea-field.css';
+import { classMap } from '@webtides/element-js/src/dom-parts/directives.js';
+import FormField from '../form-field/form-field.js';
+import style from './textarea-field.style.js';
 
 export default class TextareaField extends FormField {
     constructor(options) {
@@ -45,5 +45,5 @@ ${this.value}</textarea
 }
 
 export function define() {
-    defineElement('textarea-field', TextareaField);
+    defineElement('el-textarea-field', TextareaField);
 }

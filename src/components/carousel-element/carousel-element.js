@@ -1,6 +1,6 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import Glide from '@glidejs/glide';
-import style from './carousel-element.css';
+import style from './carousel-element.style.js';
 import CarouselElementEvents from './CarouselElementEvents';
 
 import ShadowHtml from './glide/components/ShadowHtml';
@@ -175,7 +175,7 @@ export default class CarouselElement extends TemplateElement {
 }
 
 export function define() {
-    defineElement('carousel-element', CarouselElement);
+    defineElement('el-carousel-element', CarouselElement);
 }
 
 export { html, defineElement, CarouselElementEvents };

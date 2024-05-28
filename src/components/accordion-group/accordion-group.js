@@ -1,23 +1,23 @@
 import { BaseElement, defineElement } from '@webtides/element-js';
-import { Events } from '@webtides/accordion-element';
+import Events from '../accordion-element/accordion-element.events.js';
 
 export default class AccordionGroup extends BaseElement {
     currentOpenElement = null;
-
-    connected() {
-        if (!this.showMultiple) return;
-
-        document.querySelectorAll('accordion-elment').forEach((item) => {
-            if (item.hasAttribute('open') && item.getAttribute('open') === 'true') {
-                this.currentOpenElement = item;
-            }
-        });
-    }
 
     properties() {
         return {
             showMultiple: true,
         };
+    }
+
+    connected() {
+        if (!this.showMultiple) return;
+
+        document.querySelectorAll('el-accordion-elment').forEach((item) => {
+            if (item.hasAttribute('open') && item.getAttribute('open') === 'true') {
+                this.currentOpenElement = item;
+            }
+        });
     }
 
     events() {
@@ -45,5 +45,5 @@ export default class AccordionGroup extends BaseElement {
 }
 
 export function define() {
-    defineElement('accordion-group', AccordionGroup);
+    defineElement('el-accordion-group', AccordionGroup);
 }

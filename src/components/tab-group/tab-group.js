@@ -1,5 +1,5 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
-import style from './tab-group.css';
+import style from './tab-group.style.js';
 
 export default class TabGroup extends StyledElement {
     tabLinks = [];
@@ -12,8 +12,8 @@ export default class TabGroup extends StyledElement {
     properties() {
         return {
             selected: undefined,
-            linkSelector: 'tab-link',
-            panelSelector: 'tab-panel',
+            linkSelector: 'el-tab-link',
+            panelSelector: 'el-tab-panel',
         };
     }
 
@@ -81,5 +81,5 @@ export default class TabGroup extends StyledElement {
 }
 
 export function define() {
-    defineElement('tab-group', TabGroup);
+    defineElement('el-tab-group', TabGroup);
 }

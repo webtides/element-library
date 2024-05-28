@@ -1,10 +1,30 @@
-import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '@webtides/tab-link';
+const html = String.raw;
+import readme from './tab-link.readme.md?raw';
+import { define } from './tab-link.js';
 define();
 
 export default {
-    title: 'Interactions/TabLink',
-    component: 'tab-link',
+    title: 'Components/TabLink',
+    component: 'el-tab-link',
+    tags: ['autodocs'],
+    parameters: {
+        docs: {
+            description: {
+                component: readme,
+            },
+        },
+    },
 };
 
-export const singleComponent = () => html` <tab-link></tab-link> `;
+export const TabLink = {
+    name: 'TabLink',
+    parameters: {
+        docs: {
+            description: {
+                story: 'enables you to...',
+            },
+        },
+    },
+    decorators: [],
+    render: ({}) => html`<el-tab-link></el-tab-link>`,
+};

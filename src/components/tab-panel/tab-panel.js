@@ -1,5 +1,5 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
-import style from './tab-panel.css';
+import style from './tab-panel.style.js';
 
 export default class TabPanel extends StyledElement {
     constructor() {
@@ -14,5 +14,5 @@ export default class TabPanel extends StyledElement {
 }
 
 export function define() {
-    defineElement('tab-panel', TabPanel);
+    defineElement('el-tab-panel', TabPanel);
 }

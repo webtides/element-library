@@ -1,6 +1,6 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
-import FormField from '@webtides/form-field';
-import style from './amount-field.css';
+import FormField from '../form-field/form-field.js';
+import style from './amount-field.style.js';
 
 export default class AmountField extends FormField {
     constructor() {
@@ -64,5 +64,5 @@ export default class AmountField extends FormField {
 }
 
 export function define() {
-    defineElement('amount-field', AmountField);
+    defineElement('el-amount-field', AmountField);
 }

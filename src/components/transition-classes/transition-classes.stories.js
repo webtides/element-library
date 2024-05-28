@@ -1,10 +1,30 @@
-import { Story, Meta, html } from '@open-wc/demoing-storybook';
-import { define } from '@webtides/transition-classes';
+const html = String.raw;
+import readme from './transition-classes.readme.md?raw';
+import { define } from './transition-classes.js';
 define();
 
 export default {
-    title: 'Interactions/TransitionClasses',
-    component: 'transition-classes',
+    title: 'Components/TransitionClasses',
+    component: 'el-transition-classes',
+    tags: ['autodocs'],
+    parameters: {
+        docs: {
+            description: {
+                component: readme,
+            },
+        },
+    },
 };
 
-export const singleComponent = () => html` <transition-classes></transition-classes> `;
+export const TransitionClasses = {
+    name: 'TransitionClasses',
+    parameters: {
+        docs: {
+            description: {
+                story: 'enables you to...',
+            },
+        },
+    },
+    decorators: [],
+    render: ({}) => html`<el-transition-classes></el-transition-classes>`,
+};

@@ -1,5 +1,5 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
-import style from './scroll-to-top.css';
+import style from './scroll-to-top.style.js';
 
 export default class ScrollToTop extends StyledElement {
     constructor() {
@@ -56,5 +56,5 @@ export default class ScrollToTop extends StyledElement {
 }
 
 export function define() {
-    defineElement('scroll-to-top', ScrollToTop);
+    defineElement('el-scroll-to-top', ScrollToTop);
 }
