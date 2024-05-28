@@ -9,7 +9,7 @@ export default class FormField extends TemplateElement {
     }
 
     connected() {
-        if (!!this.$refs.input.value || this.valid === false) {
+        if (!!this.$refs.input?.value || this.valid === false) {
             this.touched = true;
         }
     }

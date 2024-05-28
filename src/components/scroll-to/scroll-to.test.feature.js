@@ -6,9 +6,9 @@ define();
 describe('Feature | ScrollTo', () => {
     it('scrolls to the element with the attributed selector', async () => {
         const el = await fixture(
-            `<scroll-to selector="#section">
+            `<el-scroll-to selector="#section">
                 <button ref="button">Scroll to Section</button>
-            </scroll-to>`,
+            </el-scroll-to>`,
         );
 
         // make the body actually scrollable
@@ -27,9 +27,9 @@ describe('Feature | ScrollTo', () => {
     it('prevents the default action by default', async () => {
         fixtureSync(`<div id="some-anchor">TEST</div>`);
         const el = await fixture(
-            `<scroll-to selector="#some-anchor">
+            `<el-scroll-to selector="#some-anchor">
                 <a ref="link" href="#some-anchor">Scroll to</a>
-            </scroll-to>`,
+            </el-scroll-to>`,
         );
 
         el.$refs.link.click();
@@ -42,9 +42,9 @@ describe('Feature | ScrollTo', () => {
     it('can enable the default action by setting the prevent-default attribute to false', async () => {
         fixtureSync(`<div id="some-anchor">TEST</div>`);
         const el = await fixture(
-            `<scroll-to selector="#some-anchor" prevent-default="false">
+            `<el-scroll-to selector="#some-anchor" prevent-default="false">
                 <a ref="link" href="#some-anchor">Scroll to top</a>
-            </scroll-to>`,
+            </el-scroll-to>`,
         );
 
         el.$refs.link.click();

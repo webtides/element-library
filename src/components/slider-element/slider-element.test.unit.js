@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
-import SliderElement from './slider-element.js';
+import SliderElement, { define } from './slider-element.js';
+define();
 
 describe('Unit | SliderElement', () => {
     it('can be created without errors', async () => {
