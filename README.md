@@ -18,22 +18,24 @@ See our [live Storybook](https://webtides.github.io/element-library) to preview 
 | ------------------ | ----------------------------------------------------------------------------- | ------- |
 | accordion-element  | Single Accordion element                                                      | `0.1.0` |
 | accordion-group    | Accordion group to hold multiple elements                                     | `0.1.0` |
+| amount-field       | A simple element to create amount stepping input fields                       | `0.1.1` |
 | carousel-element   | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
+| checkbox-field     |                                                                               | `0.1.1` |
 | dropdown-element   | A dropdown element                                                            | `0.1.0` |
-| slider-element     | CSS only slider element to slide child elements                               | `0.4.3` |
-| transition-classes | An element that applies classes for various stages of a transition            | `0.1.0` |
-| tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
-| tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
-| tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
+| form-field         |                                                                               | `0.1.0` |
+| input-field        |                                                                               | `0.1.0` |
 | lazy-src           |                                                                               | `0.2.0` |
 | scroll-to          |                                                                               | `0.1.0` |
 | scroll-to-top      |                                                                               | `0.1.0` |
+| select-field       |                                                                               | `0.1.0` |
+| slider-element     | CSS only slider element to slide child elements                               | `0.4.3` |
 | sticky-element     |                                                                               | `0.2.0` |
 | svg-use            |                                                                               | `0.1.0` |
-| checkbox-field     |                                                                               | `0.1.1` |
-| form-field         |                                                                               | `0.1.0` |
-| input-field        |                                                                               | `0.1.0` |
+| tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
+| tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
+| tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
 | textarea-field     |                                                                               | `0.1.0` |
+| transition-classes | An element that applies classes for various stages of a transition            | `0.1.0` |
 
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |

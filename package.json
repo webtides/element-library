@@ -1,21 +1,16 @@
 {
     "name": "@webtides/element-library",
-    "version": "0.2.0",
+    "version": "0.1.0",
     "description": "A set of web components built with @webtides/element-js",
     "type": "module",
     "main": "index.js",
     "module": "index.js",
     "repository": "https://github.com/webtides/element-library",
-    "publishConfig": {
-        "registry": "https://npm.pkg.github.com/",
-        "access": "restricted"
-    },
     "author": "@webtides",
     "license": "MIT",
-    "private": true,
     "dependencies": {
         "@glidejs/glide": "3.4.1",
-        "@webtides/element-js": "^1.0.0",
+        "@webtides/element-js": "^1.1.0",
         "lozad": "^1.16.0"
     },
     "devDependencies": {
