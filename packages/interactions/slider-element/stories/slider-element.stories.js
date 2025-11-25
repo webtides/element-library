@@ -145,6 +145,10 @@ export const variableWidthEdgeFocusVariant = () => html`
 	</slider-element>
 `;
 
+export const noItemsVariant = () => html`
+	<slider-element arrows="false"></slider-element>
+`;
+
 class RenderingElement extends TemplateElement {
 	constructor() {
 		super({ shadowRender: false, deferUpdate: true });
