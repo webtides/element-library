@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.4.16] - 2025-11-25
+
+-       fix error in slider-element, cause by missing items check
+
 ## [0.4.15] - 2022-07-21
 
 ### Changed
