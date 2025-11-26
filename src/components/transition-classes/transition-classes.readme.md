@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/transition-classes
+npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/transition-classes';
+import '@webtides/element-library/src/components/transition-classes/transition-classes.js';
 ```
 
 ### Example

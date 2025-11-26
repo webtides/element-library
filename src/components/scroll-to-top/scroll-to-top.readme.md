@@ -7,13 +7,13 @@
 #### Installation
 
 ```sh
-npm i --save @webtides/scroll-to-top
+npm i --save @webtides/element-library
 ```
 
 #### use
 
 ```js
-import '@webtides/scroll-to-top';
+import '@webtides/element-library/src/components/scroll-to-top/scroll-to-top.js';
 ```
 
 ```html

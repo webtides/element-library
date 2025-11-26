@@ -1,5 +1,5 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
-import SliderElementEvents from './SliderElementEvents';
+import SliderElementEvents from './slider-element.events.js';
 import style from './slider-element.style.js';
 
 export default class SliderElement extends TemplateElement {

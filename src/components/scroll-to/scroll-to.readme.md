@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/scroll-to
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/scroll-to';
+import '@webtides/element-library/src/components/scroll-to/scroll-to.js';
 ```
 
 ```html

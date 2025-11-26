@@ -1,6 +1,6 @@
 import { BaseElement, defineElement } from '@webtides/element-js';
 import lozad from 'lozad';
-import Events from './lazy-src.events';
+import Events from './lazy-src.events.js';
 
 export default class LazySrc extends BaseElement {
     #observer = null;

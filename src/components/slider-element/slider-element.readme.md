@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/slider-element
+npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/slider-element';
+import '@webtides/element-library/src/components/slider-element/slider-element.js';
 ```
 
 ### Example

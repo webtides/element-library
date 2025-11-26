@@ -1,6 +1,6 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import style from './accordion-element.style.js';
-import Events from './accordion-element.events';
+import Events from './accordion-element.events.js';
 
 export default class AccordionElement extends TemplateElement {
     constructor() {
