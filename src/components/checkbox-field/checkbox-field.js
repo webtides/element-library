@@ -1,5 +1,4 @@
-import { html, defineElement } from '@webtides/element-js';
-import { classMap, unsafeHTML } from '@webtides/element-js/src/dom-parts/directives.js';
+import { html, defineElement, classMap, unsafeHTML } from '@webtides/element-js';
 import FormField, { FormFieldEvents } from '../form-field/form-field.js';
 import style from './checkbox-field.style.js';
 

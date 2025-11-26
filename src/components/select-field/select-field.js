@@ -1,5 +1,4 @@
-import { html, defineElement } from '@webtides/element-js';
-import { classMap, when } from '@webtides/element-js/src/dom-parts/directives.js';
+import { html, defineElement, classMap, when } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import style from './select-field.style.js';
 
