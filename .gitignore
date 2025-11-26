@@ -5,3 +5,6 @@ dist/*
 docs-build
 
 *storybook.log
+
+# Claude Code assistant files
+.claude/
