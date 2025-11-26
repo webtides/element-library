@@ -18,10 +18,11 @@ describe('Feature | ScrollTo', () => {
 
         el.$refs.button.click();
 
-        await nextFrame();
+        // Wait for scroll to complete - scrollIntoView with behavior:'auto' is instant,
+        // but the browser may need a few frames to update scrollTop
+        await aTimeout(50);
 
-        //TODO: this fails some time for no reason...
-        //assert.notEqual(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        assert.notEqual(document.documentElement.scrollTop || document.body.scrollTop, 0);
     });
 
     it('prevents the default action by default', async () => {
