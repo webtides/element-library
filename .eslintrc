@@ -1,9 +1,11 @@
 {
 	"root": true,
-	"extends": ["plugin:prettier/recommended"],
+	"extends": ["plugin:prettier/recommended", "plugin:import/recommended"],
 	"parser": "@babel/eslint-parser",
+	"plugins": ["import"],
 	"rules": {
-		"prettier/prettier": ["error", { "semi": true }]
+		"prettier/prettier": ["error", { "semi": true }],
+		"import/extensions": ["error", "always", { "ignorePackages": true }]
 	},
 	"globals": {
 		"document": true,
