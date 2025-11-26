@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/accordion-group
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/accordion-group';
+import '@webtides/element-library/src/components/accordion-group/accordion-group.js';
 ```
 
 ```html

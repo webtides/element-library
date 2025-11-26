@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/carousel-element
+npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/carousel-element';
+import '@webtides/element-library/src/components/carousel-element/carousel-element.js';
 ```
 
 ### Example

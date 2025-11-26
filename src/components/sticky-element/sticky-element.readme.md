@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/sticky-element
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/sticky-element';
+import '@webtides/element-library/src/components/sticky-element/sticky-element.js';
 ```
 
 ```html

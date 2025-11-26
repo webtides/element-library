@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/svg-use
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/svg-use';
+import '@webtides/element-library/src/components/svg-use/svg-use.js';
 ```
 
 ```html

@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/form-field
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/form-field';
+import '@webtides/element-library/src/components/form-field/form-field.js';
 ```
 
 This component is typically used as a base class for other form field components rather than being used directly. However, it can be used directly if you implement the `fieldTemplate()` method:

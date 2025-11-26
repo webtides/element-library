@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/checkbox-field
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/checkbox-field';
+import '@webtides/element-library/src/components/checkbox-field/checkbox-field.js';
 ```
 
 ```html

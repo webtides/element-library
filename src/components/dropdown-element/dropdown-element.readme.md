@@ -7,13 +7,13 @@
 #### Install
 
 ```sh
-npm i --save @webtides/dropdown-element
+npm i --save @webtides/element-library
 ```
 
 #### Use
 
 ```js
-import '@webtides/dropdown-element';
+import '@webtides/element-library/src/components/dropdown-element/dropdown-element.js';
 ```
 
 ```html

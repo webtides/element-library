@@ -7,11 +7,11 @@
 ### Installation
 
 ```sh
-npm i --save @webtides/amount-field
+npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/amount-field';
+import '@webtides/element-library/src/components/amount-field/amount-field.js';
 ```
 
 ### Example
