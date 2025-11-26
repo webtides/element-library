@@ -1,21 +1,56 @@
-# AccordionGroupe
+# AccordionGroup
 
-`accordion-groupe` enables you to...
+`accordion-group` is a container component that manages multiple accordion elements. It can control whether multiple accordions can be open simultaneously or enforce single-accordion-open behavior (only one accordion open at a time).
 
 ## How to use
 
-### Installation
+#### Install
 
 ```sh
-npm i --save @webtides/accordion-groupe
+npm i --save @webtides/accordion-group
 ```
+
+#### Use
 
 ```js
-import 'packages/interactions/accordion-groupon-group';
+import '@webtides/accordion-group';
 ```
-
-### Example
 
 ```html
-<accordion-groupe></accordion-groupe>
+<!-- Allow only one accordion open at a time -->
+<el-accordion-group show-multiple="false">
+    <el-accordion-element>
+        <div slot="header">First Accordion</div>
+        <div slot="content">First content...</div>
+    </el-accordion-element>
+
+    <el-accordion-element>
+        <div slot="header">Second Accordion</div>
+        <div slot="content">Second content...</div>
+    </el-accordion-element>
+</el-accordion-group>
 ```
+
+## API
+
+#### Properties/Attribute
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `showMultiple` | `boolean` | `true` | When set to `false`, only one accordion element can be open at a time. Opening a new accordion will automatically close the previously open one. When `true`, multiple accordions can be open simultaneously. |
+
+#### Methods
+
+_None_
+
+#### Events
+
+_None_ (listens to `AccordionElementToggle` events from child accordion elements)
+
+#### CSS Custom Properties
+
+_None_
+
+#### Slots
+
+_None_ (uses default slot for accordion-element children)
