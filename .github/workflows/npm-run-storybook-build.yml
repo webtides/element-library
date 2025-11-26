@@ -1,10 +1,10 @@
-name: NPM run storybook:build
+name: NPM run build-storybook
 
 on:
   push:
     branches:
       - master
-    paths: ['packages/**/stories/**', 'packages/**/src/**'] # Trigger the action only when files change in the folders defined here
+    paths: ['src/**'] # Trigger the action only when files change in the src folder
 
 jobs:
   build-and-deploy:
@@ -16,10 +16,10 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
           scope: "@webtides"
-      - run: yarn install --frozen-lockfile
+      - run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: yarn run storybook:build
+      - run: npm run build-storybook
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
