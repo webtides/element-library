@@ -1,5 +1,5 @@
 import { TemplateElement, html, defineElement, classMap } from '@webtides/element-js';
-import FormFieldEvents from './form-fields.events';
+import FormFieldEvents from './form-field.events';
 import style from './form-field.style.js';
 
 export default class FormField extends TemplateElement {

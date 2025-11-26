@@ -1,7 +1,7 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import Glide from '@glidejs/glide';
 import style from './carousel-element.style.js';
-import CarouselElementEvents from './CarouselElementEvents';
+import CarouselElementEvents from './carousel-element.events';
 
 import ShadowHtml from './glide/components/ShadowHtml';
 import ShadowAnchors from './glide/components/ShadowAnchors';
