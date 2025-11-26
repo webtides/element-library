@@ -112,15 +112,6 @@ All components follow this pattern:
 
 ## Common Tasks
 
-### Creating a New Component
-
-Use the Hygen generator:
-```bash
-npm run make:element
-```
-
-This scaffolds a new component with all necessary files following project conventions.
-
 ### Running the Development Environment
 
 ```bash
