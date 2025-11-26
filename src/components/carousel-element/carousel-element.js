@@ -1,12 +1,12 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import Glide from '@glidejs/glide';
 import style from './carousel-element.style.js';
-import CarouselElementEvents from './carousel-element.events';
+import CarouselElementEvents from './carousel-element.events.js';
 
-import ShadowHtml from './glide/components/ShadowHtml';
-import ShadowAnchors from './glide/components/ShadowAnchors';
-import ShadowGaps from './glide/components/ShadowGaps';
-import ShadowClones from './glide/components/ShadowClones';
+import ShadowHtml from './glide/components/ShadowHtml.js';
+import ShadowAnchors from './glide/components/ShadowAnchors.js';
+import ShadowGaps from './glide/components/ShadowGaps.js';
+import ShadowClones from './glide/components/ShadowClones.js';
 
 const DEFAULT_OPTIONS = {
     type: 'carousel',
