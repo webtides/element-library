@@ -1,7 +1,7 @@
 {
 	"root": true,
 	"extends": ["plugin:prettier/recommended"],
-	"parser": "babel-eslint",
+	"parser": "@babel/eslint-parser",
 	"rules": {
 		"prettier/prettier": ["error", { "semi": true }]
 	},
@@ -13,8 +13,9 @@
 		"requestAnimationFrame": true
 	},
 	"parserOptions": {
-		"ecmaVersion": 2018,
-		"sourceType": "module"
+		"ecmaVersion": 2021,
+		"sourceType": "module",
+		"requireConfigFile": false
 	},
 	"env": {
 		"es6": true,
