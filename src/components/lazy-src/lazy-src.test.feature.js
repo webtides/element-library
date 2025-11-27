@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, defineCE, assert, oneEvent, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
 import { define, Events } from './lazy-src.js';
 define();
 
@@ -16,7 +16,7 @@ describe('Feature | LazySrc', () => {
 
         await nextFrame();
 
-        assert.equal(el.$refs.image.src, transparentPngPixel);
+        expect(el.$refs.image.src).toBe(transparentPngPixel);
     });
 
     it('prevents loading src resources if the element never becomes visible', async () => {
@@ -28,7 +28,7 @@ describe('Feature | LazySrc', () => {
 
         await nextFrame();
 
-        assert.equal(el.$refs.image.src, '');
+        expect(el.$refs.image.src).toBe('');
     });
 
     it('sets the loaded property/attribute to true when the element was loaded', async () => {
@@ -38,13 +38,13 @@ describe('Feature | LazySrc', () => {
             </lazy-src>
         `);
 
-        assert.equal(el.loaded, false);
+        expect(el.loaded).toBe(false);
 
         await oneEvent(el, Events.LOAD);
         await nextFrame();
 
-        assert.equal(el.loaded, true);
-        assert.equal(el.getAttribute('loaded'), 'true');
+        expect(el.loaded).toBe(true);
+        expect(el.getAttribute('loaded')).toBe('true');
     });
 
     it("dispatches a 'Events.LOAD' event when the element was loaded", async () => {
@@ -56,7 +56,7 @@ describe('Feature | LazySrc', () => {
 
         const event = await oneEvent(el, Events.LOAD);
 
-        assert.deepEqual(event.type, Events.LOAD);
+        expect(event.type).toEqual(Events.LOAD);
     });
 
     it('lazy loads img elements', async () => {
@@ -68,7 +68,7 @@ describe('Feature | LazySrc', () => {
 
         await nextFrame();
 
-        assert.equal(el.$refs.image.src, transparentPngPixel);
+        expect(el.$refs.image.src).toBe(transparentPngPixel);
     });
 
     it('getter returns api', async () => {
@@ -79,7 +79,7 @@ describe('Feature | LazySrc', () => {
         `);
         await nextFrame();
         const api = el.api;
-        assert.ok(api);
+        expect(api).toBeTruthy();
     });
 
     it('lazy loads picture elements by adding an img element to the picture', async () => {
@@ -95,13 +95,13 @@ describe('Feature | LazySrc', () => {
 
         let img = el.querySelector('img');
 
-        assert.equal(img, undefined);
+        expect(img).toBe(undefined);
 
         await nextFrame();
 
         img = el.querySelector('img');
 
-        assert.notEqual(img, undefined);
+        expect(img).not.toBe(undefined);
     });
 
     it('ads imgClass to generated img element in picture after load', async () => {
@@ -117,13 +117,13 @@ describe('Feature | LazySrc', () => {
 
         let img = el.querySelector('img');
 
-        assert.equal(img, undefined);
+        expect(img).toBe(undefined);
 
         await nextFrame();
 
         img = el.querySelector('img');
 
-        assert.ok(img.classList.contains('lazy'));
+        expect(img.classList.contains('lazy')).toBeTruthy();
     });
 
     it("dispatches a 'Events.IMG_LOAD' event when the image within a picture was actually loaded", async () => {
@@ -139,7 +139,7 @@ describe('Feature | LazySrc', () => {
 
         const event = await oneEvent(el, Events.IMG_LOAD);
 
-        assert.deepEqual(event.type, Events.IMG_LOAD);
+        expect(event.type).toEqual(Events.IMG_LOAD);
     });
 
     it("dispatches a 'Events.IMG_ERROR' event when the image within a picture could not be loaded", async () => {
@@ -152,6 +152,6 @@ describe('Feature | LazySrc', () => {
         `);
 
         const event = await oneEvent(el, Events.IMG_ERROR);
-        assert.deepEqual(event.type, Events.IMG_ERROR);
+        expect(event.type).toEqual(Events.IMG_ERROR);
     });
 });

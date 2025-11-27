@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, fixtureSync, defineCE, assert, oneEvent, nextFrame } from '../../test-helpers.js';
+import { fixture, fixtureSync, nextFrame } from '../../test-helpers.js';
 import { define } from './scroll-to-top.js';
 define();
 
@@ -15,13 +15,13 @@ describe('Feature | ScrollToTop', () => {
         // scroll to bottom first
         window.scrollTo(0, document.body.scrollHeight);
 
-        assert.notEqual(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        expect(document.documentElement.scrollTop || document.body.scrollTop).not.toBe(0);
 
         el.$refs.button.click();
 
         await nextFrame();
 
-        assert.equal(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        expect(document.documentElement.scrollTop || document.body.scrollTop).toBe(0);
     });
 
     it('can change the scroll duration via attribute', async () => {
@@ -35,16 +35,16 @@ describe('Feature | ScrollToTop', () => {
         // scroll to bottom first
         window.scrollTo(0, document.body.scrollHeight);
 
-        assert.notEqual(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        expect(document.documentElement.scrollTop || document.body.scrollTop).not.toBe(0);
 
         el.$refs.button.click();
 
         await nextFrame();
 
-        assert.notEqual(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        expect(document.documentElement.scrollTop || document.body.scrollTop).not.toBe(0);
 
         setTimeout(() => {
-            assert.equal(document.documentElement.scrollTop || document.body.scrollTop, 0);
+            expect(document.documentElement.scrollTop || document.body.scrollTop).toBe(0);
         }, 200);
     });
 
@@ -60,7 +60,7 @@ describe('Feature | ScrollToTop', () => {
 
         await nextFrame();
 
-        assert.equal(window.location.hash, '');
+        expect(window.location.hash).toBe('');
     });
 
     it('can enable the default action by setting the prevent-default attribute to false', async () => {
@@ -75,7 +75,7 @@ describe('Feature | ScrollToTop', () => {
 
         await nextFrame();
 
-        assert.equal(window.location.hash, '#some-anchor');
+        expect(window.location.hash).toBe('#some-anchor');
         window.location.hash = '';
     });
 });

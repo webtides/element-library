@@ -119,17 +119,15 @@ describe('Feature | AccordionElement', () => {
 
 ### Custom Test Helpers
 
-The `test-helpers.js` file provides these utilities:
+The `test-helpers.js` file provides minimal utilities for browser testing:
 
 - **`fixture(html)`** - Creates and renders HTML elements in the DOM
 - **`fixtureSync(html)`** - Synchronous version of fixture
 - **`nextFrame()`** - Waits for the next animation frame
 - **`aTimeout(ms)`** - Async timeout helper
 - **`oneEvent(element, eventName)`** - Waits for a single event
-- **`assert`** - Chai-style assertions (equal, notEqual, isTrue, etc.)
-- **`defineCE(base)`** - Generates unique custom element names
 
-These are lightweight wrappers that integrate perfectly with Vitest's browser mode.
+For assertions, use Vitest's native `expect` API directly (e.g., `expect(value).toBe(expected)`).
 
 ## Running Tests
 
