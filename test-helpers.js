@@ -1,6 +1,6 @@
 /**
  * Test helpers for web component testing with Vitest
- * Replaces @open-wc/testing utilities
+ * Provides minimal utilities for rendering and timing in browser tests
  */
 
 /**
@@ -61,54 +61,4 @@ export function oneEvent(element, eventName) {
     return new Promise((resolve) => {
         element.addEventListener(eventName, resolve, { once: true });
     });
-}
-
-/**
- * Chai-style assertion helpers
- * These are simple wrappers around Vitest's expect for compatibility
- */
-export const assert = {
-    equal(actual, expected, message) {
-        expect(actual, message).toBe(expected);
-    },
-    notEqual(actual, expected, message) {
-        expect(actual, message).not.toBe(expected);
-    },
-    isTrue(value, message) {
-        expect(value, message).toBe(true);
-    },
-    isFalse(value, message) {
-        expect(value, message).toBe(false);
-    },
-    isNull(value, message) {
-        expect(value, message).toBeNull();
-    },
-    isNotNull(value, message) {
-        expect(value, message).not.toBeNull();
-    },
-    isDefined(value, message) {
-        expect(value, message).toBeDefined();
-    },
-    isUndefined(value, message) {
-        expect(value, message).toBeUndefined();
-    },
-    instanceOf(value, constructor, message) {
-        expect(value, message).toBeInstanceOf(constructor);
-    },
-    include(haystack, needle, message) {
-        expect(haystack, message).toContain(needle);
-    },
-    match(value, regex, message) {
-        expect(value, message).toMatch(regex);
-    },
-};
-
-/**
- * Generates a unique custom element name for testing
- * @param {string} base - Base name for the element
- * @returns {string} Unique element name
- */
-export function defineCE(base = 'test-element') {
-    const id = Math.random().toString(36).substring(2, 9);
-    return `${base}-${id}`;
 }

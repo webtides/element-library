@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, defineCE, assert, oneEvent, nextFrame, fixtureSync, aTimeout } from '../../test-helpers.js';
+import { fixture, nextFrame, fixtureSync, aTimeout } from '../../test-helpers.js';
 import { define } from './scroll-to.js';
 define();
 
@@ -14,7 +14,7 @@ describe('Feature | ScrollTo', () => {
         // make the body actually scrollable
         fixtureSync(`<div style="height: 2000px">Empty</div><div id="section">Section</div>`);
 
-        assert.equal(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        expect(document.documentElement.scrollTop || document.body.scrollTop).toBe(0);
 
         el.$refs.button.click();
 
@@ -22,7 +22,7 @@ describe('Feature | ScrollTo', () => {
         // but the browser may need a few frames to update scrollTop
         await aTimeout(50);
 
-        assert.notEqual(document.documentElement.scrollTop || document.body.scrollTop, 0);
+        expect(document.documentElement.scrollTop || document.body.scrollTop).not.toBe(0);
     });
 
     it('prevents the default action by default', async () => {
@@ -37,7 +37,7 @@ describe('Feature | ScrollTo', () => {
 
         await nextFrame();
 
-        assert.equal(window.location.hash, '');
+        expect(window.location.hash).toBe('');
     });
 
     it('can enable the default action by setting the prevent-default attribute to false', async () => {
@@ -52,7 +52,7 @@ describe('Feature | ScrollTo', () => {
 
         await nextFrame();
 
-        assert.equal(window.location.hash, '#some-anchor');
+        expect(window.location.hash).toBe('#some-anchor');
         window.location.hash = '';
     });
 });

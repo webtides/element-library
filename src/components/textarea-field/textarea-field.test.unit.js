@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, defineCE, assert, oneEvent, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame } from '../../test-helpers.js';
 import TextareaField, { define } from './textarea-field.js';
 define();
 
