@@ -11,17 +11,16 @@ This document describes the migration from `@web/test-runner` to Vitest 4 with b
 - `@vitest/coverage-istanbul@^4.0.0` - Coverage provider
 - `playwright@^1.49.0` - Browser automation (used by Vitest browser mode)
 
-### Dependencies Kept
-- `@open-wc/testing@^4.0.0` - Still used for web component testing utilities (compatible with Vitest)
-
-### Dependencies That Can Be Removed
+### Dependencies Removed
 You can now safely remove these packages by running `npm uninstall`:
-- `@web/test-runner`
-- `@web/dev-server`
+- `@web/test-runner` - Replaced by Vitest
+- `@web/dev-server` - No longer needed
+- `@open-wc/testing` - Replaced by custom test helpers
 
 ### Files Added
 - `vitest.config.js` - Main Vitest configuration
 - `vitest.setup.js` - Global test setup (replaces web-test-runner's testRunnerHtml)
+- `test-helpers.js` - Custom testing utilities (replaces @open-wc/testing)
 
 ### Files Removed
 - `web-test-runner.config.js` - No longer needed
@@ -85,18 +84,28 @@ globalThis.elementJsConfig = { observeGlobalStyles: true };
 }
 ```
 
-## Test File Compatibility
+## Test File Changes
 
-**Good news!** Your existing test files do NOT need to be modified. They will work as-is with Vitest because:
+Test files have been updated to use custom test helpers instead of `@open-wc/testing`. The import statement changed, but the APIs remain the same.
 
-1. Vitest provides global `describe`, `it`, and `expect` functions (just like the testing libraries you were using)
-2. `@open-wc/testing` utilities (`fixture`, `nextFrame`, `oneEvent`, etc.) are fully compatible with Vitest's browser mode
-3. The test structure and assertions remain the same
+### What Changed in Test Files
 
-### Example Test (No Changes Needed)
+**Before:**
+```javascript
+import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
+```
+
+**After:**
+```javascript
+import { fixture, defineCE, assert, oneEvent, nextFrame } from '../../test-helpers.js';
+```
+
+The utilities work exactly the same way - only the import path changed!
+
+### Example Test
 ```javascript
 /* eslint-disable no-unused-expressions */
-import { fixture, defineCE, assert, oneEvent, nextFrame } from '@open-wc/testing';
+import { fixture, defineCE, assert, oneEvent, nextFrame } from '../../test-helpers.js';
 import { define } from './accordion-element.js';
 define();
 
@@ -107,6 +116,20 @@ describe('Feature | AccordionElement', () => {
     });
 });
 ```
+
+### Custom Test Helpers
+
+The `test-helpers.js` file provides these utilities:
+
+- **`fixture(html)`** - Creates and renders HTML elements in the DOM
+- **`fixtureSync(html)`** - Synchronous version of fixture
+- **`nextFrame()`** - Waits for the next animation frame
+- **`aTimeout(ms)`** - Async timeout helper
+- **`oneEvent(element, eventName)`** - Waits for a single event
+- **`assert`** - Chai-style assertions (equal, notEqual, isTrue, etc.)
+- **`defineCE(base)`** - Generates unique custom element names
+
+These are lightweight wrappers that integrate perfectly with Vitest's browser mode.
 
 ## Running Tests
 
@@ -136,7 +159,7 @@ The UI will open a browser interface showing all your tests with detailed inform
 
 1. Run `npm install` to install the new dependencies
 2. Run `npm test` to verify all tests pass
-3. Optionally run `npm uninstall @web/test-runner @web/dev-server` to remove old dependencies
+3. Optionally run `npm uninstall @web/test-runner @web/dev-server @open-wc/testing` to remove old dependencies
 4. Commit the changes
 
 ## Benefits of Vitest
@@ -148,6 +171,7 @@ The UI will open a browser interface showing all your tests with detailed inform
 5. **Better watch mode** - Smarter test re-runs based on changed files
 6. **API compatibility** - Similar API to Jest, making it familiar
 7. **Browser mode** - Native browser testing without jsdom limitations
+8. **Zero external test dependencies** - Custom test helpers mean no dependency on @open-wc/testing
 
 ## Troubleshooting
 

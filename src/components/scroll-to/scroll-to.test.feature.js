@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { fixture, defineCE, assert, oneEvent, nextFrame, fixtureSync, aTimeout } from '@open-wc/testing';
+import { fixture, defineCE, assert, oneEvent, nextFrame, fixtureSync, aTimeout } from '../../test-helpers.js';
 import { define } from './scroll-to.js';
 define();
 
