@@ -15,7 +15,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 
 - **Framework**: `@webtides/element-js` (^1.1.0)
 - **Build Tool**: Vite (via Storybook)
-- **Testing**: Vitest 4 (with browser mode), `@open-wc/testing`
+- **Testing**: Vitest 4 (with browser mode and custom test helpers)
 - **Documentation**: Storybook 8.x
 - **Linting**: ESLint, Stylelint, Prettier
 - **External Dependencies**:
@@ -95,7 +95,7 @@ All components follow this pattern:
 ### Testing
 
 - **Test runner**: Vitest 4 with browser mode (using Playwright + Chromium)
-- **Test framework**: Uses `@open-wc/testing` utilities
+- **Test helpers**: Custom utilities in `test-helpers.js` (fixture, assert, nextFrame, etc.)
 - **Test types**:
   - Unit tests (`.test.unit.js`): Test component logic in isolation
   - Feature tests (`.test.feature.js`): Test component behavior and integration
@@ -103,7 +103,7 @@ All components follow this pattern:
 - **Watch mode**: `npm run test:watch` (interactive watch mode)
 - **Coverage**: `npm run test:coverage` (generates coverage reports)
 - **UI mode**: `npm run test:ui` (visual test runner interface)
-- **Configuration**: `vitest.config.js` and `vitest.setup.js`
+- **Configuration**: `vitest.config.js`, `vitest.setup.js`, and `test-helpers.js`
 
 ### Storybook
 
