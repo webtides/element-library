@@ -15,7 +15,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 
 - **Framework**: `@webtides/element-js` (^1.1.0)
 - **Build Tool**: Vite (via Storybook)
-- **Testing**: `@web/test-runner`, `@open-wc/testing`
+- **Testing**: Vitest 4 (with browser mode), `@open-wc/testing`
 - **Documentation**: Storybook 8.x
 - **Linting**: ESLint, Stylelint, Prettier
 - **External Dependencies**:
@@ -94,14 +94,16 @@ All components follow this pattern:
 
 ### Testing
 
-- **Test runner**: `@web/test-runner` with Chromium
+- **Test runner**: Vitest 4 with browser mode (using Playwright + Chromium)
 - **Test framework**: Uses `@open-wc/testing` utilities
 - **Test types**:
   - Unit tests (`.test.unit.js`): Test component logic in isolation
   - Feature tests (`.test.feature.js`): Test component behavior and integration
-- **Run tests**: `npm test`
-- **Watch mode**: `npm run test:watch`
-- **Coverage**: `npm run test:coverage`
+- **Run tests**: `npm test` (runs all tests once)
+- **Watch mode**: `npm run test:watch` (interactive watch mode)
+- **Coverage**: `npm run test:coverage` (generates coverage reports)
+- **UI mode**: `npm run test:ui` (visual test runner interface)
+- **Configuration**: `vitest.config.js` and `vitest.setup.js`
 
 ### Storybook
 
@@ -131,10 +133,13 @@ npm run lint:css      # Lint CSS only
 ### Testing
 
 ```bash
-npm test              # Run all tests
-npm run test:watch    # Run tests in watch mode
+npm test              # Run all tests once
+npm run test:watch    # Run tests in interactive watch mode
 npm run test:coverage # Run tests with coverage report
+npm run test:ui       # Run tests with visual UI
 ```
+
+Note: Tests run in a real browser (Chromium via Playwright) using Vitest's browser mode.
 
 ## Important Notes for AI Assistants
 
