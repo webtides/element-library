@@ -16,5 +16,15 @@ const config = {
     core: {
         disableTelemetry: true,
     },
+
+    previewHead: (head) => `
+        ${head}
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            [cloak] {
+                display: none;
+            }
+        </style>
+    `,
 };
 export default config;

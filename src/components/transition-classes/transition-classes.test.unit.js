@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-expressions */
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { describe, it } from 'vitest';
 import TransitionClasses, { define } from './transition-classes.js';
 define();
 

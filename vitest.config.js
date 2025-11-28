@@ -1,13 +1,13 @@
 import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 
 export default defineConfig({
     test: {
         browser: {
             enabled: true,
-            name: 'chromium',
-            provider: 'playwright',
-            // Headless mode by default
+            provider: playwright(),
             headless: true,
+            instances: [{ browser: 'chromium' }],
         },
         include: ['src/**/*.test.{unit,feature}.js'],
         coverage: {
@@ -15,12 +15,7 @@ export default defineConfig({
             reporter: ['text', 'json', 'html'],
             reportsDirectory: './test/coverage',
             include: ['src/**/*.js'],
-            exclude: [
-                'src/**/*.test.*.js',
-                'src/**/*.stories.js',
-                'src/**/*.style.js',
-                'src/**/*.events.js',
-            ],
+            exclude: ['src/**/*.test.*.js', 'src/**/*.stories.js', 'src/**/*.style.js', 'src/**/*.events.js'],
         },
         // Setup file for global configuration
         setupFiles: ['./vitest.setup.js'],

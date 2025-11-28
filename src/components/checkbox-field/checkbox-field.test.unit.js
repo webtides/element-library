@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-expressions */
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { describe, it } from 'vitest';
 import CheckboxField, { define } from './checkbox-field.js';
 define();
 

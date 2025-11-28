@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+import { describe, it } from 'vitest';
 import { fixture, fixtureSync, nextFrame } from '../../test-helpers.js';
 import { define } from './scroll-to-top.js';
 define();

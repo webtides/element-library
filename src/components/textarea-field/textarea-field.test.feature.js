@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+import { describe, it } from 'vitest';
 import { fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './textarea-field.js';
 define();
