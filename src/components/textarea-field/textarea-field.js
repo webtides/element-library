@@ -27,9 +27,8 @@ export default class TextareaField extends FormField {
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
                 aria-describedby="${this.name}-help"
-            >
-${this.value}</textarea
-            >
+                .value="${this.value ?? ''}"
+            ></textarea>
             ${this.touched
                 ? html`
                       <div class="validity ${classMap(classes)}">

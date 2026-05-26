@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { fixture, nextFrame, fixtureSync, aTimeout } from '../../test-helpers.js';
 import { define } from './scroll-to.js';
 define();
@@ -12,7 +12,7 @@ describe('Feature | ScrollTo', () => {
         );
 
         // make the body actually scrollable
-        fixtureSync(`<div style="height: 2000px">Empty</div><div id="section">Section</div>`);
+        fixtureSync(`<div><div style="height: 2000px">Empty</div><div id="section">Section</div></div>`);
 
         expect(document.documentElement.scrollTop || document.body.scrollTop).toBe(0);
 

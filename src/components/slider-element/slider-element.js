@@ -150,6 +150,7 @@ export default class SliderElement extends TemplateElement {
             this.startScrollEndTimer();
         }
         const target = this.items[this.selectedIndex];
+        if (!target) return;
         const parent = this.$refs.scroller;
         const parentWidth = parent.offsetWidth;
 

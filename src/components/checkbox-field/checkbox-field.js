@@ -56,7 +56,7 @@ export default class CheckboxField extends FormField {
                     ?required="${this.required}"
                 />
                 <div class="checked-indicator ${classMap(classes)}">${this.selectedIndicatorTemplate()}</div>
-                <div class="label">${unsafeHTML(this.label)}</div>
+                <div class="label">${this.label ? unsafeHTML(this.label) : ''}</div>
             </label>
         `;
     }

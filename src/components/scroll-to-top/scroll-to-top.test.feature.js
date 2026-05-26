@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { fixture, fixtureSync, nextFrame } from '../../test-helpers.js';
 import { define } from './scroll-to-top.js';
 define();
@@ -51,9 +51,9 @@ describe('Feature | ScrollToTop', () => {
     it('prevents the default action by default', async () => {
         fixtureSync(`<div id="some-anchor">TEST</div>`);
         const el = await fixture(
-            `<scroll-to-top duration="1">
+            `<el-scroll-to-top duration="1">
                 <a ref="link" href="#some-anchor">Scroll to top</a>
-            </scroll-to-top>`,
+            </el-scroll-to-top>`,
         );
 
         el.$refs.link.click();

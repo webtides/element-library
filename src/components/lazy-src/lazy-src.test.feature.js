@@ -1,5 +1,5 @@
-import { describe, it } from 'vitest';
-import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
+import { describe, it, expect } from 'vitest';
+import { fixture, fixtureSync, nextFrame, oneEvent } from '../../test-helpers.js';
 import { define, Events } from './lazy-src.js';
 define();
 
@@ -9,9 +9,9 @@ const transparentPngPixel =
 describe('Feature | LazySrc', () => {
     it('copies the data-src attribute to src attribute on the first child element', async () => {
         const el = await fixture(`
-            <lazy-src>
+            <el-lazy-src>
                 <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         await nextFrame();
@@ -21,9 +21,9 @@ describe('Feature | LazySrc', () => {
 
     it('prevents loading src resources if the element never becomes visible', async () => {
         const el = await fixture(`
-            <lazy-src style="display: none">
+            <el-lazy-src style="display: none">
                 <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         await nextFrame();
@@ -32,10 +32,10 @@ describe('Feature | LazySrc', () => {
     });
 
     it('sets the loaded property/attribute to true when the element was loaded', async () => {
-        const el = await fixture(`
-            <lazy-src loaded="false">
+        const el = fixtureSync(`
+            <el-lazy-src loaded="false">
                 <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         expect(el.loaded).toBe(false);
@@ -48,10 +48,10 @@ describe('Feature | LazySrc', () => {
     });
 
     it("dispatches a 'Events.LOAD' event when the element was loaded", async () => {
-        const el = await fixture(`
-            <lazy-src>
+        const el = fixtureSync(`
+            <el-lazy-src>
                 <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         const event = await oneEvent(el, Events.LOAD);
@@ -61,9 +61,9 @@ describe('Feature | LazySrc', () => {
 
     it('lazy loads img elements', async () => {
         const el = await fixture(`
-            <lazy-src>
+            <el-lazy-src>
                 <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         await nextFrame();
@@ -73,9 +73,9 @@ describe('Feature | LazySrc', () => {
 
     it('getter returns api', async () => {
         const el = await fixture(`
-            <lazy-src>
+            <el-lazy-src>
                 <img ref="image" data-src="${transparentPngPixel}"/>
-            </lazy-src>
+            </el-lazy-src>
         `);
         await nextFrame();
         const api = el.api;
@@ -83,43 +83,43 @@ describe('Feature | LazySrc', () => {
     });
 
     it('lazy loads picture elements by adding an img element to the picture', async () => {
-        const el = await fixture(`
-            <lazy-src>
+        const el = fixtureSync(`
+            <el-lazy-src>
                 <picture>
                     <source srcset="${transparentPngPixel}" media="(min-width: 1280px)">
                     <source srcset="${transparentPngPixel}" media="(min-width: 980px)">
                     <source srcset="${transparentPngPixel}" media="(min-width: 320px)">
                 </picture>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         let img = el.querySelector('img');
 
-        expect(img).toBe(undefined);
+        expect(img).toBeNull();
 
-        await nextFrame();
+        await oneEvent(el, Events.LOAD);
 
         img = el.querySelector('img');
 
-        expect(img).not.toBe(undefined);
+        expect(img).not.toBeNull();
     });
 
     it('ads imgClass to generated img element in picture after load', async () => {
-        const el = await fixture(`
-            <lazy-src img-class="lazy">
+        const el = fixtureSync(`
+            <el-lazy-src img-class="lazy">
                 <picture>
                     <source srcset="${transparentPngPixel}" media="(min-width: 1280px)">
                     <source srcset="${transparentPngPixel}" media="(min-width: 980px)">
                     <source srcset="${transparentPngPixel}" media="(min-width: 320px)">
                 </picture>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         let img = el.querySelector('img');
 
-        expect(img).toBe(undefined);
+        expect(img).toBeNull();
 
-        await nextFrame();
+        await oneEvent(el, Events.LOAD);
 
         img = el.querySelector('img');
 
@@ -127,14 +127,14 @@ describe('Feature | LazySrc', () => {
     });
 
     it("dispatches a 'Events.IMG_LOAD' event when the image within a picture was actually loaded", async () => {
-        const el = await fixture(`
-           	<lazy-src>
+        const el = fixtureSync(`
+           	<el-lazy-src>
                 <picture>
                     <source srcset="${transparentPngPixel}" media="(min-width: 1280px)">
                     <source srcset="${transparentPngPixel}" media="(min-width: 980px)">
                     <source srcset="${transparentPngPixel}" media="(min-width: 320px)">
                 </picture>
-            </lazy-src>
+            </el-lazy-src>
         `);
 
         const event = await oneEvent(el, Events.IMG_LOAD);
@@ -144,11 +144,11 @@ describe('Feature | LazySrc', () => {
 
     // it("dispatches a 'Events.IMG_ERROR' event when the image within a picture could not be loaded", async () => {
     //     const el = await fixture(`
-    //        	<lazy-src>
+    //        	<el-lazy-src>
     //             <picture>
     //                 <source srcset="broken" media="(min-width: 320px)">
     //             </picture>
-    //         </lazy-src>
+    //         </el-lazy-src>
     //     `);
     //
     //     const event = await oneEvent(el, Events.IMG_ERROR);
