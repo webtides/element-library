@@ -8,6 +8,9 @@
     "repository": "https://github.com/webtides/element-library",
     "author": "@webtides",
     "license": "MIT",
+    "engines": {
+        "node": ">=20.19.0"
+    },
     "dependencies": {
         "@glidejs/glide": "~3.6.2",
         "@webtides/element-js": "^1.2.11",
