@@ -9,7 +9,7 @@
     "author": "@webtides",
     "license": "MIT",
     "dependencies": {
-        "@glidejs/glide": "3.4.1",
+        "@glidejs/glide": "~3.6.2",
         "@webtides/element-js": "^1.2.11",
         "lozad": "^1.16.0"
     },
