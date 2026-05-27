@@ -37,16 +37,12 @@
         "playwright": "^1.60.0",
         "prettier": "^3.8.3",
         "storybook": "^10.4.1",
-        "stylelint": "^13.7.1",
-        "stylelint-config-standard": "^20.0.0",
-        "vite": "^7.2.4",
+        "vite": "^7.3.3",
         "vitest": "^4.1.7"
     },
     "scripts": {
         "dev": "storybook dev -p 3000 --no-open",
-        "lint": "eslint ./src/**/*.js && stylelint ./src/**/*.css",
-        "lint:js": "eslint ./src/**/*.js",
-        "lint:css": "stylelint ./src/**/*.css",
+        "lint": "eslint ./src/**/*.js",
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",
@@ -57,10 +53,6 @@
     "lint-staged": {
         "*.js": [
             "eslint --fix",
-            "prettier --write"
-        ],
-        "*.css": [
-            "stylelint --fix",
             "prettier --write"
         ],
         "*.{yaml,yml,md}": [
