@@ -19,8 +19,8 @@ This document provides context for AI assistants working with the `@webtides/ele
 - **Documentation**: Storybook 8.x
 - **Linting**: ESLint, Stylelint, Prettier
 - **External Dependencies**:
-  - `@glidejs/glide` for carousel functionality
-  - `lozad` for lazy loading
+    - `@glidejs/glide` for carousel functionality
+    - `lozad` for lazy loading
 
 ## Project Structure
 
@@ -68,6 +68,30 @@ element-library/
 
 See README.md for full list of components in planning/TBD status.
 
+## Consumption Patterns
+
+Consumers can import from the package in three ways:
+
+```js
+// Pure class import — no side effects, tree-shakable
+import { AccordionElement } from '@webtides/element-library/accordion-element';
+
+// Side-effect import — registers a single custom element
+import '@webtides/element-library/accordion-element/define';
+
+// Side-effect import — registers all 20 components
+import '@webtides/element-library/all';
+```
+
+The exports map in `package.json` exposes:
+
+- `.` → `index.js` (re-exports element-js base classes; no side effects)
+- `./all` → `all.js` (imports every component's `*.define.js`)
+- `./*` → `src/components/*/*.js` (the component module — class + `define()` function, no side effects)
+- `./*/define` → `src/components/*/*.define.js` (calls `define()` for that one component)
+
+The `sideEffects` field marks only `./all.js` and `./src/components/*/*.define.js` as side-effectful so bundlers tree-shake everything else.
+
 ## Development Conventions
 
 ### Component Structure
@@ -78,12 +102,12 @@ All components follow this pattern:
 2. **Class naming**: Use PascalCase for the JavaScript class
 3. **Custom element tag**: Use kebab-case for HTML tag names
 4. **Each component has**:
-   - Main `.js` file with component logic
-   - `.style.js` file for CSS-in-JS styles
-   - `.stories.js` file for Storybook documentation
-   - `.test.unit.js` for unit tests
-   - `.test.feature.js` for feature/integration tests
-   - Optional `.events.js` for event constants
+    - Main `.js` file with component logic
+    - `.style.js` file for CSS-in-JS styles
+    - `.stories.js` file for Storybook documentation
+    - `.test.unit.js` for unit tests
+    - `.test.feature.js` for feature/integration tests
+    - Optional `.events.js` for event constants
 
 ### Code Style
 
@@ -97,8 +121,8 @@ All components follow this pattern:
 - **Test runner**: Vitest 4 with browser mode (using Playwright + Chromium)
 - **Test helpers**: Custom utilities in `test-helpers.js` (fixture, assert, nextFrame, etc.)
 - **Test types**:
-  - Unit tests (`.test.unit.js`): Test component logic in isolation
-  - Feature tests (`.test.feature.js`): Test component behavior and integration
+    - Unit tests (`.test.unit.js`): Test component logic in isolation
+    - Feature tests (`.test.feature.js`): Test component behavior and integration
 - **Run tests**: `npm test` (runs all tests once)
 - **Watch mode**: `npm run test:watch` (interactive watch mode)
 - **Coverage**: `npm run test:coverage` (generates coverage reports)
@@ -192,4 +216,4 @@ This is a git worktree at `/Users/eddylowen/.claude-worktrees/element-library/in
 
 ---
 
-*This file is meant to provide context to AI assistants. It should be updated as the project evolves.*
+_This file is meant to provide context to AI assistants. It should be updated as the project evolves._

@@ -12,6 +12,32 @@ A set of web components built with `@webtides/element-js`
 
 See our [live Storybook](https://webtides.github.io/element-library) to preview examples of all our elements.
 
+## Installation
+
+```sh
+npm i --save @webtides/element-library
+```
+
+## Usage
+
+Register all components at once:
+
+```js
+import '@webtides/element-library/all';
+```
+
+Register a single component (tree-shakable):
+
+```js
+import '@webtides/element-library/accordion-element/define';
+```
+
+Import a component class without registering it:
+
+```js
+import { AccordionElement } from '@webtides/element-library/accordion-element';
+```
+
 ## Components
 
 | Package            | Description                                                                   | Version |
