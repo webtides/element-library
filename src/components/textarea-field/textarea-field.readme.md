@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/textarea-field/textarea-field.js';
+import '@webtides/element-library/textarea-field/define';
 ```
 
 ```html
@@ -28,12 +28,7 @@ import '@webtides/element-library/src/components/textarea-field/textarea-field.j
 ></el-textarea-field>
 
 <!-- With pre-filled value -->
-<el-textarea-field
-    name="bio"
-    label="Biography"
-    value="Tell us about yourself..."
-    rows="8"
-></el-textarea-field>
+<el-textarea-field name="bio" label="Biography" value="Tell us about yourself..." rows="8"></el-textarea-field>
 ```
 
 ## API
@@ -66,8 +61,8 @@ import '@webtides/element-library/src/components/textarea-field/textarea-field.j
 
 #### Events
 
-| Name | Detail | Description |
-| --- | --- | --- |
+| Name           | Detail           | Description                                                              |
+| -------------- | ---------------- | ------------------------------------------------------------------------ |
 | `input-change` | `value` (string) | Dispatched when the textarea content changes. Bubbles up through the DOM |
 
 #### CSS Custom Properties
@@ -94,6 +89,7 @@ _None_ - The component generates its own textarea element internally
 ## Validation
 
 The component provides real-time validation feedback:
+
 - Validation state updates on focus, blur, and change events
 - Visual indicators (checkmark for valid, cross for invalid) appear after the field is touched
 - Error messages only display when field is touched and invalid

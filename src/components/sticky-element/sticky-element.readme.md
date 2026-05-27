@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/sticky-element/sticky-element.js';
+import '@webtides/element-library/sticky-element/define';
 ```
 
 ```html
@@ -56,8 +56,8 @@ _None_ (uses default slot for content)
 
 The component automatically adds these classes based on scroll behavior:
 
-| Class | Description |
-| --- | --- |
+| Class       | Description                                                 |
+| ----------- | ----------------------------------------------------------- |
 | `is-sticky` | Added when the page has scrolled past the element's height. |
-| `is-up` | Added when scrolling up. |
-| `is-down` | Added when scrolling down. |
+| `is-up`     | Added when scrolling up.                                    |
+| `is-down`   | Added when scrolling down.                                  |

@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### use
 
 ```js
-import '@webtides/element-library/src/components/scroll-to-top/scroll-to-top.js';
+import '@webtides/element-library/scroll-to-top/define';
 ```
 
 ```html

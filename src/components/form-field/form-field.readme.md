@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/form-field/form-field.js';
+import '@webtides/element-library/form-field/define';
 ```
 
 This component is typically used as a base class for other form field components rather than being used directly. However, it can be used directly if you implement the `fieldTemplate()` method:
@@ -24,7 +24,8 @@ This component is typically used as a base class for other form field components
     label="Username"
     required="true"
     error-message="Username is required"
-    help-message="Choose a unique username">
+    help-message="Choose a unique username"
+>
 </el-form-field>
 ```
 
@@ -47,17 +48,17 @@ This component is typically used as a base class for other form field components
 
 #### Methods
 
-| Name | Parameters | Description |
-| --- | --- | --- |
-| `onFocus()` | None | Called when the input receives focus. Updates validation state. |
-| `onBlur()` | None | Called when the input loses focus. Marks field as touched and validates. |
-| `onChange()` | None | Called when the input value changes. Updates value and validation state. |
-| `clearInput()` | None | Clears the input value and resets the touched state. |
+| Name           | Parameters | Description                                                              |
+| -------------- | ---------- | ------------------------------------------------------------------------ |
+| `onFocus()`    | None       | Called when the input receives focus. Updates validation state.          |
+| `onBlur()`     | None       | Called when the input loses focus. Marks field as touched and validates. |
+| `onChange()`   | None       | Called when the input value changes. Updates value and validation state. |
+| `clearInput()` | None       | Clears the input value and resets the touched state.                     |
 
 #### Events
 
-| Name | Detail | Description |
-| --- | --- | --- |
+| Name           | Detail  | Description                                                     |
+| -------------- | ------- | --------------------------------------------------------------- |
 | `input-change` | `value` | Fired when the field value changes. Bubbles up through the DOM. |
 
 #### CSS Custom Properties

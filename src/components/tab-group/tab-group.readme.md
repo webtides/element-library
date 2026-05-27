@@ -4,14 +4,16 @@ A `tab-group` wraps a list of tab-links and tab-panels and shows one at a time
 
 ## How to use
 
-### Installation
+### Install
 
 ```sh
-npm install @webtides/tab-group
+npm i --save @webtides/element-library
 ```
 
+### Use
+
 ```js
-import('@webtides/tab-group').then(({ define }) => define());
+import '@webtides/element-library/tab-group/define';
 ```
 
 ### Example

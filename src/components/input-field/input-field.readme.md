@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/input-field/input-field.js';
+import '@webtides/element-library/input-field/define';
 ```
 
 ```html
@@ -59,8 +59,8 @@ import '@webtides/element-library/src/components/input-field/input-field.js';
 
 #### Events
 
-| Name | Detail | Description |
-| --- | --- | --- |
+| Name           | Detail           | Description                                                         |
+| -------------- | ---------------- | ------------------------------------------------------------------- |
 | `input-change` | `value` (string) | Dispatched when the input value changes. Bubbles up through the DOM |
 
 #### CSS Custom Properties
@@ -86,6 +86,7 @@ _None_ - The component generates its own input element internally
 ## Validation
 
 The component provides real-time validation feedback:
+
 - Validation state updates on focus, blur, and change events
 - Visual indicators appear after the field is touched
 - Error messages only display when field is touched and invalid

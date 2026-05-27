@@ -11,7 +11,7 @@ npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/element-library/src/components/transition-classes/transition-classes.js';
+import '@webtides/element-library/transition-classes/define';
 ```
 
 ### Example

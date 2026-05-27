@@ -4,7 +4,17 @@
 
 ## How to use
 
+### Install
+
+```sh
+npm i --save @webtides/element-library
+```
+
 ### Use
+
+```js
+import '@webtides/element-library/lazy-src/define';
+```
 
 ```html
 <el-lazy-src>

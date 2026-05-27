@@ -13,15 +13,13 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/accordion-element/accordion-element.js';
+import '@webtides/element-library/accordion-element/define';
 ```
 
 ```html
 <el-accordion-element open="false">
     <div slot="header">Accordion Header</div>
-    <div slot="content">
-        Your content goes here...
-    </div>
+    <div slot="content">Your content goes here...</div>
 </el-accordion-element>
 ```
 
@@ -35,11 +33,11 @@ import '@webtides/element-library/src/components/accordion-element/accordion-ele
 
 #### Methods
 
-| Name | Parameters | Description |
-| --- | --- | --- |
-| `toggle()` | None | Toggles the accordion between open and closed states. |
-| `expand()` | None | Opens the accordion with animation. |
-| `collapse()` | None | Closes the accordion with animation. |
+| Name         | Parameters | Description                                           |
+| ------------ | ---------- | ----------------------------------------------------- |
+| `toggle()`   | None       | Toggles the accordion between open and closed states. |
+| `expand()`   | None       | Opens the accordion with animation.                   |
+| `collapse()` | None       | Closes the accordion with animation.                  |
 
 #### Events
 
@@ -53,7 +51,7 @@ _None_
 
 #### Slots
 
-| Name | Description |
-| --- | --- |
-| `header` | Content to display in the accordion header/title area. Clicking this area toggles the accordion. |
-| `content` | Content to display in the collapsible section of the accordion. |
+| Name      | Description                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------ |
+| `header`  | Content to display in the accordion header/title area. Clicking this area toggles the accordion. |
+| `content` | Content to display in the collapsible section of the accordion.                                  |

@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/dropdown-element/dropdown-element.js';
+import '@webtides/element-library/dropdown-element/define';
 ```
 
 ```html
@@ -31,8 +31,8 @@ import '@webtides/element-library/src/components/dropdown-element/dropdown-eleme
 
 #### Properties/Attribute
 
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
+| Name   | Type      | Default | Description                                                 |
+| ------ | --------- | ------- | ----------------------------------------------------------- |
 | `open` | `boolean` | `false` | Controls whether the dropdown content is visible or hidden. |
 
 #### Methods

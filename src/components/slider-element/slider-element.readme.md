@@ -11,7 +11,7 @@ npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/element-library/src/components/slider-element/slider-element.js';
+import '@webtides/element-library/slider-element/define';
 ```
 
 ### Example

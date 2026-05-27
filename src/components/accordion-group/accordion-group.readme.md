@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/accordion-group/accordion-group.js';
+import '@webtides/element-library/accordion-group/define';
 ```
 
 ```html

@@ -11,7 +11,7 @@ npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/element-library/src/components/amount-field/amount-field.js';
+import '@webtides/element-library/amount-field/define';
 ```
 
 ### Example

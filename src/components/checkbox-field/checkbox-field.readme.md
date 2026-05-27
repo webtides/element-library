@@ -13,15 +13,11 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/checkbox-field/checkbox-field.js';
+import '@webtides/element-library/checkbox-field/define';
 ```
 
 ```html
-<el-checkbox-field
-    name="terms"
-    value="accepted"
-    label="I agree to the terms and conditions"
-    required="true">
+<el-checkbox-field name="terms" value="accepted" label="I agree to the terms and conditions" required="true">
 </el-checkbox-field>
 ```
 
@@ -49,8 +45,8 @@ _Inherits methods from FormField component_
 
 #### Events
 
-| Name | Detail | Description |
-| --- | --- | --- |
+| Name           | Detail  | Description                                                                  |
+| -------------- | ------- | ---------------------------------------------------------------------------- |
 | `input-change` | `value` | Fired when the checkbox state changes. The event bubbles up through the DOM. |
 
 #### CSS Custom Properties

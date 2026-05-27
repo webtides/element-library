@@ -4,14 +4,16 @@ The `tab-panel` element contains the content associated with a tab
 
 ## How to use
 
-### Installation
+### Install
 
 ```sh
-npm install @webtides/tab-panel
+npm i --save @webtides/element-library
 ```
 
+### Use
+
 ```js
-import('@webtides/tab-panel').then(({ define }) => define());
+import '@webtides/element-library/tab-panel/define';
 ```
 
 ### Example

@@ -4,14 +4,16 @@ A `tab-link` serves as a label for one of the tab panels to display that panel
 
 ## How to use
 
-### Installation
+### Install
 
 ```sh
-npm install @webtides/tab-link
+npm i --save @webtides/element-library
 ```
 
+### Use
+
 ```js
-import('@webtides/tab-link').then(({ define }) => define());
+import '@webtides/element-library/tab-link/define';
 ```
 
 ### Example

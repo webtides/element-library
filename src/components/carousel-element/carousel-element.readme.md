@@ -11,7 +11,7 @@ npm i --save @webtides/element-library
 ```
 
 ```js
-import '@webtides/element-library/src/components/carousel-element/carousel-element.js';
+import '@webtides/element-library/carousel-element/define';
 ```
 
 ### Example

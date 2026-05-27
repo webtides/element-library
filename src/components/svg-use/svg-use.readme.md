@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/svg-use/svg-use.js';
+import '@webtides/element-library/svg-use/define';
 ```
 
 ```html

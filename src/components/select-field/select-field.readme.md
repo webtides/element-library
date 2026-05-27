@@ -13,7 +13,7 @@ npm i --save @webtides/element-library
 #### Use
 
 ```js
-import '@webtides/element-library/src/components/select-field/select-field.js';
+import '@webtides/element-library/select-field/define';
 ```
 
 ```html
@@ -65,20 +65,23 @@ import '@webtides/element-library/src/components/select-field/select-field.js';
 The `options` property accepts two formats:
 
 **Simple strings:**
+
 ```json
 ["Option 1", "Option 2", "Option 3"]
 ```
 
 **Objects with properties:**
+
 ```json
 [
-    {"value": "opt1", "label": "Option 1"},
-    {"value": "opt2", "label": "Option 2", "selected": true},
-    {"value": "opt3", "label": "Option 3"}
+    { "value": "opt1", "label": "Option 1" },
+    { "value": "opt2", "label": "Option 2", "selected": true },
+    { "value": "opt3", "label": "Option 3" }
 ]
 ```
 
 When using objects:
+
 - `value`: The value submitted with the form (defaults to the string if not provided)
 - `label`: The text displayed in the dropdown (defaults to the string if not provided)
 - `selected`: Whether this option should be pre-selected (optional)
@@ -94,8 +97,8 @@ When using objects:
 
 #### Events
 
-| Name | Detail | Description |
-| --- | --- | --- |
+| Name           | Detail           | Description                                                            |
+| -------------- | ---------------- | ---------------------------------------------------------------------- |
 | `input-change` | `value` (string) | Dispatched when the selected value changes. Bubbles up through the DOM |
 
 #### CSS Custom Properties
@@ -117,6 +120,7 @@ _None_ - The component generates its own select element and options internally
 ## Validation
 
 The component provides validation feedback:
+
 - Validation state updates on focus, blur, and change events
 - Error messages display when field is touched and invalid
 - Supports HTML5 validation (required attribute)
