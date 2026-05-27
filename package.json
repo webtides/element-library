@@ -24,7 +24,22 @@
         "index.js",
         "patches"
     ],
-    "repository": "https://github.com/webtides/element-library",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/webtides/element-library.git"
+    },
+    "homepage": "https://webtides.github.io/element-library",
+    "bugs": {
+        "url": "https://github.com/webtides/element-library/issues"
+    },
+    "keywords": [
+        "web-components",
+        "custom-elements",
+        "element-js",
+        "webtides",
+        "ui-library",
+        "components"
+    ],
     "author": "@webtides",
     "license": "MIT",
     "engines": {
