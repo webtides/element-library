@@ -5,6 +5,9 @@ dist/*
 docs-build
 storybook-static/
 
+# Generated type declarations (built by `npm run build:types`, also via prepack)
+types/
+
 *storybook.log
 
 # Claude Code assistant files

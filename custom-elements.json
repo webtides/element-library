@@ -333,81 +333,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/components/dropdown-element/dropdown-element.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "DropdownElement",
-          "members": [
-            {
-              "kind": "method",
-              "name": "addEventListeners"
-            },
-            {
-              "kind": "method",
-              "name": "removeEventListeners"
-            },
-            {
-              "kind": "method",
-              "name": "onClick"
-            },
-            {
-              "kind": "method",
-              "name": "onKeyDown",
-              "parameters": [
-                {
-                  "name": "event"
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "open",
-              "privacy": "public",
-              "attribute": "open"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "fieldName": "open"
-            }
-          ],
-          "superclass": {
-            "name": "TemplateElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "dropdown-element",
-          "tagName": "el-dropdown-element",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "DropdownElement",
-            "module": "src/components/dropdown-element/dropdown-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/dropdown-element/dropdown-element.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/components/checkbox-field/checkbox-field.js",
       "declarations": [
         {
@@ -1058,6 +983,277 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/dropdown-element/dropdown-element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DropdownElement",
+          "members": [
+            {
+              "kind": "method",
+              "name": "addEventListeners"
+            },
+            {
+              "kind": "method",
+              "name": "removeEventListeners"
+            },
+            {
+              "kind": "method",
+              "name": "onClick"
+            },
+            {
+              "kind": "method",
+              "name": "onKeyDown",
+              "parameters": [
+                {
+                  "name": "event"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "attribute": "open"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "fieldName": "open"
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "dropdown-element",
+          "tagName": "el-dropdown-element",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DropdownElement",
+            "module": "src/components/dropdown-element/dropdown-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/dropdown-element/dropdown-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/form-field/form-field.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FormField",
+          "members": [
+            {
+              "kind": "method",
+              "name": "onFocus"
+            },
+            {
+              "kind": "method",
+              "name": "onBlur"
+            },
+            {
+              "kind": "method",
+              "name": "onChange"
+            },
+            {
+              "kind": "method",
+              "name": "clearInput"
+            },
+            {
+              "kind": "method",
+              "name": "classes"
+            },
+            {
+              "kind": "method",
+              "name": "labelTemplate"
+            },
+            {
+              "kind": "method",
+              "name": "fieldTemplate"
+            },
+            {
+              "kind": "method",
+              "name": "helpTemplate"
+            },
+            {
+              "kind": "method",
+              "name": "errorTemplate"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "labelScreenReaderOnly",
+              "privacy": "public",
+              "attribute": "label-screen-reader-only"
+            },
+            {
+              "kind": "field",
+              "name": "errorMessage",
+              "privacy": "public",
+              "attribute": "error-message"
+            },
+            {
+              "kind": "field",
+              "name": "helpMessage",
+              "privacy": "public",
+              "attribute": "help-message"
+            },
+            {
+              "kind": "field",
+              "name": "valid",
+              "privacy": "public",
+              "attribute": "valid"
+            },
+            {
+              "kind": "field",
+              "name": "touched",
+              "privacy": "public",
+              "attribute": "touched"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "name": "label-screen-reader-only",
+              "fieldName": "labelScreenReaderOnly"
+            },
+            {
+              "name": "error-message",
+              "fieldName": "errorMessage"
+            },
+            {
+              "name": "help-message",
+              "fieldName": "helpMessage"
+            },
+            {
+              "name": "valid",
+              "fieldName": "valid"
+            },
+            {
+              "name": "touched",
+              "fieldName": "touched"
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "form-field",
+          "tagName": "el-form-field",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "FormField",
+            "module": "src/components/form-field/form-field.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/form-field/form-field.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormField",
+          "declaration": {
+            "name": "FormField",
+            "module": "src/components/form-field/form-field.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormFieldEvents",
+          "declaration": {
+            "name": "FormFieldEvents",
+            "module": "src/components/form-field/form-field.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/input-field/input-field.js",
       "declarations": [
         {
@@ -1388,202 +1584,6 @@
           "declaration": {
             "name": "define",
             "module": "src/components/input-field/input-field.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/components/form-field/form-field.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "FormField",
-          "members": [
-            {
-              "kind": "method",
-              "name": "onFocus"
-            },
-            {
-              "kind": "method",
-              "name": "onBlur"
-            },
-            {
-              "kind": "method",
-              "name": "onChange"
-            },
-            {
-              "kind": "method",
-              "name": "clearInput"
-            },
-            {
-              "kind": "method",
-              "name": "classes"
-            },
-            {
-              "kind": "method",
-              "name": "labelTemplate"
-            },
-            {
-              "kind": "method",
-              "name": "fieldTemplate"
-            },
-            {
-              "kind": "method",
-              "name": "helpTemplate"
-            },
-            {
-              "kind": "method",
-              "name": "errorTemplate"
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "privacy": "public",
-              "attribute": "name"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "required",
-              "privacy": "public",
-              "attribute": "required"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "attribute": "disabled"
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "privacy": "public",
-              "attribute": "label"
-            },
-            {
-              "kind": "field",
-              "name": "labelScreenReaderOnly",
-              "privacy": "public",
-              "attribute": "label-screen-reader-only"
-            },
-            {
-              "kind": "field",
-              "name": "errorMessage",
-              "privacy": "public",
-              "attribute": "error-message"
-            },
-            {
-              "kind": "field",
-              "name": "helpMessage",
-              "privacy": "public",
-              "attribute": "help-message"
-            },
-            {
-              "kind": "field",
-              "name": "valid",
-              "privacy": "public",
-              "attribute": "valid"
-            },
-            {
-              "kind": "field",
-              "name": "touched",
-              "privacy": "public",
-              "attribute": "touched"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "name",
-              "fieldName": "name"
-            },
-            {
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "name": "required",
-              "fieldName": "required"
-            },
-            {
-              "name": "disabled",
-              "fieldName": "disabled"
-            },
-            {
-              "name": "label",
-              "fieldName": "label"
-            },
-            {
-              "name": "label-screen-reader-only",
-              "fieldName": "labelScreenReaderOnly"
-            },
-            {
-              "name": "error-message",
-              "fieldName": "errorMessage"
-            },
-            {
-              "name": "help-message",
-              "fieldName": "helpMessage"
-            },
-            {
-              "name": "valid",
-              "fieldName": "valid"
-            },
-            {
-              "name": "touched",
-              "fieldName": "touched"
-            }
-          ],
-          "superclass": {
-            "name": "TemplateElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "form-field",
-          "tagName": "el-form-field",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "FormField",
-            "module": "src/components/form-field/form-field.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/form-field/form-field.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FormField",
-          "declaration": {
-            "name": "FormField",
-            "module": "src/components/form-field/form-field.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FormFieldEvents",
-          "declaration": {
-            "name": "FormFieldEvents",
-            "module": "src/components/form-field/form-field.js"
           }
         }
       ]
@@ -2449,94 +2449,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/components/sticky-element/sticky-element.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "StickyElement",
-          "members": [
-            {
-              "kind": "field",
-              "name": "height",
-              "type": {
-                "text": "number"
-              },
-              "default": "0"
-            },
-            {
-              "kind": "field",
-              "name": "lastScrollTop",
-              "type": {
-                "text": "number"
-              },
-              "default": "0"
-            },
-            {
-              "kind": "field",
-              "name": "resizeObserver",
-              "default": "undefined"
-            },
-            {
-              "kind": "method",
-              "name": "calcCSSProperties"
-            },
-            {
-              "kind": "method",
-              "name": "hasScrolled",
-              "parameters": [
-                {
-                  "name": "scrollY"
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "forceDown",
-              "privacy": "public",
-              "attribute": "force-down"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "force-down",
-              "fieldName": "forceDown"
-            }
-          ],
-          "superclass": {
-            "name": "StyledElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "sticky-element",
-          "tagName": "el-sticky-element",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "StickyElement",
-            "module": "src/components/sticky-element/sticky-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/sticky-element/sticky-element.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/components/svg-use/svg-use.js",
       "declarations": [
         {
@@ -2712,60 +2624,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/components/tab-link/tab-link.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "TabLink",
-          "members": [
-            {
-              "kind": "field",
-              "name": "for",
-              "privacy": "public",
-              "attribute": "for"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "for",
-              "fieldName": "for"
-            }
-          ],
-          "superclass": {
-            "name": "StyledElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "tab-link",
-          "tagName": "el-tab-link",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "TabLink",
-            "module": "src/components/tab-link/tab-link.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/tab-link/tab-link.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/components/tab-panel/tab-panel.js",
       "declarations": [
         {
@@ -2814,6 +2672,94 @@
           "declaration": {
             "name": "define",
             "module": "src/components/tab-panel/tab-panel.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/sticky-element/sticky-element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "StickyElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "lastScrollTop",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "resizeObserver",
+              "default": "undefined"
+            },
+            {
+              "kind": "method",
+              "name": "calcCSSProperties"
+            },
+            {
+              "kind": "method",
+              "name": "hasScrolled",
+              "parameters": [
+                {
+                  "name": "scrollY"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "forceDown",
+              "privacy": "public",
+              "attribute": "force-down"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "force-down",
+              "fieldName": "forceDown"
+            }
+          ],
+          "superclass": {
+            "name": "StyledElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "sticky-element",
+          "tagName": "el-sticky-element",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "StickyElement",
+            "module": "src/components/sticky-element/sticky-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/sticky-element/sticky-element.js"
           }
         }
       ]
@@ -3253,6 +3199,60 @@
           "declaration": {
             "name": "define",
             "module": "src/components/transition-classes/transition-classes.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/tab-link/tab-link.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabLink",
+          "members": [
+            {
+              "kind": "field",
+              "name": "for",
+              "privacy": "public",
+              "attribute": "for"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "for",
+              "fieldName": "for"
+            }
+          ],
+          "superclass": {
+            "name": "StyledElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "tab-link",
+          "tagName": "el-tab-link",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TabLink",
+            "module": "src/components/tab-link/tab-link.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/tab-link/tab-link.js"
           }
         }
       ]
