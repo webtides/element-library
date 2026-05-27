@@ -47,5 +47,3 @@ export default class AccordionGroup extends BaseElement {
 export function define() {
     defineElement('el-accordion-group', AccordionGroup);
 }
-
-define();

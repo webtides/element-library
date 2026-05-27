@@ -136,5 +136,3 @@ export function define() {
 }
 
 export { FormField, FormFieldEvents };
-
-define();

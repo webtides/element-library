@@ -50,5 +50,3 @@ export default class SelectField extends FormField {
 export function define() {
     defineElement('el-select-field', SelectField);
 }
-
-define();

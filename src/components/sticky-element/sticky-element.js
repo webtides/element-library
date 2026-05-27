@@ -78,5 +78,3 @@ export default class StickyElement extends StyledElement {
 export function define() {
     defineElement('el-sticky-element', StickyElement);
 }
-
-define();

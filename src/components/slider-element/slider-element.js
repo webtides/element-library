@@ -255,5 +255,3 @@ export function define() {
 }
 
 export { html, defineElement, SliderElementEvents };
-
-define();

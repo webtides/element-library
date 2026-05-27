@@ -67,5 +67,3 @@ export function define() {
 }
 
 export { Events };
-
-define();

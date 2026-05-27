@@ -16,5 +16,3 @@ export default class TabPanel extends StyledElement {
 export function define() {
     defineElement('el-tab-panel', TabPanel);
 }
-
-define();

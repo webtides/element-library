@@ -118,5 +118,3 @@ export default class TransitionClasses extends BaseElement {
 export function define() {
     defineElement('el-transition-classes', TransitionClasses);
 }
-
-define();

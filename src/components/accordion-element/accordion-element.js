@@ -91,5 +91,3 @@ export function define() {
 }
 
 export { html, defineElement, Events };
-
-define();

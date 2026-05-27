@@ -179,5 +179,3 @@ export function define() {
 }
 
 export { html, defineElement, CarouselElementEvents };
-
-define();

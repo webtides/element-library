@@ -63,5 +63,3 @@ export default class DropdownElement extends TemplateElement {
 export function define() {
     defineElement('el-dropdown-element', DropdownElement);
 }
-
-define();

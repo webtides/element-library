@@ -29,5 +29,3 @@ export default class TabLink extends StyledElement {
 export function define() {
     defineElement('el-tab-link', TabLink);
 }
-
-define();
