@@ -160,503 +160,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/components/carousel-element/carousel-element.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "CarouselElement",
-          "members": [
-            {
-              "kind": "field",
-              "name": "#glide",
-              "privacy": "private",
-              "type": {
-                "text": "null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "#uniqueChildren",
-              "privacy": "private",
-              "type": {
-                "text": "array"
-              },
-              "default": "[]"
-            },
-            {
-              "kind": "field",
-              "name": "api",
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "getUniqueChildren"
-            },
-            {
-              "kind": "method",
-              "name": "mountGlide"
-            },
-            {
-              "kind": "method",
-              "name": "destroyGlide"
-            },
-            {
-              "kind": "method",
-              "name": "next"
-            },
-            {
-              "kind": "method",
-              "name": "prev"
-            },
-            {
-              "kind": "method",
-              "name": "updateBulletClasses"
-            },
-            {
-              "kind": "method",
-              "name": "renderBullets"
-            },
-            {
-              "kind": "method",
-              "name": "renderSlides"
-            },
-            {
-              "kind": "field",
-              "name": "options",
-              "privacy": "public",
-              "attribute": "options"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "attribute": "disabled"
-            },
-            {
-              "kind": "field",
-              "name": "slidePrefix",
-              "privacy": "public",
-              "attribute": "slide-prefix"
-            },
-            {
-              "kind": "field",
-              "name": "bullets",
-              "privacy": "public",
-              "attribute": "bullets"
-            },
-            {
-              "kind": "field",
-              "name": "arrows",
-              "privacy": "public",
-              "attribute": "arrows"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "options",
-              "fieldName": "options"
-            },
-            {
-              "name": "disabled",
-              "fieldName": "disabled"
-            },
-            {
-              "name": "slide-prefix",
-              "fieldName": "slidePrefix"
-            },
-            {
-              "name": "bullets",
-              "fieldName": "bullets"
-            },
-            {
-              "name": "arrows",
-              "fieldName": "arrows"
-            }
-          ],
-          "superclass": {
-            "name": "TemplateElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "carousel-element",
-          "tagName": "el-carousel-element",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "CarouselElement",
-            "module": "src/components/carousel-element/carousel-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/carousel-element/carousel-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "html",
-          "declaration": {
-            "name": "html",
-            "module": "src/components/carousel-element/carousel-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "defineElement",
-          "declaration": {
-            "name": "defineElement",
-            "module": "src/components/carousel-element/carousel-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "CarouselElementEvents",
-          "declaration": {
-            "name": "CarouselElementEvents",
-            "module": "src/components/carousel-element/carousel-element.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/components/checkbox-field/checkbox-field.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "CheckboxField",
-          "members": [
-            {
-              "kind": "field",
-              "name": "uuid"
-            },
-            {
-              "kind": "method",
-              "name": "fieldTemplate",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "selectedIndicatorTemplate"
-            },
-            {
-              "kind": "field",
-              "name": "",
-              "privacy": "public",
-              "attribute": ""
-            },
-            {
-              "kind": "field",
-              "name": "checked",
-              "privacy": "public",
-              "attribute": "checked"
-            },
-            {
-              "kind": "method",
-              "name": "onFocus",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "onBlur",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "onChange",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "clearInput",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "classes",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "labelTemplate",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "helpTemplate",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "errorTemplate",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "privacy": "public",
-              "attribute": "name",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "attribute": "value",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "required",
-              "privacy": "public",
-              "attribute": "required",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "attribute": "disabled",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "privacy": "public",
-              "attribute": "label",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "labelScreenReaderOnly",
-              "privacy": "public",
-              "attribute": "label-screen-reader-only",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "errorMessage",
-              "privacy": "public",
-              "attribute": "error-message",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "helpMessage",
-              "privacy": "public",
-              "attribute": "help-message",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "valid",
-              "privacy": "public",
-              "attribute": "valid",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "touched",
-              "privacy": "public",
-              "attribute": "touched",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "",
-              "fieldName": ""
-            },
-            {
-              "name": "checked",
-              "fieldName": "checked"
-            },
-            {
-              "name": "name",
-              "fieldName": "name",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "value",
-              "fieldName": "value",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "required",
-              "fieldName": "required",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "disabled",
-              "fieldName": "disabled",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "label",
-              "fieldName": "label",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "label-screen-reader-only",
-              "fieldName": "labelScreenReaderOnly",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "error-message",
-              "fieldName": "errorMessage",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "help-message",
-              "fieldName": "helpMessage",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "valid",
-              "fieldName": "valid",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            },
-            {
-              "name": "touched",
-              "fieldName": "touched",
-              "inheritedFrom": {
-                "name": "FormField",
-                "module": "src/components/form-field/form-field.js"
-              }
-            }
-          ],
-          "superclass": {
-            "name": "FormField",
-            "module": "/src/components/form-field/form-field.js"
-          },
-          "tagNameWithoutPrefix": "checkbox-field",
-          "tagName": "el-checkbox-field",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "CheckboxField",
-            "module": "src/components/checkbox-field/checkbox-field.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/checkbox-field/checkbox-field.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/components/amount-field/amount-field.js",
       "declarations": [
         {
@@ -1248,6 +751,503 @@
           "declaration": {
             "name": "FormFieldEvents",
             "module": "src/components/form-field/form-field.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/carousel-element/carousel-element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CarouselElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#glide",
+              "privacy": "private",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#uniqueChildren",
+              "privacy": "private",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "api",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "getUniqueChildren"
+            },
+            {
+              "kind": "method",
+              "name": "mountGlide"
+            },
+            {
+              "kind": "method",
+              "name": "destroyGlide"
+            },
+            {
+              "kind": "method",
+              "name": "next"
+            },
+            {
+              "kind": "method",
+              "name": "prev"
+            },
+            {
+              "kind": "method",
+              "name": "updateBulletClasses"
+            },
+            {
+              "kind": "method",
+              "name": "renderBullets"
+            },
+            {
+              "kind": "method",
+              "name": "renderSlides"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "privacy": "public",
+              "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "slidePrefix",
+              "privacy": "public",
+              "attribute": "slide-prefix"
+            },
+            {
+              "kind": "field",
+              "name": "bullets",
+              "privacy": "public",
+              "attribute": "bullets"
+            },
+            {
+              "kind": "field",
+              "name": "arrows",
+              "privacy": "public",
+              "attribute": "arrows"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "options",
+              "fieldName": "options"
+            },
+            {
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "slide-prefix",
+              "fieldName": "slidePrefix"
+            },
+            {
+              "name": "bullets",
+              "fieldName": "bullets"
+            },
+            {
+              "name": "arrows",
+              "fieldName": "arrows"
+            }
+          ],
+          "superclass": {
+            "name": "TemplateElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "carousel-element",
+          "tagName": "el-carousel-element",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "CarouselElement",
+            "module": "src/components/carousel-element/carousel-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/carousel-element/carousel-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "html",
+          "declaration": {
+            "name": "html",
+            "module": "src/components/carousel-element/carousel-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "defineElement",
+          "declaration": {
+            "name": "defineElement",
+            "module": "src/components/carousel-element/carousel-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CarouselElementEvents",
+          "declaration": {
+            "name": "CarouselElementEvents",
+            "module": "src/components/carousel-element/carousel-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/checkbox-field/checkbox-field.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CheckboxField",
+          "members": [
+            {
+              "kind": "field",
+              "name": "uuid"
+            },
+            {
+              "kind": "method",
+              "name": "fieldTemplate",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "selectedIndicatorTemplate"
+            },
+            {
+              "kind": "field",
+              "name": "",
+              "privacy": "public",
+              "attribute": ""
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "privacy": "public",
+              "attribute": "checked"
+            },
+            {
+              "kind": "method",
+              "name": "onFocus",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onBlur",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onChange",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "clearInput",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "classes",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "labelTemplate",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "helpTemplate",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "errorTemplate",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "attribute": "name",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "attribute": "value",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "attribute": "required",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "attribute": "disabled",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "attribute": "label",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "labelScreenReaderOnly",
+              "privacy": "public",
+              "attribute": "label-screen-reader-only",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "errorMessage",
+              "privacy": "public",
+              "attribute": "error-message",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "helpMessage",
+              "privacy": "public",
+              "attribute": "help-message",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "valid",
+              "privacy": "public",
+              "attribute": "valid",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "touched",
+              "privacy": "public",
+              "attribute": "touched",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "",
+              "fieldName": ""
+            },
+            {
+              "name": "checked",
+              "fieldName": "checked"
+            },
+            {
+              "name": "name",
+              "fieldName": "name",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "value",
+              "fieldName": "value",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "required",
+              "fieldName": "required",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "disabled",
+              "fieldName": "disabled",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "label",
+              "fieldName": "label",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "label-screen-reader-only",
+              "fieldName": "labelScreenReaderOnly",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "error-message",
+              "fieldName": "errorMessage",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "help-message",
+              "fieldName": "helpMessage",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "valid",
+              "fieldName": "valid",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            },
+            {
+              "name": "touched",
+              "fieldName": "touched",
+              "inheritedFrom": {
+                "name": "FormField",
+                "module": "src/components/form-field/form-field.js"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "FormField",
+            "module": "/src/components/form-field/form-field.js"
+          },
+          "tagNameWithoutPrefix": "checkbox-field",
+          "tagName": "el-checkbox-field",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "CheckboxField",
+            "module": "src/components/checkbox-field/checkbox-field.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/checkbox-field/checkbox-field.js"
           }
         }
       ]
@@ -2449,6 +2449,94 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/sticky-element/sticky-element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "StickyElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "lastScrollTop",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "resizeObserver",
+              "default": "undefined"
+            },
+            {
+              "kind": "method",
+              "name": "calcCSSProperties"
+            },
+            {
+              "kind": "method",
+              "name": "hasScrolled",
+              "parameters": [
+                {
+                  "name": "scrollY"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "forceDown",
+              "privacy": "public",
+              "attribute": "force-down"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "force-down",
+              "fieldName": "forceDown"
+            }
+          ],
+          "superclass": {
+            "name": "StyledElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "sticky-element",
+          "tagName": "el-sticky-element",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "StickyElement",
+            "module": "src/components/sticky-element/sticky-element.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/sticky-element/sticky-element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/svg-use/svg-use.js",
       "declarations": [
         {
@@ -2624,6 +2712,60 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/components/tab-link/tab-link.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TabLink",
+          "members": [
+            {
+              "kind": "field",
+              "name": "for",
+              "privacy": "public",
+              "attribute": "for"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "for",
+              "fieldName": "for"
+            }
+          ],
+          "superclass": {
+            "name": "StyledElement",
+            "package": "@webtides/element-js"
+          },
+          "tagNameWithoutPrefix": "tab-link",
+          "tagName": "el-tab-link",
+          "customElement": true
+        },
+        {
+          "kind": "function",
+          "name": "define"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TabLink",
+            "module": "src/components/tab-link/tab-link.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/components/tab-link/tab-link.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/components/tab-panel/tab-panel.js",
       "declarations": [
         {
@@ -2672,94 +2814,6 @@
           "declaration": {
             "name": "define",
             "module": "src/components/tab-panel/tab-panel.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/components/sticky-element/sticky-element.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "StickyElement",
-          "members": [
-            {
-              "kind": "field",
-              "name": "height",
-              "type": {
-                "text": "number"
-              },
-              "default": "0"
-            },
-            {
-              "kind": "field",
-              "name": "lastScrollTop",
-              "type": {
-                "text": "number"
-              },
-              "default": "0"
-            },
-            {
-              "kind": "field",
-              "name": "resizeObserver",
-              "default": "undefined"
-            },
-            {
-              "kind": "method",
-              "name": "calcCSSProperties"
-            },
-            {
-              "kind": "method",
-              "name": "hasScrolled",
-              "parameters": [
-                {
-                  "name": "scrollY"
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "forceDown",
-              "privacy": "public",
-              "attribute": "force-down"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "force-down",
-              "fieldName": "forceDown"
-            }
-          ],
-          "superclass": {
-            "name": "StyledElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "sticky-element",
-          "tagName": "el-sticky-element",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "StickyElement",
-            "module": "src/components/sticky-element/sticky-element.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/sticky-element/sticky-element.js"
           }
         }
       ]
@@ -3199,60 +3253,6 @@
           "declaration": {
             "name": "define",
             "module": "src/components/transition-classes/transition-classes.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/components/tab-link/tab-link.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "TabLink",
-          "members": [
-            {
-              "kind": "field",
-              "name": "for",
-              "privacy": "public",
-              "attribute": "for"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "for",
-              "fieldName": "for"
-            }
-          ],
-          "superclass": {
-            "name": "StyledElement",
-            "package": "@webtides/element-js"
-          },
-          "tagNameWithoutPrefix": "tab-link",
-          "tagName": "el-tab-link",
-          "customElement": true
-        },
-        {
-          "kind": "function",
-          "name": "define"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "TabLink",
-            "module": "src/components/tab-link/tab-link.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "define",
-          "declaration": {
-            "name": "define",
-            "module": "src/components/tab-link/tab-link.js"
           }
         }
       ]

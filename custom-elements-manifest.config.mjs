@@ -241,7 +241,7 @@ function customWebTypesPlugin() {
             }
 
             const outPath = path.resolve('./web-types.json');
-            fs.writeFileSync(outPath, JSON.stringify(webTypesData, null, 4) + '\n', 'utf-8');
+            fs.writeFileSync(outPath, JSON.stringify(webTypesData, null, 2) + '\n', 'utf-8');
             console.log('✅ Generated web-types.json');
         },
     };
