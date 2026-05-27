@@ -1,0 +1,1849 @@
+{
+    "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
+    "name": "@webtides/element-library",
+    "version": "0.1.0",
+    "description-markup": "markdown",
+    "contributions": {
+        "html": {
+            "elements": [
+                {
+                    "name": "el-accordion-element",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "open",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/accordion-element/accordion-element.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "open"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/accordion-element/accordion-element.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-accordion-group",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "show-multiple",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/accordion-group/accordion-group.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "currentOpenElement",
+                                "type": "null"
+                            },
+                            {
+                                "name": "showMultiple"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/accordion-group/accordion-group.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-carousel-element",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "options",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/carousel-element/carousel-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/carousel-element/carousel-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "slide-prefix",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/carousel-element/carousel-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "bullets",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/carousel-element/carousel-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "arrows",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/carousel-element/carousel-element.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "api"
+                            },
+                            {
+                                "name": "options"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "slidePrefix"
+                            },
+                            {
+                                "name": "bullets"
+                            },
+                            {
+                                "name": "arrows"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/carousel-element/carousel-element.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-dropdown-element",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "open",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/dropdown-element/dropdown-element.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "open"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/dropdown-element/dropdown-element.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-checkbox-field",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "checked",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "required",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label-screen-reader-only",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "error-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "help-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "valid",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "touched",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/checkbox-field/checkbox-field.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "uuid"
+                            },
+                            {
+                                "name": ""
+                            },
+                            {
+                                "name": "checked"
+                            },
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "value"
+                            },
+                            {
+                                "name": "required"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "label"
+                            },
+                            {
+                                "name": "labelScreenReaderOnly"
+                            },
+                            {
+                                "name": "errorMessage"
+                            },
+                            {
+                                "name": "helpMessage"
+                            },
+                            {
+                                "name": "valid"
+                            },
+                            {
+                                "name": "touched"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/checkbox-field/checkbox-field.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-amount-field",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "max",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "min",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "required",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label-screen-reader-only",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "error-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "help-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "valid",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "touched",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/amount-field/amount-field.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": ""
+                            },
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "value"
+                            },
+                            {
+                                "name": "max"
+                            },
+                            {
+                                "name": "min"
+                            },
+                            {
+                                "name": "required"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "label"
+                            },
+                            {
+                                "name": "labelScreenReaderOnly"
+                            },
+                            {
+                                "name": "errorMessage"
+                            },
+                            {
+                                "name": "helpMessage"
+                            },
+                            {
+                                "name": "valid"
+                            },
+                            {
+                                "name": "touched"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/amount-field/amount-field.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-input-field",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "type",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "placeholder",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "pattern",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "required",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label-screen-reader-only",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "error-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "help-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "valid",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "touched",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/input-field/input-field.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": ""
+                            },
+                            {
+                                "name": "type"
+                            },
+                            {
+                                "name": "placeholder"
+                            },
+                            {
+                                "name": "pattern"
+                            },
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "value"
+                            },
+                            {
+                                "name": "required"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "label"
+                            },
+                            {
+                                "name": "labelScreenReaderOnly"
+                            },
+                            {
+                                "name": "errorMessage"
+                            },
+                            {
+                                "name": "helpMessage"
+                            },
+                            {
+                                "name": "valid"
+                            },
+                            {
+                                "name": "touched"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/input-field/input-field.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-form-field",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "required",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label-screen-reader-only",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "error-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "help-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "valid",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "touched",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/form-field/form-field.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "value"
+                            },
+                            {
+                                "name": "required"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "label"
+                            },
+                            {
+                                "name": "labelScreenReaderOnly"
+                            },
+                            {
+                                "name": "errorMessage"
+                            },
+                            {
+                                "name": "helpMessage"
+                            },
+                            {
+                                "name": "valid"
+                            },
+                            {
+                                "name": "touched"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/form-field/form-field.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-lazy-src",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "root-margin",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/lazy-src/lazy-src.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "threshold",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/lazy-src/lazy-src.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "loaded",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/lazy-src/lazy-src.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "img-class",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/lazy-src/lazy-src.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "img-alt",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/lazy-src/lazy-src.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "api"
+                            },
+                            {
+                                "name": "rootMargin"
+                            },
+                            {
+                                "name": "threshold"
+                            },
+                            {
+                                "name": "loaded"
+                            },
+                            {
+                                "name": "imgClass"
+                            },
+                            {
+                                "name": "imgAlt"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/lazy-src/lazy-src.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-scroll-to",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "selector",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/scroll-to/scroll-to.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "prevent-default",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/scroll-to/scroll-to.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "selector"
+                            },
+                            {
+                                "name": "preventDefault"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/scroll-to/scroll-to.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-scroll-to-top",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "duration",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/scroll-to-top/scroll-to-top.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "prevent-default",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/scroll-to-top/scroll-to-top.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "duration"
+                            },
+                            {
+                                "name": "preventDefault"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/scroll-to-top/scroll-to-top.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-select-field",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "placeholder",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "options",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "required",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label-screen-reader-only",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "error-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "help-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "valid",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "touched",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/select-field/select-field.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": ""
+                            },
+                            {
+                                "name": "placeholder"
+                            },
+                            {
+                                "name": "options"
+                            },
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "value"
+                            },
+                            {
+                                "name": "required"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "label"
+                            },
+                            {
+                                "name": "labelScreenReaderOnly"
+                            },
+                            {
+                                "name": "errorMessage"
+                            },
+                            {
+                                "name": "helpMessage"
+                            },
+                            {
+                                "name": "valid"
+                            },
+                            {
+                                "name": "touched"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/select-field/select-field.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-slider-element",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "item-selector",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "items-to-show",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "items-to-scroll",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "rewind",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "selected-index",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "auto-select",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "dots",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "arrows",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "set-index-after-resize",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "manual-scroll-end-delay",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/slider-element/slider-element.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "itemsCount",
+                                "type": "number"
+                            },
+                            {
+                                "name": "items",
+                                "type": "null"
+                            },
+                            {
+                                "name": "canSlide"
+                            },
+                            {
+                                "name": "canSlideLeft"
+                            },
+                            {
+                                "name": "canSlideRight"
+                            },
+                            {
+                                "name": "itemSelector"
+                            },
+                            {
+                                "name": "itemsToShow"
+                            },
+                            {
+                                "name": "itemsToScroll"
+                            },
+                            {
+                                "name": "rewind"
+                            },
+                            {
+                                "name": "selectedIndex"
+                            },
+                            {
+                                "name": "autoSelect"
+                            },
+                            {
+                                "name": "dots"
+                            },
+                            {
+                                "name": "arrows"
+                            },
+                            {
+                                "name": "setIndexAfterResize"
+                            },
+                            {
+                                "name": "manualScrollEndDelay"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/slider-element/slider-element.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-sticky-element",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "force-down",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/sticky-element/sticky-element.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "height",
+                                "type": "number"
+                            },
+                            {
+                                "name": "lastScrollTop",
+                                "type": "number"
+                            },
+                            {
+                                "name": "resizeObserver"
+                            },
+                            {
+                                "name": "forceDown"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/sticky-element/sticky-element.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-svg-use",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/svg-use/svg-use.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "sprite-path",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/svg-use/svg-use.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "spritePath"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/svg-use/svg-use.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-tab-group",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "selected",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/tab-group/tab-group.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "link-selector",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/tab-group/tab-group.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "panel-selector",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/tab-group/tab-group.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "tabLinks",
+                                "type": "array"
+                            },
+                            {
+                                "name": "tabPanels",
+                                "type": "array"
+                            },
+                            {
+                                "name": "selected"
+                            },
+                            {
+                                "name": "linkSelector"
+                            },
+                            {
+                                "name": "panelSelector"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/tab-group/tab-group.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-tab-link",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "for",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/tab-link/tab-link.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "for"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/tab-link/tab-link.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-tab-panel",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/tab-panel/tab-panel.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "name"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/tab-panel/tab-panel.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-textarea-field",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "placeholder",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "rows",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "value",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "required",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "disabled",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "label-screen-reader-only",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "error-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "help-message",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "valid",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        },
+                        {
+                            "name": "touched",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/textarea-field/textarea-field.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": ""
+                            },
+                            {
+                                "name": "placeholder"
+                            },
+                            {
+                                "name": "rows"
+                            },
+                            {
+                                "name": "name"
+                            },
+                            {
+                                "name": "value"
+                            },
+                            {
+                                "name": "required"
+                            },
+                            {
+                                "name": "disabled"
+                            },
+                            {
+                                "name": "label"
+                            },
+                            {
+                                "name": "labelScreenReaderOnly"
+                            },
+                            {
+                                "name": "errorMessage"
+                            },
+                            {
+                                "name": "helpMessage"
+                            },
+                            {
+                                "name": "valid"
+                            },
+                            {
+                                "name": "touched"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/textarea-field/textarea-field.js",
+                        "symbol": "default"
+                    }
+                },
+                {
+                    "name": "el-transition-classes",
+                    "description": "\n---\n",
+                    "doc-url": "",
+                    "attributes": [
+                        {
+                            "name": "show",
+                            "value": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "module": "./src/components/transition-classes/transition-classes.js",
+                                "symbol": "default"
+                            }
+                        }
+                    ],
+                    "events": [],
+                    "js": {
+                        "properties": [
+                            {
+                                "name": "initialClasses",
+                                "type": "string"
+                            }
+                        ],
+                        "events": []
+                    },
+                    "source": {
+                        "module": "./src/components/transition-classes/transition-classes.js",
+                        "symbol": "default"
+                    }
+                }
+            ]
+        },
+        "css": {
+            "properties": [],
+            "pseudo-elements": []
+        }
+    }
+}

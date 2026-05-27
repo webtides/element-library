@@ -1,99 +1,108 @@
 {
-    "name": "@webtides/element-library",
-    "version": "0.1.0",
-    "description": "A set of web components built with @webtides/element-js",
-    "type": "module",
-    "main": "index.js",
-    "module": "index.js",
-    "exports": {
-        ".": "./index.js",
-        "./all": "./all.js",
-        "./*": "./src/components/*/*.js",
-        "./*/define": "./src/components/*/*.define.js"
-    },
-    "sideEffects": [
-        "./all.js",
-        "./src/components/*/*.define.js"
+  "name": "@webtides/element-library",
+  "version": "0.1.0",
+  "description": "A set of web components built with @webtides/element-js",
+  "type": "module",
+  "main": "index.js",
+  "module": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./all": "./all.js",
+    "./*": "./src/components/*/*.js",
+    "./*/define": "./src/components/*/*.define.js"
+  },
+  "customElements": "custom-elements.json",
+  "web-types": "./web-types.json",
+  "sideEffects": [
+    "./all.js",
+    "./src/components/*/*.define.js"
+  ],
+  "files": [
+    "src/components/**/*.js",
+    "src/components/**/*.md",
+    "!src/components/**/*.stories.js",
+    "!src/components/**/*.test.*.js",
+    "all.js",
+    "index.js",
+    "custom-elements.json",
+    "web-types.json",
+    "patches"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webtides/element-library.git"
+  },
+  "homepage": "https://webtides.github.io/element-library",
+  "bugs": {
+    "url": "https://github.com/webtides/element-library/issues"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "element-js",
+    "webtides",
+    "ui-library",
+    "components"
+  ],
+  "author": "@webtides",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "@glidejs/glide": "~3.6.2",
+    "@webtides/element-js": "^1.2.11",
+    "lozad": "^1.16.0"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@storybook/addon-a11y": "^10.4.1",
+    "@storybook/addon-docs": "^10.4.1",
+    "@storybook/addon-links": "^10.4.1",
+    "@storybook/web-components": "^10.4.1",
+    "@storybook/web-components-vite": "^10.4.1",
+    "@vitest/browser": "^4.1.7",
+    "@vitest/browser-playwright": "^4.1.7",
+    "@vitest/coverage-istanbul": "^4.1.7",
+    "@vitest/ui": "^4.1.7",
+    "custom-element-jet-brains-integration": "^1.7.0",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-storybook": "^10.4.1",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
+    "lit": "^3.3.3",
+    "patch-package": "^8.0.1",
+    "playwright": "^1.60.0",
+    "prettier": "^3.8.3",
+    "storybook": "^10.4.1",
+    "vite": "^8.0.14",
+    "vitest": "^4.1.7"
+  },
+  "scripts": {
+    "dev": "storybook dev -p 3000 --no-open",
+    "lint": "eslint ./src/**/*.js",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "build-storybook": "storybook build",
+    "analyze": "cem analyze --config custom-elements-manifest.config.mjs --outdir .",
+    "analyze:watch": "cem analyze --config custom-elements-manifest.config.mjs --outdir . --watch",
+    "prepack": "npm run analyze",
+    "prepare": "husky",
+    "postinstall": "patch-package"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
     ],
-    "files": [
-        "src/components/**/*.js",
-        "src/components/**/*.md",
-        "!src/components/**/*.stories.js",
-        "!src/components/**/*.test.*.js",
-        "all.js",
-        "index.js",
-        "patches"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/webtides/element-library.git"
-    },
-    "homepage": "https://webtides.github.io/element-library",
-    "bugs": {
-        "url": "https://github.com/webtides/element-library/issues"
-    },
-    "keywords": [
-        "web-components",
-        "custom-elements",
-        "element-js",
-        "webtides",
-        "ui-library",
-        "components"
-    ],
-    "author": "@webtides",
-    "license": "MIT",
-    "engines": {
-        "node": ">=20.19.0"
-    },
-    "dependencies": {
-        "@glidejs/glide": "~3.6.2",
-        "@webtides/element-js": "^1.2.11",
-        "lozad": "^1.16.0"
-    },
-    "devDependencies": {
-        "@storybook/addon-a11y": "^10.4.1",
-        "@storybook/addon-docs": "^10.4.1",
-        "@storybook/addon-links": "^10.4.1",
-        "@storybook/web-components": "^10.4.1",
-        "@storybook/web-components-vite": "^10.4.1",
-        "@vitest/browser": "^4.1.7",
-        "@vitest/browser-playwright": "^4.1.7",
-        "@vitest/coverage-istanbul": "^4.1.7",
-        "@vitest/ui": "^4.1.7",
-        "eslint": "^10.4.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-prettier": "^5.5.5",
-        "eslint-plugin-storybook": "^10.4.1",
-        "globals": "^17.6.0",
-        "husky": "^9.1.7",
-        "lint-staged": "^17.0.5",
-        "lit": "^3.3.3",
-        "patch-package": "^8.0.1",
-        "playwright": "^1.60.0",
-        "prettier": "^3.8.3",
-        "storybook": "^10.4.1",
-        "vite": "^8.0.14",
-        "vitest": "^4.1.7"
-    },
-    "scripts": {
-        "dev": "storybook dev -p 3000 --no-open",
-        "lint": "eslint ./src/**/*.js",
-        "test": "vitest run",
-        "test:coverage": "vitest run --coverage",
-        "test:watch": "vitest",
-        "test:ui": "vitest --ui",
-        "build-storybook": "storybook build",
-        "prepare": "husky",
-        "postinstall": "patch-package"
-    },
-    "lint-staged": {
-        "*.js": [
-            "eslint --fix",
-            "prettier --write"
-        ],
-        "*.{yaml,yml,md}": [
-            "prettier --write"
-        ]
-    }
+    "*.{yaml,yml,md}": [
+      "prettier --write"
+    ]
+  }
 }
