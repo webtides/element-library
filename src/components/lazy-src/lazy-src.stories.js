@@ -16,7 +16,7 @@ export default {
     },
 };
 
-export const lazyImage = {
+export const LazyImage = {
     name: 'Lazy loading Image',
     parameters: {
         docs: {

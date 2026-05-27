@@ -94,7 +94,6 @@ export const NoDotsAndNoArrows = {
 };
 
 export const Rewind = {
-    name: 'Rewind',
     parameters: {
         docs: {
             description: {
@@ -113,7 +112,6 @@ export const Rewind = {
 };
 
 export const Padding = {
-    name: 'Padding',
     parameters: {
         docs: {
             description: {

@@ -27,8 +27,7 @@ export default {
     },
 };
 
-export const selectField = {
-    name: 'Select Field',
+export const SelectField = {
     parameters: {
         docs: {
             description: {
@@ -51,7 +50,7 @@ export const selectField = {
     `,
 };
 
-export const browserSelectField = {
+export const BrowserSelectField = {
     name: 'Vanilla select field',
     parameters: {
         docs: {

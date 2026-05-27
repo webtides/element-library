@@ -34,8 +34,7 @@ export default {
     },
 };
 
-export const inputField = {
-    name: 'Input Field',
+export const InputField = {
     parameters: {
         docs: {
             description: {
@@ -59,7 +58,7 @@ export const inputField = {
     `,
 };
 
-export const browserInputField = {
+export const BrowserInputField = {
     name: 'Vanilla input field',
     parameters: {
         docs: {

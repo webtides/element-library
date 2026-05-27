@@ -38,8 +38,7 @@ export const CarouselElement = {
     `,
 };
 
-export const multiCenterVariant = {
-    name: 'multiCenterVariant',
+export const MultiCenterVariant = {
     parameters: {
         docs: {
             description: {
@@ -66,8 +65,7 @@ export const multiCenterVariant = {
     `,
 };
 
-export const arrowSlotVariant = {
-    name: 'arrowSlotVariant',
+export const ArrowSlotVariant = {
     parameters: {
         docs: {
             description: {
