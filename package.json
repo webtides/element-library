@@ -9,11 +9,11 @@
         ".": "./index.js",
         "./all": "./all.js",
         "./*": "./src/components/*/*.js",
-        "./*/define": "./src/components/*/define.js"
+        "./*/define": "./src/components/*/*.define.js"
     },
     "sideEffects": [
         "./all.js",
-        "./src/components/*/define.js"
+        "./src/components/*/*.define.js"
     ],
     "files": [
         "src/components/**/*.js",
