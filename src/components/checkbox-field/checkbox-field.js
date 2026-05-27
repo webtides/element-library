@@ -2,7 +2,20 @@ import { html, defineElement, classMap, unsafeHTML } from '@webtides/element-js'
 import FormField, { FormFieldEvents } from '../form-field/form-field.js';
 import style from './checkbox-field.style.js';
 
+/**
+ * Styled checkbox input with a custom checkmark indicator, label, and validation. Extends
+ * `FormField` and inherits its label / help / error / required surface.
+ *
+ * @element el-checkbox-field
+ *
+ * @fires {CustomEvent<string>} input-change - Fired when the checked state changes.
+ *   `detail` is the input's `value`. Bubbles.
+ *
+ * @property {boolean} checked - Whether the checkbox is checked. Reflected to the `checked`
+ *   attribute.
+ */
 export default class CheckboxField extends FormField {
+    /** @private */
     uuid = Math.random().toString(36).substr(2, 5);
 
     constructor(options) {
@@ -61,6 +74,7 @@ export default class CheckboxField extends FormField {
         `;
     }
 
+    /** @private */
     selectedIndicatorTemplate() {
         return html` <div class="checked">&checkmark;</div> `;
     }

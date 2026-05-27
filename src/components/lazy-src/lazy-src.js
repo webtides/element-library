@@ -2,7 +2,30 @@ import { BaseElement, defineElement } from '@webtides/element-js';
 import lozad from 'lozad';
 import Events from './lazy-src.events.js';
 
+/**
+ * Lazy-loads child `<img>` / `<picture>` / `<iframe>` / `<video>` elements that use a
+ * `data-src` attribute. Backed by lozad's `IntersectionObserver`; promotes `data-src` to
+ * `src` once the child intersects the viewport.
+ *
+ * @element el-lazy-src
+ *
+ * @fires {CustomEvent<LazySrc>} LazySrcLoad - Fired once the child first intersects the
+ *   viewport and lozad swaps in the real source. `detail` is the host element. Bubbles.
+ * @fires {CustomEvent<LazySrc>} LazySrcImgLoad - Fired when an inner `<img>` finishes
+ *   loading. `detail` is the host element. Bubbles.
+ * @fires {CustomEvent<LazySrc>} LazySrcImgError - Fired when an inner `<img>` fails to
+ *   load. `detail` is the host element. Bubbles.
+ *
+ * @property {string} rootMargin - `IntersectionObserver` `rootMargin` forwarded to lozad.
+ * @property {number | number[]} threshold - `IntersectionObserver` `threshold` forwarded to
+ *   lozad.
+ * @property {boolean} loaded - `true` once the child has been swapped in. Reflected to the
+ *   `loaded` attribute so consumers can target the loaded state from CSS.
+ * @property {string} imgClass - Class to apply to the inner `<img>` once it is loaded.
+ * @property {string} imgAlt - `alt` text to apply to the inner `<img>` once it is loaded.
+ */
 export default class LazySrc extends BaseElement {
+    /** @private */
     #observer = null;
 
     constructor() {
@@ -35,10 +58,14 @@ export default class LazySrc extends BaseElement {
         this.#observer.observe();
     }
 
+    /**
+     * Returns the underlying lozad observer instance.
+     */
     get api() {
         return this.#observer;
     }
 
+    /** @private */
     afterIntersection(target) {
         this.dispatch(Events.LOAD, this, true);
         this.loaded = true;

@@ -1,6 +1,20 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
 import style from './scroll-to-top.style.js';
 
+/**
+ * Wraps any click-emitting child (`<a>`, `<button>`, …) and smoothly scrolls the window
+ * to the top when the child is clicked.
+ *
+ * @element el-scroll-to-top
+ *
+ * @slot - Default slot. Any child that emits a `click` event will trigger the scroll.
+ *
+ * @property {number} duration - Duration of the easing animation in milliseconds. Ignored
+ *   when the page's `html` element has `scroll-behavior: smooth` (the browser drives the
+ *   scroll in that case).
+ * @property {boolean} preventDefault - When `true`, the captured click's default action is
+ *   suppressed.
+ */
 export default class ScrollToTop extends StyledElement {
     constructor() {
         super({ styles: [style] });
@@ -30,6 +44,10 @@ export default class ScrollToTop extends StyledElement {
         };
     }
 
+    /**
+     * Scroll the window to the top.
+     * @returns {void}
+     */
     scrollToTop() {
         const htmlScroll = window
             .getComputedStyle(document.querySelectorAll('html')[0], null)

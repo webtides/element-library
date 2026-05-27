@@ -2,6 +2,31 @@ import { TemplateElement, html, defineElement, classMap } from '@webtides/elemen
 import FormFieldEvents from './form-field.events.js';
 import style from './form-field.style.js';
 
+/**
+ * Base class for form input components. Provides label, help text, error message,
+ * validation and touched-state plumbing. Intended to be extended (`InputField`,
+ * `CheckboxField`, `TextareaField`, `AmountField`, …); subclasses override
+ * `fieldTemplate()` to render their actual input.
+ *
+ * @element el-form-field
+ *
+ * @fires {CustomEvent<string>} input-change - Fired when the field's `value` changes.
+ *   `detail` is the new value. Bubbles.
+ *
+ * @property {string} name - Form name for the underlying input.
+ * @property {string | null} value - Current value of the field.
+ * @property {boolean} required - Whether the field is required for form submission.
+ * @property {boolean} disabled - Whether the field is disabled.
+ * @property {string} label - Label text displayed for the field.
+ * @property {boolean} labelScreenReaderOnly - When `true`, the label is visually hidden but
+ *   still announced to screen readers (via an `sr-only` class).
+ * @property {string} errorMessage - Error message displayed when the field is invalid and has
+ *   been touched.
+ * @property {string} helpMessage - Helper text displayed below the field.
+ * @property {boolean} valid - Whether the field currently passes validation.
+ * @property {boolean} touched - Whether the user has interacted with the field (focused and
+ *   blurred). Validation messages only surface when this is `true`.
+ */
 export default class FormField extends TemplateElement {
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
@@ -74,26 +99,44 @@ export default class FormField extends TemplateElement {
         };
     }
 
+    /**
+     * Called when the input receives focus. Refreshes validation state.
+     * @returns {void}
+     */
     onFocus() {
         this.valid = this.$refs.input.validity.valid;
     }
 
+    /**
+     * Called when the input loses focus. Marks the field as touched and refreshes
+     * validation state.
+     * @returns {void}
+     */
     onBlur() {
         this.touched = true;
         this.valid = this.$refs.input.validity.valid;
     }
 
+    /**
+     * Called when the input value changes. Updates `value` and refreshes validation.
+     * @returns {void}
+     */
     onChange() {
         this.value = this.$refs.input.value;
         this.valid = this.$refs.input.validity.valid;
     }
 
+    /**
+     * Clears the input value, refocuses it, and resets the touched state.
+     * @returns {void}
+     */
     clearInput() {
         this.$refs.input.focus();
         this.$refs.input.value = '';
         this.touched = false;
     }
 
+    /** @private */
     classes() {
         return {
             field: classMap({ 'is-valid': !!this.valid, 'is-invalid': !this.valid, 'is-touched': !!this.touched }),
@@ -109,6 +152,7 @@ export default class FormField extends TemplateElement {
         `;
     }
 
+    /** @private */
     labelTemplate() {
         if (!this.label) return null;
         return html`
@@ -116,14 +160,20 @@ export default class FormField extends TemplateElement {
         `;
     }
 
+    /**
+     * Subclass extension point. Override to render the actual input element(s).
+     * @returns {unknown}
+     */
     fieldTemplate() {
         return html` <!-- IMPLEMENT FIELD --> `;
     }
 
+    /** @private */
     helpTemplate() {
         return html` <span id="${this.name}-help-message" class="message help-message">${this.helpMessage}</span> `;
     }
 
+    /** @private */
     errorTemplate() {
         if (!(this.touched && this.errorMessage && !this.valid)) return null;
 

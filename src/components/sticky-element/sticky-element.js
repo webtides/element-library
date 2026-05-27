@@ -1,9 +1,27 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
 import style from './sticky-element.style.js';
 
+/**
+ * Sticky positioning helper. Toggles `is-sticky`, `is-up` and `is-down` classes on the
+ * host element based on the page's scroll position and direction so consumers can drive
+ * styling from CSS. Publishes the host's height as the `--sticky-height` custom property.
+ *
+ * @element el-sticky-element
+ *
+ * @slot - Default slot for the sticky content (e.g. a `<nav>`).
+ *
+ * @cssproperty --sticky-height - Auto-set to the host's `clientHeight`. Maintained via a
+ *   `ResizeObserver` and useful for transform calculations or layout offsets.
+ *
+ * @property {boolean} forceDown - When `true`, the element always shows the `is-down` state
+ *   regardless of scroll direction. Useful for navigation that should remain visible.
+ */
 export default class StickyElement extends StyledElement {
+    /** @private */
     height = 0;
+    /** @private */
     lastScrollTop = 0;
+    /** @private */
     resizeObserver = undefined;
 
     constructor() {
@@ -48,10 +66,12 @@ export default class StickyElement extends StyledElement {
         };
     }
 
+    /** @private */
     calcCSSProperties() {
         this.style.setProperty('--sticky-height', this.clientHeight + 'px');
     }
 
+    /** @private */
     hasScrolled(scrollY) {
         if (scrollY > this.height && scrollY > 0) {
             this.classList.add('is-sticky');

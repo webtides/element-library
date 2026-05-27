@@ -2,6 +2,28 @@ import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import style from './accordion-element.style.js';
 import Events from './accordion-element.events.js';
 
+/**
+ * A collapsible content component that expands and collapses content sections with smooth
+ * animations. Features customizable header and content slots, automatic toggle functionality,
+ * and emits an event when its state changes.
+ *
+ * @element el-accordion-element
+ *
+ * @fires {CustomEvent<{ open: boolean }>} AccordionElementToggle - Fired when the accordion is
+ *   toggled. The event bubbles up through the DOM. `detail.open` reflects the new open state.
+ *
+ * @slot header - Content to display in the accordion header/title area. Clicking this area
+ *   toggles the accordion.
+ * @slot content - Content to display in the collapsible section of the accordion.
+ *
+ * @csspart title-wrapper - The header container that wraps the `header` slot and toggle icons.
+ * @csspart content-wrapper - The wrapper around the collapsible `content` slot.
+ * @csspart open-icon - Icon shown while the accordion is collapsed.
+ * @csspart close-icon - Icon shown while the accordion is expanded.
+ *
+ * @property {boolean} open - Controls whether the accordion is expanded (`true`) or collapsed
+ *   (`false`). Reflected to the `open` attribute.
+ */
 export default class AccordionElement extends TemplateElement {
     constructor() {
         super({ shadowRender: true, styles: [style], propertyOptions: { open: { reflect: true } } });
@@ -36,10 +58,18 @@ export default class AccordionElement extends TemplateElement {
         };
     }
 
+    /**
+     * Toggles the accordion between open and closed states.
+     * @returns {void}
+     */
     toggle() {
         this.open = !this.open;
     }
 
+    /**
+     * Closes the accordion with animation.
+     * @returns {void}
+     */
     collapse() {
         const contentHeight = this.$refs.content.scrollHeight;
 
@@ -58,6 +88,10 @@ export default class AccordionElement extends TemplateElement {
         this.$refs.content.setAttribute('data-collapsed', 'true');
     }
 
+    /**
+     * Opens the accordion with animation.
+     * @returns {void}
+     */
     expand() {
         const contentHeight = this.$refs.content.scrollHeight;
         this.$refs.content.style.height = contentHeight + 'px';
@@ -77,6 +111,7 @@ export default class AccordionElement extends TemplateElement {
         `;
     }
 
+    /** @private */
     iconsTemplate() {
         return html`
             <!--    		https://www.compart.com/de/unicode/U+2227-->

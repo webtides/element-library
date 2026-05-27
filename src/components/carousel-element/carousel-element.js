@@ -15,6 +15,40 @@ const DEFAULT_OPTIONS = {
     keyboard: false,
 };
 
+/**
+ * Carousel/slider component backed by Glide.js. Direct children of the host element are
+ * treated as slides; the component renders Glide's controls (navigation arrows and bullet
+ * pager) inside the shadow DOM around them.
+ *
+ * @element el-carousel-element
+ *
+ * @fires {CustomEvent<number>} CarouselRun - Fired on every Glide `run` (slide change).
+ *   `detail` is the new active slide index.
+ *
+ * @slot - Default slot. Direct children become slides (unless they have a `slot`
+ *   attribute or are Glide clones).
+ * @slot arrow-left - Content of the "previous" navigation button.
+ * @slot arrow-right - Content of the "next" navigation button.
+ *
+ * @csspart track - The Glide track wrapper.
+ * @csspart slides - The slides container.
+ * @csspart arrows - The navigation arrows wrapper.
+ * @csspart arrow - Applied to both arrow buttons.
+ * @csspart arrow-left - Applied to the previous-slide button (in addition to `arrow`).
+ * @csspart arrow-right - Applied to the next-slide button (in addition to `arrow`).
+ * @csspart dots - The bullet pager wrapper.
+ * @csspart dot - Applied to each bullet.
+ * @csspart selected-dot - Added to the bullet representing the active slide.
+ *
+ * @property {object} options - Options forwarded to the Glide constructor. Merged on top of
+ *   the component's defaults (`type: 'carousel'`, `perView: 1`, `startAt: 0`,
+ *   `keyboard: false`).
+ * @property {boolean} disabled - When `true`, Glide is not mounted and slides render as a
+ *   plain list (useful for SSR or feature-flagging the carousel off).
+ * @property {string} slidePrefix - Prefix used when generating per-slide identifiers.
+ * @property {boolean} bullets - Whether to render the bullet pager.
+ * @property {boolean} arrows - Whether to render the previous/next navigation arrows.
+ */
 export default class CarouselElement extends TemplateElement {
     #glide = null;
     #uniqueChildren = [];
@@ -29,8 +63,11 @@ export default class CarouselElement extends TemplateElement {
         });
     }
 
+    /**
+     * Returns the underlying Glide instance for external navigation/configuration. Falls
+     * back to a no-op `{ go() }` stub while Glide is not mounted (e.g. when `disabled`).
+     */
     get api() {
-        // returns interface for external navigation or configuration
         return (
             this.#glide || {
                 go: () => {},
@@ -66,12 +103,14 @@ export default class CarouselElement extends TemplateElement {
         this.destroyGlide();
     }
 
+    /** @private */
     getUniqueChildren() {
         return Array.from(this.children).filter(
             (item) => !item.classList.contains('glide__slide--clone') && !item.hasAttribute('slot'),
         );
     }
 
+    /** @private */
     mountGlide() {
         if (this.disabled) {
             return;
@@ -89,6 +128,7 @@ export default class CarouselElement extends TemplateElement {
         this.updateBulletClasses();
     }
 
+    /** @private */
     destroyGlide() {
         if (this.#glide) {
             this.#glide.destroy();
@@ -96,14 +136,23 @@ export default class CarouselElement extends TemplateElement {
         }
     }
 
+    /**
+     * Advance to the next slide.
+     * @returns {void}
+     */
     next() {
         this.api.go('>');
     }
 
+    /**
+     * Move to the previous slide.
+     * @returns {void}
+     */
     prev() {
         this.api.go('<');
     }
 
+    /** @private */
     updateBulletClasses() {
         const bullets = Array.from(this.getRoot().querySelectorAll('.glide__bullet'));
         bullets.forEach((bullet, index) => {
@@ -115,6 +164,7 @@ export default class CarouselElement extends TemplateElement {
         });
     }
 
+    /** @private */
     renderBullets() {
         let bullets = [];
         for (let i = 0; i < this.#uniqueChildren.length; i++) {
@@ -123,6 +173,7 @@ export default class CarouselElement extends TemplateElement {
         return bullets;
     }
 
+    /** @private */
     renderSlides() {
         let slides = [];
         for (let i = 0; i < this.#uniqueChildren.length; i++) {

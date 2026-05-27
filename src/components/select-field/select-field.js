@@ -2,6 +2,22 @@ import { html, defineElement, classMap, when } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import style from './select-field.style.js';
 
+/**
+ * Native `<select>` wrapper with label, help text, validation feedback and a custom
+ * dropdown indicator. Extends `FormField` and inherits its label / help / error /
+ * required surface.
+ *
+ * @element el-select-field
+ *
+ * @fires {CustomEvent<string>} input-change - Fired when the selected value changes.
+ *   `detail` is the new value. Bubbles.
+ *
+ * @property {string} placeholder - Placeholder text rendered as the first disabled `<option>`
+ *   when no selection has been made.
+ * @property {Array<string | { value: string, label?: string, selected?: boolean }>} options -
+ *   Options to render. Accepts plain strings (`['Apple', 'Pear']`) or option objects
+ *   (`[{ value, label, selected? }]`). Strings are used as both value and label.
+ */
 export default class SelectField extends FormField {
     constructor() {
         super({ styles: [style] });
@@ -11,10 +27,11 @@ export default class SelectField extends FormField {
         return {
             ...super.properties(),
             placeholder: '',
-            options: [], // ['string1', 'string2'] or [{value: 'value', label: 'label'}, ...]
+            options: [],
         };
     }
 
+    /** @private */
     fieldTemplate() {
         return html`
             <select
@@ -42,6 +59,7 @@ export default class SelectField extends FormField {
         `;
     }
 
+    /** @private */
     dropdownIndicatorTemplate() {
         return html` <div class="icon">&or;</div> `;
     }

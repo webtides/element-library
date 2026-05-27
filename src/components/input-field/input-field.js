@@ -2,6 +2,23 @@ import { html, defineElement, classMap, when } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import style from './input-field.style.js';
 
+/**
+ * Native `<input>` wrapper with label, help text, validation feedback (visual checkmark /
+ * cross indicators) and ARIA wiring. Extends `FormField` and inherits its label / help /
+ * error / required surface.
+ *
+ * @element el-input-field
+ *
+ * @fires {CustomEvent<string>} input-change - Fired when the input's value changes.
+ *   `detail` is the new value. Bubbles.
+ *
+ * @property {string} type - Native `type` attribute of the underlying `<input>` (e.g.
+ *   `'text'`, `'email'`, `'password'`, `'tel'`, `'url'`).
+ * @property {string} placeholder - Placeholder text shown while the input is empty.
+ * @property {string | false} pattern - Regular expression used as the input's `pattern`
+ *   attribute. When `false`, the field falls back to a permissive `[sS]*` pattern (i.e. no
+ *   restriction).
+ */
 export default class InputField extends FormField {
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
@@ -16,6 +33,7 @@ export default class InputField extends FormField {
         };
     }
 
+    /** @private */
     fieldTemplate() {
         return html`
             <input

@@ -1,6 +1,27 @@
 import { BaseElement, defineElement } from '@webtides/element-js';
 
+/**
+ * Applies transition classes to the host element across `enter` / `enter-start` /
+ * `enter-end` and `leave` / `leave-start` / `leave-end` stages, driven by the `show`
+ * property. Each stage is read from a same-named attribute on the host (e.g.
+ * `enter="fade-in"` `enter-start="opacity-0"` `enter-end="opacity-100"`).
+ *
+ * @element el-transition-classes
+ *
+ * @slot - Default slot for the element(s) being transitioned.
+ *
+ * @attr enter - Space-separated classes added throughout the enter transition.
+ * @attr enter-start - Classes applied at the start of the enter transition.
+ * @attr enter-end - Classes applied at the end of the enter transition.
+ * @attr leave - Space-separated classes added throughout the leave transition.
+ * @attr leave-start - Classes applied at the start of the leave transition.
+ * @attr leave-end - Classes applied at the end of the leave transition.
+ *
+ * @property {boolean} show - When `true` the host plays the enter transition; when `false`
+ *   the leave transition.
+ */
 export default class TransitionClasses extends BaseElement {
+    /** @private */
     initialClasses = '';
 
     properties() {
@@ -22,6 +43,7 @@ export default class TransitionClasses extends BaseElement {
         };
     }
 
+    /** @private */
     stages(during, start, end, show, hide) {
         return {
             start: () => {
@@ -44,12 +66,14 @@ export default class TransitionClasses extends BaseElement {
         };
     }
 
+    /** @private */
     classes(attribute) {
         return this.getAttribute(attribute)
             .split(' ')
             .filter((token) => token !== '');
     }
 
+    /** @private */
     in() {
         this.transition(
             this.stages(
@@ -68,6 +92,7 @@ export default class TransitionClasses extends BaseElement {
         );
     }
 
+    /** @private */
     out() {
         this.transition(
             this.stages(
@@ -82,13 +107,22 @@ export default class TransitionClasses extends BaseElement {
         );
     }
 
+    /**
+     * Play the enter transition (equivalent to setting `show = true`).
+     * @returns {void}
+     */
     show() {
         this.in();
     }
+    /**
+     * Play the leave transition (equivalent to setting `show = false`).
+     * @returns {void}
+     */
     hide() {
         this.out();
     }
 
+    /** @private */
     transition(stages) {
         stages.start();
         stages.during();

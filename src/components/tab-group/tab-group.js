@@ -1,8 +1,24 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
 import style from './tab-group.style.js';
 
+/**
+ * Container that pairs `<el-tab-link>` children with `<el-tab-panel>` children and shows
+ * one panel at a time. Listens for `tab-select` events bubbled from `<el-tab-link>` and
+ * mirrors the active selection onto the `selected` attribute (reflected).
+ *
+ * @element el-tab-group
+ *
+ * @slot - Default slot containing `<el-tab-link>` and `<el-tab-panel>` children.
+ *
+ * @property {string | undefined} selected - Name of the currently selected tab. Matches a
+ *   `<el-tab-panel>`'s `name`. Reflected to the `selected` attribute.
+ * @property {string} linkSelector - Selector used to find tab link children.
+ * @property {string} panelSelector - Selector used to find tab panel children.
+ */
 export default class TabGroup extends StyledElement {
+    /** @private */
     tabLinks = [];
+    /** @private */
     tabPanels = [];
 
     constructor() {
@@ -51,10 +67,16 @@ export default class TabGroup extends StyledElement {
         };
     }
 
+    /**
+     * Programmatically activate the panel with the given name.
+     * @param {string} name - The `name` of the target `<el-tab-panel>`.
+     * @returns {void}
+     */
     selectTab(name) {
         this.selected = name;
     }
 
+    /** @private */
     updateSelection() {
         for (const tabLink of this.tabLinks) {
             const panelName = tabLink.getAttribute('for');
@@ -71,10 +93,12 @@ export default class TabGroup extends StyledElement {
         }
     }
 
+    /** @private */
     queryTabLinks() {
         return this.querySelectorAll(this.linkSelector);
     }
 
+    /** @private */
     queryTabPanels() {
         return this.querySelectorAll(this.panelSelector);
     }

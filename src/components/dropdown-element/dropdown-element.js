@@ -1,6 +1,22 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import style from './dropdown-element.style.js';
 
+/**
+ * Toggleable dropdown menu with `trigger` and `content` slots. Auto-closes on outside
+ * click or `Escape`.
+ *
+ * @element el-dropdown-element
+ *
+ * @slot trigger - Element that opens the dropdown when clicked. Automatically receives
+ *   the `show-dropdown` attribute.
+ * @slot content - Dropdown content shown only while `open` is `true`.
+ *
+ * @csspart trigger - Forwarded onto the `trigger` slot.
+ * @csspart content - Forwarded onto the `content` slot.
+ *
+ * @property {boolean} open - Whether the dropdown content is visible. Setting to `true`
+ *   attaches a one-shot outside-click / `Escape` listener that closes the dropdown.
+ */
 export default class DropdownElement extends TemplateElement {
     constructor() {
         super({ styles: [style], shadowRender: true });
@@ -34,20 +50,24 @@ export default class DropdownElement extends TemplateElement {
         };
     }
 
+    /** @private */
     addEventListeners() {
         window.addEventListener('click', this.onClick.bind(this), { once: true });
         document.addEventListener('keydown', this.onKeyDown.bind(this), { once: true });
     }
 
+    /** @private */
     removeEventListeners() {
         window.removeEventListener('click', this.onClick);
         document.removeEventListener('keydown', this.onKeyDown);
     }
 
+    /** @private */
     onClick() {
         this.open = false;
     }
 
+    /** @private */
     onKeyDown(event) {
         if (event.keyCode === 27) this.open = false;
     }

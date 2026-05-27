@@ -2,10 +2,59 @@ import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import SliderElementEvents from './slider-element.events.js';
 import style from './slider-element.style.js';
 
+/**
+ * CSS-scroll-snap based carousel. Direct children matched by `itemSelector` are arranged
+ * horizontally and navigated via the rendered dot pager and arrow buttons, by setting
+ * `selectedIndex`, or by calling `next()` / `previous()` / `goTo()`.
+ *
+ * @element el-slider-element
+ *
+ * @fires {CustomEvent<number>} SliderRun - Fired when `selectedIndex` changes.
+ *   `detail` is the new index.
+ * @fires {CustomEvent<number>} SliderResize - Fired after the host element resizes and
+ *   the slider re-aligns to the current index. `detail` is the current index.
+ *
+ * @slot - Default slot. Place item nodes here; each must match `itemSelector`.
+ * @slot arrow-left - Content of the "previous" navigation button (defaults to `⟨`).
+ * @slot arrow-right - Content of the "next" navigation button (defaults to `⟩`).
+ *
+ * @csspart scroller - The horizontally scrolling track.
+ * @csspart controls - Applied to both the dots wrapper and the arrows wrapper.
+ * @csspart dots - The dot pager wrapper.
+ * @csspart dot - Applied to each pager dot.
+ * @csspart selected-dot - Added to the dot representing the active slide.
+ * @csspart arrows - The arrow buttons wrapper.
+ * @csspart arrow - Applied to both arrow buttons.
+ * @csspart arrow-left - Applied to the previous button (in addition to `arrow`).
+ * @csspart arrow-right - Applied to the next button (in addition to `arrow`).
+ * @csspart arrow-disabled - Added to an arrow button when it cannot navigate further.
+ *
+ * @property {string} itemSelector - CSS selector used to find item nodes among the slotted
+ *   children.
+ * @property {number} itemsToShow - Number of items visible per slide step. Used to compute
+ *   the per-item width.
+ * @property {number} itemsToScroll - Number of items advanced by each `next()` / `previous()`
+ *   call.
+ * @property {boolean} rewind - When `true`, navigating past the last (or before the first)
+ *   item wraps around.
+ * @property {number} selectedIndex - Currently focused item index.
+ * @property {boolean} autoSelect - When `true`, navigation skips items that are already fully
+ *   visible.
+ * @property {boolean} dots - Whether to render the dot pager.
+ * @property {boolean} arrows - Whether to render the previous/next arrow buttons.
+ * @property {boolean} setIndexAfterResize - When `true`, the slider re-aligns to
+ *   `selectedIndex` after the host resizes.
+ * @property {number} manualScrollEndDelay - Debounce window (ms) used to detect the end of a
+ *   manual scroll.
+ */
 export default class SliderElement extends TemplateElement {
+    /** @private */
     itemsCount = 0;
+    /** @private */
     #scrollTimer = null;
+    /** @private */
     items = null;
+    /** @private */
     #scrollToIndex = false;
 
     constructor(options) {
@@ -27,6 +76,10 @@ export default class SliderElement extends TemplateElement {
         };
     }
 
+    /**
+     * `true` when the slider's content overflows its viewport (i.e. there is anything
+     * to scroll through).
+     */
     get canSlide() {
         if (!this.$refs.scroller) {
             return false;
@@ -34,10 +87,12 @@ export default class SliderElement extends TemplateElement {
         return this.$refs.scroller.scrollWidth > this.$refs.scroller.offsetWidth;
     }
 
+    /** `true` when `selectedIndex` can be decremented. */
     get canSlideLeft() {
         return this.selectedIndex > 0;
     }
 
+    /** `true` when `selectedIndex` can be incremented. */
     get canSlideRight() {
         return this.selectedIndex < this.itemsCount;
     }
@@ -55,6 +110,7 @@ export default class SliderElement extends TemplateElement {
         });
     }
 
+    /** @private */
     indexItems() {
         this.items = Array.from(this.querySelectorAll(this.itemSelector));
         this.itemsCount = this.items.length > 1 ? this.items.length - 1 : 0;
@@ -90,6 +146,10 @@ export default class SliderElement extends TemplateElement {
         };
     }
 
+    /**
+     * Advance to the next item (by `itemsToScroll`).
+     * @returns {void}
+     */
     next() {
         const newIndex = this.selectedIndex + this.itemsToScroll;
         this.selectedIndex = this.rewind && newIndex > this.itemsCount ? 0 : Math.min(this.itemsCount, newIndex);
@@ -108,6 +168,10 @@ export default class SliderElement extends TemplateElement {
         this.scrollToIndex();
     }
 
+    /**
+     * Move to the previous item (by `itemsToScroll`).
+     * @returns {void}
+     */
     previous() {
         const newIndex = this.selectedIndex - this.itemsToScroll;
         this.selectedIndex = this.rewind && newIndex < 0 ? this.itemsCount : Math.max(newIndex, 0);
@@ -127,6 +191,13 @@ export default class SliderElement extends TemplateElement {
         this.scrollToIndex();
     }
 
+    /**
+     * Jump directly to `index`.
+     * @param {number} index - Target item index.
+     * @param {boolean} [smooth=true] - When `true` the scroll animates; otherwise it
+     *   jumps instantly.
+     * @returns {void}
+     */
     goTo(index, smooth = true) {
         if (index !== this.selectedIndex) {
             this.selectedIndex = index;
@@ -134,11 +205,13 @@ export default class SliderElement extends TemplateElement {
         }
     }
 
+    /** @private */
     startScrollEndTimer() {
         clearTimeout(this.#scrollTimer);
         this.#scrollTimer = setTimeout(() => this.onManualScrollEnd(), this.manualScrollEndDelay);
     }
 
+    /** @private */
     scrollToIndex(smooth = true) {
         if (!this.$refs.scroller) {
             //external call before render
@@ -169,6 +242,7 @@ export default class SliderElement extends TemplateElement {
         });
     }
 
+    /** @private */
     onManualScrollEnd() {
         if (!this.#scrollToIndex) {
             const scroller = this.$refs.scroller;
@@ -187,6 +261,7 @@ export default class SliderElement extends TemplateElement {
         this.#scrollToIndex = false;
     }
 
+    /** @private */
     addResizeListener() {
         try {
             const resizeObserver = new ResizeObserver(() => {
@@ -215,6 +290,7 @@ export default class SliderElement extends TemplateElement {
         `;
     }
 
+    /** @private */
     dotsTemplate() {
         return this.items.map((item, index) => {
             return html`
@@ -227,6 +303,7 @@ export default class SliderElement extends TemplateElement {
         });
     }
 
+    /** @private */
     arrowsTemplate() {
         const disabledLeft = !this.rewind && !this.canSlideLeft;
         const disabledRight = !this.rewind && !this.canSlideRight;
