@@ -13,13 +13,14 @@ This document provides context for AI assistants working with the `@webtides/ele
 
 ## Technology Stack
 
-- **Framework**: `@webtides/element-js` (^1.1.0)
-- **Build Tool**: Vite (via Storybook)
+- **Framework**: `@webtides/element-js` (^1.2.11)
+- **Build Tool**: Vite 8 (via Storybook; uses Rolldown bundler)
 - **Testing**: Vitest 4 (with browser mode and custom test helpers)
-- **Documentation**: Storybook 8.x
-- **Linting**: ESLint, Stylelint, Prettier
+- **Documentation**: Storybook 10.x
+- **Linting**: ESLint (flat config) + Prettier
+- **Node**: 20.19+ required (see `.nvmrc` and `engines.node`)
 - **External Dependencies**:
-    - `@glidejs/glide` for carousel functionality
+    - `@glidejs/glide` for carousel functionality (pinned at `~3.6.2`; patched via `patch-package`)
     - `lozad` for lazy loading
 
 ## Project Structure
@@ -29,13 +30,19 @@ element-library/
 ├── src/
 │   └── components/        # All web components
 │       └── [component-name]/
-│           ├── [component-name].js         # Component logic
-│           ├── [component-name].style.js   # Component styles
-│           ├── [component-name].events.js  # Event constants (if needed)
-│           ├── [component-name].stories.js # Storybook stories
+│           ├── [component-name].js              # Class + define() function (no side effects)
+│           ├── [component-name].define.js       # Side-effect entry: calls define()
+│           ├── [component-name].style.js        # Component styles
+│           ├── [component-name].events.js       # Event constants (optional)
+│           ├── [component-name].stories.js      # Storybook stories
+│           ├── [component-name].readme.md       # Component documentation
+│           ├── [component-name].version.md      # Component changelog
 │           ├── [component-name].test.unit.js    # Unit tests
 │           └── [component-name].test.feature.js # Feature tests
 ├── .storybook/           # Storybook configuration
+├── patches/              # patch-package patches (Glide deep-import fix)
+├── all.js                # Side-effect entry: registers every component
+├── index.js              # Pure re-export of element-js base classes
 └── package.json
 ```
 
@@ -102,19 +109,22 @@ All components follow this pattern:
 2. **Class naming**: Use PascalCase for the JavaScript class
 3. **Custom element tag**: Use kebab-case for HTML tag names
 4. **Each component has**:
-    - Main `.js` file with component logic
+    - Main `.js` file with class + `define()` function (no side effects on import)
+    - `.define.js` side-effect entry that calls `define()`
     - `.style.js` file for CSS-in-JS styles
     - `.stories.js` file for Storybook documentation
+    - `.readme.md` for component documentation
+    - `.version.md` per-component changelog
     - `.test.unit.js` for unit tests
     - `.test.feature.js` for feature/integration tests
     - Optional `.events.js` for event constants
 
 ### Code Style
 
-- **Linting**: Project uses ESLint for JS and Stylelint for CSS
+- **Linting**: ESLint (flat config in `eslint.config.js`)
 - **Formatting**: Prettier is configured with lint-staged
 - **Pre-commit hooks**: Husky runs linting and formatting on commit
-- **Indentation**: Use project's configured settings (check .editorconfig if present)
+- **Indentation**: Use project's configured settings (check `.editorconfig`)
 
 ### Testing
 
@@ -132,9 +142,9 @@ All components follow this pattern:
 ### Storybook
 
 - **Development**: `npm run dev` (runs on port 3000)
-- **Build**: `npm run build-storybook`
+- **Build**: `npm run build-storybook` (outputs to `storybook-static/`)
 - **Stories location**: Each component has a `.stories.js` file
-- **Addons**: Accessibility, interactions, coverage, and essentials enabled
+- **Addons**: `@storybook/addon-links`, `@storybook/addon-docs`, `@chromatic-com/storybook`, `@storybook/addon-a11y`
 
 ## Common Tasks
 
@@ -149,9 +159,7 @@ This starts Storybook on http://localhost:3000
 ### Linting
 
 ```bash
-npm run lint          # Lint both JS and CSS
-npm run lint:js       # Lint JavaScript only
-npm run lint:css      # Lint CSS only
+npm run lint          # Lint JavaScript (ESLint)
 ```
 
 ### Testing
@@ -191,7 +199,7 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 
 ### Code Quality Expectations
 
-- All code should pass ESLint and Stylelint
+- All code should pass ESLint
 - Prettier formatting is enforced via pre-commit hooks
 - Tests should be written for new features
 - Accessibility should be considered for all UI components
@@ -209,10 +217,6 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 - **Live Storybook**: https://webtides.github.io/element-library
 - **Contributing Guide**: `.github/CONTRIBUTING.md`
 - **License**: MIT (see LICENSE file)
-
-## Current Branch Context
-
-This is a git worktree at `/Users/eddylowen/.claude-worktrees/element-library/intelligent-herschel` connected to the main repository at `/Users/eddylowen/code/open-source/webtides/element-library`.
 
 ---
 
