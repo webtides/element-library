@@ -1,0 +1,11 @@
+diff --git a/node_modules/@glidejs/glide/src/components/html.js b/node_modules/@glidejs/glide/src/components/html.js
+index e04eb23..bc3c2c4 100644
+--- a/node_modules/@glidejs/glide/src/components/html.js
++++ b/node_modules/@glidejs/glide/src/components/html.js
+@@ -1,5 +1,5 @@
+ import { warn } from '../utils/log'
+-import { exist, toArray } from '../utils/dom'
++import { toArray } from '../utils/dom'
+ import { define } from '../utils/object'
+ import { isString } from '../utils/unit'
+ 
