@@ -8,6 +8,10 @@ storybook-static/
 # Generated type declarations (built by `npm run build:types`, also via prepack)
 types/
 
+# Generated Custom Elements Manifest + JetBrains web-types (built by `npm run analyze`, also via prepack)
+custom-elements.json
+web-types.json
+
 *storybook.log
 
 # Claude Code assistant files
