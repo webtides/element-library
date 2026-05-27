@@ -1,4 +1,4 @@
-import { userEvent, within, expect } from '@storybook/test';
+import { userEvent, within, expect } from 'storybook/test';
 import { define } from './input-field.js';
 define();
 const html = String.raw;
@@ -69,5 +69,6 @@ export const browserInputField = {
         },
     },
     decorators: [],
-    render: ({ label, placeholder }) => html`<label>${label}<br><input type="text" placeholder="${placeholder}" /></label>`,
+    render: ({ label, placeholder }) =>
+        html`<label>${label}<br /><input type="text" placeholder="${placeholder}" /></label>`,
 };

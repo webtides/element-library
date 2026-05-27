@@ -1,4 +1,4 @@
-import { userEvent, within, expect } from '@storybook/test';
+import { userEvent, within, expect } from 'storybook/test';
 import { define } from './select-field.js';
 define();
 const html = String.raw;
@@ -40,7 +40,7 @@ export const selectField = {
     render: ({ name, options, placeholder, required, disabled, label, helpMessage, errorMessage }) => html`
         <el-select-field
             name="${name}"
-            options='${JSON.stringify(options)}'
+            options="${JSON.stringify(options)}"
             placeholder="${placeholder}"
             required="${required ? 'true' : 'false'}"
             disabled="${disabled ? 'true' : 'false'}"
