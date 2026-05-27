@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      storybook:
+        patterns:
+          - 'storybook'
+          - '@storybook/*'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+      dev-deps-patch:
+        dependency-type: development
+        update-types:
+          - patch
+    ignore:
+      # Pinned at ~3.6.2 — 3.7+ added an exports map that blocks the
+      # deep imports the carousel-element ShadowDOM patches depend on.
+      - dependency-name: '@glidejs/glide'
+      # Peer caps at eslint 9; we're on 10 via legacy-peer-deps. Bumping
+      # this minor version won't help until upstream relaxes the peer.
+      - dependency-name: 'eslint-plugin-import'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
