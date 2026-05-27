@@ -109,7 +109,7 @@
     "analyze:watch": "cem analyze --config custom-elements-manifest.config.mjs --outdir . --watch",
     "build:types": "tsc -p tsconfig.json",
     "prepack": "npm run analyze && npm run build:types",
-    "prepare": "husky",
+    "prepare": "husky && npm run analyze && npm run build:types",
     "postinstall": "patch-package"
   },
   "lint-staged": {
