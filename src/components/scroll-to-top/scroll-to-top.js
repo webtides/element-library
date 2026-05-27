@@ -58,3 +58,5 @@ export default class ScrollToTop extends StyledElement {
 export function define() {
     defineElement('el-scroll-to-top', ScrollToTop);
 }
+
+define();

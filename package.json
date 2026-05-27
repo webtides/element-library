@@ -5,6 +5,18 @@
     "type": "module",
     "main": "index.js",
     "module": "index.js",
+    "exports": {
+        ".": "./index.js",
+        "./*": "./src/components/*/*.js"
+    },
+    "files": [
+        "src/components/**/*.js",
+        "src/components/**/*.md",
+        "!src/components/**/*.stories.js",
+        "!src/components/**/*.test.*.js",
+        "index.js",
+        "patches"
+    ],
     "repository": "https://github.com/webtides/element-library",
     "author": "@webtides",
     "license": "MIT",

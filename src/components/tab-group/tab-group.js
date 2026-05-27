@@ -83,3 +83,5 @@ export default class TabGroup extends StyledElement {
 export function define() {
     defineElement('el-tab-group', TabGroup);
 }
+
+define();

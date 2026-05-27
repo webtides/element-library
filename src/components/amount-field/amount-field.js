@@ -66,3 +66,5 @@ export default class AmountField extends FormField {
 export function define() {
     defineElement('el-amount-field', AmountField);
 }
+
+define();

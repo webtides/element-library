@@ -51,3 +51,5 @@ export default class InputField extends FormField {
 export function define() {
     defineElement('el-input-field', InputField);
 }
+
+define();

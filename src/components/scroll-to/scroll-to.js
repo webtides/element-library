@@ -26,3 +26,5 @@ export default class ScrollTo extends BaseElement {
 export function define() {
     defineElement('el-scroll-to', ScrollTo);
 }
+
+define();

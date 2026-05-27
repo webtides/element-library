@@ -45,3 +45,5 @@ export default class TextareaField extends FormField {
 export function define() {
     defineElement('el-textarea-field', TextareaField);
 }
+
+define();

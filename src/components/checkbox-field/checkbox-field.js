@@ -69,3 +69,5 @@ export default class CheckboxField extends FormField {
 export function define() {
     defineElement('el-checkbox-field', CheckboxField);
 }
+
+define();
