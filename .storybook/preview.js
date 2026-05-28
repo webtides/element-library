@@ -4,7 +4,9 @@ const html = String.raw;
 const preview = {
     parameters: {
         options: {
-            storySort: {},
+            storySort: {
+                order: ['Docs', ['Introduction', 'Installation', 'Usage'], 'Components'],
+            },
         },
     },
     decorators: [],

@@ -1,0 +1,45 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/Installation" />
+
+# Installation
+
+## Requirements
+
+- **Node**: 20.19 or newer (see the project's `.nvmrc`)
+- A bundler that supports the `exports` field in `package.json` (Vite, Rollup, esbuild, webpack 5+, etc.)
+
+## Install from npm
+
+```sh
+npm i --save @webtides/element-library
+```
+
+Or with your package manager of choice:
+
+```sh
+pnpm add @webtides/element-library
+yarn add @webtides/element-library
+```
+
+## Peer dependency
+
+`@webtides/element-library` lists [`@webtides/element-js`](https://github.com/webtides/element-js) as a peer dependency. Most package managers install peer dependencies automatically, but if you see an "unmet peer dependency" warning, install it explicitly:
+
+```sh
+npm i --save @webtides/element-js
+```
+
+## What ships with the package
+
+In addition to the components, the published package includes:
+
+- `custom-elements.json` — Custom Elements Manifest, consumed by editors and documentation tools.
+- `web-types.json` — JetBrains-style web-types for WebStorm / IntelliJ autocomplete.
+- `*.d.ts` declarations — type information for editor support, even though the source is JavaScript.
+
+These are generated automatically at build time and are exposed via the package's `exports` map.
+
+## Next step
+
+Once installed, see [Usage](?path=/docs/docs-usage--docs) for the three import patterns the library supports.

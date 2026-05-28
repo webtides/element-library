@@ -1,0 +1,67 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/Usage" />
+
+# Usage
+
+`@webtides/element-library` supports three import patterns. Pick the one that matches what you're building.
+
+## Register all components
+
+The fastest way to get started — registers every custom element in the library:
+
+```js
+import '@webtides/element-library/all';
+```
+
+Best for prototyping, demos, or apps where bundle size isn't a concern. Pulls in all ~20 components.
+
+## Register a single component
+
+Tree-shakable — only the component (and its dependencies) ends up in your bundle:
+
+```js
+import '@webtides/element-library/accordion-element/define';
+```
+
+The `/define` subpath is the **side-effect entry**: importing it calls `customElements.define()` for that one element. This is the recommended pattern for production apps.
+
+After importing, use the element in your HTML:
+
+```html
+<accordion-element>
+    <button slot="trigger">Toggle</button>
+    <div slot="content">Hidden content goes here.</div>
+</accordion-element>
+```
+
+## Import the class without registering
+
+If you want to subclass an element, register it under a different tag name, or use the class without auto-registration:
+
+```js
+import { AccordionElement } from '@webtides/element-library/accordion-element';
+
+class MyAccordion extends AccordionElement {
+    // override behavior here
+}
+
+customElements.define('my-accordion', MyAccordion);
+```
+
+This entry has **no side effects** — importing the class alone will not register the element.
+
+## How the exports map is structured
+
+| Subpath                                        | Purpose                                     | Side effects |
+| ---------------------------------------------- | ------------------------------------------- | ------------ |
+| `@webtides/element-library`                    | Re-exports `element-js` base classes        | No           |
+| `@webtides/element-library/all`                | Registers every component                   | Yes          |
+| `@webtides/element-library/<component>`        | The component class + a `define()` function | No           |
+| `@webtides/element-library/<component>/define` | Calls `define()` for that one component     | Yes          |
+
+The `sideEffects` field in `package.json` marks only the `/all` and `/<component>/define` paths as side-effectful, so bundlers can tree-shake everything else.
+
+## Styling
+
+Components ship with minimal internal styling. Many examples in this Storybook use [Tailwind](https://tailwindcss.com) via the CDN for layout — that's a convenience for the demos, not a runtime requirement of the library.

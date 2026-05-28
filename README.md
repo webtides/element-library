@@ -104,12 +104,6 @@ import { AccordionElement } from '@webtides/element-library/accordion-element';
 | multi-range-field  |             | TBD  |
 -->
 
-<!--
-## Documentation
-
-For detailed documentation see the [Docs](docs/README.md).
--->
-
 ## Contributing & Development
 
 For contributions and development see [contributing docs](.github/CONTRIBUTING.md)
