@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Changed
+
+- BREAKING: replaced the `.is-sticky`, `.is-up`, `.is-down` host classes with the custom states `:state(sticky)`, `:state(up)`, `:state(down)`. Consumers that styled on the old class names should switch to `el-sticky-element:state(...) { … }`.
 
 ## Legacy (pre-merge)
 

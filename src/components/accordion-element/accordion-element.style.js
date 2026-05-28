@@ -33,7 +33,7 @@ export default css`
         display: none;
     }
 
-    :host([open='true']) {
+    :host(:state(open)) {
         .open-icon {
             display: none;
         }

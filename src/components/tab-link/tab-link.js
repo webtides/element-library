@@ -14,6 +14,9 @@ import style from './tab-link.style.js';
  *
  * @slot - Default slot for the tab label content.
  *
+ * @cssstate active - Set by the parent `<el-tab-group>` while this link's panel is the
+ *   selected one. Style with `el-tab-link:state(active) { … }`.
+ *
  * @property {string | undefined} for - Name of the panel this link activates (matches a
  *   `<el-tab-panel>`'s `name`).
  */

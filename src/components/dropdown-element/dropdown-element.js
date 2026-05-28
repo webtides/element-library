@@ -14,6 +14,9 @@ import style from './dropdown-element.style.js';
  * @csspart trigger - Forwarded onto the `trigger` slot.
  * @csspart content - Forwarded onto the `content` slot.
  *
+ * @cssstate open - Set while the dropdown content is visible. Style with `:host(:state(open))`
+ *   or `el-dropdown-element:state(open)` from outside.
+ *
  * @property {boolean} open - Whether the dropdown content is visible. Setting to `true`
  *   attaches a one-shot outside-click / `Escape` listener that closes the dropdown.
  */
@@ -33,8 +36,10 @@ export default class DropdownElement extends TemplateElement {
             open: (open) => {
                 if (open) {
                     this.addEventListeners();
+                    this._internals.states.add('open');
                 } else {
                     this.removeEventListeners();
+                    this._internals.states.delete('open');
                 }
             },
         };

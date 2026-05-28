@@ -14,11 +14,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ### accordion-element
 
+- Added: `open` custom state on the host (`:host(:state(open))`).
 - Changed (BREAKING): renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content`; the internal `.content-wrapper` class is now `.content`.
+- Changed: internal style now uses `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
+
+### checkbox-field
+
+- Added: `checked` custom state on the host. Inherits the `touched / valid / invalid` states from `FormField`.
+
+### dropdown-element
+
+- Added: `open` custom state on the host.
+
+### form-field
+
+- Added: host-level `touched`, `valid` and `invalid` custom states. Inherited by all field subclasses. The inner `.field.is-*` classes still exist for internal use.
+
+### lazy-src
+
+- Added: `loaded` custom state on the host (alongside the existing reflected `loaded` attribute).
 
 ### select-field
 
 - Changed (BREAKING): renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator`.
+
+### sticky-element
+
+- Changed (BREAKING): replaced the `.is-sticky / .is-up / .is-down` host classes with the custom states `:state(sticky) / :state(up) / :state(down)`.
+
+### tab-group
+
+- Changed: selection is mirrored onto child `<el-tab-link>` elements via the `active` custom state instead of the `[active]` attribute.
+
+### tab-link
+
+- Changed (BREAKING): the active state is now exposed as `:state(active)` instead of `[active]`.
 
 ## [0.1.0] - TBD
 

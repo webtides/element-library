@@ -12,9 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `open` custom state on the host. Style with `:host(:state(open))` or `el-accordion-element:state(open)` from outside.
+
 ### Changed
 
 - BREAKING: renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content` for consistency with the rest of the library (carousel, slider, amount-field). The internal `.content-wrapper` class is now `.content`.
+- Internal style now keys off `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
 
 ## Legacy (pre-merge)
 

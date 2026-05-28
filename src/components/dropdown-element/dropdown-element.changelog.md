@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Added
+
+- `open` custom state on the host. Style with `:host(:state(open))` or `el-dropdown-element:state(open)` from outside.
 
 ## Legacy (pre-merge)
 

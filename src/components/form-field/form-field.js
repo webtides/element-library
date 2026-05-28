@@ -13,6 +13,12 @@ import style from './form-field.style.js';
  * @fires {CustomEvent<string>} input-change - Fired when the field's `value` changes.
  *   `detail` is the new value. Bubbles.
  *
+ * @cssstate touched - Set on the host once the user has focused and blurred the field.
+ *   Inherited by all subclasses (`InputField`, `CheckboxField`, `TextareaField`,
+ *   `AmountField`, `SelectField`).
+ * @cssstate valid - Set on the host while the field currently passes validation.
+ * @cssstate invalid - Set on the host while the field currently fails validation.
+ *
  * @property {string} name - Form name for the underlying input.
  * @property {string | null} value - Current value of the field.
  * @property {boolean} required - Whether the field is required for form submission.
@@ -36,6 +42,7 @@ export default class FormField extends TemplateElement {
         if (!!this.$refs.input?.value || this.valid === false) {
             this.touched = true;
         }
+        this.syncValidationStates();
     }
 
     properties() {
@@ -60,7 +67,22 @@ export default class FormField extends TemplateElement {
             value: (value) => {
                 this.dispatch(FormFieldEvents.INPUT_CHANGE, value, true);
             },
+            valid: () => this.syncValidationStates(),
+            touched: () => this.syncValidationStates(),
         };
+    }
+
+    /** @private */
+    syncValidationStates() {
+        if (this.touched) this._internals.states.add('touched');
+        else this._internals.states.delete('touched');
+        if (this.valid) {
+            this._internals.states.add('valid');
+            this._internals.states.delete('invalid');
+        } else {
+            this._internals.states.delete('valid');
+            this._internals.states.add('invalid');
+        }
     }
 
     events() {

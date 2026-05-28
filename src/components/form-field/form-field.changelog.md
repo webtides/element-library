@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Added
+
+- `touched`, `valid` and `invalid` custom states on the host. Inherited by all subclasses (`InputField`, `CheckboxField`, `TextareaField`, `AmountField`, `SelectField`). The inner `.field.is-touched / .is-valid / .is-invalid` classes still exist; they remain the internal hook for event delegation and shadow-DOM rendered subclasses.
 
 ## Legacy (pre-merge)
 

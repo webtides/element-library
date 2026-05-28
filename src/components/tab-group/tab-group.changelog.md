@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Changed
+
+- Selection is now mirrored onto child `<el-tab-link>` elements via the `active` custom state instead of the `[active]` attribute. The `selected` attribute on `<el-tab-group>` itself is unchanged.
 
 ## Legacy (pre-merge)
 

@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Added
+
+- `checked` custom state on the host. Style with `el-checkbox-field:state(checked) { … }`. The reflected `checked` attribute is unchanged. Inherits the `touched / valid / invalid` states from `FormField`.
 
 ## Legacy (pre-merge)
 

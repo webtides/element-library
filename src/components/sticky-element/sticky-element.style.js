@@ -8,12 +8,12 @@ export default css`
 
         --sticky-height: 100%;
 
-        &.is-sticky {
-            &.is-up:not([force-down]) {
+        &:state(sticky) {
+            &:state(up):not([force-down]) {
                 transform: translateY(-100%);
             }
 
-            &.is-down {
+            &:state(down) {
                 transform: translateY(calc(-100% + var(--sticky-height)));
             }
         }

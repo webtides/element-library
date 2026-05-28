@@ -11,6 +11,10 @@ import style from './checkbox-field.style.js';
  * @fires {CustomEvent<string>} input-change - Fired when the checked state changes.
  *   `detail` is the input's `value`. Bubbles.
  *
+ * @cssstate checked - Set on the host while the checkbox is checked. Style with
+ *   `el-checkbox-field:state(checked) { … }`. Inherits `touched`, `valid` and `invalid`
+ *   from `FormField`.
+ *
  * @property {boolean} checked - Whether the checkbox is checked. Reflected to the `checked`
  *   attribute.
  */
@@ -30,6 +34,8 @@ export default class CheckboxField extends FormField {
     }
     connected() {
         this.setAttribute('checked', this.checked === true ? 'true' : 'false');
+        if (this.checked) this._internals.states.add('checked');
+        this.syncValidationStates();
     }
 
     watch() {
@@ -37,6 +43,8 @@ export default class CheckboxField extends FormField {
             ...super.watch(),
             checked: (checked) => {
                 this.setAttribute('checked', checked ? 'true' : 'false');
+                if (checked) this._internals.states.add('checked');
+                else this._internals.states.delete('checked');
                 this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value, true);
             },
         };

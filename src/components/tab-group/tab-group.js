@@ -81,9 +81,9 @@ export default class TabGroup extends StyledElement {
         for (const tabLink of this.tabLinks) {
             const panelName = tabLink.getAttribute('for');
             if (panelName === this.selected) {
-                tabLink.setAttribute('active', '');
+                tabLink._internals.states.add('active');
             } else {
-                tabLink.removeAttribute('active');
+                tabLink._internals.states.delete('active');
             }
         }
 

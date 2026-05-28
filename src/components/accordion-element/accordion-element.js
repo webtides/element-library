@@ -21,6 +21,9 @@ import Events from './accordion-element.events.js';
  * @csspart open-icon - Icon shown while the accordion is collapsed.
  * @csspart close-icon - Icon shown while the accordion is expanded.
  *
+ * @cssstate open - Set while the accordion is expanded. Style with `:host(:state(open))` or
+ *   `el-accordion-element:state(open)` from outside.
+ *
  * @property {boolean} open - Controls whether the accordion is expanded (`true`) or collapsed
  *   (`false`). Reflected to the `open` attribute.
  */
@@ -31,6 +34,7 @@ export default class AccordionElement extends TemplateElement {
 
     connected() {
         if (!this.open) this.collapse();
+        if (this.open) this._internals.states.add('open');
     }
 
     properties() {
@@ -43,6 +47,8 @@ export default class AccordionElement extends TemplateElement {
         return {
             open: (open) => {
                 open === true ? this.expand() : this.collapse();
+                if (open) this._internals.states.add('open');
+                else this._internals.states.delete('open');
                 this.dispatch(Events.TOGGLE, { open: this.open }, true);
             },
         };

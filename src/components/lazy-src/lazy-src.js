@@ -19,6 +19,9 @@ import Events from './lazy-src.events.js';
  * @property {string} rootMargin - `IntersectionObserver` `rootMargin` forwarded to lozad.
  * @property {number | number[]} threshold - `IntersectionObserver` `threshold` forwarded to
  *   lozad.
+ * @cssstate loaded - Set once the child has been swapped in. Equivalent to the reflected
+ *   `loaded` attribute; prefer `el-lazy-src:state(loaded) { … }` going forward.
+ *
  * @property {boolean} loaded - `true` once the child has been swapped in. Reflected to the
  *   `loaded` attribute so consumers can target the loaded state from CSS.
  * @property {string} imgClass - Class to apply to the inner `<img>` once it is loaded.
@@ -69,6 +72,7 @@ export default class LazySrc extends BaseElement {
     afterIntersection(target) {
         this.dispatch(Events.LOAD, this, true);
         this.loaded = true;
+        this._internals.states.add('loaded');
 
         const img = target.querySelector('img');
         if (img) {
