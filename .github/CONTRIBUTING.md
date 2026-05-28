@@ -48,7 +48,7 @@ We use a trunk-based development workflow.
 
 > In the trunk-based development model, all developers work on a single branch with open access to it. Often it's simply the `main` branch. They commit code to it and run it. It's super simple. In some cases, they create short-lived feature branches. Once code on their branch compiles and passes all tests, they merge it straight to `main`. It ensures that development is truly continuous and prevents developers from creating merge conflicts that are difficult to resolve.
 
-The trunk branch for this repo is `master`. As a release is complete the `master` branch is tagged with the new release version.
+The trunk branch for this repo is `main`. As a release is complete the `main` branch is tagged with the new release version.
 
 ### Pull Requests
 
