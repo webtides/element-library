@@ -1,15 +1,25 @@
 import defaultThemeCSS from '../src/themes/default.css?raw';
+import darkThemeCSS from '../src/themes/dark.css?raw';
 
-const defaultThemeSheet = new CSSStyleSheet();
-defaultThemeSheet.replaceSync(defaultThemeCSS);
+const themeSheets = {
+    default: (() => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(defaultThemeCSS);
+        return sheet;
+    })(),
+    dark: (() => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(darkThemeCSS);
+        return sheet;
+    })(),
+};
+
+const allThemeSheets = Object.values(themeSheets);
 
 function applyTheme(theme) {
-    const adopted = document.adoptedStyleSheets.filter((s) => s !== defaultThemeSheet);
-    if (theme === 'default') {
-        document.adoptedStyleSheets = [...adopted, defaultThemeSheet];
-    } else {
-        document.adoptedStyleSheets = adopted;
-    }
+    const adopted = document.adoptedStyleSheets.filter((s) => !allThemeSheets.includes(s));
+    const sheet = themeSheets[theme];
+    document.adoptedStyleSheets = sheet ? [...adopted, sheet] : adopted;
 }
 
 function applyColorScheme(scheme) {
@@ -83,6 +93,7 @@ const preview = {
                 items: [
                     { value: 'none', title: 'None (headless)' },
                     { value: 'default', title: 'Default' },
+                    { value: 'dark', title: 'Dark' },
                 ],
                 dynamicTitle: true,
             },
