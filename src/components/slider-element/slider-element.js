@@ -156,13 +156,15 @@ export default class SliderElement extends TemplateElement {
         if (this.autoSelect && this.canSlide) {
             //check if element is already visible
             const target = this.items[this.selectedIndex];
-            const parent = this.$refs.scroller;
-            const { marginLeft, marginRight } = getComputedStyle(target);
-            const targetWidth = target.offsetWidth + parseInt(marginLeft) + parseInt(marginRight);
-            if (target.offsetLeft + targetWidth < parent.scrollLeft + parent.offsetWidth) {
-                // means is in bounds
-                this.next();
-                return;
+            if (target) {
+                const parent = this.$refs.scroller;
+                const { marginLeft, marginRight } = getComputedStyle(target);
+                const targetWidth = target.offsetWidth + parseInt(marginLeft) + parseInt(marginRight);
+                if (target.offsetLeft + targetWidth < parent.scrollLeft + parent.offsetWidth) {
+                    // means is in bounds
+                    this.next();
+                    return;
+                }
             }
         }
         this.scrollToIndex();
@@ -179,12 +181,14 @@ export default class SliderElement extends TemplateElement {
         if (this.autoSelect && this.canSlide) {
             //check if element is already visible
             const target = this.items[this.selectedIndex];
-            const { marginLeft } = getComputedStyle(target);
-            const parent = this.$refs.scroller;
-            if (target.offsetLeft - parseInt(marginLeft) > parent.scrollLeft) {
-                // means is still in viewport
-                this.previous();
-                return;
+            if (target) {
+                const { marginLeft } = getComputedStyle(target);
+                const parent = this.$refs.scroller;
+                if (target.offsetLeft - parseInt(marginLeft) > parent.scrollLeft) {
+                    // means is still in viewport
+                    this.previous();
+                    return;
+                }
             }
         }
 
