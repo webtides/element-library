@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Changed
+
+- BREAKING: renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content` for consistency with the rest of the library (carousel, slider, amount-field). The internal `.content-wrapper` class is now `.content`.
 
 ## Legacy (pre-merge)
 

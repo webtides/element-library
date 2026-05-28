@@ -9,7 +9,7 @@ export default css`
         }
     }
 
-    [part~='title-wrapper'] {
+    [part~='title'] {
         display: flex;
     }
 
@@ -43,7 +43,7 @@ export default css`
         }
     }
 
-    .content-wrapper {
+    .content {
         overflow: hidden;
         transition: height 0.3s ease-out;
         height: auto;

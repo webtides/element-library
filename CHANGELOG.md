@@ -10,13 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
    headings as needed.
 -->
 
-<!-- ## Unreleased -->
+## Unreleased
 
-<!-- ### slider-element -->
-<!-- - Fixed: short description -->
+### accordion-element
 
-<!-- ### accordion-element -->
-<!-- - Added: short description -->
+- Changed (BREAKING): renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content`; the internal `.content-wrapper` class is now `.content`.
+
+### select-field
+
+- Changed (BREAKING): renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator`.
 
 ## [0.1.0] - TBD
 

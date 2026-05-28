@@ -16,8 +16,8 @@ import Events from './accordion-element.events.js';
  *   toggles the accordion.
  * @slot content - Content to display in the collapsible section of the accordion.
  *
- * @csspart title-wrapper - The header container that wraps the `header` slot and toggle icons.
- * @csspart content-wrapper - The wrapper around the collapsible `content` slot.
+ * @csspart title - The header container that wraps the `header` slot and toggle icons.
+ * @csspart content - The wrapper around the collapsible `content` slot.
  * @csspart open-icon - Icon shown while the accordion is collapsed.
  * @csspart close-icon - Icon shown while the accordion is expanded.
  *
@@ -101,11 +101,11 @@ export default class AccordionElement extends TemplateElement {
 
     template() {
         return html`
-            <div part="title-wrapper" ref="header" data-toggle>
+            <div part="title" ref="header" data-toggle>
                 <slot name="header"></slot>
                 ${this.iconsTemplate()}
             </div>
-            <div part="content-wrapper" class="content-wrapper" ref="content">
+            <div part="content" class="content" ref="content">
                 <slot name="content"></slot>
             </div>
         `;

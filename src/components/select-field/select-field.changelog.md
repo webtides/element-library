@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Changed
+
+- BREAKING: renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator` to avoid collisions with generic consumer styles.
 
 ## Legacy (pre-merge)
 

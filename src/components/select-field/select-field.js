@@ -61,7 +61,7 @@ export default class SelectField extends FormField {
 
     /** @private */
     dropdownIndicatorTemplate() {
-        return html` <div class="icon">&or;</div> `;
+        return html` <div class="dropdown-indicator">&or;</div> `;
     }
 }
 
