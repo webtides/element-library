@@ -5,6 +5,9 @@ dist/*
 docs-build
 storybook-static/
 
+# Generated coverage report (built by `npm run test:coverage`, set in vitest.config.js)
+test/coverage/
+
 # Generated type declarations (built by `npm run build:types`, also via prepack)
 types/
 
