@@ -61,7 +61,7 @@ element-library/
 - **lazy-src**: Lazy loading wrapper
 - **scroll-to**: Scroll to target element
 - **scroll-to-top**: Scroll to top button
-- **select-field**: Select dropdown (in progress)
+- **select-field**: Select dropdown
 - **slider-element**: CSS-only slider
 - **sticky-element**: Sticky positioning element
 - **svg-use**: SVG icon element
