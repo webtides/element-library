@@ -110,3 +110,46 @@ el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {
   border-color: var(--el-color-danger);
 }
+
+/*
+ * select-field renders both a native chevron AND a custom .dropdown-indicator.
+ * Suppress the native one and float the indicator inside the select so themed
+ * selects show a single, theme-able chevron.
+ */
+el-select-field .field {
+  position: relative;
+}
+
+el-select-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: calc(var(--el-space-3) * 2 + var(--el-space-2));
+}
+
+el-select-field .dropdown-indicator {
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  position: absolute;
+  right: var(--el-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--el-color-fg-muted);
+}
+
+/* Respect user motion + contrast preferences */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --el-duration-md: 0s;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --el-color-fg: light-dark(#000000, #ffffff);
+    --el-color-border: light-dark(#000000, #ffffff);
+    --el-border-width: 2px;
+    --el-focus-ring-width: 3px;
+  }
+}

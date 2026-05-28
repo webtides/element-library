@@ -18,6 +18,17 @@ function applyTheme(theme) {
     const adopted = document.adoptedStyleSheets.filter((s) => !allThemeSheets.includes(s));
     const sheet = themeSheets[theme];
     document.adoptedStyleSheets = sheet ? [...adopted, sheet] : adopted;
+
+    // Mirror the theme's surface onto the Storybook iframe body so the page
+    // background flips with the theme / color-scheme. Stays inside Storybook —
+    // doesn't leak into consumer themes.
+    if (sheet) {
+        document.body.style.background = 'var(--el-color-bg)';
+        document.body.style.color = 'var(--el-color-fg)';
+    } else {
+        document.body.style.background = '';
+        document.body.style.color = '';
+    }
 }
 
 function applyColorScheme(scheme) {

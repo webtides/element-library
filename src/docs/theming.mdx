@@ -47,6 +47,15 @@ The shipped themes use the [`light-dark()`](https://developer.mozilla.org/en-US/
 
 The `default.css` and `high-contrast.css` themes both declare `color-scheme: light dark` themselves, so without further configuration on your page, both modes work out of the box.
 
+### Other user preferences
+
+The shipped themes also respond to two other user-preference media queries:
+
+- **`prefers-reduced-motion: reduce`** — `--el-duration-md` collapses to `0s` in both themes, disabling component transitions.
+- **`prefers-contrast: more`** — the default theme bumps `--el-color-fg` and `--el-color-border` to pure black/white, raises `--el-border-width` to `2px` and `--el-focus-ring-width` to `3px`. The high-contrast theme is already at its contrast ceiling, so it doesn't change.
+
+If you write a custom theme, mirror these media queries in your file. They're CSS-level rules, not part of the token API, so you opt in by including them.
+
 ## What you can theme
 
 Three layered surfaces, in increasing specificity:
@@ -97,8 +106,8 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 | Token               | Default (default theme / high-contrast) | Used for                                   |
 | ------------------- | --------------------------------------- | ------------------------------------------ |
 | `--el-radius-sm`    | `2px` / `0`                             | Small inset elements (checkbox indicator). |
-| `--el-radius-md`    | `6px` / `2px`                           | Inputs, buttons, panels.                   |
-| `--el-radius-lg`    | `12px` / `4px`                          | Large surfaces (modals, future).           |
+| `--el-radius-md`    | `6px` / `2px`                           | Inputs, buttons.                           |
+| `--el-radius-lg`    | `12px` / `4px`                          | Panels, popovers, future modals/cards.     |
 | `--el-border-width` | `1px` / `2px`                           | Default border width.                      |
 
 ### Typography
@@ -116,6 +125,8 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 | ---------------- | --------------------------- | ------------------- |
 | `--el-shadow-md` | `0 4px 12px light-dark(…)`  | `none`              |
 | `--el-shadow-lg` | `0 12px 24px light-dark(…)` | `none`              |
+
+`--el-shadow-lg` is used by floating surfaces (currently `el-dropdown-element`'s panel; future popovers/modals). `--el-shadow-md` is part of the contract for inline elevation but isn't read by any current component — set it in your theme to ready it for future surfaces or your own overrides.
 
 ### Motion
 

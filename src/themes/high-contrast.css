@@ -106,3 +106,32 @@ el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {
   border-color: var(--el-color-danger);
 }
+
+/* select-field chevron — see default.css for rationale */
+el-select-field .field {
+  position: relative;
+}
+
+el-select-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: calc(var(--el-space-3) * 2 + var(--el-space-2));
+}
+
+el-select-field .dropdown-indicator {
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  position: absolute;
+  right: var(--el-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--el-color-fg);
+}
+
+/* Respect user motion preference (contrast is already at its ceiling) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --el-duration-md: 0s;
+  }
+}
