@@ -64,4 +64,12 @@ The `sideEffects` field in `package.json` marks only the `/all` and `/<component
 
 ## Styling
 
-Components ship with minimal internal styling. Many examples in this Storybook use [Tailwind](https://tailwindcss.com) via the CDN for layout — that's a convenience for the demos, not a runtime requirement of the library.
+Components ship with minimal internal styling and are **headless by default** — no opinionated visual identity. When you want a coherent look, opt into a theme:
+
+```js
+import '@webtides/element-library/themes/default.css';
+```
+
+See [Theming](?path=/docs/docs-theming--docs) for the full guide: shipped themes, the `--el-*` token contract, how to write your own theme, and how parts and custom states fit in.
+
+Many examples in this Storybook use [Tailwind](https://tailwindcss.com) via the CDN for layout — that's a convenience for the demos, not a runtime requirement of the library.

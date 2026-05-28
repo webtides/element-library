@@ -38,6 +38,17 @@ Import a component class without registering it:
 import { AccordionElement } from '@webtides/element-library/accordion-element';
 ```
 
+## Theming
+
+Components are **headless by default** — no theme imported means no opinionated colors, borders, or shadows. To opt in to a coherent look, import one of the shipped themes:
+
+```js
+import '@webtides/element-library/themes/default.css'; // neutral, system-feeling
+import '@webtides/element-library/themes/high-contrast.css'; // WCAG-AAA-leaning
+```
+
+Each theme defines the library's `--el-*` design-token contract at `:root` and uses `light-dark()`, so a single import covers both light and dark color schemes. You can override individual tokens to customize, or ship a full custom theme using the same pattern — see the [Theming guide](https://webtides.github.io/element-library/?path=/docs/docs-theming--docs) in the live Storybook for the token reference, custom states, and CSS Parts.
+
 ## Components
 
 | Package            | Description                                                                   | Version |

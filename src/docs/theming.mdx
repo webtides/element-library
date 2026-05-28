@@ -1,0 +1,201 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Docs/Theming" />
+
+# Theming
+
+`@webtides/element-library` is intentionally **headless by default** — components render with minimal structural CSS and no opinionated visual identity. When you want a coherent visual look, you opt into a theme.
+
+A theme is an **opt-in CSS file** that sets the library's `--el-*` design tokens at `:root`. Components pick up the tokens automatically, with safe null-ish fallbacks if no theme is loaded.
+
+Try it live: use the **Theme** dropdown in the Storybook toolbar to flip between `None (headless)`, `Default`, and `High contrast`. Pair it with the **Color scheme** dropdown to see how the themes adapt to light/dark.
+
+## Quick start
+
+Import a shipped theme once, at the top of your app:
+
+```js
+// Pick one
+import '@webtides/element-library/themes/default.css';
+import '@webtides/element-library/themes/high-contrast.css';
+```
+
+That's it — every component on the page now picks up the tokens. No per-component setup, no class on `<html>` required.
+
+If you want to stay headless, **don't import a theme**. Components keep working; they just render with the browser-native form-control look and no decorative borders, backgrounds, or shadows.
+
+## Themes vs. color schemes
+
+These are two separate axes:
+
+- A **theme** is a visual identity — palette, motion, radii, spacing. The library currently ships two: `default` and `high-contrast`. You can write your own.
+- A **color scheme** is light vs. dark, set by the user or the page via the CSS `color-scheme` property.
+
+The shipped themes use the [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) function, so **a theme carries both modes**. Switching `color-scheme` flips between the light and dark variants of whichever theme is active. You don't ship a "dark theme" — you ship a theme, and the user's color-scheme picks the mode.
+
+```html
+<!-- Follow the OS / user agent -->
+<html style="color-scheme: light dark">
+    …
+</html>
+
+<!-- Force one mode regardless of OS preference -->
+<html style="color-scheme: dark">
+    …
+</html>
+```
+
+The `default.css` and `high-contrast.css` themes both declare `color-scheme: light dark` themselves, so without further configuration on your page, both modes work out of the box.
+
+## What you can theme
+
+Three layered surfaces, in increasing specificity:
+
+| Surface              | What it is                                                             | When to use it                                                 |
+| -------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Design tokens**    | CSS custom properties (`--el-*`) read by every component's stylesheet. | Primary surface. Covers ~90% of theming needs.                 |
+| **CSS Shadow Parts** | Named slots in each component's shadow tree (`::part(name)`).          | When you need to override structure that tokens can't express. |
+| **Custom states**    | Host-level `:state(name)` selectors that mirror component state.       | State-aware styling (`:state(open)`, `:state(active)`, etc.).  |
+
+Tokens are documented below. Parts and states are listed in each component's docs page (CSS Parts and "States" sections).
+
+## Token reference
+
+All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallbacks (`0` widths, `transparent` colors, `none` shadows), so unthemed = headless.
+
+### Color — surfaces & text
+
+| Token                 | Default value (light / dark) | Used for                             |
+| --------------------- | ---------------------------- | ------------------------------------ |
+| `--el-color-fg`       | `#111827` / `#f3f4f6`        | Primary text & icons.                |
+| `--el-color-fg-muted` | `#6b7280` / `#9ca3af`        | Help text, inactive labels.          |
+| `--el-color-bg`       | `#ffffff` / `#0f1115`        | Default surface background.          |
+| `--el-color-bg-muted` | `#f3f4f6` / `#1c1f24`        | Subdued surfaces, hover backgrounds. |
+| `--el-color-border`   | `#d1d5db` / `#2d3138`        | Default border / divider color.      |
+
+### Color — interactive & semantic
+
+| Token                   | Default value (light / dark) | Used for                    |
+| ----------------------- | ---------------------------- | --------------------------- |
+| `--el-color-accent`     | `#2563eb` / `#60a5fa`        | Brand / interactive accent. |
+| `--el-color-success`    | `#16a34a` / `#4ade80`        | Validity OK indicators.     |
+| `--el-color-danger`     | `#dc2626` / `#f87171`        | Validity error indicators.  |
+| `--el-color-focus-ring` | `var(--el-color-accent)`     | Focus outline color.        |
+
+### Spacing — 4px base scale
+
+| Token          | Value     |
+| -------------- | --------- |
+| `--el-space-1` | `0.25rem` |
+| `--el-space-2` | `0.5rem`  |
+| `--el-space-3` | `0.75rem` |
+| `--el-space-4` | `1rem`    |
+| `--el-space-5` | `1.5rem`  |
+
+### Radius & border
+
+| Token               | Default (default theme / high-contrast) | Used for                                   |
+| ------------------- | --------------------------------------- | ------------------------------------------ |
+| `--el-radius-sm`    | `2px` / `0`                             | Small inset elements (checkbox indicator). |
+| `--el-radius-md`    | `6px` / `2px`                           | Inputs, buttons, panels.                   |
+| `--el-radius-lg`    | `12px` / `4px`                          | Large surfaces (modals, future).           |
+| `--el-border-width` | `1px` / `2px`                           | Default border width.                      |
+
+### Typography
+
+| Token               | Default                                                          |
+| ------------------- | ---------------------------------------------------------------- |
+| `--el-font-family`  | `ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, …` |
+| `--el-font-size-sm` | `0.875rem`                                                       |
+| `--el-font-size-md` | `1rem`                                                           |
+| `--el-line-height`  | `1.5`                                                            |
+
+### Shadow
+
+| Token            | Default theme               | High-contrast theme |
+| ---------------- | --------------------------- | ------------------- |
+| `--el-shadow-md` | `0 4px 12px light-dark(…)`  | `none`              |
+| `--el-shadow-lg` | `0 12px 24px light-dark(…)` | `none`              |
+
+### Motion
+
+| Token              | Default theme                | High-contrast theme |
+| ------------------ | ---------------------------- | ------------------- |
+| `--el-duration-md` | `200ms`                      | `150ms`             |
+| `--el-ease`        | `cubic-bezier(0.2, 0, 0, 1)` | same                |
+
+### Focus ring & sizing
+
+| Token                    | Default theme | High-contrast theme |
+| ------------------------ | ------------- | ------------------- |
+| `--el-focus-ring-width`  | `2px`         | `3px`               |
+| `--el-focus-ring-offset` | `2px`         | `2px`               |
+| `--el-control-height`    | `2.5rem`      | `2.75rem`           |
+| `--el-touch-target`      | `2.75rem`     | `3rem`              |
+
+## Writing your own theme
+
+A theme is just a CSS file that sets the tokens you care about — you only need to override what you want to change. Anything you leave out falls back to the component's null-ish default (or to whatever theme is layered before yours).
+
+```css
+/* my-app/src/themes/sunset.css */
+
+:root {
+    color-scheme: light dark;
+
+    /* Take the default's surfaces and just override accent + radii */
+    --el-color-accent: light-dark(#e25b30, #ffb88a);
+    --el-color-focus-ring: var(--el-color-accent);
+
+    --el-radius-sm: 4px;
+    --el-radius-md: 10px;
+    --el-radius-lg: 20px;
+
+    --el-duration-md: 250ms;
+}
+```
+
+```js
+// my-app/src/main.js
+import '@webtides/element-library/themes/default.css'; // tokens you keep
+import './themes/sunset.css'; // overrides
+```
+
+You can also stack themes — load `default.css` first as a baseline, then a scoped override sheet for a specific subtree.
+
+### Scoping a theme to a subtree
+
+Themes don't have to live at `:root`. Drop the tokens on any element to scope them:
+
+```html
+<body>
+    <main>Default theme everywhere…</main>
+
+    <section
+        style="
+        --el-color-accent: #16a34a;
+        --el-radius-md: 0;
+    "
+    >
+        …except inside this subtree, which uses a different accent and squared corners.
+    </section>
+</body>
+```
+
+Custom properties inherit naturally — including across shadow boundaries — so this works for every component in the library.
+
+## Beyond tokens
+
+For overrides tokens can't express, the library exposes two other surfaces:
+
+- **CSS Shadow Parts** — `::part(name)` reaches specific inner elements of shadow-DOM components. See each component's "CSS Parts" section for the names exposed by that element. Example: `::part(panel)` on `el-dropdown-element`.
+- **Custom states** — host-level `:state(name)` selectors mirror component state. Example: `el-tab-link:state(active) { … }`, `:host(:state(open))` inside other components, `el-input-field:state(invalid) input`. See each component's docs for the states it exposes.
+
+The form-field family (`form-field`, `input-field`, `textarea-field`, `select-field`, `checkbox-field`) renders in **light DOM**, so they're styled with normal descendant selectors instead of `::part()`. Their internal class hooks (`.field`, `.validity`, `.checked-indicator`, `.dropdown-indicator`, etc.) are documented per component.
+
+## Available themes
+
+| Theme             | Import                                               | Identity                                                                                                     |
+| ----------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Default**       | `@webtides/element-library/themes/default.css`       | Neutral, system-feeling. Modest radii, soft shadows, blue accent.                                            |
+| **High contrast** | `@webtides/element-library/themes/high-contrast.css` | WCAG-AAA-leaning. Near-black/white surfaces, 2px borders, 3px focus rings, no shadows, larger touch targets. |
