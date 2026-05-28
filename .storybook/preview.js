@@ -1,15 +1,23 @@
 import defaultThemeCSS from '../src/themes/default.css?raw';
+import highContrastThemeCSS from '../src/themes/high-contrast.css?raw';
 
-const defaultThemeSheet = new CSSStyleSheet();
-defaultThemeSheet.replaceSync(defaultThemeCSS);
+function makeSheet(css) {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    return sheet;
+}
+
+const themeSheets = {
+    default: makeSheet(defaultThemeCSS),
+    'high-contrast': makeSheet(highContrastThemeCSS),
+};
+
+const allThemeSheets = Object.values(themeSheets);
 
 function applyTheme(theme) {
-    const adopted = document.adoptedStyleSheets.filter((s) => s !== defaultThemeSheet);
-    if (theme === 'default') {
-        document.adoptedStyleSheets = [...adopted, defaultThemeSheet];
-    } else {
-        document.adoptedStyleSheets = adopted;
-    }
+    const adopted = document.adoptedStyleSheets.filter((s) => !allThemeSheets.includes(s));
+    const sheet = themeSheets[theme];
+    document.adoptedStyleSheets = sheet ? [...adopted, sheet] : adopted;
 }
 
 function applyColorScheme(scheme) {
@@ -83,6 +91,7 @@ const preview = {
                 items: [
                     { value: 'none', title: 'None (headless)' },
                     { value: 'default', title: 'Default' },
+                    { value: 'high-contrast', title: 'High contrast' },
                 ],
                 dynamicTitle: true,
             },
