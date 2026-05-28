@@ -4,29 +4,29 @@ export default css`
     el-input-field {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: var(--el-space-1, 4px);
 
         .field {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--el-space-2, 8px);
 
             .validity {
                 .valid {
-                    color: green;
+                    color: var(--el-color-success, green);
                 }
 
                 .invalid {
-                    color: red;
+                    color: var(--el-color-danger, red);
                 }
             }
         }
 
         .message {
-            font-size: 14px;
+            font-size: var(--el-font-size-sm, 14px);
 
             &.error-message {
-                color: red;
+                color: var(--el-color-danger, red);
             }
         }
     }

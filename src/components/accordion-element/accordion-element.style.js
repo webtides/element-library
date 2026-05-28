@@ -45,7 +45,7 @@ export default css`
 
     .content {
         overflow: hidden;
-        transition: height 0.3s ease-out;
+        transition: height var(--el-duration-md, 0.3s) var(--el-ease, ease-out);
         height: auto;
     }
 `;

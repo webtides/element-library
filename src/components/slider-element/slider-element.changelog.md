@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Changed
+
+- Hardcoded values in the stylesheet now reference design tokens with the previous values as fallbacks: `--el-color-fg` (dot color, default `light-dark(#333, #e5e7eb)`), `--el-color-bg` (arrow button background, default `light-dark(white, #1a1a1a)`), `--el-space-1` / `--el-space-2` / `--el-space-4` for padding.
 
 ## Legacy (pre-merge)
 

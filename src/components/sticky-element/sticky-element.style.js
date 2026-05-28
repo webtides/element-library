@@ -4,7 +4,7 @@ export default css`
     el-sticky-element {
         position: sticky;
         display: block;
-        transition: transform 0.3s ease;
+        transition: transform var(--el-duration-md, 0.3s) var(--el-ease, ease);
 
         --sticky-height: 100%;
 

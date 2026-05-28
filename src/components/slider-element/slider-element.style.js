@@ -45,14 +45,14 @@ export default css`
             cursor: pointer;
             background: none;
             border: none;
-            color: #333;
-            padding: 4px;
+            color: var(--el-color-fg, light-dark(#333, #e5e7eb));
+            padding: var(--el-space-1, 4px);
             font-size: 18px;
         }
 
         [part~='dot']::after {
             content: '○';
-            padding: 4px;
+            padding: var(--el-space-1, 4px);
         }
 
         [part~='dot']:hover {
@@ -81,14 +81,14 @@ export default css`
 
         [part~='arrow'] {
             pointer-events: all;
-            padding: 4px;
+            padding: var(--el-space-1, 4px);
             font-size: 18px;
 
             button {
                 cursor: pointer;
-                background: white;
+                background: var(--el-color-bg, light-dark(white, #1a1a1a));
                 border: none;
-                padding: 8px 16px;
+                padding: var(--el-space-2, 8px) var(--el-space-4, 16px);
             }
         }
 

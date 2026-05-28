@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: `open` custom state on the host (`:host(:state(open))`).
 - Changed (BREAKING): renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content`; the internal `.content-wrapper` class is now `.content`.
 - Changed: internal style now uses `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
+- Changed: expand/collapse transition is token-driven (`--el-duration-md`, `--el-ease`).
 
 ### checkbox-field
 
@@ -30,6 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: host-level `touched`, `valid` and `invalid` custom states. Inherited by all field subclasses. The inner `.field.is-*` classes still exist for internal use.
 
+### input-field
+
+- Changed: hardcoded values now reference design tokens (`--el-space-*`, `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`) with the previous values as fallbacks.
+
 ### lazy-src
 
 - Added: `loaded` custom state on the host (alongside the existing reflected `loaded` attribute).
@@ -38,9 +43,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Changed (BREAKING): renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator`.
 
+### slider-element
+
+- Changed: hardcoded colors and paddings now reference design tokens (`--el-color-fg`, `--el-color-bg`, `--el-space-*`). Color fallbacks use `light-dark()` so unthemed dark mode renders sensibly.
+
 ### sticky-element
 
 - Changed (BREAKING): replaced the `.is-sticky / .is-up / .is-down` host classes with the custom states `:state(sticky) / :state(up) / :state(down)`.
+- Changed: sticky transition is token-driven (`--el-duration-md`, `--el-ease`).
 
 ### tab-group
 
