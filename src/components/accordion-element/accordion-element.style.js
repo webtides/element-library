@@ -11,6 +11,9 @@ export default css`
 
     [part~='title'] {
         display: flex;
+        padding: var(--el-space-3, 0) 0;
+        cursor: pointer;
+        border-bottom: var(--el-border-width, 0) solid var(--el-color-border, transparent);
     }
 
     .open-icon,
@@ -47,5 +50,6 @@ export default css`
         overflow: hidden;
         transition: height var(--el-duration-md, 0.3s) var(--el-ease, ease-out);
         height: auto;
+        padding: var(--el-space-3, 0) 0;
     }
 `;

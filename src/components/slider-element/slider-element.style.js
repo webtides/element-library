@@ -45,7 +45,7 @@ export default css`
             cursor: pointer;
             background: none;
             border: none;
-            color: var(--el-color-fg, light-dark(#333, #e5e7eb));
+            color: var(--el-color-fg, currentColor);
             padding: var(--el-space-1, 4px);
             font-size: 18px;
         }
@@ -86,7 +86,9 @@ export default css`
 
             button {
                 cursor: pointer;
-                background: var(--el-color-bg, light-dark(white, #1a1a1a));
+                background: var(--el-color-bg, transparent);
+                color: var(--el-color-fg, inherit);
+                border-radius: var(--el-radius-md, 0);
                 border: none;
                 padding: var(--el-space-2, 8px) var(--el-space-4, 16px);
             }

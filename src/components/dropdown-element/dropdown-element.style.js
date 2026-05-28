@@ -5,4 +5,13 @@ export default css`
         display: block;
         position: relative;
     }
+
+    [part~='panel'] {
+        background: var(--el-color-bg, transparent);
+        color: var(--el-color-fg, inherit);
+        border: var(--el-border-width, 0) solid var(--el-color-border, transparent);
+        border-radius: var(--el-radius-md, 0);
+        padding: var(--el-space-3, 0);
+        box-shadow: var(--el-shadow-md, none);
+    }
 `;

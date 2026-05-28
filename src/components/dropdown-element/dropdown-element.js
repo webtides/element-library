@@ -12,6 +12,8 @@ import style from './dropdown-element.style.js';
  * @slot content - Dropdown content shown only while `open` is `true`.
  *
  * @csspart trigger - Forwarded onto the `trigger` slot.
+ * @csspart panel - Wrapper around the `content` slot. Surface for background, border, radius
+ *   and elevation. Only present in the DOM while `open` is `true`.
  * @csspart content - Forwarded onto the `content` slot.
  *
  * @cssstate open - Set while the dropdown content is visible. Style with `:host(:state(open))`
@@ -80,7 +82,13 @@ export default class DropdownElement extends TemplateElement {
     template() {
         return html`
             <slot part="trigger" name="trigger" show-dropdown></slot>
-            ${this.open ? html` <slot part="content" name="content"></slot> ` : null}
+            ${this.open
+                ? html`
+                      <div part="panel">
+                          <slot part="content" name="content"></slot>
+                      </div>
+                  `
+                : null}
         `;
     }
 }

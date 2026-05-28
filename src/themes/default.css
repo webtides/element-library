@@ -7,8 +7,8 @@
  *     import '@webtides/element-library/themes/default.css';
  *
  * Without this (or another) theme imported, components fall back to the
- * default values baked into each component's stylesheet — i.e. they stay
- * headless.
+ * null-ish defaults baked into each component's stylesheet — i.e. they stay
+ * headless (no borders, no decorative backgrounds, native controls untouched).
  *
  * Surface colors use light-dark(), so the theme automatically adapts when
  * the page declares color-scheme. The :root rule below opts the document
@@ -40,8 +40,8 @@
 
   /* Radius */
   --el-radius-sm: 2px;
-  --el-radius-md: 4px;
-  --el-radius-lg: 8px;
+  --el-radius-md: 6px;
+  --el-radius-lg: 12px;
 
   /* Border */
   --el-border-width: 1px;
@@ -57,7 +57,7 @@
   --el-shadow-lg: 0 12px 24px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.5));
 
   /* Motion */
-  --el-duration-md: 300ms;
+  --el-duration-md: 200ms;
   --el-ease: cubic-bezier(0.2, 0, 0, 1);
 
   /* Focus ring */
@@ -67,4 +67,46 @@
   /* Sizing */
   --el-control-height: 2.5rem;
   --el-touch-target: 2.75rem;
+}
+
+/*
+ * Native form controls (input / textarea / select) live in light DOM, so the
+ * theme decorates them directly. Without this rule, consumers get the browser's
+ * native input look (headless default).
+ */
+el-input-field input,
+el-textarea-field textarea,
+el-select-field select {
+  border: var(--el-border-width) solid var(--el-color-border);
+  border-radius: var(--el-radius-md);
+  padding: var(--el-space-2) var(--el-space-3);
+  background: var(--el-color-bg);
+  color: var(--el-color-fg);
+  font-family: var(--el-font-family);
+  font-size: var(--el-font-size-md);
+  line-height: var(--el-line-height);
+  transition:
+    border-color var(--el-duration-md) var(--el-ease),
+    box-shadow var(--el-duration-md) var(--el-ease);
+}
+
+el-input-field input,
+el-select-field select {
+  min-height: var(--el-control-height);
+}
+
+el-input-field input:focus,
+el-textarea-field textarea:focus,
+el-select-field select:focus {
+  outline: none;
+  border-color: var(--el-color-focus-ring);
+  box-shadow:
+    0 0 0 var(--el-focus-ring-offset) var(--el-color-bg),
+    0 0 0 calc(var(--el-focus-ring-offset) + var(--el-focus-ring-width)) var(--el-color-focus-ring);
+}
+
+el-input-field:state(invalid) input,
+el-textarea-field:state(invalid) textarea,
+el-select-field:state(invalid) select {
+  border-color: var(--el-color-danger);
 }
