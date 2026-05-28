@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './tab-group.readme.md?raw';
 import { define as defineGroup } from './tab-group.js';
 import { define as defineLink } from '../tab-link/tab-link.js';

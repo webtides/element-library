@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './checkbox-field.readme.md?raw';
 import { define } from './checkbox-field.js';
 define();

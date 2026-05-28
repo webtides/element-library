@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './svg-use.readme.md?raw';
 import { define } from './svg-use.js';
 define();
@@ -26,6 +26,5 @@ export const SvgUse = {
         },
     },
     decorators: [],
-    render: ({}) =>
-        html`<el-svg-use></el-svg-use>`,
+    render: ({}) => html`<el-svg-use></el-svg-use>`,
 };

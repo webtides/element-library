@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './transition-classes.readme.md?raw';
 import { define } from './transition-classes.js';
 define();

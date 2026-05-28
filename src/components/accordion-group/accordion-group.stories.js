@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './accordion-group.readme.md?raw';
 import { define as define1 } from './accordion-group.js';
 define1();

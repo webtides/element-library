@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './tab-panel.readme.md?raw';
 import { define } from './tab-panel.js';
 define();

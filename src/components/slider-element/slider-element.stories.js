@@ -1,5 +1,5 @@
 import { defineElement, TemplateElement } from '@webtides/element-js';
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './slider-element.readme.md?raw';
 import { define } from './slider-element.js';
 define();

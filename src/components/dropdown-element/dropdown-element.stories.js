@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './dropdown-element.readme.md?raw';
 import { define } from './dropdown-element.js';
 define();

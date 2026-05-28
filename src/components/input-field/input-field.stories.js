@@ -1,7 +1,7 @@
 import { userEvent, within, expect } from 'storybook/test';
 import { define } from './input-field.js';
 define();
-const html = String.raw;
+import { html } from '@webtides/element-js';
 
 export default {
     title: 'Components/InputField',

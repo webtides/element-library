@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './scroll-to-top.readme.md?raw';
 import { define } from './scroll-to-top.js';
 define();

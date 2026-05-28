@@ -1,7 +1,7 @@
 import readme from './lazy-src.readme.md?raw';
 import { define } from './lazy-src.js';
 define();
-const html = String.raw;
+import { html } from '@webtides/element-js';
 
 export default {
     title: 'Components/LazySrc',

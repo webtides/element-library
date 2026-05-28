@@ -1,4 +1,4 @@
-const html = String.raw;
+import { html } from '@webtides/element-js';
 import readme from './amount-field.readme.md?raw';
 import { define } from './amount-field.js';
 define();
