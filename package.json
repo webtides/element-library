@@ -43,7 +43,8 @@
     "index.js",
     "custom-elements.json",
     "web-types.json",
-    "patches"
+    "patches",
+    "CHANGELOG.md"
   ],
   "repository": {
     "type": "git",

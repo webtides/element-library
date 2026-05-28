@@ -42,6 +42,15 @@ npm run test:ui        # visual test runner
 
 Please ensure tests pass before submitting a PR. New features should ship with both unit (`*.test.unit.js`) and feature (`*.test.feature.js`) tests.
 
+## Changelog entries
+
+Every PR that produces a user-visible change updates **two** changelogs under their `## Unreleased` heading:
+
+1. The affected component's `src/components/<name>/<name>.changelog.md`.
+2. The root `CHANGELOG.md`, grouped under an `### <component-name>` subsection.
+
+A PR that touches multiple components updates each component's changelog and adds one subsection per component in the root. PRs without user-visible changes (refactors, internal tooling, docs-only) do not need changelog entries.
+
 ## Git branching
 
 We use a trunk-based development workflow.
@@ -61,4 +70,4 @@ When all reviewers approve a PR, the feature/release may be merged.
 
 ## Versioning & releases
 
-Tagging a commit with `v*` (e.g. `v0.2.0`) triggers the `Publish to npm` workflow, which runs the full test suite and then publishes to npm. The `NPM_TOKEN` secret must be configured on the repo for publishing to succeed.
+Releases are cut manually — see [`RELEASING.md`](../RELEASING.md) for the step-by-step flow. In short: bump `package.json`, promote `Unreleased` to a dated version heading in the root and affected component changelogs, commit, tag `vX.Y.Z`, and push. The `Publish to npm` workflow fires on the `v*` tag, runs the full test suite, and publishes. The `NPM_TOKEN` secret must be configured on the repo for publishing to succeed.
