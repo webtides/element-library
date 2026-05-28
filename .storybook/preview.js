@@ -1,3 +1,25 @@
+import defaultThemeCSS from '../src/themes/default.css?raw';
+
+const defaultThemeSheet = new CSSStyleSheet();
+defaultThemeSheet.replaceSync(defaultThemeCSS);
+
+function applyTheme(theme) {
+    const adopted = document.adoptedStyleSheets.filter((s) => s !== defaultThemeSheet);
+    if (theme === 'default') {
+        document.adoptedStyleSheets = [...adopted, defaultThemeSheet];
+    } else {
+        document.adoptedStyleSheets = adopted;
+    }
+}
+
+function applyColorScheme(scheme) {
+    if (scheme === 'auto') {
+        document.documentElement.style.removeProperty('color-scheme');
+    } else {
+        document.documentElement.style.setProperty('color-scheme', scheme);
+    }
+}
+
 function isElementJsTemplate(value) {
     return (
         value &&
@@ -51,8 +73,40 @@ const preview = {
             },
         },
     },
+    globalTypes: {
+        theme: {
+            name: 'Theme',
+            description: 'Design-token theme applied at :root',
+            defaultValue: 'default',
+            toolbar: {
+                icon: 'paintbrush',
+                items: [
+                    { value: 'none', title: 'None (headless)' },
+                    { value: 'default', title: 'Default' },
+                ],
+                dynamicTitle: true,
+            },
+        },
+        colorScheme: {
+            name: 'Color scheme',
+            description: 'CSS color-scheme override on <html>',
+            defaultValue: 'auto',
+            toolbar: {
+                icon: 'mirror',
+                items: [
+                    { value: 'auto', title: 'System' },
+                    { value: 'light', title: 'Light' },
+                    { value: 'dark', title: 'Dark' },
+                ],
+                dynamicTitle: true,
+            },
+        },
+    },
     decorators: [
-        (story) => {
+        (story, context) => {
+            applyTheme(context.globals.theme);
+            applyColorScheme(context.globals.colorScheme);
+
             const result = story();
             if (isElementJsTemplate(result)) {
                 const container = document.createElement('div');

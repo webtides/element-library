@@ -23,6 +23,7 @@
       "types": "./types/src/components/*/*.define.d.ts",
       "default": "./src/components/*/*.define.js"
     },
+    "./themes/*.css": "./src/themes/*.css",
     "./custom-elements.json": "./custom-elements.json",
     "./web-types.json": "./web-types.json",
     "./package.json": "./package.json"
@@ -38,6 +39,7 @@
     "src/components/**/*.md",
     "!src/components/**/*.stories.js",
     "!src/components/**/*.test.*.js",
+    "src/themes/*.css",
     "types/**/*.d.ts",
     "all.js",
     "index.js",

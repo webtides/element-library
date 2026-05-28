@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### Theming
+
+- Added: opt-in default theme stylesheet at `@webtides/element-library/themes/default.css`. Defines the `--el-*` token vocabulary at `:root` with `light-dark()` color values; without it imported, components stay headless.
+- Added: Storybook toolbar gains a "Theme" switch (None / Default) and a "Color scheme" switch (System / Light / Dark) for previewing themed and unthemed states.
+
 ### accordion-element
 
 - Added: `open` custom state on the host (`:host(:state(open))`).
