@@ -19,8 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: expanded token-driven surfaces across components so the theme toggle is actually visible — dropdown panel, accordion title/content padding + divider, checkbox indicator + accent, tab-link active accent + hover, tab-group bottom border, form-field label margin/color, amount-field wrapper border + button/input padding. All fallbacks are null-ish (`0` widths, `transparent` colors, `none` shadows) so unthemed components remain headless.
 - Changed: default theme decorates native form controls (`input`, `textarea`, `select`) directly via component selectors, since those live in light DOM and can't be safely overridden from component CSS without losing the native unthemed look.
 - Changed: slider-element fallbacks for dot color and arrow background are now `currentColor` / `transparent` instead of `#333` / `white` — unthemed slider matches surrounding text instead of imposing a light-mode-assuming palette.
-- Added: opt-in dark theme stylesheet at `@webtides/element-library/themes/dark.css`. Unlike default.css (which uses `light-dark()` and follows the user's `color-scheme`), this one is pinned to dark — use it when you want dark regardless of the OS or page setting. Slightly higher contrast and a cyan accent so it reads as a distinct theme rather than just default-forced-dark.
-- Added: Storybook theme toolbar now offers None / Default / Dark.
 
 ### accordion-element
 
