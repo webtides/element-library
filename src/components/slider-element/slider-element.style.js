@@ -47,7 +47,7 @@ export default css`
             border: none;
             color: var(--el-color-fg, currentColor);
             padding: var(--el-space-1, 4px);
-            font-size: 18px;
+            font-size: 22px;
         }
 
         [part~='dot']::after {
@@ -56,11 +56,15 @@ export default css`
         }
 
         [part~='dot']:hover {
-            color: #666;
+            color: var(--el-color-accent, #666);
         }
 
         [part~='dot']:active {
-            color: #999;
+            color: var(--el-color-accent, #999);
+        }
+
+        [part~='dot'][aria-pressed='true'] {
+            color: var(--el-color-accent, currentColor);
         }
 
         [part~='dot'][aria-pressed='true']::after {
@@ -79,19 +83,17 @@ export default css`
         align-items: center;
         pointer-events: none;
 
+        /* The arrow <button> *is* the part element (it wraps a <slot>), so style
+           it directly — a nested "button" selector would match nothing. */
         [part~='arrow'] {
             pointer-events: all;
-            padding: var(--el-space-1, 4px);
+            cursor: pointer;
             font-size: 18px;
-
-            button {
-                cursor: pointer;
-                background: var(--el-color-bg, transparent);
-                color: var(--el-color-fg, inherit);
-                border-radius: var(--el-radius-md, 0);
-                border: none;
-                padding: var(--el-space-2, 8px) var(--el-space-4, 16px);
-            }
+            background: var(--el-color-bg, transparent);
+            color: var(--el-color-fg, inherit);
+            border-radius: var(--el-radius-md, 0);
+            border: var(--el-border-width, 0) solid var(--el-color-border, transparent);
+            padding: var(--el-space-2, 8px) var(--el-space-4, 16px);
         }
 
         [part~='arrow-left'] {

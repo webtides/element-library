@@ -2,6 +2,12 @@ const css = String.raw;
 
 export default css`
     :host {
+        display: block;
+        margin-bottom: var(--el-space-2, 0);
+        border: var(--el-border-width, 0) solid var(--el-color-border, transparent);
+        border-radius: var(--el-radius-md, 0);
+        background: var(--el-color-bg, transparent);
+
         &[cloak='true'] {
             svg {
                 display: none;
@@ -11,9 +17,14 @@ export default css`
 
     [part~='title'] {
         display: flex;
-        padding: var(--el-space-3, 0) 0;
+        padding: var(--el-space-3, 0) var(--el-space-3, 0);
         cursor: pointer;
-        border-bottom: var(--el-border-width, 0) solid var(--el-color-border, transparent);
+        /* Divider between header and body — shown only while the item is open. */
+        border-bottom: var(--el-border-width, 0) solid transparent;
+    }
+
+    :host(:state(open)) [part~='title'] {
+        border-bottom-color: var(--el-color-border, transparent);
     }
 
     .icon {
@@ -48,6 +59,6 @@ export default css`
 
     /* Padding lives on the inner wrapper so collapsing .content to height:0 clips it too. */
     .content-inner {
-        padding: var(--el-space-3, 0) 0;
+        padding: var(--el-space-3, 0) var(--el-space-3, 0);
     }
 `;

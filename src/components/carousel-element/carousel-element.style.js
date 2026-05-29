@@ -108,8 +108,8 @@ export default css`
     }
     .glide__bullet {
         background-color: rgba(255, 255, 255, 0.5);
-        width: 9px;
-        height: 9px;
+        width: 13px;
+        height: 13px;
         padding: 0;
         border-radius: 50%;
         border: 2px solid transparent;

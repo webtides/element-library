@@ -1,5 +1,6 @@
 import defaultThemeCSS from '../src/themes/default.css?raw';
 import highContrastThemeCSS from '../src/themes/high-contrast.css?raw';
+import sketchyThemeCSS from '../src/themes/sketchy.css?raw';
 
 function makeSheet(css) {
     const sheet = new CSSStyleSheet();
@@ -10,6 +11,7 @@ function makeSheet(css) {
 const themeSheets = {
     default: makeSheet(defaultThemeCSS),
     'high-contrast': makeSheet(highContrastThemeCSS),
+    sketchy: makeSheet(sketchyThemeCSS),
 };
 
 const allThemeSheets = Object.values(themeSheets);
@@ -103,6 +105,7 @@ const preview = {
                     { value: 'none', title: 'None (headless)' },
                     { value: 'default', title: 'Default' },
                     { value: 'high-contrast', title: 'High contrast' },
+                    { value: 'sketchy', title: 'Sketchy' },
                 ],
                 dynamicTitle: true,
             },

@@ -8,7 +8,7 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 A theme is an **opt-in CSS file** that sets the library's `--el-*` design tokens at `:root`. Components pick up the tokens automatically, with safe null-ish fallbacks if no theme is loaded.
 
-Try it live: use the **Theme** dropdown in the Storybook toolbar to flip between `None (headless)`, `Default`, and `High contrast`. Pair it with the **Color scheme** dropdown to see how the themes adapt to light/dark.
+Try it live: use the **Theme** dropdown in the Storybook toolbar to flip between `None (headless)`, `Default`, `High contrast`, and `Sketchy`. Pair it with the **Color scheme** dropdown to see how the themes adapt to light/dark.
 
 ## Quick start
 
@@ -28,7 +28,7 @@ If you want to stay headless, **don't import a theme**. Components keep working;
 
 These are two separate axes:
 
-- A **theme** is a visual identity — palette, motion, radii, spacing. The library currently ships two: `default` and `high-contrast`. You can write your own.
+- A **theme** is a visual identity — palette, motion, radii, spacing. The library currently ships three: `default`, `high-contrast`, and `sketchy`. You can write your own.
 - A **color scheme** is light vs. dark, set by the user or the page via the CSS `color-scheme` property.
 
 The shipped themes use the [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) function, so **a theme carries both modes**. Switching `color-scheme` flips between the light and dark variants of whichever theme is active. You don't ship a "dark theme" — you ship a theme, and the user's color-scheme picks the mode.
@@ -206,7 +206,8 @@ The form-field family (`form-field`, `input-field`, `textarea-field`, `select-fi
 
 ## Available themes
 
-| Theme             | Import                                               | Identity                                                                                                     |
-| ----------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Default**       | `@webtides/element-library/themes/default.css`       | Neutral, system-feeling. Modest radii, soft shadows, blue accent.                                            |
-| **High contrast** | `@webtides/element-library/themes/high-contrast.css` | WCAG-AAA-leaning. Near-black/white surfaces, 2px borders, 3px focus rings, no shadows, larger touch targets. |
+| Theme             | Import                                               | Identity                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Default**       | `@webtides/element-library/themes/default.css`       | Neutral, system-feeling. Modest radii, soft shadows, blue accent.                                                                                                     |
+| **High contrast** | `@webtides/element-library/themes/high-contrast.css` | WCAG-AAA-leaning. Near-black/white surfaces, 2px borders, 3px focus rings, no shadows, larger touch targets.                                                          |
+| **Sketchy**       | `@webtides/element-library/themes/sketchy.css`       | Hand-drawn "wired"/rough.js feel. Handwriting font, irregular pencil-stroke borders, ink-on-paper surfaces, offset cutout shadows. Pure tokens — no canvas rendering. |

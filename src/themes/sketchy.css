@@ -1,0 +1,230 @@
+/*
+ * @webtides/element-library — sketchy theme
+ *
+ * Opt-in stylesheet that gives components a hand-drawn, "wired"/rough.js-style
+ * look: a handwriting font, irregular pencil-stroke borders, ink-on-paper
+ * surfaces and offset cutout shadows. Import once at the top of your app:
+ *
+ *     import '@webtides/element-library/themes/sketchy.css';
+ *
+ * The sketch feel is achieved purely with design tokens — no canvas/SVG
+ * rendering — so it stays a single CSS import like the other themes. The
+ * tell vs. real rough.js is that the border "wobble" is identical on every
+ * element (a fixed irregular border-radius) rather than randomized per box.
+ *
+ * The handwriting face (Patrick Hand) is embedded below via @font-face with an
+ * absolute URL on purpose: themes are loaded into a constructable stylesheet
+ * (replaceSync) in some hosts, which drops @import rules and resolves relative
+ * URLs against the document — @font-face with an absolute src works in both
+ * the bundler and replaceSync paths.
+ *
+ * Uses light-dark() so both color schemes are supported — light reads as ink
+ * on warm paper, dark as chalk on a board. The theme follows the user's
+ * color-scheme like default.css does.
+ */
+
+/* Patrick Hand — latin + latin-ext (gstatic, content-versioned woff2) */
+@font-face {
+  font-family: 'Patrick Hand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/patrickhand/v25/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2) format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Patrick Hand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/patrickhand/v25/LDI1apSQOAYtSuYWp8ZhfYe8UMLLubg58xGL.woff2) format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* Color — surfaces & text (ink on white / chalk on a board) */
+  --el-color-fg: light-dark(#2b2b2b, #ece4d4);
+  --el-color-fg-muted: light-dark(#5f5b53, #b0a890);
+  --el-color-bg: light-dark(#ffffff, #232020);
+  --el-color-bg-muted: light-dark(#f4f4f4, #2e2a28);
+  --el-color-border: light-dark(#2b2b2b, #ece4d4);
+
+  /* Color — interactive & semantic (felt-tip marker palette) */
+  --el-color-accent: light-dark(#2f6fed, #8fb0ff);
+  --el-color-success: light-dark(#2f9e44, #69db7c);
+  --el-color-danger: light-dark(#e03131, #ff8787);
+  --el-color-focus-ring: var(--el-color-accent);
+
+  /* Spacing — same 4px base scale as the other themes */
+  --el-space-1: 0.25rem;
+  --el-space-2: 0.5rem;
+  --el-space-3: 0.75rem;
+  --el-space-4: 1rem;
+  --el-space-5: 1.5rem;
+
+  /*
+   * Radius — the hand-drawn corner trick. An asymmetric 8-value border-radius
+   * (horizontal radii / vertical radii) makes each corner round by a slightly
+   * different amount, faking a pencil stroke. Values are kept modest so short,
+   * wide controls (inputs/buttons) wobble instead of turning into pills.
+   */
+  --el-radius-sm: 6px 10px 7px 9px / 9px 6px 10px 7px;
+  --el-radius-md: 16px 9px 18px 11px / 11px 17px 9px 16px;
+  --el-radius-lg: 26px 15px 30px 17px / 17px 28px 15px 26px;
+
+  /* Border — pen line */
+  --el-border-width: 2px;
+
+  /* Typography — handwriting face, with casual fallbacks before generic cursive */
+  --el-font-family: 'Patrick Hand', 'Comic Sans MS', 'Segoe Print', 'Bradley Hand', 'Marker Felt', cursive;
+  --el-font-size-sm: 0.9375rem;
+  --el-font-size-md: 1.0625rem;
+  --el-line-height: 1.55;
+
+  /* Shadow — hard offset "cutout"/sticker shadow, no blur, in the ink color */
+  --el-shadow-md: 2px 2px 0 light-dark(rgba(43, 43, 43, 0.2), rgba(0, 0, 0, 0.55));
+  --el-shadow-lg: 4px 5px 0 light-dark(rgba(43, 43, 43, 0.24), rgba(0, 0, 0, 0.6));
+
+  /* Motion — a little springy overshoot for a playful feel */
+  --el-duration-md: 200ms;
+  --el-ease: cubic-bezier(0.34, 1.3, 0.64, 1);
+
+  /* Focus ring — slightly larger gap so the ring reads as a separate scribble */
+  --el-focus-ring-width: 2px;
+  --el-focus-ring-offset: 3px;
+
+  /* Sizing */
+  --el-control-height: 2.5rem;
+  --el-touch-target: 2.75rem;
+}
+
+/*
+ * Native form controls (input / textarea / select) live in light DOM, so the
+ * theme decorates them directly. Mirrors the rule set in default.css.
+ */
+el-input-field input,
+el-textarea-field textarea,
+el-select-field select {
+  box-sizing: border-box;
+  width: 100%;
+  border: var(--el-border-width) solid var(--el-color-border);
+  border-radius: var(--el-radius-md);
+  padding: var(--el-space-2) var(--el-space-3);
+  background: var(--el-color-bg);
+  color: var(--el-color-fg);
+  font-family: var(--el-font-family);
+  font-size: var(--el-font-size-md);
+  line-height: var(--el-line-height);
+  transition:
+    border-color var(--el-duration-md) var(--el-ease),
+    box-shadow var(--el-duration-md) var(--el-ease);
+}
+
+el-input-field input,
+el-select-field select {
+  min-height: var(--el-control-height);
+}
+
+el-input-field input:focus,
+el-textarea-field textarea:focus,
+el-select-field select:focus {
+  outline: none;
+  border-color: var(--el-color-focus-ring);
+  box-shadow:
+    0 0 0 var(--el-focus-ring-offset) var(--el-color-bg),
+    0 0 0 calc(var(--el-focus-ring-offset) + var(--el-focus-ring-width)) var(--el-color-focus-ring);
+}
+
+el-input-field:state(invalid) input,
+el-textarea-field:state(invalid) textarea,
+el-select-field:state(invalid) select {
+  border-color: var(--el-color-danger);
+}
+
+/* select-field chevron — see default.css for rationale */
+el-select-field .field {
+  position: relative;
+}
+
+el-select-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: calc(var(--el-space-3) * 2 + var(--el-space-2));
+}
+
+el-select-field .dropdown-indicator {
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  position: absolute;
+  right: var(--el-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--el-color-fg-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Component flourishes
+ *
+ * The accordion, tab and slider components now read the design tokens (so every
+ * theme can decorate them). The extras below are sketch-only: a soft cutout
+ * shadow and spacing that wouldn't suit the other themes.
+ *
+ * Carousel is different — it inlines Glide's own hardcoded theme (white arrows
+ * meant to sit over images) and reads no tokens, so it's re-skinned here,
+ * sketchy-only, via ::part() with !important to beat Glide's class selectors.
+ * ::part() pierces the shadow boundary from this document-level sheet.
+ * ------------------------------------------------------------------------- */
+
+/* Accordion — lift each hand-drawn card off the page */
+el-accordion-element {
+  box-shadow: var(--el-shadow-md);
+}
+
+/* Tabs — small gap between the boxed tabs */
+el-tab-link {
+  margin-right: var(--el-space-1);
+}
+
+/* Carousel — re-skin Glide's hardcoded arrows + bullets as sketch controls */
+el-carousel-element::part(arrow) {
+  background: var(--el-color-bg) !important;
+  color: var(--el-color-fg) !important;
+  border: var(--el-border-width) solid var(--el-color-border) !important;
+  border-radius: var(--el-radius-md) !important;
+  box-shadow: var(--el-shadow-md) !important;
+  text-shadow: none !important;
+}
+el-carousel-element::part(dot) {
+  background: var(--el-color-bg) !important;
+  border: 2px solid var(--el-color-border) !important;
+  box-shadow: none !important;
+}
+el-carousel-element::part(selected-dot) {
+  background: var(--el-color-accent) !important;
+}
+
+/* Respect user motion + contrast preferences (mirrors default.css) */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --el-duration-md: 0s;
+    /* drop the overshoot too, so any non-tokenized easing stays calm */
+    --el-ease: cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --el-color-fg: light-dark(#000000, #ffffff);
+    --el-color-border: light-dark(#000000, #ffffff);
+    --el-border-width: 3px;
+    --el-focus-ring-width: 3px;
+  }
+}
