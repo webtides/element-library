@@ -112,7 +112,9 @@ export default class AccordionElement extends TemplateElement {
                 ${this.iconsTemplate()}
             </div>
             <div part="content" class="content" ref="content">
-                <slot name="content"></slot>
+                <div class="content-inner">
+                    <slot name="content"></slot>
+                </div>
             </div>
         `;
     }

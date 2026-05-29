@@ -77,7 +77,7 @@ const preview = {
     parameters: {
         options: {
             storySort: {
-                order: ['Docs', ['Introduction', 'Installation', 'Usage', 'Theming'], 'Components'],
+                order: ['Docs', ['Introduction', 'Installation', 'Usage', 'Theming'], 'Demo', 'Components'],
             },
         },
         docs: {

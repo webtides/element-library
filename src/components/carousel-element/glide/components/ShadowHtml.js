@@ -3,8 +3,10 @@ import { define } from '@glidejs/glide/src/utils/object';
 
 const TRACK_SELECTOR = '[data-glide-el="track"]';
 
-export default function (Glide, Components) {
-    const glideHtml = GlideHTMLComponent(Glide, Components);
+export default function (Glide, Components, Events) {
+    // Glide passes (glide, components, events) to every component factory; html.js needs
+    // Events to register its `update` handler, so forward it like the sibling Shadow* wrappers.
+    const glideHtml = GlideHTMLComponent(Glide, Components, Events);
 
     define(glideHtml, 'host', {
         /**

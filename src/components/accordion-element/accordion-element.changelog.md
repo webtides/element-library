@@ -22,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Internal style now keys off `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
 - Expand/collapse transition reads `--el-duration-md` and `--el-ease` (with the previous `0.3s ease-out` as fallback).
 
+### Fixed
+
+- Collapsed content no longer leaves a visible sliver. The content padding moved from `.content` (which collapses to `height: 0`) onto a new inner `.content-inner` wrapper, so closing the accordion now also clips the padding. Previously only noticeable once a theme set `--el-space-3`.
+
 ## Legacy (pre-merge)
 
 The version numbers below predate the single-package merge and refer to the component's former standalone npm package, not the current `@webtides/element-library` version. Kept for historical reference.

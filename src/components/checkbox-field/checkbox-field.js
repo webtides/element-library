@@ -61,6 +61,15 @@ export default class CheckboxField extends FormField {
         };
     }
 
+    /**
+     * The checkbox renders its label inline next to the box (see `fieldTemplate`), so the base
+     * FormField label is suppressed.
+     * @returns {null}
+     */
+    labelTemplate() {
+        return null;
+    }
+
     fieldTemplate() {
         const classes = { 'is-checked': !!this.checked };
         return html`

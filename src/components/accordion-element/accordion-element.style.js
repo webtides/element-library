@@ -50,6 +50,10 @@ export default css`
         overflow: hidden;
         transition: height var(--el-duration-md, 0.3s) var(--el-ease, ease-out);
         height: auto;
+    }
+
+    /* Padding lives on the inner wrapper so collapsing .content to height:0 clips it too. */
+    .content-inner {
         padding: var(--el-space-3, 0) 0;
     }
 `;

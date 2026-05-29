@@ -32,10 +32,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed (BREAKING): renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content`; the internal `.content-wrapper` class is now `.content`.
 - Changed: internal style now uses `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
 - Changed: expand/collapse transition is token-driven (`--el-duration-md`, `--el-ease`).
+- Fixed: collapsed content no longer leaves a padding-sized sliver — the `.content` padding moved to an inner `.content-inner` wrapper so closing the accordion clips it. Only surfaced once a theme set `--el-space-3`.
+
+### carousel-element
+
+- Fixed: `ShadowHtml` now forwards Glide's `Events` argument to the wrapped html component (like the other `Shadow*` wrappers). It previously called the factory with `(Glide, Components)` only, so `Events.on('update', …)` threw `Cannot read properties of undefined (reading 'on')` on every mount.
+- Fixed: Glide's core + theme CSS is inlined into the component style instead of `@import`-ed. The `@import` was dropped inside the shadow-DOM adopted stylesheet, so arrows/bullets weren't positioned over the slides (they appeared as a strip below the image) and the track wasn't clipped.
 
 ### checkbox-field
 
 - Added: `checked` custom state on the host. Inherits the `touched / valid / invalid` states from `FormField`.
+- Fixed: the native `<input type="checkbox">` is now visually hidden (still focusable / in the a11y tree) instead of rendering a second box next to the custom indicator; the duplicated label is gone (the base `FormField` label is suppressed in favour of the inline one). `.checked-indicator` gained `currentColor` fallbacks so unthemed checkboxes stay visible, plus `:focus-visible` styling.
 
 ### dropdown-element
 

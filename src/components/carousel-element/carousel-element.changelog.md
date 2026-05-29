@@ -10,11 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Fixed
+
+- The shadow-DOM `Html` component (`ShadowHtml`) now forwards Glide's `Events` argument to the wrapped `@glidejs/glide` html component, matching the sibling `ShadowAnchors` / `ShadowClones` / `ShadowGaps` wrappers. Previously it called the factory with only `(Glide, Components)`, so the underlying component's `Events.on('update', …)` threw `Cannot read properties of undefined (reading 'on')` on every mount.
+- Glide's core + theme CSS is now inlined in `carousel-element.style.js` instead of being pulled in with `@import '@glidejs/glide/dist/css/…'`. The `@import` was silently dropped because element-js applies component styles as constructed/adopted stylesheets, where `@import` is not allowed — so `.glide__track` lost `overflow: hidden` and the arrows/bullets lost their absolute positioning and fell into a strip below the slides instead of overlaying them.
 
 ## Legacy (pre-merge)
 
