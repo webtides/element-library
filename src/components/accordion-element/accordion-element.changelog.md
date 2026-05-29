@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - BREAKING: renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content` for consistency with the rest of the library (carousel, slider, amount-field). The internal `.content-wrapper` class is now `.content`.
+- BREAKING: replaced the separate `open-icon` / `close-icon` parts with a single `icon` part — one SVG chevron that rotates 180° when open (animated with `--el-duration-md` / `--el-ease`) instead of swapping two `&vee;` / `&wedge;` text glyphs.
 - Internal style now keys off `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
 - Expand/collapse transition reads `--el-duration-md` and `--el-ease` (with the previous `0.3s ease-out` as fallback).
 

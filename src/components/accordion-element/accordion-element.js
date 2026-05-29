@@ -16,10 +16,9 @@ import Events from './accordion-element.events.js';
  *   toggles the accordion.
  * @slot content - Content to display in the collapsible section of the accordion.
  *
- * @csspart title - The header container that wraps the `header` slot and toggle icons.
+ * @csspart title - The header container that wraps the `header` slot and toggle icon.
  * @csspart content - The wrapper around the collapsible `content` slot.
- * @csspart open-icon - Icon shown while the accordion is collapsed.
- * @csspart close-icon - Icon shown while the accordion is expanded.
+ * @csspart icon - The chevron icon; rotates 180° while the accordion is open.
  *
  * @cssstate open - Set while the accordion is expanded. Style with `:host(:state(open))` or
  *   `el-accordion-element:state(open)` from outside.
@@ -122,9 +121,18 @@ export default class AccordionElement extends TemplateElement {
     /** @private */
     iconsTemplate() {
         return html`
-            <!--    		https://www.compart.com/de/unicode/U+2227-->
-            <div part="open-icon" class="open-icon">&vee;</div>
-            <div part="close-icon" class="close-icon">&wedge;</div>
+            <span part="icon" class="icon" aria-hidden="true">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </span>
         `;
     }
 }

@@ -16,34 +16,28 @@ export default css`
         border-bottom: var(--el-border-width, 0) solid var(--el-color-border, transparent);
     }
 
-    .open-icon,
-    .close-icon {
+    .icon {
+        display: flex;
+        flex-shrink: 0;
         justify-content: center;
         align-items: center;
         margin-left: auto;
-        width: 8.33%;
+        width: 1.25em;
+        height: 1.25em;
+        transition: transform var(--el-duration-md, 0.3s) var(--el-ease, ease-out);
     }
 
-    .open-icon {
-        display: flex;
-    }
-
-    .close-icon {
-        display: none;
+    .icon svg {
+        width: 100%;
+        height: 100%;
     }
 
     :host([cloak]) {
         display: none;
     }
 
-    :host(:state(open)) {
-        .open-icon {
-            display: none;
-        }
-
-        .close-icon {
-            display: flex;
-        }
+    :host(:state(open)) .icon {
+        transform: rotate(180deg);
     }
 
     .content {

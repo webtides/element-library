@@ -14,5 +14,11 @@ export default css`
         .dropdown-indicator {
             display: none;
         }
+
+        .dropdown-indicator svg {
+            display: block;
+            width: 1em;
+            height: 1em;
+        }
     }
 `;

@@ -77,6 +77,8 @@
 el-input-field input,
 el-textarea-field textarea,
 el-select-field select {
+  box-sizing: border-box;
+  width: 100%;
   border: var(--el-border-width) solid var(--el-color-border);
   border-radius: var(--el-radius-md);
   padding: var(--el-space-2) var(--el-space-3);

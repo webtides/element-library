@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - BREAKING: renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator` to avoid collisions with generic consumer styles.
+- The `.dropdown-indicator` now renders an SVG chevron (inheriting `currentColor`) instead of the `&or;` text glyph, for a crisp, consistent caret. Still hidden by default and shown/positioned by the themes.
 
 ## Legacy (pre-merge)
 

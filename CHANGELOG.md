@@ -25,11 +25,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: expanded token-driven surfaces across components so the theme toggle is actually visible — dropdown panel, accordion title/content padding + divider, checkbox indicator + accent, tab-link active accent + hover, tab-group bottom border, form-field label margin/color, amount-field wrapper border + button/input padding. All fallbacks are null-ish (`0` widths, `transparent` colors, `none` shadows) so unthemed components remain headless.
 - Changed: default theme decorates native form controls (`input`, `textarea`, `select`) directly via component selectors, since those live in light DOM and can't be safely overridden from component CSS without losing the native unthemed look.
 - Changed: slider-element fallbacks for dot color and arrow background are now `currentColor` / `transparent` instead of `#333` / `white` — unthemed slider matches surrounding text instead of imposing a light-mode-assuming palette.
+- Changed: both themes render native form controls (`input`, `textarea`, `select`) full-width (`width: 100%; box-sizing: border-box`), so themed forms are consistent and the select's custom chevron sits flush at the control's right edge.
 
 ### accordion-element
 
 - Added: `open` custom state on the host (`:host(:state(open))`).
 - Changed (BREAKING): renamed CSS parts `title-wrapper` → `title` and `content-wrapper` → `content`; the internal `.content-wrapper` class is now `.content`.
+- Changed (BREAKING): replaced the `open-icon` / `close-icon` parts with a single `icon` part — one SVG chevron that rotates 180° when open — instead of two `&vee;` / `&wedge;` text glyphs.
 - Changed: internal style now uses `:host(:state(open))` instead of `:host([open='true'])`. The reflected `open` attribute is unchanged.
 - Changed: expand/collapse transition is token-driven (`--el-duration-md`, `--el-ease`).
 - Fixed: collapsed content no longer leaves a padding-sized sliver — the `.content` padding moved to an inner `.content-inner` wrapper so closing the accordion clips it. Only surfaced once a theme set `--el-space-3`.
@@ -63,6 +65,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### select-field
 
 - Changed (BREAKING): renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator`.
+- Changed: the `.dropdown-indicator` renders an SVG chevron (`currentColor`) instead of the `&or;` text glyph. Still hidden by default; themes show and position it.
 
 ### slider-element
 
