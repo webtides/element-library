@@ -91,12 +91,12 @@ The component provides real-time validation feedback:
 - Error messages only display when field is touched and invalid
 - Supports HTML5 validation attributes (required, disabled)
 - Clicking the invalid indicator (×) clears the textarea content
-- Tab key (keyCode 9) doesn't trigger change events to avoid false validation during navigation
+- Tab key (keyCode 9) doesn't trigger change events to avoid false validation during navigation (inherited from `form-field`)
 
 ## Features
 
 - **Multi-line input**: Supports multiple rows of text input
-- **Auto-resize**: The `rows` attribute controls the initial height
+- **Configurable height**: The `rows` attribute sets the number of visible rows
 - **Touch-aware**: Supports both click and touch events for clearing input
 - **Validation feedback**: Visual indicators show valid/invalid states after user interaction
 - **Accessible**: Full ARIA support and proper semantic HTML structure

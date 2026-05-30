@@ -53,7 +53,7 @@ This component is typically used as a base class for other form field components
 | `onFocus()`    | None       | Called when the input receives focus. Updates validation state.          |
 | `onBlur()`     | None       | Called when the input loses focus. Marks field as touched and validates. |
 | `onChange()`   | None       | Called when the input value changes. Updates value and validation state. |
-| `clearInput()` | None       | Clears the input value and resets the touched state.                     |
+| `clearInput()` | None       | Focuses the input, clears its value, and resets the touched state.       |
 
 #### Events
 
