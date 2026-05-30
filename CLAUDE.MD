@@ -36,7 +36,7 @@ element-library/
 │           ├── [component-name].events.js       # Event constants (optional)
 │           ├── [component-name].stories.js      # Storybook stories
 │           ├── [component-name].readme.md       # Component documentation
-│           ├── [component-name].version.md      # Component changelog
+│           ├── [component-name].changelog.md    # Component changelog
 │           ├── [component-name].test.unit.js    # Unit tests
 │           └── [component-name].test.feature.js # Feature tests
 ├── .storybook/           # Storybook configuration
@@ -50,20 +50,21 @@ element-library/
 
 ### Implemented Components
 
-- **accordion-element**: Single accordion element
+- **accordion**: Single accordion element
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
-- **carousel-element**: Carousel wrapper for glide.js
+- **button**: Themeable button (Shoelace-style)
+- **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
-- **dropdown-element**: Dropdown component
+- **dropdown**: Dropdown component
 - **form-field**: Base form field
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
 - **scroll-to**: Scroll to target element
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
-- **slider-element**: CSS-only slider
-- **sticky-element**: Sticky positioning element
+- **slider**: CSS-only slider
+- **sticky**: Sticky positioning element
 - **svg-use**: SVG icon element
 - **tab-group**: Tab container
 - **tab-link**: Individual tab link
@@ -81,12 +82,12 @@ Consumers can import from the package in three ways:
 
 ```js
 // Pure class import — no side effects, tree-shakable
-import { AccordionElement } from '@webtides/element-library/accordion-element';
+import Accordion from '@webtides/element-library/accordion';
 
 // Side-effect import — registers a single custom element
-import '@webtides/element-library/accordion-element/define';
+import '@webtides/element-library/accordion/define';
 
-// Side-effect import — registers all 20 components
+// Side-effect import — registers all 21 components
 import '@webtides/element-library/all';
 ```
 
@@ -114,7 +115,7 @@ All components follow this pattern:
     - `.style.js` file for CSS-in-JS styles
     - `.stories.js` file for Storybook documentation
     - `.readme.md` for component documentation
-    - `.version.md` per-component changelog
+    - `.changelog.md` per-component changelog
     - `.test.unit.js` for unit tests
     - `.test.feature.js` for feature/integration tests
     - Optional `.events.js` for event constants
@@ -207,7 +208,7 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 
 ## Git Workflow
 
-- **Main branch**: `master`
+- **Main branch**: `main`
 - **Pre-commit hooks**: Automatically lint and format staged files
 - **Commit messages**: Use clear, descriptive messages
 - **Feature branches**: Use descriptive branch names
