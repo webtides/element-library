@@ -17,9 +17,9 @@ import '@webtides/element-library/scroll-to-top/define';
 ```
 
 ```html
-<scroll-to-top>
+<el-scroll-to-top>
     <button>Scroll to top</button>
-</scroll-to-top>
+</el-scroll-to-top>
 ```
 
 ## API

@@ -17,9 +17,9 @@ import '@webtides/element-library/scroll-to/define';
 ```
 
 ```html
-<scroll-to selector="#highlights-section">
+<el-scroll-to selector="#highlights-section">
     <a>Highlights</a>
-</scroll-to>
+</el-scroll-to>
 <!-- some in between content ... -->
 <section id="highlights-section"></section>
 ```
