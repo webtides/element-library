@@ -65,7 +65,7 @@ export default class FormField extends TemplateElement {
     watch() {
         return {
             value: (value) => {
-                this.dispatch(FormFieldEvents.INPUT_CHANGE, value, true);
+                this.dispatch(FormFieldEvents.INPUT_CHANGE, value);
             },
             valid: () => this.syncValidationStates(),
             touched: () => this.syncValidationStates(),

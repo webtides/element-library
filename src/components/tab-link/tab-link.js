@@ -38,7 +38,7 @@ export default class TabLink extends StyledElement {
                     event.preventDefault();
                     event.stopPropagation();
                     if (this.hasAttribute('disabled')) return;
-                    this.dispatch('tab-select', { selected: this.for }, true, true, true);
+                    this.dispatch('tab-select', { selected: this.for });
                 },
             },
         };

@@ -70,7 +70,7 @@ export default class LazySrc extends BaseElement {
 
     /** @private */
     afterIntersection(target) {
-        this.dispatch(Events.LOAD, this, true);
+        this.dispatch(Events.LOAD, this);
         this.loaded = true;
         this._internals.states.add('loaded');
 
@@ -84,10 +84,10 @@ export default class LazySrc extends BaseElement {
                 img.setAttribute('alt', this.imgAlt);
             }
             img.onload = () => {
-                this.dispatch(Events.IMG_LOAD, this, true);
+                this.dispatch(Events.IMG_LOAD, this);
             };
             img.onerror = () => {
-                this.dispatch(Events.IMG_ERROR, this, true);
+                this.dispatch(Events.IMG_ERROR, this);
             };
         }
     }

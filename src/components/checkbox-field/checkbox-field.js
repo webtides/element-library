@@ -45,7 +45,7 @@ export default class CheckboxField extends FormField {
                 this.setAttribute('checked', checked ? 'true' : 'false');
                 if (checked) this._internals.states.add('checked');
                 else this._internals.states.delete('checked');
-                this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value, true);
+                this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value);
             },
         };
     }

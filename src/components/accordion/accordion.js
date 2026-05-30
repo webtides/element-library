@@ -48,7 +48,7 @@ export default class Accordion extends TemplateElement {
                 open === true ? this.expand() : this.collapse();
                 if (open) this._internals.states.add('open');
                 else this._internals.states.delete('open');
-                this.dispatch(Events.TOGGLE, { open: this.open }, true);
+                this.dispatch(Events.TOGGLE, { open: this.open });
             },
         };
     }
