@@ -19,15 +19,15 @@ import '@webtides/element-library/accordion-group/define';
 ```html
 <!-- Allow only one accordion open at a time -->
 <el-accordion-group show-multiple="false">
-    <el-accordion-element>
+    <el-accordion>
         <div slot="header">First Accordion</div>
         <div slot="content">First content...</div>
-    </el-accordion-element>
+    </el-accordion>
 
-    <el-accordion-element>
+    <el-accordion>
         <div slot="header">Second Accordion</div>
         <div slot="content">Second content...</div>
-    </el-accordion-element>
+    </el-accordion>
 </el-accordion-group>
 ```
 
@@ -45,7 +45,7 @@ _None_
 
 #### Events
 
-_None_ (listens to `AccordionElementToggle` events from child accordion elements)
+_None_ (listens to `AccordionToggle` events from child accordion elements)
 
 #### CSS Custom Properties
 
@@ -53,4 +53,4 @@ _None_
 
 #### Slots
 
-_None_ (uses default slot for accordion-element children)
+_None_ (uses default slot for accordion children)

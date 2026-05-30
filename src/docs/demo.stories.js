@@ -122,7 +122,7 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
 
         <style>
             /* Float the dropdown's themed panel as an overlay instead of pushing the header taller. */
-            el-dropdown-element::part(panel) {
+            el-dropdown::part(panel) {
                 position: absolute;
                 right: 0;
                 margin-top: 0.5rem;
@@ -131,7 +131,7 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
         </style>
 
         <!-- ───────── Sticky header with dropdown menu ───────── -->
-        <el-sticky-element>
+        <el-sticky>
             <header
                 class="w-full border-b"
                 style="border-color:var(--el-color-border,#e5e7eb);background:var(--el-color-bg,#fff)"
@@ -141,7 +141,7 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
 
                     <nav class="hidden sm:flex items-center gap-6 text-sm">${nav}</nav>
 
-                    <el-dropdown-element open="false">
+                    <el-dropdown open="false">
                         <div slot="trigger">
                             <button
                                 type="button"
@@ -152,10 +152,10 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
                             </button>
                         </div>
                         <div slot="content" class="grid gap-1 text-sm w-44">${dropdownItems.map(dropdownItem)}</div>
-                    </el-dropdown-element>
+                    </el-dropdown>
                 </div>
             </header>
-        </el-sticky-element>
+        </el-sticky>
 
         <main id="top" class="max-w-5xl mx-auto px-4">${children}</main>
 
@@ -222,13 +222,13 @@ export const Page = {
                     </el-scroll-to>
 
                     <div class="mt-10 rounded-xl overflow-hidden">
-                        <el-carousel-element>
+                        <el-carousel>
                             ${swatchSlide('Brand', ['#1e3a8a', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'])}
                             ${swatchSlide('Neutral', ['#0f172a', '#334155', '#64748b', '#cbd5e1', '#f1f5f9'])}
                             ${swatchSlide('Accent', ['#065f46', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'])}
                             <span slot="arrow-left" aria-hidden="true">‹</span>
                             <span slot="arrow-right" aria-hidden="true">›</span>
-                        </el-carousel-element>
+                        </el-carousel>
                     </div>
                 </section>
 
@@ -274,7 +274,7 @@ export const Page = {
                 <!-- ───────── Token catalogue (slider) ───────── -->
                 <section id="catalogue" class="py-12">
                     <h2 class="text-2xl font-bold mb-6">The token catalogue</h2>
-                    <el-slider-element items-to-show="3">
+                    <el-slider items-to-show="3">
                         ${tokens.map(
                             (t) => html`
                                 <div class="item px-2">
@@ -291,7 +291,7 @@ export const Page = {
                                 </div>
                             `,
                         )}
-                    </el-slider-element>
+                    </el-slider>
                 </section>
 
                 ${lazyGallery(
@@ -366,27 +366,27 @@ export const Page = {
                 <section id="faq" class="py-12">
                     <h2 class="text-2xl font-bold mb-6">Frequently asked</h2>
                     <el-accordion-group show-multiple="false">
-                        <el-accordion-element open="true">
+                        <el-accordion open="true">
                             <div slot="header" class="font-medium">How does theming work?</div>
                             <div slot="content" class="opacity-80">
                                 Every value is a CSS custom property. Swap a token set — or toggle light/dark and
                                 high-contrast — and the whole system re-skins without touching component code.
                             </div>
-                        </el-accordion-element>
-                        <el-accordion-element open="false">
+                        </el-accordion>
+                        <el-accordion open="false">
                             <div slot="header" class="font-medium">Can I export the tokens?</div>
                             <div slot="content" class="opacity-80">
                                 Yes — tokens ship as JSON and CSS, and stay in sync with the Figma kit so design and
                                 code never drift.
                             </div>
-                        </el-accordion-element>
-                        <el-accordion-element open="false">
+                        </el-accordion>
+                        <el-accordion open="false">
                             <div slot="header" class="font-medium">Is it accessible?</div>
                             <div slot="content" class="opacity-80">
                                 Components ship with keyboard and ARIA support, and the themes meet contrast targets —
                                 including a dedicated high-contrast mode.
                             </div>
-                        </el-accordion-element>
+                        </el-accordion>
                     </el-accordion-group>
                 </section>
 

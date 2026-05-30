@@ -1,14 +1,14 @@
 import { BaseElement, defineElement } from '@webtides/element-js';
-import Events from '../accordion-element/accordion-element.events.js';
+import Events from '../accordion/accordion.events.js';
 
 /**
- * Container that manages multiple `<el-accordion-element>` children. When `showMultiple` is
+ * Container that manages multiple `<el-accordion>` children. When `showMultiple` is
  * `false`, only one accordion can be open at a time; opening a new accordion closes the
  * previously open one.
  *
  * @element el-accordion-group
  *
- * @slot - Default slot for `<el-accordion-element>` children.
+ * @slot - Default slot for `<el-accordion>` children.
  *
  * @property {boolean} showMultiple - When `false`, only one child accordion can be open at a
  *   time; opening a new accordion closes the previously open one. When `true`, multiple

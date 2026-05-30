@@ -183,7 +183,7 @@ el-select-field .dropdown-indicator {
  * ------------------------------------------------------------------------- */
 
 /* Accordion — lift each hand-drawn card off the page */
-el-accordion-element {
+el-accordion {
   box-shadow: var(--el-shadow-md);
 }
 
@@ -193,7 +193,7 @@ el-tab-link {
 }
 
 /* Carousel — re-skin Glide's hardcoded arrows + bullets as sketch controls */
-el-carousel-element::part(arrow) {
+el-carousel::part(arrow) {
   background: var(--el-color-bg) !important;
   color: var(--el-color-fg) !important;
   border: var(--el-border-width) solid var(--el-color-border) !important;
@@ -201,12 +201,12 @@ el-carousel-element::part(arrow) {
   box-shadow: var(--el-shadow-md) !important;
   text-shadow: none !important;
 }
-el-carousel-element::part(dot) {
+el-carousel::part(dot) {
   background: var(--el-color-bg) !important;
   border: 2px solid var(--el-color-border) !important;
   box-shadow: none !important;
 }
-el-carousel-element::part(selected-dot) {
+el-carousel::part(selected-dot) {
   background: var(--el-color-accent) !important;
 }
 

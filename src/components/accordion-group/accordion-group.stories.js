@@ -2,7 +2,7 @@ import { html } from '@webtides/element-js';
 import readme from './accordion-group.readme.md?raw';
 import { define as define1 } from './accordion-group.js';
 define1();
-import { define as define2 } from '../accordion-element/accordion-element.js';
+import { define as define2 } from '../accordion/accordion.js';
 define2();
 
 export default {
@@ -30,7 +30,7 @@ export const SingleElement = {
     decorators: [],
     render: ({}) => html`
         <el-accordion-group show-multiple="false">
-            <el-accordion-element open="false">
+            <el-accordion open="false">
                 <div slot="header" class="">Accordion Header</div>
                 <div slot="content">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
@@ -39,18 +39,18 @@ export const SingleElement = {
                     minima numquam. Asperiores commodi consequuntur delectus dolor eos fuga natus nemo repellendus
                     repudiandae sunt? Amet beatae dicta impedit, praesentium quis vel.
                 </div>
-            </el-accordion-element>
+            </el-accordion>
 
-            <el-accordion-element open="false">
+            <el-accordion open="false">
                 <div slot="header" class="">Accordion Header</div>
                 <div slot="content">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
                     eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
                     repellendus soluta sunt voluptatem!
                 </div>
-            </el-accordion-element>
+            </el-accordion>
 
-            <el-accordion-element open="false">
+            <el-accordion open="false">
                 <div slot="header" class="">Accordion Header</div>
                 <div slot="content">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
@@ -61,7 +61,7 @@ export const SingleElement = {
                     elit. Adipisci alias amet autem cupiditate ea earum est explicabo illo inventore laboriosam neque
                     nisi perferendis, quia quisquam quo sapiente voluptas voluptate voluptates?
                 </div>
-            </el-accordion-element>
+            </el-accordion>
         </el-accordion-group>
     `,
 };
@@ -78,7 +78,7 @@ export const MultipleOpen = {
     decorators: [],
     render: ({}) =>
         html` <el-accordion-group>
-            <el-accordion-element open="false">
+            <el-accordion open="false">
                 <div slot="header" class="">Accordion Header</div>
                 <div slot="content">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
@@ -87,18 +87,18 @@ export const MultipleOpen = {
                     minima numquam. Asperiores commodi consequuntur delectus dolor eos fuga natus nemo repellendus
                     repudiandae sunt? Amet beatae dicta impedit, praesentium quis vel.
                 </div>
-            </el-accordion-element>
+            </el-accordion>
 
-            <el-accordion-element open="false">
+            <el-accordion open="false">
                 <div slot="header" class="">Accordion Header</div>
                 <div slot="content">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
                     eos, fuga fugiat incidunt itaque libero maxime non nostrum odio, perferendis placeat quia
                     repellendus soluta sunt voluptatem!
                 </div>
-            </el-accordion-element>
+            </el-accordion>
 
-            <el-accordion-element open="false">
+            <el-accordion open="false">
                 <div slot="header" class="">Accordion Header</div>
                 <div slot="content">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, aliquid autem dicta
@@ -109,6 +109,6 @@ export const MultipleOpen = {
                     elit. Adipisci alias amet autem cupiditate ea earum est explicabo illo inventore laboriosam neque
                     nisi perferendis, quia quisquam quo sapiente voluptas voluptate voluptates?
                 </div>
-            </el-accordion-element>
+            </el-accordion>
         </el-accordion-group>`,
 };

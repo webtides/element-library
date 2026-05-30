@@ -29,13 +29,13 @@ import '@webtides/element-library/all';
 Register a single component (tree-shakable):
 
 ```js
-import '@webtides/element-library/accordion-element/define';
+import '@webtides/element-library/accordion/define';
 ```
 
 Import a component class without registering it:
 
 ```js
-import { AccordionElement } from '@webtides/element-library/accordion-element';
+import { Accordion } from '@webtides/element-library/accordion';
 ```
 
 ## Theming
@@ -53,20 +53,21 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 
 | Package            | Description                                                                   | Version |
 | ------------------ | ----------------------------------------------------------------------------- | ------- |
-| accordion-element  | Single Accordion element                                                      | `0.1.0` |
+| accordion          | Single Accordion element                                                      | `0.1.0` |
 | accordion-group    | Accordion group to hold multiple elements                                     | `0.1.0` |
 | amount-field       | A simple element to create amount stepping input fields                       | `0.1.1` |
-| carousel-element   | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
+| button             | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
+| carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field     |                                                                               | `0.1.1` |
-| dropdown-element   | A dropdown element                                                            | `0.1.0` |
+| dropdown           | A dropdown element                                                            | `0.1.0` |
 | form-field         |                                                                               | `0.1.0` |
 | input-field        |                                                                               | `0.1.0` |
 | lazy-src           |                                                                               | `0.2.0` |
 | scroll-to          |                                                                               | `0.1.0` |
 | scroll-to-top      |                                                                               | `0.1.0` |
 | select-field       |                                                                               | `0.1.0` |
-| slider-element     | CSS only slider element to slide child elements                               | `0.4.3` |
-| sticky-element     |                                                                               | `0.2.0` |
+| slider             | CSS only slider element to slide child elements                               | `0.4.3` |
+| sticky             |                                                                               | `0.2.0` |
 | svg-use            |                                                                               | `0.1.0` |
 | tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
 | tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
