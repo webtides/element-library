@@ -41,6 +41,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: expand/collapse transition is token-driven (`--el-duration-md`, `--el-ease`).
 - Fixed: collapsed content no longer leaves a padding-sized sliver — the `.content` padding moved to an inner `.content-inner` wrapper so closing the accordion clips it. Only surfaced once a theme set `--el-space-3`.
 
+### accordion-group
+
+- Fixed: single-open mode (`show-multiple="false"`) now correctly closes the previously open accordion when one starts open declaratively. The `connected()` preselection scan had an inverted guard (it ran only in multi-open mode) and queried the whole document instead of the group's own children.
+
 ### carousel
 
 - Fixed: `ShadowHtml` now forwards Glide's `Events` argument to the wrapped html component (like the other `Shadow*` wrappers). It previously called the factory with `(Glide, Components)` only, so `Events.on('update', …)` threw `Cannot read properties of undefined (reading 'on')` on every mount.

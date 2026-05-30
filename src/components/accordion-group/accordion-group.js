@@ -25,9 +25,9 @@ export default class AccordionGroup extends BaseElement {
     }
 
     connected() {
-        if (!this.showMultiple) return;
+        if (this.showMultiple) return;
 
-        document.querySelectorAll('el-accordion-elment').forEach((item) => {
+        this.querySelectorAll('el-accordion').forEach((item) => {
             if (item.hasAttribute('open') && item.getAttribute('open') === 'true') {
                 this.currentOpenElement = item;
             }
