@@ -110,13 +110,7 @@ const lazyGallery = (title, caption) => html`
 const scrollTopButton = html`
     <div style="position:fixed;right:1.5rem;bottom:1.5rem;z-index:50">
         <el-scroll-to-top duration="600">
-            <button
-                class="rounded-full w-12 h-12 shadow-lg text-white flex items-center justify-center"
-                style="background:var(--el-color-accent,#2563eb)"
-                aria-label="Scroll to top"
-            >
-                ↑
-            </button>
+            <el-button variant="primary" circle="true" size="large" aria-label="Scroll to top"> ↑ </el-button>
         </el-scroll-to-top>
     </div>
 `;
@@ -224,12 +218,7 @@ export const Page = {
                         <code>@webtides/element-library</code>. Theme it once, ship it everywhere.
                     </p>
                     <el-scroll-to selector="#start">
-                        <button
-                            class="rounded-md px-6 py-3 font-semibold text-white"
-                            style="background:var(--el-color-accent,#2563eb)"
-                        >
-                            Get the kit
-                        </button>
+                        <el-button variant="primary" size="large">Get the kit</el-button>
                     </el-scroll-to>
 
                     <div class="mt-10 rounded-xl overflow-hidden">
@@ -368,13 +357,7 @@ export const Page = {
                         </div>
 
                         <div class="sm:col-span-2">
-                            <button
-                                type="submit"
-                                class="rounded-md px-6 py-3 font-semibold text-white"
-                                style="background:var(--el-color-accent,#2563eb)"
-                            >
-                                Request access
-                            </button>
+                            <el-button type="submit" variant="primary" size="large"> Request access </el-button>
                         </div>
                     </form>
                 </section>

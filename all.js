@@ -1,6 +1,7 @@
 import './src/components/accordion-element/accordion-element.define.js';
 import './src/components/accordion-group/accordion-group.define.js';
 import './src/components/amount-field/amount-field.define.js';
+import './src/components/button/button.define.js';
 import './src/components/carousel-element/carousel-element.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
 import './src/components/dropdown-element/dropdown-element.define.js';
