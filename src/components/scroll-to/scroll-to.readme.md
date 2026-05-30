@@ -1,6 +1,6 @@
 # ScrollTo
 
-`scroll-to` is an element that allows you to smoothly scroll to any other element on the page. Use any regular DOM query selector to point to targeting elements. Any `click` event emitting child elements such as <a>, <button>, etc will trigger the `scroll-to`.
+`scroll-to` is a wrapper that smoothly scrolls to another element on the page. Point it at a target with any CSS selector; any `click`-emitting child element (e.g. `<a>` or `<button>`) triggers the scroll.
 
 ## How to use
 

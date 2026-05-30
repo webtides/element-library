@@ -1,6 +1,6 @@
 # LazySrc
 
-`el-lazy-src` enables you to lazy load child elements with a `src` attribute. Place any `<img>`, `<picture>`, `<iframe>`, or `<video>` element inside with a `data-src` attribute instead of the `src` attribute and `lazy-src` will load it on demand when the element becomes visible in the viewport. It is backed by [lozad](https://github.com/ApoorvSaxena/lozad).
+`lazy-src` is a lazy-loading wrapper for media elements. Place any `<img>`, `<picture>`, `<iframe>`, or `<video>` inside with a `data-src` attribute instead of `src`, and it loads the resource on demand once the element scrolls into view. It is backed by [lozad](https://github.com/ApoorvSaxena/lozad).
 
 ## How to use
 

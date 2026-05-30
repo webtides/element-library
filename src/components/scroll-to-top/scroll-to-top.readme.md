@@ -1,6 +1,6 @@
 # ScrollToTop
 
-`scroll-to-top` enables you to smoothly scroll to the top of the page. Place any `click` event emitting child element inside such as `<a>`, `<button>`, etc. If a `click` event gets fired, `scroll-to-top` will capture it and scroll to top.
+`scroll-to-top` is a wrapper that smoothly scrolls the page to the top. Place any `click`-emitting child element inside (e.g. `<a>` or `<button>`); when it fires a `click`, `scroll-to-top` captures it and scrolls to the top.
 
 ## How to use
 
