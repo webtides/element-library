@@ -62,4 +62,4 @@ _Inherits methods from the `FormField` component._
 
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-bg`, `--el-color-border`, `--el-radius-md`, `--el-touch-target`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.

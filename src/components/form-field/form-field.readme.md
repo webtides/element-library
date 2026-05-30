@@ -61,9 +61,19 @@ This component is typically used as a base class for other form field components
 | -------------- | ------- | --------------------------------------------------------------- |
 | `input-change` | `value` | Fired when the field value changes. Bubbles up through the DOM. |
 
+#### CSS States
+
+Custom states reflected on the host (and inherited by `input-field`, `select-field`, `textarea-field`, `checkbox-field` and `amount-field`). Style with `el-input-field:state(invalid)`, etc.
+
+| Name      | Description                                          |
+| --------- | ---------------------------------------------------- |
+| `valid`   | Present while the field passes validation.           |
+| `invalid` | Present while the field fails validation.            |
+| `touched` | Present once the field has been focused and blurred. |
+
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-fg`, `--el-color-fg-muted`, `--el-space-1`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

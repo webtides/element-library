@@ -45,9 +45,23 @@ import '@webtides/element-library/accordion/define';
 | --- | --- | --- |
 | `AccordionToggle` | `{ open: boolean }` | Fired when the accordion is toggled. The event bubbles up through the DOM. The detail contains the current open state. |
 
+#### CSS Parts
+
+| Name      | Description                                                              |
+| --------- | ------------------------------------------------------------------------ |
+| `title`   | The clickable header row (wraps the `header` slot and the chevron icon). |
+| `content` | The collapsible content region.                                          |
+| `icon`    | The chevron icon; rotates 180° while the accordion is open.              |
+
+#### CSS States
+
+| Name | Description |
+| --- | --- |
+| `open` | Present on the host while the accordion is expanded. Style with `el-accordion:state(open)` or `:host(:state(open))`. |
+
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-bg`, `--el-color-border`, `--el-radius-md`, `--el-space-3`, `--el-duration-md`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

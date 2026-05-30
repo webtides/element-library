@@ -43,9 +43,23 @@ _None_
 
 _None_
 
+#### CSS Parts
+
+| Name      | Description                                                 |
+| --------- | ----------------------------------------------------------- |
+| `trigger` | The `<slot>` holding the trigger element.                   |
+| `panel`   | The floating container rendered while the dropdown is open. |
+| `content` | The `<slot>` holding the dropdown content.                  |
+
+#### CSS States
+
+| Name   | Description                                                                           |
+| ------ | ------------------------------------------------------------------------------------- |
+| `open` | Present on the host while the dropdown is open. Style with `el-dropdown:state(open)`. |
+
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-bg`, `--el-color-border`, `--el-radius-lg`, `--el-shadow-lg`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

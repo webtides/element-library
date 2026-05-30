@@ -48,6 +48,12 @@ import '@webtides/element-library/lazy-src/define';
 | `LazySrcImgLoad` | `this` | Fired when the inner `<img>` has finished loading. Bubbles up through the DOM. |
 | `LazySrcImgError` | `this` | Fired when the inner `<img>` fails to load. Bubbles up through the DOM. |
 
+#### CSS States
+
+| Name     | Description                                                                        |
+| -------- | ---------------------------------------------------------------------------------- |
+| `loaded` | Present once the lazy resource has loaded. Style with `el-lazy-src:state(loaded)`. |
+
 #### CSS Custom Properties
 
 _None_

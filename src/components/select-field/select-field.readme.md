@@ -103,7 +103,7 @@ When using objects:
 
 #### CSS Custom Properties
 
-The component inherits styling from the base `FormField` component and includes a dropdown indicator.
+This component is headless by default and inherits its styling — and the `--el-*` design tokens it reads — from `FormField`, plus a custom dropdown indicator. Skin it by setting those tokens via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

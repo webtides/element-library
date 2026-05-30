@@ -65,11 +65,7 @@ import '@webtides/element-library/input-field/define';
 
 #### CSS Custom Properties
 
-The component inherits styling from the base `FormField` component:
-
-| Name | Default | Description |
-| --- | --- | --- |
-| Custom styling | See component styles | The field displays with a flex layout and includes validity indicators (checkmark/cross) |
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`, `--el-space-2`), on top of the styling it inherits from `FormField`. Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

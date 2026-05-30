@@ -84,4 +84,4 @@ import '@webtides/element-library/slider/define';
 
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-border`, `--el-radius-md`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.

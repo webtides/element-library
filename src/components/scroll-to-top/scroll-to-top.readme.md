@@ -4,13 +4,13 @@
 
 ## How to use
 
-#### Installation
+#### Install
 
 ```sh
 npm i --save @webtides/element-library
 ```
 
-#### use
+#### Use
 
 ```js
 import '@webtides/element-library/scroll-to-top/define';

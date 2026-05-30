@@ -67,11 +67,7 @@ import '@webtides/element-library/textarea-field/define';
 
 #### CSS Custom Properties
 
-The component inherits styling from the base `FormField` component:
-
-| Name | Default | Description |
-| --- | --- | --- |
-| Custom styling | See component styles | The field displays with block layout and includes validity indicators (checkmark/cross) |
+This component is headless by default and inherits its styling — and the `--el-*` design tokens it reads — from `FormField`. Skin it by setting those tokens via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

@@ -49,9 +49,17 @@ _Inherits methods from FormField component_
 | -------------- | ------- | ---------------------------------------------------------------------------- |
 | `input-change` | `value` | Fired when the checkbox state changes. The event bubbles up through the DOM. |
 
+#### CSS States
+
+| Name      | Description                                                                           |
+| --------- | ------------------------------------------------------------------------------------- |
+| `checked` | Present while the checkbox is checked. Style with `el-checkbox-field:state(checked)`. |
+
+Also inherits the `valid` / `invalid` / `touched` states from [`form-field`](../form-field/form-field.readme.md).
+
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-border`, `--el-radius-sm`, `--el-focus-ring-width`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 #### Slots
 

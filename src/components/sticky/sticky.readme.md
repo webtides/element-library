@@ -1,6 +1,6 @@
 # Sticky
 
-`sticky` is a component that creates smart sticky positioning behavior. It automatically adds CSS classes based on scroll position and direction, allowing you to create headers or navigation elements that stick to the top of the viewport and can hide/show based on scroll direction.
+`sticky` is a component that creates smart sticky positioning behavior. It automatically toggles custom states based on scroll position and direction, allowing you to create headers or navigation elements that stick to the top of the viewport and can hide/show based on scroll direction.
 
 ## How to use
 
@@ -52,12 +52,12 @@ _None_
 
 _None_ (uses default slot for content)
 
-#### CSS Classes
+#### CSS States
 
-The component automatically adds these classes based on scroll behavior:
+The component automatically toggles these custom states based on scroll behavior. Style them with `el-sticky:state(sticky)`, `el-sticky:state(up)`, etc.:
 
-| Class       | Description                                                 |
-| ----------- | ----------------------------------------------------------- |
-| `is-sticky` | Added when the page has scrolled past the element's height. |
-| `is-up`     | Added when scrolling up.                                    |
-| `is-down`   | Added when scrolling down.                                  |
+| State    | Description                                               |
+| -------- | --------------------------------------------------------- |
+| `sticky` | Set once the page has scrolled past the element's height. |
+| `up`     | Set when scrolling up.                                    |
+| `down`   | Set when scrolling down.                                  |

@@ -51,7 +51,7 @@ _None_
 
 #### CSS Custom Properties
 
-_None_
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-fg`, `--el-border-width`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 #### CSS States
 
