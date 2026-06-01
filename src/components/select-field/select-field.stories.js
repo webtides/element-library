@@ -1,4 +1,4 @@
-import { userEvent, within, expect } from 'storybook/test';
+import { userEvent, within, expect, waitFor } from 'storybook/test';
 import { define } from './select-field.js';
 define();
 import { html } from '@webtides/element-js';
@@ -48,6 +48,29 @@ export const SelectField = {
             error-message="${errorMessage}"
         ></el-select-field>
     `,
+    play: async ({ canvasElement, step }) => {
+        const canvas = within(canvasElement);
+        // el-select-field renders its <label>/<select> into light DOM asynchronously
+        // on connect, so wait for the select rather than querying synchronously.
+        const select = await canvas.findByLabelText('Label');
+
+        await step('renders a required select with no choice made', async () => {
+            await expect(select).toBeRequired();
+            await expect(select).toHaveValue('');
+        });
+
+        await step('flags the field invalid once touched without a choice', async () => {
+            select.focus();
+            await userEvent.tab();
+            await waitFor(() => expect(select).toHaveAttribute('aria-invalid', 'true'));
+        });
+
+        await step('choosing an option updates the value and clears the error', async () => {
+            await userEvent.selectOptions(select, 'Option 1');
+            await expect(select).toHaveValue('Option 1');
+            await waitFor(() => expect(select).toHaveAttribute('aria-invalid', 'false'));
+        });
+    },
 };
 
 export const BrowserSelectField = {
