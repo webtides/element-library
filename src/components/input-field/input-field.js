@@ -1,4 +1,4 @@
-import { html, defineElement, classMap, when } from '@webtides/element-js';
+import { html, defineElement, classMap, when, optionalAttribute } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import style from './input-field.style.js';
 
@@ -16,8 +16,8 @@ import style from './input-field.style.js';
  *   `'text'`, `'email'`, `'password'`, `'tel'`, `'url'`).
  * @property {string} placeholder - Placeholder text shown while the input is empty.
  * @property {string | false} pattern - Regular expression used as the input's `pattern`
- *   attribute. When `false`, the field falls back to a permissive `[sS]*` pattern (i.e. no
- *   restriction).
+ *   attribute. When `false` (the default), the `pattern` attribute is omitted entirely, so
+ *   the field applies no pattern constraint.
  */
 export default class InputField extends FormField {
     constructor(options) {
@@ -45,7 +45,7 @@ export default class InputField extends FormField {
                 placeholder="${this.placeholder}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
-                pattern=${this.pattern ? this.pattern : '[sS]*'}
+                ${optionalAttribute(this.pattern, 'pattern', this.pattern)}
                 aria-describedby="${this.name}-help-message"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
                 aria-errormessage="${this.name}-error-message"

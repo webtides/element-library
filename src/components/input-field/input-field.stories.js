@@ -67,15 +67,16 @@ export const InputField = {
             await expect(input).toBeRequired();
         });
 
-        await step('accepts user input', async () => {
-            await userEvent.type(input, 'hello@example.com');
-            await expect(input).toHaveValue('hello@example.com');
-        });
-
-        await step('flags the required field as invalid once cleared and blurred', async () => {
-            await userEvent.clear(input);
+        await step('flags the field invalid once touched while empty', async () => {
+            input.focus();
             await userEvent.tab();
             await waitFor(() => expect(input).toHaveAttribute('aria-invalid', 'true'));
+        });
+
+        await step('typing a value updates it and clears the error', async () => {
+            await userEvent.type(input, 'hello@example.com');
+            await expect(input).toHaveValue('hello@example.com');
+            await waitFor(() => expect(input).toHaveAttribute('aria-invalid', 'false'));
         });
     },
 };

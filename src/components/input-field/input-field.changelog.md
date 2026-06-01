@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Hardcoded values in the stylesheet now reference design tokens with the previous values as fallbacks: `--el-space-1` / `--el-space-2` for gaps, `--el-color-success` / `--el-color-danger` for validity icon colors, `--el-font-size-sm` for the help/error message text.
 
+### Fixed
+
+- The `pattern` attribute is now omitted entirely when `pattern` is unset, via element-js's `optionalAttribute` directive. It previously fell back to a `[sS]*` regex — meant as "match anything" but actually matching only runs of `s` / `S` — which made the field report any ordinary value as invalid. The directive that allows omitting the attribute didn't exist when the fallback was introduced.
+
 ## Legacy (pre-merge)
 
 The version numbers below predate the single-package merge and refer to the component's former standalone npm package, not the current `@webtides/element-library` version. Kept for historical reference.

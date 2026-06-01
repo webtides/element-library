@@ -66,6 +66,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### input-field
 
 - Changed: hardcoded values now reference design tokens (`--el-space-*`, `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`) with the previous values as fallbacks.
+- Fixed: the `pattern` attribute is now omitted when unset (via element-js's `optionalAttribute` directive) instead of falling back to a `[sS]*` regex that matched only runs of `s` / `S` and so rejected any ordinary value as invalid.
 
 ### lazy-src
 
