@@ -77,6 +77,12 @@ function templateToSource(result) {
 /** @type { import('@storybook/web-components').Preview } */
 const preview = {
     parameters: {
+        // Accessibility checks (axe-core via @storybook/addon-a11y) run on every
+        // story. 'todo' reports violations as warnings in the Testing UI / test
+        // reports without failing the run — flip to 'error' to enforce once the
+        // current violations (slider, carousel, tab-group, amount-field,
+        // textarea-field, demo page) are resolved.
+        a11y: { test: 'todo' },
         options: {
             storySort: {
                 order: ['Docs', ['Introduction', 'Installation', 'Usage', 'Theming'], 'Demo', 'Components'],
