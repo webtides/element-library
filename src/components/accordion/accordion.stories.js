@@ -21,7 +21,7 @@ export const Accordion = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A single collapsible panel with a `header` and `content` slot, collapsed by default (`open="false"`).',
             },
         },
     },
@@ -41,7 +41,7 @@ export const InitialOpen = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'The same panel rendered expanded on load via `open="true"`.',
             },
         },
     },

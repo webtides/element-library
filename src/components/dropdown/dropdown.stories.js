@@ -21,7 +21,7 @@ export const Dropdown = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A trigger button paired with a content panel that toggles open on click and closes on outside-click or `Escape`.',
             },
         },
     },

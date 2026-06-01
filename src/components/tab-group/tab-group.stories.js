@@ -25,7 +25,7 @@ export const TabGroup = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A full tab set wiring `el-tab-link`s to `el-tab-panel`s, with a preselected tab and a disabled one.',
             },
         },
     },
@@ -50,7 +50,7 @@ export const CustomSelector = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Pointing `panel-selector` at arbitrary markup (`[role=tabpanel]`), so panels need not be `el-tab-panel` elements.',
             },
         },
     },

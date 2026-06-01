@@ -21,7 +21,7 @@ export const Sticky = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A sticky container that toggles custom states as it pins to the viewport, so headers or nav can hide and reveal based on scroll direction.',
             },
         },
     },

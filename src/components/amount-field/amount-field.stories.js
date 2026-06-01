@@ -26,7 +26,7 @@ export const AmountField = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A numeric stepper with increment and decrement controls, clamped to the `min`/`max` range.',
             },
         },
     },

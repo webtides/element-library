@@ -22,7 +22,7 @@ export const Slider = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'The default CSS slider with navigation arrows and pagination dots.',
             },
         },
     },
@@ -41,7 +41,7 @@ export const NoArrow = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Arrows hidden via `arrows="false"`, leaving only the pagination dots.',
             },
         },
     },
@@ -60,7 +60,7 @@ export const NoDots = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Pagination dots hidden via `dots="false"`, leaving only the arrows.',
             },
         },
     },
@@ -79,7 +79,7 @@ export const NoDotsAndNoArrows = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Both arrows and dots hidden — drag or scroll to navigate.',
             },
         },
     },
@@ -97,7 +97,7 @@ export const Rewind = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'With `rewind="true"` the slider loops back to the first slide after the last.',
             },
         },
     },
@@ -115,7 +115,7 @@ export const Padding = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Three slides per view (`items-to-show="3"`) with per-item margins creating gutters between slides.',
             },
         },
     },
@@ -140,7 +140,7 @@ export const SelectedIndex = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Opens scrolled to a specific slide via `selected-index="3"`.',
             },
         },
     },
@@ -165,7 +165,7 @@ export const ItemsToShow = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Displays several slides per view with `items-to-show="3"`.',
             },
         },
     },
@@ -190,7 +190,7 @@ export const ItemsToShowSnapPoint = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Per-item `--snap-align: start | end` overrides where individual slides snap within the viewport.',
             },
         },
     },
@@ -211,11 +211,11 @@ export const ItemsToShowSnapPoint = {
 };
 
 export const ItemsToScroll = {
-    name: 'ItemsToShow',
+    name: 'ItemsToScroll',
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Advances several slides per step with `items-to-scroll="3"`, paired with `items-to-show="3"`.',
             },
         },
     },
@@ -240,7 +240,7 @@ export const VariableWidth = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Slides of differing widths, with `--snap-align` controlling each one’s snap edge.',
             },
         },
     },
@@ -265,7 +265,7 @@ export const VariableWidthEdgeFocus = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Variable-width slides with `auto-select="true"`, which selects the slide nearest the snap edge.',
             },
         },
     },
@@ -313,7 +313,7 @@ export const ItemsToScrollRender = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Asynchronously-rendered, variable-width children that resize after mount, verifying the slider recalculates snap points.',
             },
         },
     },
@@ -339,7 +339,7 @@ export const AutoSelect = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: '`auto-select="true"` keeps the focused slide selected as late-rendering children change width.',
             },
         },
     },

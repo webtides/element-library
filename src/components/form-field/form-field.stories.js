@@ -21,7 +21,7 @@ export const FormField = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'The base field rendered directly. It is normally extended by concrete fields (`input-field`, `checkbox-field`, …) rather than used on its own.',
             },
         },
     },

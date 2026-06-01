@@ -21,7 +21,7 @@ export const TextareaField = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A multi-line text field wrapping the native `<textarea>` with label, help text and validation states.',
             },
         },
     },

@@ -21,7 +21,7 @@ export const Carousel = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'The default Glide-backed carousel — one slide per view with arrows and bullets.',
             },
         },
     },
@@ -42,7 +42,7 @@ export const MultiCenterVariant = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Custom Glide `options` showing five slides per view, centered on the active one (`{ perView: 5, focusAt: "center" }`).',
             },
         },
     },
@@ -69,7 +69,7 @@ export const ArrowSlotVariant = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Replaces the default arrows with custom markup via the `arrow-left` / `arrow-right` slots.',
             },
         },
     },

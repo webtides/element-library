@@ -21,7 +21,7 @@ export const TransitionClasses = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'The bare element in its default state. Set the per-stage `enter*` / `leave*` attributes to apply transition classes to the host as the `show` property flips.',
             },
         },
     },

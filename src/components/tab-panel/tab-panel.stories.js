@@ -21,7 +21,7 @@ export const TabPanel = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A standalone panel. Its visibility is normally driven by the parent `el-tab-group`, which shows or hides it by matching `name` to the active tab.',
             },
         },
     },

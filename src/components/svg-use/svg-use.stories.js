@@ -21,7 +21,7 @@ export const SvgUse = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'References a symbol from an SVG sprite via `<use>`; shown here with no `href` set.',
             },
         },
     },

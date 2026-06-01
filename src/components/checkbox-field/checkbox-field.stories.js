@@ -21,7 +21,7 @@ export const CheckboxField = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A checkbox with a custom indicator, inheriting label, validation and state handling from `form-field`.',
             },
         },
     },

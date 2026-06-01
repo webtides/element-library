@@ -21,7 +21,7 @@ export const TabLink = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'A standalone tab link. Clicking it dispatches a bubbling `tab-select` event carrying its `for` value; an `el-tab-group` wires several together into a tab set.',
             },
         },
     },

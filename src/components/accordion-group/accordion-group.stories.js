@@ -23,7 +23,7 @@ export const SingleElement = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Single-open mode (`show-multiple="false"`): opening one panel closes the others.',
             },
         },
     },
@@ -71,7 +71,7 @@ export const MultipleOpen = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Default multi-open mode: each panel toggles independently and several can stay open at once.',
             },
         },
     },

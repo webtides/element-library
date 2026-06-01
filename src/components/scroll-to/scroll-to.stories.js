@@ -21,7 +21,7 @@ export const ScrollTo = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Wraps a button that smoothly scrolls to the element matched by `selector` (here `#element5`).',
             },
         },
     },

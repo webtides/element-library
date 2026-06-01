@@ -21,7 +21,7 @@ export const ScrollToTop = {
     parameters: {
         docs: {
             description: {
-                story: 'enables you to...',
+                story: 'Wraps a button that smoothly scrolls the page back to the top, animated over `duration` milliseconds.',
             },
         },
     },
