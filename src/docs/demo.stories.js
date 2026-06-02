@@ -16,8 +16,8 @@ export default {
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
                     'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
                     'tabs, a token-catalogue slider, a lazy-loaded pattern gallery, a request-access form built from ' +
-                    'the field components, an FAQ accordion, and the transition + scroll helpers. The design-system ' +
-                    'framing leans into the ' +
+                    'the field components (submitting it floats a success toast), an FAQ accordion, and the ' +
+                    'transition + scroll helpers. The design-system framing leans into the ' +
                     'theming story — flip the **Theme** and **Color scheme** toolbar switches to see the whole page ' +
                     're-skin through the design tokens.',
             },
@@ -345,7 +345,7 @@ export const Page = {
                     <form
                         class="grid sm:grid-cols-2 gap-6 rounded-xl border p-6"
                         style="border-color:var(--el-color-border,#e5e7eb)"
-                        onsubmit="return false"
+                        onsubmit="event.preventDefault(); this.parentElement.querySelector('[data-demo-toast]').cloneNode(true).toast();"
                     >
                         <el-input-field
                             name="name"
@@ -429,6 +429,11 @@ export const Page = {
                             <el-button type="submit" variant="primary" size="large"> Request access </el-button>
                         </div>
                     </form>
+
+                    <!-- Toast template: submitting the form clones this and floats it via toast(). -->
+                    <el-notification data-demo-toast variant="success" closable="true" duration="4000">
+                        Thanks! We'll be in touch shortly.
+                    </el-notification>
                 </section>
 
                 <!-- ───────── FAQ accordion ───────── -->
