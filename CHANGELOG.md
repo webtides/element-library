@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### Components
 
 - Added: new `el-button` component — a themeable button modelled on Shoelace's `<sl-button>` (variants, sizes, outline/pill/circle, caret, loading, prefix/suffix slots, link mode).
+- Added: new `el-dialog` component — a modal dialog built on the native `<dialog>` element (platform-provided focus trap, background `inert`, focus restore and `<form method="dialog">` auto-close), with an animated, cancelable open/close lifecycle and ref-counted body-scroll locking that compensates for the removed scrollbar width (no layout shift on open). API modelled on Shoelace's `<sl-dialog>`.
 - Added: new `el-radio-field` component — a single-choice radio group extending `FormField`, rendering a native `<fieldset>`/`<legend>` of mutually-exclusive radios from an `options` array (strings or `{ value, label?, disabled? }`) with a custom, headless-by-default indicator. Inherits the `input-change` event and `touched`/`valid`/`invalid` states.
 - Added: new `el-switch-field` component — an on/off toggle extending `FormField`, rendering a native `<input type="checkbox">` with `role="switch"` behind a custom, headless-by-default track/thumb. Reflects `checked`, adds a `checked` custom state, and inherits the `input-change` event and `touched`/`valid`/`invalid` states.
 - Added: new `el-password-field` component — a masked password input extending `InputField`, pinning the input `type` to `password` (flipping to `text` while revealed) and adding an optional show/hide reveal button (`password-toggle`, default on). Inherits the `input-change` event and `touched`/`valid`/`invalid` states. All three shipped themes decorate its native input identically to `el-input-field`, so themed password and text fields match.
@@ -22,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ### Theming
 
+- Added: dialog tokens (`--el-dialog-width`, `--el-dialog-overlay-background`) wired into all three shipped themes (default / high-contrast / sketchy), so themed `el-dialog`s get a visible, per-theme overlay scrim. Unthemed dialogs keep a `transparent` backdrop (headless). Documented in the Storybook _Docs / Theming_ token reference.
 - Added: opt-in default theme stylesheet at `@webtides/element-library/themes/default.css`. Defines the `--el-*` token vocabulary at `:root` with `light-dark()` color values; without it imported, components stay headless.
 - Added: opt-in high-contrast theme stylesheet at `@webtides/element-library/themes/high-contrast.css`. Same token contract, accessibility-leaning identity: near-black/white surfaces, 2px borders, 3px focus rings, no shadows, larger touch targets. Supports both color schemes via `light-dark()`.
 - Added: Storybook toolbar gains a "Theme" switch (None / Default / High contrast) and a "Color scheme" switch (System / Light / Dark) for previewing themed and unthemed states.

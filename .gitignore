@@ -8,6 +8,9 @@ storybook-static/
 # Generated coverage report (built by `npm run test:coverage`, set in vitest.config.js)
 test/coverage/
 
+# Transient debug attachments from Vitest browser-mode runs
+.vitest-attachments/
+
 # Generated type declarations (built by `npm run build:types`, also via prepack)
 types/
 
