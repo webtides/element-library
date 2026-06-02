@@ -63,6 +63,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | form-field         |                                                                               | `0.1.0` |
 | input-field        |                                                                               | `0.1.0` |
 | lazy-src           |                                                                               | `0.2.0` |
+| password-field     | A masked password input with an optional show/hide reveal toggle              | `0.1.0` |
 | radio-field        | A single-choice radio group built on a native fieldset                        | `0.1.0` |
 | scroll-to          |                                                                               | `0.1.0` |
 | scroll-to-top      |                                                                               | `0.1.0` |
@@ -106,7 +107,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | compare-images     |               | TBD |
 | text-highlight     |               | TBD |
 | tooltip-element    | Popover ?!    | TBD |
-| password-field     |             | TBD  |
 | dropdown-field     |             | TBD  |
 | range-field        |             | TBD  |
 | input-group        |             | TBD  |
