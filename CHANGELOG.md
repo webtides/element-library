@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### Components
 
 - Added: new `el-button` component — a themeable button modelled on Shoelace's `<sl-button>` (variants, sizes, outline/pill/circle, caret, loading, prefix/suffix slots, link mode).
+- Added: new `el-radio-field` component — a single-choice radio group extending `FormField`, rendering a native `<fieldset>`/`<legend>` of mutually-exclusive radios from an `options` array (strings or `{ value, label?, disabled? }`) with a custom, headless-by-default indicator. Inherits the `input-change` event and `touched`/`valid`/`invalid` states.
 - Changed (BREAKING): dropped the `-element` suffix from five components. The tags `el-accordion-element / el-carousel-element / el-dropdown-element / el-slider-element / el-sticky-element` are now `el-accordion / el-carousel / el-dropdown / el-slider / el-sticky`; their import subpaths (`@webtides/element-library/<name>` and `/<name>/define`) and exported classes (`AccordionElement → Accordion`, `CarouselElement → Carousel`, `DropdownElement → Dropdown`, `SliderElement → Slider`, `StickyElement → Sticky`) change to match. `accordion-group` is unchanged.
 
 ### Theming
