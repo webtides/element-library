@@ -340,6 +340,20 @@ export const Page = {
                         </div>
 
                         <div class="sm:col-span-2">
+                            <el-radio-field
+                                name="billing"
+                                label="Billing cycle"
+                                value="annual"
+                                required="true"
+                                help-message="Annual saves two months."
+                                .options="${[
+                                    { value: 'monthly', label: 'Monthly' },
+                                    { value: 'annual', label: 'Annual' },
+                                ]}"
+                            ></el-radio-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <el-textarea-field
                                 name="context"
                                 label="What are you building?"

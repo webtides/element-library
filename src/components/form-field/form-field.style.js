@@ -6,7 +6,8 @@ export default css`
     el-textarea-field,
     el-select-field,
     el-amount-field,
-    el-checkbox-field {
+    el-checkbox-field,
+    el-radio-field {
         display: block;
 
         > label {

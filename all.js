@@ -8,6 +8,7 @@ import './src/components/dropdown/dropdown.define.js';
 import './src/components/form-field/form-field.define.js';
 import './src/components/input-field/input-field.define.js';
 import './src/components/lazy-src/lazy-src.define.js';
+import './src/components/radio-field/radio-field.define.js';
 import './src/components/scroll-to/scroll-to.define.js';
 import './src/components/scroll-to-top/scroll-to-top.define.js';
 import './src/components/select-field/select-field.define.js';
