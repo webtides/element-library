@@ -75,6 +75,7 @@
  * native input look (headless default).
  */
 el-input-field input,
+el-password-field input,
 el-textarea-field textarea,
 el-select-field select {
   box-sizing: border-box;
@@ -93,11 +94,13 @@ el-select-field select {
 }
 
 el-input-field input,
+el-password-field input,
 el-select-field select {
   min-height: var(--el-control-height);
 }
 
 el-input-field input:focus,
+el-password-field input:focus,
 el-textarea-field textarea:focus,
 el-select-field select:focus {
   outline: none;
@@ -108,6 +111,7 @@ el-select-field select:focus {
 }
 
 el-input-field:state(invalid) input,
+el-password-field:state(invalid) input,
 el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {
   border-color: var(--el-color-danger);
