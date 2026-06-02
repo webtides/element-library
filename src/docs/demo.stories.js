@@ -326,6 +326,14 @@ export const Page = {
                             error-message="Please enter a valid email."
                         ></el-input-field>
 
+                        <el-password-field
+                            name="password"
+                            label="Choose a password"
+                            placeholder="••••••••"
+                            required="true"
+                            help-message="At least 8 characters."
+                        ></el-password-field>
+
                         <el-select-field
                             name="team"
                             label="Team size"

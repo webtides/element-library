@@ -3,6 +3,7 @@ const css = String.raw;
 export default css`
     el-form-field,
     el-input-field,
+    el-password-field,
     el-textarea-field,
     el-select-field,
     el-amount-field,
