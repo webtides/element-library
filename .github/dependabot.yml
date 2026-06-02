@@ -24,6 +24,18 @@ updates:
         dependency-type: development
         update-types:
           - patch
+        # Catch-all for leftover dev patches. Without these excludes it
+        # siphons packages owned by the named groups above (e.g. @vitest/*
+        # landed here instead of the vitest group), splitting a single
+        # version line across two PRs that then conflict on merge.
+        exclude-patterns:
+          - 'storybook'
+          - '@storybook/*'
+          - 'vitest'
+          - '@vitest/*'
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
     ignore:
       # Pinned at ~3.6.2 — 3.7+ added an exports map that blocks the
       # deep imports the carousel-element ShadowDOM patches depend on.
