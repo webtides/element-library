@@ -70,6 +70,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | slider             | CSS only slider element to slide child elements                               | `0.4.3` |
 | sticky             |                                                                               | `0.2.0` |
 | svg-use            |                                                                               | `0.1.0` |
+| switch-field       | An on/off toggle backed by a native checkbox with role="switch"               | `0.1.0` |
 | tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
 | tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
 | tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
@@ -106,7 +107,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | text-highlight     |               | TBD |
 | tooltip-element    | Popover ?!    | TBD |
 | password-field     |             | TBD  |
-| switch-field       |             | TBD  |
 | dropdown-field     |             | TBD  |
 | range-field        |             | TBD  |
 | input-group        |             | TBD  |
