@@ -363,6 +363,14 @@ export const Page = {
                         </div>
 
                         <div class="sm:col-span-2">
+                            <el-switch-field
+                                name="updates"
+                                checked="true"
+                                label="Email me occasional product updates"
+                            ></el-switch-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <el-checkbox-field
                                 name="terms"
                                 required="true"

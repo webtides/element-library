@@ -15,6 +15,7 @@ import './src/components/select-field/select-field.define.js';
 import './src/components/slider/slider.define.js';
 import './src/components/sticky/sticky.define.js';
 import './src/components/svg-use/svg-use.define.js';
+import './src/components/switch-field/switch-field.define.js';
 import './src/components/tab-group/tab-group.define.js';
 import './src/components/tab-link/tab-link.define.js';
 import './src/components/tab-panel/tab-panel.define.js';
