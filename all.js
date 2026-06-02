@@ -4,6 +4,7 @@ import './src/components/amount-field/amount-field.define.js';
 import './src/components/button/button.define.js';
 import './src/components/carousel/carousel.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
+import './src/components/dialog/dialog.define.js';
 import './src/components/dropdown/dropdown.define.js';
 import './src/components/form-field/form-field.define.js';
 import './src/components/input-field/input-field.define.js';

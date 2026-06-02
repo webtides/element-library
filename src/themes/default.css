@@ -67,6 +67,10 @@
   /* Sizing */
   --el-control-height: 2.5rem;
   --el-touch-target: 2.75rem;
+
+  /* Dialog — overlay scrim dims the inert background; the panel reads the shared surface tokens */
+  --el-dialog-width: 31rem;
+  --el-dialog-overlay-background: light-dark(rgba(17, 24, 39, 0.5), rgba(0, 0, 0, 0.6));
 }
 
 /*

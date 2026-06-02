@@ -64,6 +64,10 @@
   /* Sizing — bumped touch target to comfortably exceed WCAG 2.1 (44px) */
   --el-control-height: 2.75rem;
   --el-touch-target: 3rem;
+
+  /* Dialog — a heavier scrim for an unambiguous separation from the background */
+  --el-dialog-width: 31rem;
+  --el-dialog-overlay-background: light-dark(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85));
 }
 
 /*

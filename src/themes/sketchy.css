@@ -102,6 +102,10 @@
   /* Sizing */
   --el-control-height: 2.5rem;
   --el-touch-target: 2.75rem;
+
+  /* Dialog — an ink-wash scrim in the page's ink color */
+  --el-dialog-width: 31rem;
+  --el-dialog-overlay-background: light-dark(rgba(43, 43, 43, 0.45), rgba(0, 0, 0, 0.6));
 }
 
 /*

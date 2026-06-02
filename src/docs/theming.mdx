@@ -126,7 +126,7 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 | `--el-shadow-md` | `0 4px 12px light-dark(…)`  | `none`              |
 | `--el-shadow-lg` | `0 12px 24px light-dark(…)` | `none`              |
 
-`--el-shadow-lg` is used by floating surfaces (currently `el-dropdown-element`'s panel; future popovers/modals). `--el-shadow-md` is part of the contract for inline elevation but isn't read by any current component — set it in your theme to ready it for future surfaces or your own overrides.
+`--el-shadow-lg` is used by floating surfaces (`el-dropdown`'s panel and `el-dialog`'s panel; future popovers). `--el-shadow-md` is part of the contract for inline elevation but isn't read by any current component — set it in your theme to ready it for future surfaces or your own overrides.
 
 ### Motion
 
@@ -143,6 +143,18 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 | `--el-focus-ring-offset` | `2px`         | `2px`               |
 | `--el-control-height`    | `2.5rem`      | `2.75rem`           |
 | `--el-touch-target`      | `2.75rem`     | `3rem`              |
+
+### Component tokens
+
+A few components add their own tokens on top of the shared vocabulary above. They have null-ish or sensible fallbacks, so they're optional — set them in a theme to tune that component.
+
+| Token                            | Default theme                        | Fallback (headless) | Used by                                        |
+| -------------------------------- | ------------------------------------ | ------------------- | ---------------------------------------------- |
+| `--el-dialog-width`              | `31rem`                              | `31rem`             | `el-dialog` panel width.                       |
+| `--el-dialog-overlay-background` | `rgba(17, 24, 39, 0.5)` (dark scrim) | `transparent`       | `el-dialog` `::backdrop` (the overlay scrim).  |
+| `--el-dialog-enter-offset`       | _(unset)_                            | `0.5rem`            | Vertical distance the dialog animates in from. |
+
+Because the overlay scrim falls back to `transparent`, an **unthemed** `el-dialog` has no visible backdrop — it stays headless like every other component. Import a theme (or set `--el-dialog-overlay-background` yourself) to get the dimmed background.
 
 ## Writing your own theme
 

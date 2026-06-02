@@ -14,9 +14,10 @@ export default {
                 component:
                     'A single, somewhat realistic page — a design system built with the library itself — that wires up ' +
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
-                    'dropdown resources menu, a hero carousel of palette swatches, token tabs, a token-catalogue ' +
-                    'slider, a lazy-loaded pattern gallery, a request-access form built from the field components, an ' +
-                    'FAQ accordion, and the transition + scroll helpers. The design-system framing leans into the ' +
+                    'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
+                    'tabs, a token-catalogue slider, a lazy-loaded pattern gallery, a request-access form built from ' +
+                    'the field components, an FAQ accordion, and the transition + scroll helpers. The design-system ' +
+                    'framing leans into the ' +
                     'theming story — flip the **Theme** and **Color scheme** toolbar switches to see the whole page ' +
                     're-skin through the design tokens.',
             },
@@ -217,9 +218,47 @@ export const Page = {
                         A token-driven design system implemented as real web components with
                         <code>@webtides/element-library</code>. Theme it once, ship it everywhere.
                     </p>
-                    <el-scroll-to selector="#start">
-                        <el-button variant="primary" size="large">Get the kit</el-button>
-                    </el-scroll-to>
+                    <div class="flex items-center justify-center gap-3 flex-wrap">
+                        <el-scroll-to selector="#start">
+                            <el-button variant="primary" size="large">Get the kit</el-button>
+                        </el-scroll-to>
+
+                        <!-- A modal built from the library itself: form-field + buttons inside el-dialog.
+                             The trigger opens its adjacent dialog; the scrim + panel re-skin with the theme. -->
+                        <span class="inline-block">
+                            <el-button
+                                variant="default"
+                                size="large"
+                                outline="true"
+                                onclick="this.nextElementSibling.show()"
+                            >
+                                Book a walkthrough
+                            </el-button>
+                            <el-dialog label="Book a walkthrough">
+                                <p class="opacity-80 mb-4">
+                                    Pick a time and we'll walk your team through the tokens, components and theming
+                                    workflow.
+                                </p>
+                                <el-input-field
+                                    name="when"
+                                    type="text"
+                                    label="Preferred date"
+                                    placeholder="Next Tuesday, 2pm"
+                                ></el-input-field>
+                                <el-button
+                                    slot="footer"
+                                    variant="default"
+                                    outline="true"
+                                    onclick="this.closest('el-dialog').hide()"
+                                >
+                                    Maybe later
+                                </el-button>
+                                <el-button slot="footer" variant="primary" onclick="this.closest('el-dialog').hide()">
+                                    Confirm
+                                </el-button>
+                            </el-dialog>
+                        </span>
+                    </div>
 
                     <div class="mt-10 rounded-xl overflow-hidden">
                         <el-carousel>
