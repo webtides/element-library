@@ -1,40 +1,7 @@
 import { TemplateElement, html, defineElement } from '@webtides/element-js';
 import style from './notification.style.js';
 import Events from './notification.events.js';
-
-/**
- * Resolves after two animation frames, long enough for an enter starting-style to be committed.
- * (Mirrors `src/utils/transitions.js` from the dialog work; inlined here to keep this an
- * independent, main-based component.)
- */
-function nextFrame() {
-    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-}
-
-/** Resolves once `element`'s running CSS transition finishes — or immediately when none is set. */
-function afterTransition(element) {
-    return new Promise((resolve) => {
-        const styles = getComputedStyle(element);
-        const seconds = (value) => Math.max(0, ...value.split(',').map((part) => parseFloat(part) || 0));
-        const duration = seconds(styles.transitionDuration) + seconds(styles.transitionDelay);
-        if (duration === 0) {
-            resolve();
-            return;
-        }
-        let settled = false;
-        const finish = () => {
-            if (settled) return;
-            settled = true;
-            element.removeEventListener('transitionend', onEnd);
-            resolve();
-        };
-        const onEnd = (event) => {
-            if (event.target === element) finish();
-        };
-        element.addEventListener('transitionend', onEnd);
-        setTimeout(finish, duration * 1000 + 50);
-    });
-}
+import { afterTransition, nextFrame } from '../../utils/transitions.js';
 
 /**
  * Lazily-created, shared toast container pinned to the top-right of the viewport. Toasts append
