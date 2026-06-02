@@ -17,3 +17,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Initial release of `el-password-field` — a masked password input extending `InputField`. Pins the input `type` to `password` (flipping to `text` while revealed) and adds an optional show/hide reveal button.
 - `passwordToggle` property (default `true`) to show/hide the reveal button, `passwordVisible` state, and a `togglePasswordVisibility()` method.
 - Inherits the label / help / error / validation surface, the `input-change` event and the `touched` / `valid` / `invalid` states from `InputField` / `FormField`.
+- All three shipped themes decorate `el-password-field`'s native input identically to `el-input-field` (border, padding, focus ring, invalid state), so themed password and text fields match.
