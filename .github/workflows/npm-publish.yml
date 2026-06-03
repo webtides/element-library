@@ -34,3 +34,29 @@ jobs:
       - run: npm install -g npm@latest # OIDC trusted publishing needs npm >= 11.5.1
       - run: npm ci
       - run: npm publish --access public
+
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # required to create the GitHub Release
+    steps:
+      - uses: actions/checkout@v6
+      - name: Extract changelog section for this tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { flag=1; next }
+            flag && /^## / { flag=0 }
+            flag { print }
+          ' CHANGELOG.md > release-notes.md
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s release-notes.md ]; then
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag
+          else
+            # No matching CHANGELOG section — fall back to commit-based notes.
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
+          fi
