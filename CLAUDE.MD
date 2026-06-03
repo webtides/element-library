@@ -213,6 +213,30 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 - **Commit messages**: Use clear, descriptive messages
 - **Feature branches**: Use descriptive branch names
 
+## Releasing & Publishing
+
+Releases are fully automated by `.github/workflows/npm-publish.yml`, which is triggered by pushing a `v*` git tag. The workflow has three sequential jobs:
+
+1. **test** — `npm ci`, install Chromium, `npm test` (the publish gate; a red test blocks the release).
+2. **publish** — publishes to npm via **OIDC trusted publishing** (no token). Requires `id-token: write` permission, npm `>= 11.5.1` (the workflow upgrades npm), and a Trusted Publisher configured on npmjs.com for this repo + `npm-publish.yml`. `prepack` regenerates `custom-elements.json`, `web-types.json`, and `types/**` before packing.
+3. **github-release** — creates a GitHub Release for the tag, using the matching `## [x.y.z]` section of `CHANGELOG.md` as the body (falls back to auto-generated commit notes if no section is found).
+
+### Cutting a release
+
+1. Move the accumulated `## Unreleased` notes — in the root `CHANGELOG.md` **and** every touched component's `*.changelog.md` — into a new `## [x.y.z] - YYYY-MM-DD` heading, leaving a fresh empty `## Unreleased` above. Components with no changes that release keep only their existing entries.
+2. Bump the version and create the tag:
+    ```bash
+    npm version patch   # or minor / major — bumps package.json and creates the vX.Y.Z tag
+    git push --follow-tags
+    ```
+3. The tag push runs the workflow: test → npm publish (OIDC) → GitHub Release.
+
+### Notes
+
+- **No npm token exists** — publishing is tokenless via OIDC. Do not reintroduce an `NPM_TOKEN` secret or a 2FA-bypass token.
+- **GitHub Releases** live at `https://github.com/webtides/element-library/releases` and are created automatically by the workflow. To backfill or create one manually for an existing tag: `gh release create vX.Y.Z --notes-file <file>` (or `--generate-notes`).
+- The npm tarball contents are controlled by the `files` array in `package.json`; verify with `npm pack --dry-run` before tagging.
+
 ## Resources
 
 - **Live Storybook**: https://webtides.github.io/element-library
