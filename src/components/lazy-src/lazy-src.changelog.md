@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - `loaded` custom state on the host, set once the child has been swapped in. Style with `el-lazy-src:state(loaded) { … }`. The reflected `loaded` attribute is unchanged.

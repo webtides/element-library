@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 <!-- ### Removed -->
 <!-- ### Fixed -->
 
+## [0.1.0] - 2026-06-03
+
+### Changed
+
+- Migrated into the single-repo `@webtides/element-library` package. No API changes.
+
 ## Legacy (pre-merge)
 
 The version numbers below predate the single-package merge and refer to the component's former standalone npm package, not the current `@webtides/element-library` version. Kept for historical reference.

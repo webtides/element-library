@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Changed
 
 - BREAKING: renamed the dropdown indicator's CSS class from `.icon` to `.dropdown-indicator` to avoid collisions with generic consumer styles.

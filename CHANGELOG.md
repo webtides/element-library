@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Components
 
 - Added: new `el-button` component — a themeable button modelled on Shoelace's `<sl-button>` (variants, sizes, outline/pill/circle, caret, loading, prefix/suffix slots, link mode).

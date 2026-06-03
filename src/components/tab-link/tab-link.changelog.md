@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Changed
 
 - BREAKING: the active state is now exposed as a custom state (`:state(active)`) instead of the `[active]` attribute. `<el-tab-group>` toggles it on each link as the selection changes. Consumers should use `el-tab-link:state(active) { … }`.

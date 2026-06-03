@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Changed
 
 - BREAKING: renamed the component — tag `el-slider-element` → `el-slider`, import subpaths `@webtides/element-library/slider-element` → `/slider` (and `/slider-element/define` → `/slider/define`), and exported class `SliderElement` → `Slider`.

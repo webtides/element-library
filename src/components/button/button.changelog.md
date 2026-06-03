@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - Initial `el-button` — a themeable button modelled on Shoelace's `<sl-button>`. Renders a native `<button>`, or an `<a>` when `href` is set. Supports `variant` (`default / primary / success / neutral / warning / danger / text`), `size` (`small / medium / large`), `outline`, `pill`, `circle`, `caret`, `loading` and `disabled`; `prefix` / `suffix` icon slots; `base / prefix / label / suffix / caret / spinner` CSS parts; and `focus()` / `blur()` / `click()` methods. `type="submit"` / `type="reset"` drive the nearest ancestor `<form>` across the shadow boundary. Styling reads the `--el-*` design tokens, so it re-skins with every theme.

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - `touched`, `valid` and `invalid` custom states on the host. Inherited by all subclasses (`InputField`, `CheckboxField`, `TextareaField`, `AmountField`, `SelectField`). The inner `.field.is-touched / .is-valid / .is-invalid` classes still exist; they remain the internal hook for event delegation and shadow-DOM rendered subclasses.

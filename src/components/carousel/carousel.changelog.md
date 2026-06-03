@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Changed
 
 - BREAKING: renamed the component — tag `el-carousel-element` → `el-carousel`, import subpaths `@webtides/element-library/carousel-element` → `/carousel` (and `/carousel-element/define` → `/carousel/define`), and exported class `CarouselElement` → `Carousel`.

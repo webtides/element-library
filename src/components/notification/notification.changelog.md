@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - Initial release of `el-notification` — an alert/notification that can be shown inline or as a transient toast (`toast()` floats it into a shared top-right stack). API modelled on Shoelace's `<sl-alert>`.

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Fixed
 
 - Single-open mode (`show-multiple="false"`) now correctly closes the previously open accordion when one starts open declaratively. The `connected()` preselection scan had an inverted guard (it ran only in multi-open mode) and queried the whole document instead of the group's own children.

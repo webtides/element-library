@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - Initial release of `el-password-field` — a masked password input extending `InputField`. Pins the input `type` to `password` (flipping to `text` while revealed) and adds an optional show/hide reveal button.

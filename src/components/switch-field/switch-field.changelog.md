@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - Initial release of `el-switch-field` — an on/off toggle extending `FormField`. Renders a native `<input type="checkbox">` with `role="switch"` (announced as a switch, submits with forms) behind a custom, headless-by-default track/thumb.

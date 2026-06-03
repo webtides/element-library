@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - Initial release of `el-radio-field` — a single-choice radio group extending `FormField`. Renders a native `<fieldset>`/`<legend>` wrapping mutually-exclusive `<input type="radio">`s (native grouping, arrow-key navigation and form submission) with a custom, headless-by-default circular indicator.

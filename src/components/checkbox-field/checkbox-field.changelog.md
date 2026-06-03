@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - `checked` custom state on the host. Style with `el-checkbox-field:state(checked) { … }`. The reflected `checked` attribute is unchanged. Inherits the `touched / valid / invalid` states from `FormField`.

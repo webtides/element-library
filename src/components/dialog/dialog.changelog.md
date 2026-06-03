@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.0] - 2026-06-03
+
 ### Added
 
 - Initial release of `el-dialog` — a modal dialog built on the native `<dialog>` element. The platform provides focus trapping, background `inert`, top-layer rendering, focus restoration and `<form method="dialog">` auto-close; the component adds an animated, cancelable open/close lifecycle and ref-counted body-scroll locking that compensates for the removed scrollbar width (no layout shift on open). API modelled on Shoelace's `<sl-dialog>`.
