@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.1.2] - 2026-06-04
+
+### Packaging
+
+- Fixed: the published tarball now ships the runtime `src/utils/*.js` files. The `files` allowlist in `package.json` included `src/components/**/*.js` but not `src/utils/**/*.js`, so `0.1.1` shipped only the `types/src/utils/*.d.ts` declarations while the runtime modules were dropped. Components that import them — `el-notification` and `el-dialog` (`../../utils/transitions.js`, `../../utils/body-scroll.js`) — failed to resolve those imports from the published package, breaking downstream builds (e.g. `nuxt build`). This is independent of the `patch-package` `postinstall` fix in `0.1.1`.
+
 ## [0.1.1] - 2026-06-04
 
 ### Packaging

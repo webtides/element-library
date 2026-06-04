@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.2] - 2026-06-04
+
+### Fixed
+
+- The published package now ships the runtime `src/utils/transitions.js` and `src/utils/body-scroll.js` this component imports; `0.1.1` shipped only their type declarations, so importing `el-dialog` from the published package failed to resolve `../../utils/*.js`. Fixed via the root `files` allowlist (see root [`CHANGELOG.md`](../../../CHANGELOG.md)).
+
 ## [0.1.0] - 2026-06-03
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "@webtides/element-library",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A set of web components built with @webtides/element-js",
   "type": "module",
   "main": "index.js",
@@ -39,6 +39,7 @@
     "src/components/**/*.md",
     "!src/components/**/*.stories.js",
     "!src/components/**/*.test.*.js",
+    "src/utils/**/*.js",
     "src/themes/*.css",
     "types/**/*.d.ts",
     "all.js",
