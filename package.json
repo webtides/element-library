@@ -1,6 +1,6 @@
 {
   "name": "@webtides/element-library",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A set of web components built with @webtides/element-js",
   "type": "module",
   "main": "index.js",
@@ -45,7 +45,6 @@
     "index.js",
     "custom-elements.json",
     "web-types.json",
-    "patches",
     "CHANGELOG.md"
   ],
   "repository": {
@@ -97,7 +96,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "lit": "^3.3.3",
-    "patch-package": "^8.0.1",
     "playwright": "^1.60.0",
     "prettier": "^3.8.3",
     "storybook": "^10.4.1",
@@ -117,8 +115,7 @@
     "analyze:watch": "cem analyze --config custom-elements-manifest.config.mjs --outdir . --watch",
     "build:types": "tsc -p tsconfig.json",
     "prepack": "npm run analyze && npm run build:types",
-    "prepare": "husky && npm run analyze && npm run build:types",
-    "postinstall": "patch-package"
+    "prepare": "husky && npm run analyze && npm run build:types"
   },
   "lint-staged": {
     "*.js": [

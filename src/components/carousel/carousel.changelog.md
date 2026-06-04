@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.1.1] - 2026-06-04
+
+### Fixed
+
+- The carousel now bundles in consumer projects. `ShadowHtml` deep-imported `@glidejs/glide/src/components/html`, whose pristine source does `import { exist, toArray } from '../utils/dom'` even though `dom.js` exports no `exist` — `esbuild`/Vite reject this as a hard error ("No matching export for import 'exist'"). `0.1.0` patched it via `patch-package`/`postinstall`, but a dependency's `postinstall` runs from its own nested directory and cannot reach the consumer's hoisted `@glidejs/glide`, so the patch never applied downstream (and the missing `patch-package` binary broke `npm install` outright). The fixed Glide `html.js` is now vendored as `glide/components/glide-html.js` (upstream verbatim minus the unused `exist` import) and `ShadowHtml` imports that copy, removing all reliance on patching consumers' `node_modules`.
+
 ## [0.1.0] - 2026-06-03
 
 ### Changed

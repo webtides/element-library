@@ -1,4 +1,4 @@
-import GlideHTMLComponent from '@glidejs/glide/src/components/html';
+import GlideHTMLComponent from './glide-html.js';
 import { define } from '@glidejs/glide/src/utils/object';
 
 const TRACK_SELECTOR = '[data-glide-el="track"]';

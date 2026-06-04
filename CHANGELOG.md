@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.1.1] - 2026-06-04
+
+### Packaging
+
+- Fixed: a clean `npm install @webtides/element-library` no longer fails. `0.1.0` ran `"postinstall": "patch-package"` without shipping `patch-package`, so consumers without it on `PATH` got `sh: patch-package: command not found` (exit 127) and the install aborted. The `postinstall` hook, the `patch-package` devDependency, and the `patches/` directory have all been removed.
+
+### Components
+
+- Fixed (`el-carousel`): the carousel now bundles in consumer projects. It deep-imports Glide's `src/components/html.js`, whose pristine source imports a non-existent `exist` export — which `esbuild`/Vite reject as a hard build error. `0.1.0` "fixed" this with a `patch-package` patch applied via `postinstall`, but a dependency's `postinstall` runs from its own nested directory and can never reach the consumer's hoisted `@glidejs/glide`, so the patch never applied downstream. The fixed Glide `html.js` component is now vendored into the carousel (`glide/components/glide-html.js`) instead, removing the dependency on patching consumers' `node_modules`.
+
 ## [0.1.0] - 2026-06-03
 
 ### Components
