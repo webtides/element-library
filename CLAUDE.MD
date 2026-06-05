@@ -87,18 +87,36 @@ import Accordion from '@webtides/element-library/accordion';
 // Side-effect import — registers a single custom element
 import '@webtides/element-library/accordion/define';
 
-// Side-effect import — registers all 21 components
+// Side-effect import — registers all components (client-side, for hydration)
 import '@webtides/element-library/all';
+
+// Server-side rendering — a lazy Catalog of every component, for the renderer's `resolve`
+import catalog from '@webtides/element-library/catalog';
 ```
 
 The exports map in `package.json` exposes:
 
 - `.` → `index.js` (re-exports element-js base classes; no side effects)
 - `./all` → `all.js` (imports every component's `*.define.js`)
+- `./catalog` → `catalog.js` (a generated `{ tag: () => import(...) }` map for SSR — see below)
 - `./*` → `src/components/*/*.js` (the component module — class + `define()` function, no side effects)
 - `./*/define` → `src/components/*/*.define.js` (calls `define()` for that one component)
 
-The `sideEffects` field marks only `./all.js` and `./src/components/*/*.define.js` as side-effectful so bundlers tree-shake everything else.
+The `sideEffects` field marks only `./all.js` and `./src/components/*/*.define.js` as side-effectful so bundlers tree-shake everything else. (`./catalog` is intentionally **not** side-effectful — it is a plain map of lazy importers, so unused loaders tree-shake away.)
+
+### `./catalog` — SSR (the opposite end of `./all`)
+
+`./catalog` is for **server-side rendering** with [`@webtides/element-js-ssr-renderer`](https://github.com/webtides/element-js-ssr-renderer): a `Catalog` — `{ "el-button": () => import("./src/components/button/button.js"), … }` — that the renderer's `resolve` option consumes to pre-render the components present on a page to Declarative Shadow DOM. It is the mirror image of `./all`:
+
+|  | `./all` | `./catalog` |
+| --- | --- | --- |
+| Side | client (browser) | server (SSR) |
+| Effect | side-effectful: `define()`s every component for hydration | a plain value; defines nothing, runs no `customElements.define` |
+| Loading | eager (all components) | lazy (only tags on the page) |
+
+A consumer doing SSR uses **both**: `./catalog` on the server to pre-render, and `./all` (or per-component `…/define`) on the client to hydrate. Because the catalog ships inside the package, its specifiers are package-internal relative paths that resolve in any consumer bundle regardless of `node_modules` layout — no consumer codegen, no hand-written import map.
+
+`catalog.js` is **generated, not hand-edited** — regenerate it from the CEM with `npm run gen:catalog` whenever components are added or removed. It is committed and shipped via the `files` allowlist. (The `gen:catalog` script runs the renderer via `npx`; once `@webtides/element-js-ssr-renderer` is published to npm, a `prepack` step will regenerate it on every release so it can't drift from the components.)
 
 ## Development Conventions
 

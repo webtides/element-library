@@ -18,6 +18,9 @@ types/
 custom-elements.json
 web-types.json
 
+# Generated SSR Catalog (built by `npm run gen:catalog`; shipped via `files`, regenerated at release)
+catalog.js
+
 *storybook.log
 
 # Claude Code assistant files

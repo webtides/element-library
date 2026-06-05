@@ -15,6 +15,7 @@
       "types": "./types/all.d.ts",
       "default": "./all.js"
     },
+    "./catalog": "./catalog.js",
     "./*": {
       "types": "./types/src/components/*/*.d.ts",
       "default": "./src/components/*/*.js"
@@ -43,6 +44,7 @@
     "src/themes/*.css",
     "types/**/*.d.ts",
     "all.js",
+    "catalog.js",
     "index.js",
     "custom-elements.json",
     "web-types.json",
@@ -115,6 +117,7 @@
     "analyze": "cem analyze --config custom-elements-manifest.config.mjs --outdir .",
     "analyze:watch": "cem analyze --config custom-elements-manifest.config.mjs --outdir . --watch",
     "build:types": "tsc -p tsconfig.json",
+    "gen:catalog": "npx -y @webtides/element-js-ssr-renderer catalog --manifest custom-elements.json -o catalog.js && prettier --write catalog.js",
     "prepack": "npm run analyze && npm run build:types",
     "prepare": "husky && npm run analyze && npm run build:types"
   },
