@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.2.0] - 2026-06-10
+
 ### Packaging
 
 - Added: a new `@webtides/element-library/catalog` export — the recommended way to consume this library under **server-side rendering** with `@webtides/element-js-ssr-renderer`. `catalog.js` is a generated, bundler-traceable `Catalog` (`{ "el-button": () => import("./src/components/button/button.js"), … }`) covering all 26 components. Because it ships **inside the package**, its specifiers are package-internal relative paths that resolve in any consumer's bundle regardless of `node_modules` layout, so SSR works on every target (plain Node, Nitro, edge/Workers, webpack, Vite) with no consumer codegen and no hand-written import map: `import catalog from "@webtides/element-library/catalog"` then pass it to the renderer's `resolve`. Distinct from `./all` (a client-side side-effect bundle that registers every component for hydration) — the catalog defines nothing and runs no `define()`, it only tells the SSR renderer how to load each class. Regenerated automatically on release via the `prepack` hook (and on demand with `npm run gen:catalog`), so it can never drift from the components; a Node SSR smoke test (`npm run test:catalog`, run in CI) verifies a known tag still resolves to its class through the renderer.

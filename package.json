@@ -1,6 +1,6 @@
 {
   "name": "@webtides/element-library",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A set of web components built with @webtides/element-js",
   "type": "module",
   "main": "index.js",
