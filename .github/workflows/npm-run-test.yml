@@ -21,4 +21,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run lint
       - run: npm run build:types
+      - run: npm run test:catalog # Node SSR smoke test for the ./catalog export
       - run: npm run test:coverage

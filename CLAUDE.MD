@@ -108,15 +108,15 @@ The `sideEffects` field marks only `./all.js` and `./src/components/*/*.define.j
 
 `./catalog` is for **server-side rendering** with [`@webtides/element-js-ssr-renderer`](https://github.com/webtides/element-js-ssr-renderer): a `Catalog` — `{ "el-button": () => import("./src/components/button/button.js"), … }` — that the renderer's `resolve` option consumes to pre-render the components present on a page to Declarative Shadow DOM. It is the mirror image of `./all`:
 
-|  | `./all` | `./catalog` |
-| --- | --- | --- |
-| Side | client (browser) | server (SSR) |
-| Effect | side-effectful: `define()`s every component for hydration | a plain value; defines nothing, runs no `customElements.define` |
-| Loading | eager (all components) | lazy (only tags on the page) |
+|         | `./all`                                                   | `./catalog`                                                     |
+| ------- | --------------------------------------------------------- | --------------------------------------------------------------- |
+| Side    | client (browser)                                          | server (SSR)                                                    |
+| Effect  | side-effectful: `define()`s every component for hydration | a plain value; defines nothing, runs no `customElements.define` |
+| Loading | eager (all components)                                    | lazy (only tags on the page)                                    |
 
 A consumer doing SSR uses **both**: `./catalog` on the server to pre-render, and `./all` (or per-component `…/define`) on the client to hydrate. Because the catalog ships inside the package, its specifiers are package-internal relative paths that resolve in any consumer bundle regardless of `node_modules` layout — no consumer codegen, no hand-written import map.
 
-`catalog.js` is **generated, not hand-edited** — regenerate it from the CEM with `npm run gen:catalog` whenever components are added or removed. It is committed and shipped via the `files` allowlist. (The `gen:catalog` script runs the renderer via `npx`; once `@webtides/element-js-ssr-renderer` is published to npm, a `prepack` step will regenerate it on every release so it can't drift from the components.)
+`catalog.js` is **generated, not hand-edited** — regenerate it from the CEM with `npm run gen:catalog` whenever components are added or removed. Like `custom-elements.json`/`web-types.json`, it is **gitignored** (not committed) but shipped via the `files` allowlist, and the `prepack` hook regenerates it on every release so it can't drift from the components. The `test:catalog` script (a Node SSR smoke test, run in CI) renders a known tag through the renderer's `resolve` to verify the catalog actually resolves to component classes.
 
 ## Development Conventions
 
@@ -235,8 +235,8 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 
 Releases are fully automated by `.github/workflows/npm-publish.yml`, which is triggered by pushing a `v*` git tag. The workflow has three sequential jobs:
 
-1. **test** — `npm ci`, install Chromium, `npm test` (the publish gate; a red test blocks the release).
-2. **publish** — publishes to npm via **OIDC trusted publishing** (no token). Requires `id-token: write` permission, npm `>= 11.5.1` (the workflow upgrades npm), and a Trusted Publisher configured on npmjs.com for this repo + `npm-publish.yml`. `prepack` regenerates `custom-elements.json`, `web-types.json`, and `types/**` before packing.
+1. **test** — `npm ci`, install Chromium, `npm test`, then `npm run test:catalog` (the Node SSR catalog smoke test); the publish gate — a red test blocks the release.
+2. **publish** — publishes to npm via **OIDC trusted publishing** (no token). Requires `id-token: write` permission, npm `>= 11.5.1` (the workflow upgrades npm), and a Trusted Publisher configured on npmjs.com for this repo + `npm-publish.yml`. `prepack` regenerates `custom-elements.json`, `web-types.json`, `types/**`, and `catalog.js` before packing.
 3. **github-release** — creates a GitHub Release for the tag, using the matching `## [x.y.z]` section of `CHANGELOG.md` as the body (falls back to auto-generated commit notes if no section is found).
 
 ### Cutting a release
