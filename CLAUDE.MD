@@ -194,6 +194,12 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 
 ## Important Notes for AI Assistants
 
+### When Working from an Issue
+
+1. **Need, not solution**: an issue states a need and the requester's context (often a downstream app). Its acceptance criteria are binding; a proposed solution is not.
+2. **Fit this library**: build what matches this library's conventions and API, even where that differs from the proposal, and explain every deviation in the PR under "Deviations from the issue".
+3. **Wrong place**: if the need does not belong in this library, say so in the issue instead of building it.
+
 ### When Adding Features
 
 1. **Follow existing patterns**: Look at similar components for reference
