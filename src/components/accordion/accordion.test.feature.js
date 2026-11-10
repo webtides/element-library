@@ -21,4 +21,31 @@ describe('Feature | Accordion', () => {
         const results = await axe.run(el);
         expect(results.violations).toEqual([]);
     });
+
+    it('does not throw when it is removed while the collapse animation is pending', async () => {
+        const errors = [];
+        const onError = (event) => {
+            event.preventDefault();
+            errors.push(event.message);
+        };
+        window.addEventListener('error', onError);
+
+        const el = await fixture(`
+            <el-accordion open="true">
+                <div slot="header">Accordion Header</div>
+                <div slot="content">Accordion content.</div>
+            </el-accordion>
+        `);
+        await nextFrame();
+
+        // collapse() schedules two animation frames; the element is gone before they run.
+        el.collapse();
+        el.remove();
+        await nextFrame();
+        await nextFrame();
+        await nextFrame();
+
+        window.removeEventListener('error', onError);
+        expect(errors).toEqual([]);
+    });
 });

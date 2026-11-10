@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: `@webtides/element-js` is now required at `^1.3.0` (was `^1.2.11`). The range already let fresh installs resolve to 1.3.0; the library is now built and tested against it. 1.3.0 reworks hydration and the server-side string renderer, which shows up here in two ways. Fixed: after hydrating server-rendered markup, property updates reach the rendered controls again — on 1.2.11, toggling `disabled` on a hydrated `el-button`, `el-input-field`, `el-textarea-field`, `el-password-field`, `el-checkbox-field`, `el-switch-field` or `el-amount-field` left the inner control unchanged. Fixed: server-rendered form fields without a value no longer emit `value="null"` on the native control (`el-input-field`, `el-password-field`, `el-select-field`, `el-checkbox-field`, `el-switch-field`).
 - Changed: the `./catalog` SSR smoke test (`npm run test:catalog`) now runs against `@webtides/element-js-ssr-renderer` `^0.4.0` (was `^0.1.0`), the version consumers install today. Dev dependency only; the generated `catalog.js` is unchanged.
 
+### accordion
+
+- Fixed: `collapse()` no longer throws `Cannot read properties of undefined (reading 'style')` when the accordion is removed from the DOM before its two animation frames have run (for example a closed accordion that is connected and removed again right away). The content node is now captured up front instead of being read from `$refs` inside the frames, which element-js clears on disconnect.
+
 ## [0.2.0] - 2026-06-10
 
 ### Packaging

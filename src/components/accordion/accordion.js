@@ -76,21 +76,24 @@ export default class Accordion extends TemplateElement {
      * @returns {void}
      */
     collapse() {
-        const contentHeight = this.$refs.content.scrollHeight;
+        // Hold on to the node: the frames below can run after the element was
+        // disconnected, and element-js clears `$refs` on disconnect.
+        const content = this.$refs.content;
+        const contentHeight = content.scrollHeight;
 
-        const elementTransition = this.$refs.content.style.transition;
-        this.$refs.content.style.transition = '';
+        const elementTransition = content.style.transition;
+        content.style.transition = '';
 
         requestAnimationFrame(() => {
-            this.$refs.content.style.height = contentHeight + 'px';
-            this.$refs.content.style.transition = elementTransition;
+            content.style.height = contentHeight + 'px';
+            content.style.transition = elementTransition;
 
             requestAnimationFrame(() => {
-                this.$refs.content.style.height = 0 + 'px';
+                content.style.height = 0 + 'px';
             });
         });
 
-        this.$refs.content.setAttribute('data-collapsed', 'true');
+        content.setAttribute('data-collapsed', 'true');
     }
 
     /**
