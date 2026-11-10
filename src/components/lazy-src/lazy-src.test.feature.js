@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { fixture, fixtureSync, nextFrame, oneEvent } from '../../test-helpers.js';
 import { define, Events } from './lazy-src.js';
 define();

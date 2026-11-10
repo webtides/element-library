@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import Dialog, { define } from './dialog.js';
 import Events from './dialog.events.js';
 define();

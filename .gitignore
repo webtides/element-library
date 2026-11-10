@@ -25,3 +25,4 @@ catalog.js
 
 # Claude Code assistant files
 .claude/
+.vitest/

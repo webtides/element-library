@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it } from 'vite-plus/test';
 import { fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './sticky.js';
 define();

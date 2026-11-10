@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it } from 'vite-plus/test';
 import TextareaField, { define } from './textarea-field.js';
 define();
 

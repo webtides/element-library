@@ -21,7 +21,7 @@ npm run dev        # Storybook on http://localhost:3000
 
 ## Coding standards
 
-We use ESLint and Prettier to ensure consistent code quality. Both run automatically on staged files via Husky and `lint-staged` on commit.
+We use Oxlint and Oxfmt (through Vite+) to ensure consistent code quality. Both run automatically on staged files via Husky and `lint-staged` on commit.
 
 To run the checks manually:
 

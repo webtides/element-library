@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { fixture, fixtureSync, nextFrame } from '../../test-helpers.js';
 import { define } from './scroll-to-top.js';
 define();

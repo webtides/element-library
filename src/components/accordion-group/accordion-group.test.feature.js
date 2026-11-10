@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './accordion-group.js';
 import { define as defineAccordion } from '../accordion/accordion.js';

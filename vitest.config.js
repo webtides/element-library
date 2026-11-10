@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
-import { playwright } from '@vitest/browser-playwright';
+import { defineConfig } from 'vite-plus';
+import { playwright } from 'vite-plus/test/browser-playwright';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,16 @@ const browser = () => ({
 
 export default defineConfig({
     test: {
+        // Vitest v4 compatibility: preserve mock call history.
+        // Remove after tests no longer rely on calls from setup or earlier tests.
+        // https://viteplus.dev/guide/vitest-v5#remove-unneeded-compatibility-settings
+        // https://vitest.dev/guide/migration/#clearmocks-is-enabled-by-default
+        clearMocks: false,
+        // Vitest v4 compatibility: keep separate Vite servers for inline projects.
+        // Remove when plugins and config hooks can run once for shared projects.
+        // https://viteplus.dev/guide/vitest-v5#remove-unneeded-compatibility-settings
+        // https://vitest.dev/guide/migration/#inline-projects-share-the-vite-server-by-default
+        sharedViteServer: false,
         // Coverage is configured once at the root and aggregates across projects.
         coverage: {
             provider: 'istanbul',

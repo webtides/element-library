@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it } from 'vite-plus/test';
 import SvgUse, { define } from './svg-use.js';
 define();
 

@@ -40,9 +40,12 @@ updates:
       # Pinned at ~3.6.2 — 3.7+ added an exports map that blocks the
       # deep imports the carousel-element ShadowDOM patches depend on.
       - dependency-name: '@glidejs/glide'
-      # Peer caps at eslint 9; we're on 10 via legacy-peer-deps. Bumping
-      # this minor version won't help until upstream relaxes the peer.
-      - dependency-name: 'eslint-plugin-import'
+      # Pinned by Vite+: `vite` is an alias of @voidzero-dev/vite-plus-core and
+      # vitest/@vitest/* must match the Vitest version bundled with vite-plus.
+      # They move together with a `vite-plus` bump (`npx vp migrate`), never alone.
+      - dependency-name: 'vite'
+      - dependency-name: 'vitest'
+      - dependency-name: '@vitest/*'
 
   - package-ecosystem: github-actions
     directory: /

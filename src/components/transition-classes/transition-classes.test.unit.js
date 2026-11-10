@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it } from 'vite-plus/test';
 import TransitionClasses, { define } from './transition-classes.js';
 define();
 

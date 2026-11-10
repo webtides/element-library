@@ -14,11 +14,12 @@ This document provides context for AI assistants working with the `@webtides/ele
 ## Technology Stack
 
 - **Framework**: `@webtides/element-js` (^1.2.11)
+- **Toolchain**: Vite+ (`vite-plus`, local `vp` CLI) bundles Vite, Vitest, Oxlint and Oxfmt
 - **Build Tool**: Vite 8 (via Storybook; uses Rolldown bundler)
-- **Testing**: Vitest 4 (with browser mode and custom test helpers)
+- **Testing**: Vitest 5 via `vp test` (with browser mode and custom test helpers)
 - **Documentation**: Storybook 10.x
-- **Linting**: ESLint (flat config) + Prettier
-- **Node**: 20.19+ required (see `.nvmrc` and `engines.node`)
+- **Linting**: Oxlint (`vp lint`) + Oxfmt (`vp fmt`), configured in `vite.config.ts`
+- **Node**: development needs 22.18+ (Vite+ requirement, see `.nvmrc`); consumers need 20.19+ (`engines.node`)
 - **External Dependencies**:
     - `@glidejs/glide` for carousel functionality (pinned at `~3.6.2`; patched via `patch-package`)
     - `lozad` for lazy loading
@@ -140,14 +141,15 @@ All components follow this pattern:
 
 ### Code Style
 
-- **Linting**: ESLint (flat config in `eslint.config.js`)
-- **Formatting**: Prettier is configured with lint-staged
+- **Linting**: Oxlint (the `lint` block in `vite.config.ts`)
+- **Formatting**: Oxfmt (the `fmt` block in `vite.config.ts`), run on staged files by lint-staged
 - **Pre-commit hooks**: Husky runs linting and formatting on commit
 - **Indentation**: Use project's configured settings (check `.editorconfig`)
 
 ### Testing
 
-- **Test runner**: Vitest 4 with browser mode (using Playwright + Chromium)
+- **Test runner**: Vitest 5 (bundled with Vite+) with browser mode (using Playwright + Chromium)
+- **Imports**: test files import from `vite-plus/test`, not `vitest` (the `vite-plus/prefer-vite-plus-imports` lint rule enforces it)
 - **Test helpers**: Custom utilities in `test-helpers.js` (fixture, assert, nextFrame, etc.)
 - **Test types**:
     - Unit tests (`.test.unit.js`): Test component logic in isolation
@@ -178,7 +180,9 @@ This starts Storybook on http://localhost:3000
 ### Linting
 
 ```bash
-npm run lint          # Lint JavaScript (ESLint)
+npm run lint          # Lint JavaScript (Oxlint)
+npx vp fmt            # Format everything (Oxfmt)
+npx vp check          # Format check + lint in one go
 ```
 
 ### Testing
@@ -224,8 +228,8 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 
 ### Code Quality Expectations
 
-- All code should pass ESLint
-- Prettier formatting is enforced via pre-commit hooks
+- All code should pass Oxlint (`npm run lint`)
+- Oxfmt formatting is enforced via pre-commit hooks
 - Tests should be written for new features
 - Accessibility should be considered for all UI components
 - Component APIs should be simple and intuitive

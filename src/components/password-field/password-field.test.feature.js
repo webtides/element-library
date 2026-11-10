@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
 import { fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './password-field.js';

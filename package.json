@@ -84,52 +84,50 @@
     "@storybook/addon-vitest": "^10.4.1",
     "@storybook/web-components": "^10.4.1",
     "@storybook/web-components-vite": "^10.4.1",
-    "@vitest/browser": "^4.1.8",
-    "@vitest/browser-playwright": "^4.1.8",
-    "@vitest/coverage-istanbul": "^4.1.8",
-    "@vitest/ui": "^4.1.8",
+    "@vitest/browser-playwright": "5.1.0",
+    "@vitest/coverage-istanbul": "5.1.0",
+    "@vitest/ui": "5.1.0",
     "@webtides/element-js-ssr-renderer": "^0.4.0",
     "axe-core": "^4.12.0",
     "custom-element-jet-brains-integration": "^1.7.0",
-    "eslint": "^10.4.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-storybook": "^10.4.1",
-    "globals": "^17.6.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "lit": "^3.3.3",
     "playwright": "^1.60.0",
-    "prettier": "^3.8.3",
     "storybook": "^10.4.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16",
-    "vitest": "^4.1.8"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1",
+    "vite-plus": "1.5.1",
+    "vitest": "5.1.0"
   },
   "scripts": {
     "dev": "storybook dev -p 3000 --no-open",
-    "lint": "eslint ./src/**/*.js",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
+    "lint": "vp lint",
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage",
+    "test:watch": "vp test",
+    "test:ui": "vp test --ui",
     "build-storybook": "storybook build",
     "analyze": "cem analyze --config custom-elements-manifest.config.mjs --outdir .",
     "analyze:watch": "cem analyze --config custom-elements-manifest.config.mjs --outdir . --watch",
     "build:types": "tsc -p tsconfig.json",
-    "gen:catalog": "npx -y @webtides/element-js-ssr-renderer catalog --manifest custom-elements.json -o catalog.js && prettier --write catalog.js",
+    "gen:catalog": "npx -y @webtides/element-js-ssr-renderer catalog --manifest custom-elements.json -o catalog.js && vp fmt catalog.js",
     "test:catalog": "npm run gen:catalog && node test/catalog.smoke.mjs",
     "prepack": "npm run analyze && npm run build:types && npm run gen:catalog",
     "prepare": "husky && npm run analyze && npm run build:types"
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
-      "prettier --write"
+      "vp lint --fix",
+      "vp fmt"
     ],
     "*.{yaml,yml,md,json}": [
-      "prettier --write"
+      "vp fmt"
     ]
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1",
+    "vitest": "5.1.0"
   }
 }
