@@ -13,7 +13,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 
 ## Technology Stack
 
-- **Framework**: `@webtides/element-js` (^1.2.11)
+- **Framework**: `@webtides/element-js` (^1.3.1)
 - **Toolchain**: Vite+ (`vite-plus`, local `vp` CLI) bundles Vite, Vitest, Oxlint and Oxfmt
 - **Build Tool**: Vite 8 (via Storybook; uses Rolldown bundler)
 - **Testing**: Vitest 5 via `vp test` (with browser mode and custom test helpers)

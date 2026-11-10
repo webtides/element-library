@@ -55,4 +55,21 @@ describe('Feature | Button', () => {
         await nextFrame();
         expect(submitted).toBe(true);
     });
+
+    it('leaves unset attributes out of the server-rendered markup', async () => {
+        // `template().toString()` is the markup the SSR renderer puts into the Declarative Shadow DOM.
+        const controlTag = (el, tag) =>
+            el
+                .template()
+                .toString()
+                .match(new RegExp(`<${tag}\\s[^>]*>`))[0];
+
+        const link = await fixture(`<el-button href="/docs">Docs</el-button>`);
+        expect(controlTag(link, 'a')).toMatch(/\shref=['"]\/docs['"]/);
+        // A stray `download` would make the browser save the target instead of navigating to it.
+        expect(controlTag(link, 'a')).not.toMatch(/\s(target|rel|download)=/);
+
+        const button = await fixture(`<el-button>Save</el-button>`);
+        expect(controlTag(button, 'button')).not.toMatch(/\s(name|value)=/);
+    });
 });
