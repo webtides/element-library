@@ -82,13 +82,15 @@ export default class Dropdown extends TemplateElement {
     template() {
         return html`
             <slot part="trigger" name="trigger" show-dropdown></slot>
-            ${this.open
-                ? html`
-                      <div part="panel">
-                          <slot part="content" name="content"></slot>
-                      </div>
-                  `
-                : null}
+            ${
+                this.open
+                    ? html`
+                          <div part="panel">
+                              <slot part="content" name="content"></slot>
+                          </div>
+                      `
+                    : null
+            }
         `;
     }
 }

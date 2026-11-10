@@ -193,33 +193,37 @@ export default class Carousel extends TemplateElement {
                         ${this._options.shadowRender ? html` <slot></slot> ` : this.renderSlides()}
                     </div>
                 </div>
-                ${this.arrows
-                    ? html`
-                          <div part="arrows" class="glide__arrows" data-glide-el="controls">
-                              <button
-                                  part="arrow arrow-left"
-                                  class="glide__arrow glide__arrow--left"
-                                  data-glide-dir="<"
-                              >
-                                  <slot name="arrow-left"></slot>
-                              </button>
-                              <button
-                                  part="arrow arrow-right"
-                                  class="glide__arrow glide__arrow--right"
-                                  data-glide-dir=">"
-                              >
-                                  <slot name="arrow-right"></slot>
-                              </button>
-                          </div>
-                      `
-                    : ''}
-                ${this.bullets
-                    ? html`
-                          <div part="dots" class="glide__bullets" data-glide-el="controls[nav]">
-                              ${this.renderBullets()}
-                          </div>
-                      `
-                    : ''}
+                ${
+                    this.arrows
+                        ? html`
+                              <div part="arrows" class="glide__arrows" data-glide-el="controls">
+                                  <button
+                                      part="arrow arrow-left"
+                                      class="glide__arrow glide__arrow--left"
+                                      data-glide-dir="<"
+                                  >
+                                      <slot name="arrow-left"></slot>
+                                  </button>
+                                  <button
+                                      part="arrow arrow-right"
+                                      class="glide__arrow glide__arrow--right"
+                                      data-glide-dir=">"
+                                  >
+                                      <slot name="arrow-right"></slot>
+                                  </button>
+                              </div>
+                          `
+                        : ''
+                }
+                ${
+                    this.bullets
+                        ? html`
+                              <div part="dots" class="glide__bullets" data-glide-el="controls[nav]">
+                                  ${this.renderBullets()}
+                              </div>
+                          `
+                        : ''
+                }
             </div>
         `;
     }
