@@ -68,6 +68,23 @@ describe('Feature | Notification', () => {
         expect(document.querySelector('.el-toast-stack')).toBeNull();
     });
 
+    it('draws the variant icon when the element is rendered in the browser', async () => {
+        for (const variant of ['default', 'success', 'warning', 'danger']) {
+            const el = await fixture(`<el-notification open="true" variant="${variant}">Message</el-notification>`);
+            const shapes = [...el.shadowRoot.querySelectorAll('[part="icon"] svg *')];
+
+            expect(shapes.length, variant).toBeGreaterThan(0);
+            for (const shape of shapes) {
+                expect(shape.namespaceURI, `${variant} <${shape.localName}>`).toBe('http://www.w3.org/2000/svg');
+            }
+            // An SVG child in the HTML namespace has no geometry, so nothing would be drawn.
+            const { width, height } = shapes[0].getBoundingClientRect();
+            expect(width * height, variant).toBeGreaterThan(0);
+
+            el.remove();
+        }
+    });
+
     it('has no detectable a11y violations', async () => {
         const el = await fixture(
             `<el-notification open="true" variant="success" closable="true">Saved</el-notification>`,

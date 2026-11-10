@@ -21,6 +21,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Fixed: `collapse()` no longer throws `Cannot read properties of undefined (reading 'style')` when the accordion is removed from the DOM before its two animation frames have run (for example a closed accordion that is connected and removed again right away). The content node is now captured up front instead of being read from `$refs` inside the frames, which element-js clears on disconnect.
 
+### notification
+
+- Fixed: the default variant icon is drawn again when the element is rendered in the browser (a toast, or a notification a framework creates after load). The icon shapes were a template nested inside the `<svg>`, which put them into the HTML namespace on client render, so the icon was an empty box; server-rendered notifications were not affected. Each variant now renders one complete `<svg>` template.
+
 ## [0.2.0] - 2026-06-10
 
 ### Packaging
