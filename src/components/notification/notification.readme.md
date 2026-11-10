@@ -35,6 +35,10 @@ note.textContent = 'Saved to your library.';
 note.toast(); // floats it into the shared top-right stack and shows it
 ```
 
+#### Server-rendered
+
+An open notification rendered on the server (Declarative Shadow DOM) is visible before its JavaScript loads, and without JavaScript. Until the element is connected, its visibility follows the `open` attribute; from then on `show()` / `hide()` animate as usual. A notification that is open from its first render appears without the enter transition.
+
 ## API
 
 #### Properties/Attributes

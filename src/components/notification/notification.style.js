@@ -28,6 +28,23 @@ export default css`
         display: none;
     }
 
+    /*
+     * Before the element is connected: server-rendered markup (Declarative Shadow DOM) is already on
+     * the page, but connected() has not run yet, or never will without JavaScript, so nothing has set
+     * "showing" / "is-hidden". Until then the resting state comes from the open attribute: an open
+     * notification is visible, a closed one takes no space. element-js adds the "connected" state
+     * right after connected(), which hands control back to the classes above without a transition.
+     */
+    :host(:not(:state(connected))[open]:not([open='false'])) [part~='base'] {
+        opacity: 1;
+        transform: none;
+    }
+
+    :host(:not(:state(connected)):not([open])) [part~='base'],
+    :host(:not(:state(connected))[open='false']) [part~='base'] {
+        display: none;
+    }
+
     .panel {
         display: flex;
         align-items: flex-start;

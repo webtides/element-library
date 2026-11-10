@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ### notification
 
+- Fixed: a server-rendered open notification (Declarative Shadow DOM) is visible before its JavaScript runs, and stays visible without JavaScript. It used to be transparent until `connected()` added the `showing` class, and then faded in. A server-rendered closed notification no longer reserves its height before the element is connected. Until the element is connected the resting state follows the `open` attribute; afterwards `show()` / `hide()` / `toast()` animate as before.
+- Changed: a notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, `toast()`, setting `open`) still animates.
 - Fixed: the default variant icon is drawn again when the element is rendered in the browser (a toast, or a notification a framework creates after load). The icon shapes were a template nested inside the `<svg>`, which put them into the HTML namespace on client render, so the icon was an empty box; server-rendered notifications were not affected. Each variant now renders one complete `<svg>` template.
 
 ## [0.2.0] - 2026-06-10
