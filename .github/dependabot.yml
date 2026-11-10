@@ -15,11 +15,6 @@ updates:
         patterns:
           - 'vitest'
           - '@vitest/*'
-      eslint:
-        patterns:
-          - 'eslint'
-          - 'eslint-*'
-          - '@eslint/*'
       dev-deps-patch:
         dependency-type: development
         update-types:
@@ -33,9 +28,6 @@ updates:
           - '@storybook/*'
           - 'vitest'
           - '@vitest/*'
-          - 'eslint'
-          - 'eslint-*'
-          - '@eslint/*'
     ignore:
       # Pinned at ~3.6.2 — 3.7+ added an exports map that blocks the
       # deep imports the carousel-element ShadowDOM patches depend on.

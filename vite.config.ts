@@ -9,34 +9,6 @@ export default defineConfig({
         env: {
             builtin: true,
         },
-        overrides: [
-            {
-                files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)', '**/*.story.@(ts|tsx|js|jsx|mjs|cjs)'],
-                rules: {
-                    'storybook/await-interactions': 'error',
-                    'storybook/context-in-play-function': 'error',
-                    'storybook/default-exports': 'error',
-                    'storybook/hierarchy-separator': 'warn',
-                    'storybook/no-redundant-story-name': 'warn',
-                    'storybook/no-renderer-packages': 'error',
-                    'storybook/prefer-pascal-case': 'warn',
-                    'storybook/story-exports': 'error',
-                    'storybook/use-storybook-expect': 'error',
-                    'storybook/use-storybook-testing-library': 'error',
-                    'import/no-anonymous-default-export': 'off',
-                    'react/rules-of-hooks': 'off',
-                },
-                jsPlugins: ['eslint-plugin-storybook'],
-                plugins: ['react', 'import'],
-            },
-            {
-                files: ['.storybook/main.@(js|cjs|mjs|ts)'],
-                rules: {
-                    'storybook/no-uninstalled-addons': 'error',
-                },
-                jsPlugins: ['eslint-plugin-storybook'],
-            },
-        ],
         // Type-aware rules need a strict, checked TypeScript program. tsconfig.json only emits
         // declarations from JSDoc here (`checkJs: false`, `strict: false`), so they would just add noise.
         options: {
