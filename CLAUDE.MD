@@ -99,7 +99,7 @@ The exports map in `package.json` exposes:
 
 - `.` → `index.js` (re-exports element-js base classes; no side effects)
 - `./all` → `all.js` (imports every component's `*.define.js`)
-- `./catalog` → `catalog.js` (a generated `{ tag: () => import(...) }` map for SSR — see below)
+- `./catalog` → `catalog.js` (a generated `{ tag: () => import(...) }` map for SSR — see below), typed by the hand-written `catalog.d.ts`
 - `./*` → `src/components/*/*.js` (the component module — class + `define()` function, no side effects)
 - `./*/define` → `src/components/*/*.define.js` (calls `define()` for that one component)
 
@@ -117,7 +117,9 @@ The `sideEffects` field marks only `./all.js` and `./src/components/*/*.define.j
 
 A consumer doing SSR uses **both**: `./catalog` on the server to pre-render, and `./all` (or per-component `…/define`) on the client to hydrate. Because the catalog ships inside the package, its specifiers are package-internal relative paths that resolve in any consumer bundle regardless of `node_modules` layout — no consumer codegen, no hand-written import map.
 
-`catalog.js` is **generated, not hand-edited** — regenerate it from the CEM with `npm run gen:catalog` whenever components are added or removed. Like `custom-elements.json`/`web-types.json`, it is **gitignored** (not committed) but shipped via the `files` allowlist, and the `prepack` hook regenerates it on every release so it can't drift from the components. The `test:catalog` script (a Node SSR smoke test, run in CI) renders a known tag through the renderer's `resolve` to verify the catalog actually resolves to component classes.
+`catalog.js` is **generated, not hand-edited** — regenerate it from the CEM with `npm run gen:catalog` whenever components are added or removed. Like `custom-elements.json`/`web-types.json`, it is **gitignored** (not committed) but shipped via the `files` allowlist, and the `prepack` hook regenerates it on every release so it can't drift from the components. The `test:catalog` script (a Node SSR smoke test, run in CI) renders a known tag through the renderer's `resolve` to verify the catalog actually resolves to component classes. It then compiles `test/catalog.types.ts`, which imports the export by package name under `strict`, to verify that a TypeScript consumer gets a typed default export.
+
+`catalog.d.ts` is the one hand-written, committed file of the pair: it types the default export structurally as a map from tag to lazy loader, without importing from the renderer (which ships no declarations).
 
 ## Development Conventions
 
