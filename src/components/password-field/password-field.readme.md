@@ -29,7 +29,7 @@ import '@webtides/element-library/password-field/define';
 
 #### Properties/Attributes
 
-Inherits all of `input-field`'s properties (`name`, `value`, `placeholder`, `required`, `disabled`, `label`, `labelScreenReaderOnly`, `errorMessage`, `helpMessage`, `pattern`, `valid`, `touched`) and adds:
+Inherits all of `input-field`'s properties (`name`, `value`, `placeholder`, `required`, `disabled`, `label`, `labelScreenReaderOnly`, `errorMessage`, `helpMessage`, `pattern`, `valid`, `touched`, and the keyboard and autofill hints `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect`, `spellcheck`) and adds:
 
 | Name               | Type      | Default | Description                                            |
 | ------------------ | --------- | ------- | ------------------------------------------------------ |
@@ -37,6 +37,8 @@ Inherits all of `input-field`'s properties (`name`, `value`, `placeholder`, `req
 | `password-visible` | `boolean` | `false` | Whether the value is currently revealed as plain text. |
 
 > `type` is fixed to `password` (and switches to `text` while revealed); setting it has no effect.
+
+Set `autocomplete` so that a password manager can tell a login from a sign-up: `current-password` for a login, `new-password` where a password is chosen. The hints stay on the input when the toggle reveals or masks the value.
 
 #### Methods
 

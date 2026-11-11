@@ -1,5 +1,6 @@
-import { html, defineElement, classMap } from '@webtides/element-js';
+import { html, defineElement, classMap, spreadAttributes } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
+import { shadowNativeTextEntryProperties, textEntryAttributes } from '../../utils/text-entry-attributes.js';
 import style from './textarea-field.style.js';
 
 /**
@@ -15,6 +16,17 @@ import style from './textarea-field.style.js';
  * @property {string} placeholder - Placeholder text shown while the textarea is empty.
  * @property {number} rows - Number of visible text rows. Forwarded to the underlying
  *   `<textarea>`'s `rows` attribute.
+ * @property {string | null} autocomplete - Passed on to the control as its `autocomplete`
+ *   attribute (e.g. `'email'`, `'current-password'`, `'one-time-code'`). `null` (the default)
+ *   leaves the attribute out. The same holds for the five properties below.
+ * @property {string | null} inputmode - Passed on as `inputmode`: the on-screen keyboard to show
+ *   (e.g. `'numeric'`, `'email'`).
+ * @property {string | null} enterkeyhint - Passed on as `enterkeyhint`: the label of the enter key
+ *   on an on-screen keyboard (e.g. `'next'`, `'send'`).
+ * @property {string | null} autocapitalize - Passed on as `autocapitalize` (e.g. `'none'`,
+ *   `'sentences'`).
+ * @property {string | null} autocorrect - Passed on as `autocorrect` (`'on'` or `'off'`).
+ * @property {boolean | string | null} spellcheck - Passed on as `spellcheck` (`true` or `false`).
  */
 export default class TextareaField extends FormField {
     /**
@@ -25,6 +37,7 @@ export default class TextareaField extends FormField {
 
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
+        shadowNativeTextEntryProperties(this);
     }
 
     properties() {
@@ -32,6 +45,12 @@ export default class TextareaField extends FormField {
             ...super.properties(),
             placeholder: '',
             rows: 3,
+            autocomplete: null,
+            inputmode: null,
+            enterkeyhint: null,
+            autocapitalize: null,
+            autocorrect: null,
+            spellcheck: null,
         };
     }
 
@@ -83,6 +102,7 @@ export default class TextareaField extends FormField {
                 placeholder="${this.placeholder}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
+                ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this.name}-help-message"
             >${this.value ?? ''}</textarea>
             ${

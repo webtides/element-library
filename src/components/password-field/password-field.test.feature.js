@@ -50,4 +50,23 @@ describe('Feature | PasswordField', () => {
         const results = await axe.run(el);
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
+
+    it('keeps the text entry attributes on the input when the toggle renders it again', async () => {
+        const el = await passwordFixture('autocomplete="new-password" autocapitalize="none" spellcheck="false"');
+        const expected = { autocomplete: 'new-password', autocapitalize: 'none', spellcheck: 'false' };
+        const onInput = () =>
+            Object.fromEntries(
+                Object.keys(expected).map((name) => [name, el.querySelector('input').getAttribute(name)]),
+            );
+        expect(onInput()).toEqual(expected);
+
+        el.querySelector('[data-password-toggle]').click();
+        await nextFrame();
+        expect(el.querySelector('input').getAttribute('type')).toBe('text');
+        expect(onInput()).toEqual(expected);
+
+        el.querySelector('[data-password-toggle]').click();
+        await nextFrame();
+        expect(onInput()).toEqual(expected);
+    });
 });

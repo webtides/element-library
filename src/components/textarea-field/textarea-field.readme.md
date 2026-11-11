@@ -41,6 +41,12 @@ import '@webtides/element-library/textarea-field/define';
 | `value` | `string` | `null` | The current text content of the textarea field |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the textarea is empty |
 | `rows` | `number` | `3` | The number of visible text rows in the textarea |
+| `autocomplete` | `string` | `null` | Passed on to the control as `autocomplete` (e.g. `email`, `current-password`, `one-time-code`) |
+| `inputmode` | `string` | `null` | Passed on as `inputmode`: the on-screen keyboard to show (e.g. `numeric`, `email`) |
+| `enterkeyhint` | `string` | `null` | Passed on as `enterkeyhint`: the label of the enter key on an on-screen keyboard (e.g. `next`, `send`) |
+| `autocapitalize` | `string` | `null` | Passed on as `autocapitalize` (e.g. `none`, `sentences`) |
+| `autocorrect` | `string` | `null` | Passed on as `autocorrect` (`on` or `off`) |
+| `spellcheck` | `boolean` | `null` | Passed on as `spellcheck` (`true` or `false`) |
 | `required` | `boolean` | `false` | Whether the field is required for form submission |
 | `disabled` | `boolean` | `false` | Whether the field is disabled and cannot be interacted with |
 | `label` | `string` | `''` | Label text displayed above the textarea field |
@@ -81,6 +87,22 @@ _None_ - The component generates its own textarea element internally
 - Visual validity indicators (✓ for valid, × for invalid) appear after field is touched
 - Error messages are properly associated with the textarea field
 - Help messages are linked via `aria-describedby`
+
+## Keyboard and autofill hints
+
+`autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native control, in server-rendered markup as well. One that is not set is left out on the control.
+
+```html
+<el-textarea-field
+    name="note"
+    label="Note"
+    autocapitalize="sentences"
+    enterkeyhint="enter"
+    spellcheck="true"
+></el-textarea-field>
+```
+
+Removing one of these attributes later leaves it empty (`autocomplete=""`) on the element and on the control, if it was there when the element started: element-js writes a removed attribute back empty. An empty value has the meaning of the default: on for `spellcheck` and `autocorrect`, the browser's own choice for the other four.
 
 ## Server rendering
 

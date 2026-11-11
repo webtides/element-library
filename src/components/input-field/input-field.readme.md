@@ -39,6 +39,12 @@ import '@webtides/element-library/input-field/define';
 | `type` | `string` | `'text'` | The type of input field (e.g., 'text', 'email', 'password', 'tel', 'url', etc.) |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the input is empty |
 | `pattern` | `string\|boolean` | `false` | Regular expression pattern for input validation. If false, allows any input |
+| `autocomplete` | `string` | `null` | Passed on to the control as `autocomplete` (e.g. `email`, `current-password`, `one-time-code`) |
+| `inputmode` | `string` | `null` | Passed on as `inputmode`: the on-screen keyboard to show (e.g. `numeric`, `email`) |
+| `enterkeyhint` | `string` | `null` | Passed on as `enterkeyhint`: the label of the enter key on an on-screen keyboard (e.g. `next`, `send`) |
+| `autocapitalize` | `string` | `null` | Passed on as `autocapitalize` (e.g. `none`, `sentences`) |
+| `autocorrect` | `string` | `null` | Passed on as `autocorrect` (`on` or `off`) |
+| `spellcheck` | `boolean` | `null` | Passed on as `spellcheck` (`true` or `false`) |
 | `required` | `boolean` | `false` | Whether the field is required for form submission |
 | `disabled` | `boolean` | `false` | Whether the field is disabled and cannot be interacted with |
 | `label` | `string` | `''` | Label text displayed above the input field |
@@ -70,6 +76,22 @@ This component is headless by default and reads the library's `--el-*` design to
 #### Slots
 
 _None_ - The component generates its own input element internally
+
+## Keyboard and autofill hints
+
+`autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native control, in server-rendered markup as well. One that is not set is left out on the control.
+
+```html
+<el-input-field
+    name="code"
+    label="Code"
+    autocomplete="one-time-code"
+    inputmode="numeric"
+    enterkeyhint="done"
+></el-input-field>
+```
+
+Removing one of these attributes later leaves it empty (`autocomplete=""`) on the element and on the control, if it was there when the element started: element-js writes a removed attribute back empty. An empty value has the meaning of the default: on for `spellcheck` and `autocorrect`, the browser's own choice for the other four.
 
 ## Accessibility
 

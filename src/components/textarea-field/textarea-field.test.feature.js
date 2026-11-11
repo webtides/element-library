@@ -56,4 +56,44 @@ describe('Feature | TextareaField', () => {
         const results = await axe.run(el);
         expect(results.violations).toEqual([]);
     });
+
+    it('passes the text entry attributes on to the textarea', async () => {
+        const el = await fixture(`
+            <el-textarea-field
+                name="body"
+                autocomplete="off"
+                inputmode="text"
+                enterkeyhint="enter"
+                autocapitalize="sentences"
+                autocorrect="on"
+                spellcheck="true"
+            ></el-textarea-field>
+        `);
+        await nextFrame();
+        const textarea = el.querySelector('textarea');
+
+        expect(textarea.getAttribute('autocomplete')).toBe('off');
+        expect(textarea.getAttribute('inputmode')).toBe('text');
+        expect(textarea.getAttribute('enterkeyhint')).toBe('enter');
+        expect(textarea.getAttribute('autocapitalize')).toBe('sentences');
+        expect(textarea.getAttribute('autocorrect')).toBe('on');
+        expect(textarea.getAttribute('spellcheck')).toBe('true');
+    });
+
+    it('renders no text entry attribute that is not set', async () => {
+        const el = await fixture(`<el-textarea-field name="body"></el-textarea-field>`);
+        await nextFrame();
+        const textarea = el.querySelector('textarea');
+
+        for (const name of [
+            'autocomplete',
+            'inputmode',
+            'enterkeyhint',
+            'autocapitalize',
+            'autocorrect',
+            'spellcheck',
+        ]) {
+            expect(textarea.hasAttribute(name), name).toBe(false);
+        }
+    });
 });
