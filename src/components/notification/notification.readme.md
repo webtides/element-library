@@ -48,6 +48,7 @@ An open notification rendered on the server (Declarative Shadow DOM) is visible 
 | `open` | `boolean` | `false` | Whether the notification is shown. Reflected to the `open` attribute. |
 | `variant` | `'default' \| 'primary' \| 'success' \| 'neutral' \| 'warning' \| 'danger'` | `'default'` | Visual + semantic variant. |
 | `closable` | `boolean` | `false` | Whether to render a close button. |
+| `close-label` | `string` | `'Close'` | Accessible label for the close button. |
 | `duration` | `number` | `Infinity` | Auto-dismiss delay in ms. Pauses while pointer/focus is inside. |
 
 #### Methods
@@ -100,5 +101,5 @@ On a touch screen (`@media (any-pointer: coarse)`) the close button is at least 
 
 - The host is a live region: `role="alert"` + `aria-live="assertive"` for `danger` / `warning`, `role="status"` + `aria-live="polite"` otherwise — so a toast is announced when it appears.
 - The auto-dismiss countdown pauses while the pointer or keyboard focus is inside the notification, so it can't disappear out from under someone reading or interacting with it.
-- The close button is a real `<button>` with an accessible name.
+- The close button is a real `<button>` with an accessible name, "Close" by default. Set `close-label` to translate it.
 - The transition collapses under `prefers-reduced-motion: reduce`.

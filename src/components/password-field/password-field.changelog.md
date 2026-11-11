@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 
 - `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<input>`, in server-rendered markup and on every render, the one the reveal toggle triggers included. Set them as attributes or properties on the element; one that is not set is left out on the `<input>`. Before, the field dropped them, so a password manager and the on-screen keyboard got no hints. `autocomplete="current-password"` and `autocomplete="new-password"` now reach the input.
+- `show-label` and `hide-label` (`showLabel`, `hideLabel`): the two accessible labels of the reveal button. Defaults `'Show password'` and `'Hide password'`, the texts that were fixed before. ([#98](https://github.com/webtides/element-library/issues/98))
 
 ### Changed
 

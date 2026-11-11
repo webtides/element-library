@@ -38,6 +38,16 @@ describe('Feature | PasswordField', () => {
         expect(el.querySelector('input').getAttribute('type')).toBe('password');
     });
 
+    it('takes the two labels of the reveal button from show-label and hide-label', async () => {
+        const el = await passwordFixture('show-label="Passwort anzeigen" hide-label="Passwort verbergen"');
+        const label = () => el.querySelector('[data-password-toggle]').getAttribute('aria-label');
+        expect(label()).toBe('Passwort anzeigen');
+
+        el.querySelector('[data-password-toggle]').click();
+        await nextFrame();
+        expect(label()).toBe('Passwort verbergen');
+    });
+
     it('omits the reveal button with password-toggle="false"', async () => {
         const el = await passwordFixture('password-toggle="false"');
         await nextFrame();

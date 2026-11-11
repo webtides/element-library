@@ -15,6 +15,10 @@ import style from './password-field.style.js';
  * @property {boolean} passwordToggle - Whether to render the show/hide reveal button. Default `true`.
  * @property {boolean} passwordVisible - Whether the value is currently revealed as plain text.
  *   Default `false`.
+ * @property {string} showLabel - Accessible label of the reveal button while the value is masked.
+ *   Default `'Show password'`.
+ * @property {string} hideLabel - Accessible label of the reveal button while the value is revealed.
+ *   Default `'Hide password'`.
  */
 export default class PasswordField extends InputField {
     constructor(options) {
@@ -27,6 +31,8 @@ export default class PasswordField extends InputField {
             type: 'password',
             passwordToggle: true,
             passwordVisible: false,
+            showLabel: 'Show password',
+            hideLabel: 'Hide password',
         };
     }
 
@@ -60,7 +66,7 @@ export default class PasswordField extends InputField {
                 type="button"
                 class="password-toggle"
                 data-password-toggle
-                aria-label="${this.passwordVisible ? 'Hide password' : 'Show password'}"
+                aria-label="${this.passwordVisible ? this.hideLabel : this.showLabel}"
                 aria-pressed="${this.passwordVisible ? 'true' : 'false'}"
                 ?disabled="${this.disabled}"
             >

@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `close-label` (`closeLabel`): the accessible label of the close button, as on `el-dialog`. Default `'Close'`. Before, the label was fixed, so a screen reader announced the button in English on a page in another language. ([#98](https://github.com/webtides/element-library/issues/98))
+
 ### Changed
 
 - A notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, `toast()`, setting `open`) still animates.

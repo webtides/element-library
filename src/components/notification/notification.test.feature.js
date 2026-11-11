@@ -33,6 +33,16 @@ describe('Feature | Notification', () => {
         expect(el.matches(':state(open)')).toBe(false);
     });
 
+    it('labels its close button "Close" by default and takes another label from close-label', async () => {
+        const closeLabel = async (attrs) => {
+            const el = await fixture(`<el-notification open="true" closable="true" ${attrs}>Message</el-notification>`);
+            return el.shadowRoot.querySelector('[data-close]').getAttribute('aria-label');
+        };
+
+        expect(await closeLabel('')).toBe('Close');
+        expect(await closeLabel('close-label="Schließen"')).toBe('Schließen');
+    });
+
     it('renders a close button when closable and hides on click', async () => {
         const el = await fixture(`<el-notification open="true" closable="true">Message</el-notification>`);
         const closeButton = el.shadowRoot.querySelector('[data-close]');

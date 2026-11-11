@@ -58,6 +58,7 @@ function getToastStack() {
  * @property {'default'|'primary'|'success'|'neutral'|'warning'|'danger'} variant - Visual + semantic
  *   variant. Default `'default'`.
  * @property {boolean} closable - Whether to render a close button. Default `false`.
+ * @property {string} closeLabel - Accessible label for the close button. Default `'Close'`.
  * @property {number} duration - Auto-dismiss delay in milliseconds; `Infinity` (default) never
  *   auto-dismisses. The countdown pauses while the pointer or focus is inside the notification.
  */
@@ -71,6 +72,7 @@ export default class Notification extends TemplateElement {
             open: false,
             variant: 'default',
             closable: false,
+            closeLabel: 'Close',
             duration: Infinity,
         };
     }
@@ -211,7 +213,7 @@ export default class Notification extends TemplateElement {
     /** @private */
     closeButtonTemplate() {
         return html`
-            <button part="close-button" type="button" class="close-button" aria-label="Close" data-close>
+            <button part="close-button" type="button" class="close-button" aria-label="${this.closeLabel}" data-close>
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"

@@ -31,10 +31,12 @@ import '@webtides/element-library/password-field/define';
 
 Inherits all of `input-field`'s properties (`name`, `value`, `placeholder`, `required`, `disabled`, `label`, `labelScreenReaderOnly`, `errorMessage`, `helpMessage`, `pattern`, `valid`, `touched`, and the keyboard and autofill hints `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect`, `spellcheck`) and adds:
 
-| Name               | Type      | Default | Description                                            |
-| ------------------ | --------- | ------- | ------------------------------------------------------ |
-| `password-toggle`  | `boolean` | `true`  | Whether to render the show/hide reveal button.         |
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `password-toggle` | `boolean` | `true` | Whether to render the show/hide reveal button. |
 | `password-visible` | `boolean` | `false` | Whether the value is currently revealed as plain text. |
+| `show-label` | `string` | `'Show password'` | Accessible label of the reveal button while the value is masked. |
+| `hide-label` | `string` | `'Hide password'` | Accessible label of the reveal button while the value is revealed. |
 
 > `type` is fixed to `password` (and switches to `text` while revealed); setting it has no effect.
 
@@ -60,6 +62,6 @@ On a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least
 
 ## Accessibility
 
-- The reveal button is a real `<button>` with an `aria-label` that flips between "Show password" and "Hide password", and an `aria-pressed` state, so its purpose and state are announced.
+- The reveal button is a real `<button>` with an `aria-label` that flips between "Show password" and "Hide password", and an `aria-pressed` state, so its purpose and state are announced. Set `show-label` and `hide-label` to translate the two labels.
 - Validation messages surface only once the field is `touched` (inherited from `form-field`).
 - The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the input while it is shown: a screen reader announces it when it appears and reads it again when the input gets focus.
