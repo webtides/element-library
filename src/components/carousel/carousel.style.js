@@ -58,6 +58,18 @@ export default css`
         -webkit-tap-highlight-color: transparent;
     }
 
+    /* The clones Glide needs for looping are copies of slides, kept in this shadow root. They get
+       what the slides get, and :where() lets a rule of the page win, as it does for a slide. */
+    :where(.glide__slide--clone) {
+        width: 100%;
+        height: 100%;
+        flex-shrink: 0;
+        white-space: normal;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
     /* --- Glide theme: arrows --- */
     .glide__arrow {
         position: absolute;

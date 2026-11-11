@@ -20,13 +20,19 @@ const DEFAULT_OPTIONS = {
  * treated as slides; the component renders Glide's controls (navigation arrows and bullet
  * pager) inside the shadow DOM around them.
  *
+ * The children of the element stay what the page wrote. The copies of the first and the last
+ * slides that Glide needs for looping are kept in the shadow root, so a framework can hydrate
+ * server-rendered slides. Rules of the page's style sheets reach those copies as far as they
+ * select them without an ancestor outside the carousel (a class on the slide does, `el-carousel >
+ * .slide` does not).
+ *
  * @element el-carousel
  *
  * @fires {CustomEvent<number>} CarouselRun - Fired on every Glide `run` (slide change).
  *   `detail` is the new active slide index.
  *
  * @slot - Default slot. Direct children become slides (unless they have a `slot`
- *   attribute or are Glide clones).
+ *   attribute).
  * @slot arrow-left - Content of the "previous" navigation button; it names the button. Left
  *   empty, the button is named "Previous slide" for screen readers and shows nothing.
  * @slot arrow-right - Content of the "next" navigation button; it names the button. Left empty,
@@ -107,9 +113,7 @@ export default class Carousel extends TemplateElement {
 
     /** @private */
     getUniqueChildren() {
-        return Array.from(this.children).filter(
-            (item) => !item.classList.contains('glide__slide--clone') && !item.hasAttribute('slot'),
-        );
+        return Array.from(this.children).filter((item) => !item.hasAttribute('slot'));
     }
 
     /** @private */

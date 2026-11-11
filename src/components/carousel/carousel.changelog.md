@@ -15,10 +15,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high (28 × 22 px before). The bullets keep their size of 13 px: each gets a hit area of `--el-touch-target` around its dot, and the bullets move apart by as much, so that the areas do not overlap. The row of bullets wraps when it gets wider than the carousel. Unchanged on a fine pointer and without the token.
+- The copies of the slides that Glide needs for looping are kept in the shadow root. The children of the element stay what the page wrote: before, four slides became eight children as soon as the carousel started, and a framework that hydrated a server-rendered carousel with slides from a loop found nodes it had not rendered (Svelte 5: `hydration_mismatch`, the page was built again). A rule of the page's style sheets still styles a copy when it selects the slide by a class; a selector that needs an ancestor outside the carousel (`el-carousel > div`, `.gallery .slide`) no longer reaches the copies. See "Looping, and server-rendered slides" in the readme. ([#96](https://github.com/webtides/element-library/issues/96))
 
 ### Fixed
 
 - The arrow buttons have an accessible name when their slots are empty: "Previous slide" and "Next slide", for screen readers only. What is put into the `arrow-left` and `arrow-right` slots replaces that name, as it named the button before. An arrow with an empty slot was a button without a name (axe `button-name`). ([#94](https://github.com/webtides/element-library/issues/94))
+- Going on from the last slide shows the first slide coming in. It showed a copy of the second one, which then jumped to the first: the copies after the last slide were in the wrong order. ([#96](https://github.com/webtides/element-library/issues/96))
+- `api.update()` keeps the slides. After an update Glide took the `<slot>` for its only slide, so the carousel had one empty slide. ([#96](https://github.com/webtides/element-library/issues/96))
+- What a page puts into the `arrow-left` or `arrow-right` slot no longer gets the margins of a slide gap. ([#96](https://github.com/webtides/element-library/issues/96))
 
 ## [0.1.1] - 2026-06-04
 

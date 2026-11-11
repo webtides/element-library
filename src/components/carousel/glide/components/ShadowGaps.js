@@ -12,7 +12,7 @@ export default function (Glide, Components, Events) {
     Events.on(
         ['build.after', 'update'],
         throttle(() => {
-            Gaps.apply(Components.Html.host.children);
+            Gaps.apply(Components.Html.rendered);
         }, 30),
     );
 
@@ -21,7 +21,7 @@ export default function (Glide, Components, Events) {
      * - on destroying to bring markup to its inital state
      */
     Events.on('destroy', () => {
-        Gaps.remove(Components.Html.host.children);
+        Gaps.remove(Components.Html.rendered);
     });
 
     return Gaps;

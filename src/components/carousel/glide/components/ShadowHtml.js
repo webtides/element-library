@@ -19,13 +19,32 @@ export default function (Glide, Components, Events) {
         },
     });
 
+    define(glideHtml, 'rendered', {
+        /**
+         * The slides and their clones in the order they render: the wrapper in the shadow root holds
+         * the clones around the slot, the slides of the page come in at the slot.
+         *
+         * @return {Element[]}
+         */
+        get() {
+            return Array.from(glideHtml.wrapper.children).flatMap((child) =>
+                child.localName === 'slot' ? glideHtml.slides : [child],
+            );
+        },
+    });
+
     glideHtml.mount = function () {
         this.root = Glide.selector;
         this.track = this.root.querySelector(TRACK_SELECTOR);
+        this.collectSlides();
+    };
 
-        this.slides = Array.prototype.slice.call(this.host.children).filter((slide) => {
-            return !slide.classList.contains(Glide.settings.classes.cloneSlide) && !slide.hasAttribute('slot');
-        });
+    /**
+     * The slides are the children of the host, without what the page put into a named slot (the
+     * content of the arrows). The wrapper, where Glide looks for them, is in the shadow root.
+     */
+    glideHtml.collectSlides = function () {
+        this.slides = Array.from(this.host.children).filter((slide) => !slide.hasAttribute('slot'));
     };
 
     return glideHtml;
