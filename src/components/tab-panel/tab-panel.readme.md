@@ -1,6 +1,6 @@
 # TabPanel
 
-`tab-panel` contains the content associated with a tab. It is paired with an `<el-tab-link>` by `name`, and its visibility is driven by the parent `<el-tab-group>`, which toggles `display: block / none` based on the active selection.
+`tab-panel` contains the content associated with a tab (`role="tabpanel"`). It is paired with an `<el-tab-link>` by `name`, and its visibility is driven by the parent `<el-tab-group>`, which toggles `display: block / none` based on the active selection and labels the panel by its link (`aria-labelledby`).
 
 ## How to use
 
@@ -18,10 +18,12 @@ import '@webtides/element-library/tab-panel/define';
 
 ```html
 <el-tab-group selected="general">
-    <el-tab-link for="general">General</el-tab-link>
-    <el-tab-link for="custom">Custom</el-tab-link>
-    <el-tab-link for="advanced">Advanced</el-tab-link>
-    <el-tab-link for="disabled" disabled>Disabled</el-tab-link>
+    <div>
+        <el-tab-link for="general">General</el-tab-link>
+        <el-tab-link for="custom">Custom</el-tab-link>
+        <el-tab-link for="advanced">Advanced</el-tab-link>
+        <el-tab-link for="disabled" disabled>Disabled</el-tab-link>
+    </div>
 
     <el-tab-panel name="general">This is the general tab panel.</el-tab-panel>
     <el-tab-panel name="custom">This is the custom tab panel.</el-tab-panel>

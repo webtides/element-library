@@ -25,19 +25,21 @@ export const TabGroup = {
     parameters: {
         docs: {
             description: {
-                story: 'A full tab set wiring `el-tab-link`s to `el-tab-panel`s, with a preselected tab and a disabled one.',
+                story: 'A full tab set wiring `el-tab-link`s to `el-tab-panel`s, with a preselected tab and a disabled one. The links are in an element of their own, which the group makes the `tablist`. The arrow keys, Home and End move between the links.',
             },
         },
     },
     decorators: [],
     render: ({}) => html`
-        <el-tab-group selected="general" link-selector="tab-link" panel-selector="tab-panel">
-            <el-tab-link for="general" active>General</el-tab-link>
-            <el-tab-link for="custom">Custom</el-tab-link>
-            <el-tab-link for="advanced">Advanced</el-tab-link>
-            <el-tab-link for="disabled" disabled>Disabled</el-tab-link>
+        <el-tab-group selected="general">
+            <div>
+                <el-tab-link for="general">General</el-tab-link>
+                <el-tab-link for="custom">Custom</el-tab-link>
+                <el-tab-link for="advanced">Advanced</el-tab-link>
+                <el-tab-link for="disabled" disabled>Disabled</el-tab-link>
+            </div>
 
-            <el-tab-panel name="general" active>This is the general tab panel.</el-tab-panel>
+            <el-tab-panel name="general">This is the general tab panel.</el-tab-panel>
             <el-tab-panel name="custom">This is the custom tab panel.</el-tab-panel>
             <el-tab-panel name="advanced">This is the advanced tab panel.</el-tab-panel>
             <el-tab-panel name="disabled">This is a disabled tab panel.</el-tab-panel>
@@ -57,10 +59,12 @@ export const CustomSelector = {
     decorators: [],
     render: ({}) => html`
         <el-tab-group selected="general" panel-selector="[role=tabpanel]">
-            <el-tab-link for="general">General</el-tab-link>
-            <el-tab-link for="custom">Custom</el-tab-link>
-            <el-tab-link for="advanced">Advanced</el-tab-link>
-            <el-tab-link for="disabled" disabled>Disabled</el-tab-link>
+            <div>
+                <el-tab-link for="general">General</el-tab-link>
+                <el-tab-link for="custom">Custom</el-tab-link>
+                <el-tab-link for="advanced">Advanced</el-tab-link>
+                <el-tab-link for="disabled" disabled>Disabled</el-tab-link>
+            </div>
 
             <div role="tabpanel" name="general">This is the general tab panel.</div>
             <div role="tabpanel" name="custom">This is the custom tab panel.</div>

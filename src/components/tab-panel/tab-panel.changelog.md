@@ -10,8 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
+## Unreleased
+
+### Added
+
+- The panel has `role="tabpanel"`, and its `el-tab-group` labels it by its link (`aria-labelledby`). A role the page sets itself is kept. ([#97](https://github.com/webtides/element-library/issues/97))
+
 <!-- ### Changed -->
 <!-- ### Removed -->
 <!-- ### Fixed -->

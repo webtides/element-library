@@ -275,9 +275,11 @@ export const Page = {
                 <section id="features" class="py-12">
                     <h2 class="text-2xl font-bold mb-6">What's in the system</h2>
                     <el-tab-group selected="tokens" link-selector="el-tab-link" panel-selector="el-tab-panel">
-                        <el-tab-link for="tokens" active>Tokens</el-tab-link>
-                        <el-tab-link for="components">Components</el-tab-link>
-                        <el-tab-link for="patterns">Patterns</el-tab-link>
+                        <div>
+                            <el-tab-link for="tokens" active>Tokens</el-tab-link>
+                            <el-tab-link for="components">Components</el-tab-link>
+                            <el-tab-link for="patterns">Patterns</el-tab-link>
+                        </div>
 
                         <el-tab-panel name="tokens" active>
                             <div class="flex items-start gap-3 pt-4">

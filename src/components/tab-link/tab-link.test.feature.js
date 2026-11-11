@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { aTimeout, fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './tab-link.js';
 define();
 
@@ -10,15 +10,62 @@ describe('Feature | TabLink', () => {
         await nextFrame();
     });
 
+    it('is a tab', async () => {
+        const el = await fixture(`<el-tab-link for="a">a</el-tab-link>`);
+
+        expect(el.getAttribute('role')).toBe('tab');
+    });
+
+    it('keeps a role the page gave it', async () => {
+        const el = await fixture(`<el-tab-link for="a" role="button">a</el-tab-link>`);
+
+        expect(el.getAttribute('role')).toBe('button');
+    });
+
+    it('dispatches tab-select on a click, on Enter and on Space', async () => {
+        const el = await fixture(`<el-tab-link for="a">a</el-tab-link>`);
+
+        for (const act of [
+            () => el.click(),
+            () => el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })),
+            () => el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })),
+        ]) {
+            const selected = oneEvent(el, 'tab-select');
+            act();
+            expect((await selected).detail).toEqual({ selected: 'a' });
+        }
+    });
+
+    it('dispatches nothing while disabled', async () => {
+        const el = await fixture(`<el-tab-link for="a" disabled>a</el-tab-link>`);
+        let events = 0;
+        el.addEventListener('tab-select', () => events++);
+
+        el.click();
+        el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+
+        expect(events).toBe(0);
+    });
+
     it('exposes a disabled link as disabled', async () => {
         const el = await fixture(`<el-tab-link for="a" disabled>a</el-tab-link>`);
+
+        expect(el.getAttribute('aria-disabled')).toBe('true');
+    });
+
+    // The attribute is set after the start here. One that was there at the start cannot be taken
+    // away again: element-js writes a removed attribute back empty.
+    it('follows a disabled attribute that is set and removed later', async () => {
+        const el = await fixture(`<el-tab-link for="a">a</el-tab-link>`);
+
+        el.setAttribute('disabled', '');
+        await aTimeout(20);
         expect(el.getAttribute('aria-disabled')).toBe('true');
 
         el.removeAttribute('disabled');
+        await aTimeout(20);
+        expect(el.hasAttribute('disabled')).toBe(false);
         expect(el.hasAttribute('aria-disabled')).toBe(false);
-
-        el.setAttribute('disabled', '');
-        expect(el.getAttribute('aria-disabled')).toBe('true');
     });
 
     it('does not mark a link that is not disabled', async () => {
@@ -29,7 +76,7 @@ describe('Feature | TabLink', () => {
 
     it('has no detectable a11y violations while disabled', async () => {
         const wrapper = await fixture(`
-            <div style="background: #fff; color: #111827">
+            <div role="tablist" style="background: #fff; color: #111827">
                 <el-tab-link for="a" disabled>Disabled</el-tab-link>
             </div>
         `);

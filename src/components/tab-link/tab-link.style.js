@@ -18,6 +18,11 @@ export default css`
             color: var(--el-color-fg, inherit);
         }
 
+        &:focus-visible {
+            outline: var(--el-focus-ring-width, 2px) solid var(--el-color-focus-ring, currentColor);
+            outline-offset: var(--el-focus-ring-offset, 2px);
+        }
+
         &:state(active) {
             color: var(--el-color-fg, inherit);
             background: var(--el-color-bg-muted, transparent);

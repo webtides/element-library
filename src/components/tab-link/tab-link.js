@@ -2,15 +2,16 @@ import { StyledElement, defineElement } from '@webtides/element-js';
 import style from './tab-link.style.js';
 
 /**
- * Clickable label for a `<el-tab-panel>`. Dispatches a bubbling `tab-select` event with
- * `detail.selected` set to its `for` attribute when clicked (unless `disabled`). Used
- * inside `<el-tab-group>`.
+ * The tab of a `<el-tab-panel>` (`role="tab"`). Dispatches a bubbling `tab-select` event with
+ * `detail.selected` set to its `for` attribute when it is clicked or when Enter or Space is
+ * pressed on it (unless `disabled`). Used inside `<el-tab-group>`, which marks the selected
+ * link (`aria-selected`), keeps it in the tab order and moves between the links with the arrow keys.
  *
  * @element el-tab-link
  *
- * @fires {CustomEvent<{ selected: string }>} tab-select - Fired on click. `detail.selected`
- *   is the `for` value, used by `<el-tab-group>` to activate the matching panel. Bubbles
- *   and crosses shadow boundaries.
+ * @fires {CustomEvent<{ selected: string }>} tab-select - Fired on click and on Enter or Space.
+ *   `detail.selected` is the `for` value, used by `<el-tab-group>` to activate the matching
+ *   panel. Bubbles and crosses shadow boundaries.
  *
  * @slot - Default slot for the tab label content.
  *
@@ -31,6 +32,10 @@ export default class TabLink extends StyledElement {
 
     attributeChangedCallback() {
         this._syncDisabled();
+    }
+
+    connected() {
+        if (!this.hasAttribute('role')) this.setAttribute('role', 'tab');
     }
 
     /**
@@ -56,6 +61,13 @@ export default class TabLink extends StyledElement {
                     event.stopPropagation();
                     if (this.hasAttribute('disabled')) return;
                     this.dispatch('tab-select', { selected: this.for });
+                },
+                keydown: (event) => {
+                    // Keys pressed on something inside the link belong to that element.
+                    if (event.target !== this || (event.key !== 'Enter' && event.key !== ' ')) return;
+                    // Space would scroll the page.
+                    event.preventDefault();
+                    this.click();
                 },
             },
         };

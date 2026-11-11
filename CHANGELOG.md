@@ -101,10 +101,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the switch, is at least `--el-touch-target` wide and high. Before, it was as high as the switch. Unchanged on a fine pointer and without the token.
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the switch names it in `aria-describedby` while it is shown. Before, nothing connected the message with the switch. ([#94](https://github.com/webtides/element-library/issues/94))
 
+### tab-group
+
+- Added: keyboard support: the arrow keys move to the next and the previous link and select it, Home and End go to the first and the last one. Disabled links are skipped, and the arrow keys wrap around. Before, a tab could only be changed with a click. ([#97](https://github.com/webtides/element-library/issues/97))
+- Added: `orientation` (`'horizontal'` by default, or `'vertical'`): which arrow keys move between the links, left and right or up and down. ([#97](https://github.com/webtides/element-library/issues/97))
+- Added: the group tells assistive technology what its parts are: the selected link has `aria-selected="true"` and is the only link in the tab order (roving `tabindex`), every panel is labelled by its link (`aria-labelledby`; a link without an `id` gets one), and the element around the links gets `role="tablist"` and `aria-orientation`, unless the page gave it another role. ([#97](https://github.com/webtides/element-library/issues/97))
+- Changed: put the links into an element of their own (for example a `<div>`), so that the group can make it the `tablist`. Links that are direct children of the group still work, with the keyboard too, but have no `tablist` around them, which axe reports (`aria-required-parent`). The group cannot be the list itself, because it holds the panels as well. ([#97](https://github.com/webtides/element-library/issues/97))
+
 ### tab-link
 
+- Added: the link is a tab: it has `role="tab"`, and Enter and Space select it like a click does. In an `el-tab-group` it carries `aria-selected`, and only the selected link is in the tab order. Before, it had no role and reacted to a click only. A role the page sets itself is kept. ([#97](https://github.com/webtides/element-library/issues/97))
+- Added: a focus ring from the library's tokens (`--el-focus-ring-width`, `--el-color-focus-ring`, `--el-focus-ring-offset`) while the link has the keyboard focus. ([#97](https://github.com/webtides/element-library/issues/97))
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high (36 px high with the default theme before). Unchanged on a fine pointer and without the token.
 - Fixed: a disabled link is exposed as disabled: the element sets `aria-disabled="true"` on itself while it has the `disabled` attribute. Before, it was only greyed out, and axe counted the reduced contrast as a failure. ([#94](https://github.com/webtides/element-library/issues/94))
+
+### tab-panel
+
+- Added: the panel has `role="tabpanel"`, and its `el-tab-group` labels it by its link (`aria-labelledby`). A role the page sets itself is kept. ([#97](https://github.com/webtides/element-library/issues/97))
 
 ### textarea-field
 

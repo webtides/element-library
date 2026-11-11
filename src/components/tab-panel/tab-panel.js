@@ -2,9 +2,9 @@ import { StyledElement, defineElement } from '@webtides/element-js';
 import style from './tab-panel.style.js';
 
 /**
- * Content panel paired with an `<el-tab-link>` by `name`. Visibility is driven by the
- * parent `<el-tab-group>`, which toggles `display: block / none` based on the active
- * selection.
+ * Content panel paired with an `<el-tab-link>` by `name` (`role="tabpanel"`). Visibility is
+ * driven by the parent `<el-tab-group>`, which toggles `display: block / none` based on the
+ * active selection and labels the panel by its link (`aria-labelledby`).
  *
  * @element el-tab-panel
  *
@@ -22,6 +22,10 @@ export default class TabPanel extends StyledElement {
         return {
             name: undefined,
         };
+    }
+
+    connected() {
+        if (!this.hasAttribute('role')) this.setAttribute('role', 'tabpanel');
     }
 }
 

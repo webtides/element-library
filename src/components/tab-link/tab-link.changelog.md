@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- The link is a tab: it has `role="tab"`, and Enter and Space select it like a click does. In an `el-tab-group` it carries `aria-selected`, and only the selected link is in the tab order. Before, it had no role and reacted to a click only. A role the page sets itself is kept. ([#97](https://github.com/webtides/element-library/issues/97))
+- A focus ring from the library's tokens (`--el-focus-ring-width`, `--el-color-focus-ring`, `--el-focus-ring-offset`) while the link has the keyboard focus. ([#97](https://github.com/webtides/element-library/issues/97))
+
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high (36 px high with the default theme before). Unchanged on a fine pointer and without the token.
