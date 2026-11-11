@@ -3,6 +3,10 @@ import { getDefaultValuesFromConstructorVisitor } from '@custom-elements-manifes
 import { handleJsDoc } from '@custom-elements-manifest/analyzer/src/features/analyse-phase/creators/handlers.js';
 import { extractMixinNodes, isMixin } from '@custom-elements-manifest/analyzer/src/utils/mixins.js';
 import { handleName } from '@custom-elements-manifest/analyzer/src/features/analyse-phase/creators/createMixin.js';
+// Needs the `prettier` dev dependency: this package imports `@prettier/sync`, which has prettier as a
+// peer. Without it this config fails to import, and `cem analyze` then prints the error, falls back
+// to its defaults (no excludes, no plugins, no web-types.json) and still exits 0. Prettier is not
+// this repo's formatter, that is Oxfmt. `npm run test:catalog` checks that the fallback did not happen.
 import { getWebTypesData } from 'custom-element-jet-brains-integration';
 import path from 'node:path';
 import fs from 'node:fs';

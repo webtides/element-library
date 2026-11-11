@@ -19,6 +19,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 - **Testing**: Vitest 5 via `vp test` (with browser mode and custom test helpers)
 - **Documentation**: Storybook 10.x
 - **Linting**: Oxlint (`vp lint`) + Oxfmt (`vp fmt`), configured in `vite.config.ts`
+- **Manifest**: `npm run analyze` writes `custom-elements.json` and `web-types.json` (both gitignored). The `prettier` dev dependency exists only for this step: the web-types generator `custom-element-jet-brains-integration` needs it as a peer. Do not remove it — without it the manifest config fails to import and `cem analyze` silently falls back to defaults (see the comment in `custom-elements-manifest.config.mjs`)
 - **Node**: development needs 22.18+ (Vite+ requirement, see `.nvmrc`); consumers need 20.19+ (`engines.node`)
 - **External Dependencies**:
     - `@glidejs/glide` for carousel functionality (pinned at `~3.6.2`; patched via `patch-package`)
@@ -109,11 +110,11 @@ The `sideEffects` field marks only `./all.js` and `./src/components/*/*.define.j
 
 `./catalog` is for **server-side rendering** with [`@webtides/element-js-ssr-renderer`](https://github.com/webtides/element-js-ssr-renderer): a `Catalog` — `{ "el-button": () => import("./src/components/button/button.js"), … }` — that the renderer's `resolve` option consumes to pre-render the components present on a page to Declarative Shadow DOM. It is the mirror image of `./all`:
 
-|         | `./all`                                                   | `./catalog`                                                     |
-| ------- | --------------------------------------------------------- | --------------------------------------------------------------- |
-| Side    | client (browser)                                          | server (SSR)                                                    |
-| Effect  | side-effectful: `define()`s every component for hydration | a plain value; defines nothing, runs no `customElements.define` |
-| Loading | eager (all components)                                    | lazy (only tags on the page)                                    |
+|  | `./all` | `./catalog` |
+| --- | --- | --- |
+| Side | client (browser) | server (SSR) |
+| Effect | side-effectful: `define()`s every component for hydration | a plain value; defines nothing, runs no `customElements.define` |
+| Loading | eager (all components) | lazy (only tags on the page) |
 
 A consumer doing SSR uses **both**: `./catalog` on the server to pre-render, and `./all` (or per-component `…/define`) on the client to hydrate. Because the catalog ships inside the package, its specifiers are package-internal relative paths that resolve in any consumer bundle regardless of `node_modules` layout — no consumer codegen, no hand-written import map.
 
