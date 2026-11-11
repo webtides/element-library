@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
-import { fixture, nextFrame, sendMouse, sizeOf } from '../../test-helpers.js';
+import { fixture, forcePseudoClasses, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './button.js';
 define();
 
@@ -81,18 +81,64 @@ describe('Feature | Button', () => {
         expect(sizeOf(control).height).toBe(32);
     });
 
-    it('shows a hover and a pressed style to a mouse', async () => {
+    it('shows a hover and a pressed style where the pointer can hover', async () => {
         const el = await fixture(`<el-button variant="primary">Save</el-button>`);
         const control = el.shadowRoot.querySelector('[part="base"]');
         expect(getComputedStyle(control).filter).toBe('none');
 
-        await sendMouse('mouseMoved', control);
+        await forcePseudoClasses(control, ['hover']);
         expect(getComputedStyle(control).filter).toBe('brightness(0.95)');
 
-        await sendMouse('mousePressed', control);
+        await forcePseudoClasses(control, ['hover', 'active']);
         expect(getComputedStyle(control).filter).toBe('brightness(0.88)');
+    });
 
-        await sendMouse('mouseReleased', control);
-        expect(getComputedStyle(control).filter).toBe('brightness(0.95)');
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('is at least --el-touch-target in both directions, whatever its size and shape', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px">
+                    <el-button size="small">a</el-button>
+                    <el-button>a</el-button>
+                    <el-button size="large">a</el-button>
+                    <el-button size="small" circle="true">a</el-button>
+                    <el-button circle="true">a</el-button>
+                    <el-button size="large" circle="true">a</el-button>
+                    <el-button size="small" variant="text">a</el-button>
+                    <el-button size="small" href="#target">a</el-button>
+                </div>
+            `);
+            for (const button of wrapper.querySelectorAll('el-button')) {
+                const { width, height } = sizeOf(button.shadowRoot.querySelector('[part="base"]'));
+                expect(Math.min(width, height), button.outerHTML).toBeGreaterThanOrEqual(44);
+            }
+        });
+
+        it('keeps a circle round', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px"><el-button size="small" circle="true">a</el-button></div>
+            `);
+            const control = wrapper.querySelector('el-button').shadowRoot.querySelector('[part="base"]');
+            expect(sizeOf(control)).toEqual({ width: 44, height: 44 });
+        });
+
+        it('keeps its size without --el-touch-target', async () => {
+            const el = await fixture(`<el-button size="small">OK</el-button>`);
+            expect(sizeOf(el.shadowRoot.querySelector('[part="base"]')).height).toBe(32);
+        });
+
+        it('shows a pressed style, and no hover style for the :hover that a tap leaves behind', async () => {
+            const el = await fixture(`<el-button variant="primary">Save</el-button>`);
+            const control = el.shadowRoot.querySelector('[part="base"]');
+
+            // A touch screen keeps :hover on the element that was tapped last.
+            await forcePseudoClasses(control, ['hover']);
+            expect(control.matches(':hover')).toBe(true);
+            expect(getComputedStyle(control).filter).toBe('none');
+
+            await forcePseudoClasses(control, ['hover', 'active']);
+            expect(getComputedStyle(control).filter).toBe('brightness(0.88)');
+        });
     });
 });

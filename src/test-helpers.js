@@ -8,8 +8,8 @@ import { cdp } from 'vite-plus/test/browser';
 
 /**
  * Makes the page a touch screen for the tests of the surrounding `describe`: `(any-pointer: coarse)`
- * matches and `(hover: hover)` does not. Chromium only. Every test file runs in a page of its own,
- * so other files are not affected.
+ * matches and `(hover: hover)` does not. Switched off again after the last of these tests.
+ * Chromium only.
  * @returns {void}
  */
 export function useTouchScreen() {
@@ -28,39 +28,38 @@ export async function emulateTouchScreen(enabled) {
 }
 
 /**
- * The center of an element in the coordinates of the top-level page. Input that is sent through
- * `cdp()` uses these, while a test file runs in an iframe. Scrolls the element into view first.
- * @param {Element} element
- * @returns {{ x: number, y: number }}
- */
-export function pagePointOf(element) {
-    element.scrollIntoView({ block: 'center' });
-    const rect = element.getBoundingClientRect();
-    const frame = window.frameElement.getBoundingClientRect();
-    return { x: frame.left + rect.left + rect.width / 2, y: frame.top + rect.top + rect.height / 2 };
-}
-
-/**
- * Sends a real mouse event to the center of an element.
- * @param {'mouseMoved' | 'mousePressed' | 'mouseReleased'} type
- * @param {Element} element
+ * Puts an element into the given states, as "Force element state" in the developer tools does:
+ * `forcePseudoClasses(button, ['hover', 'active'])`. Chromium only. Use a fresh element per test:
+ * after a state is taken back, `getComputedStyle()` can still report the forced style.
+ *
+ * Real input is no alternative for a test: whether a synthetic finger sets `:active` depends on
+ * the platform (it does not in headless Chromium on Linux), and on what the page has seen before.
+ * @param {Element} element - May be inside a shadow root.
+ * @param {Array<'hover' | 'active' | 'focus' | 'focus-visible'>} pseudoClasses
  * @returns {Promise<void>}
  */
-export async function sendMouse(type, element) {
-    const button = type === 'mouseMoved' ? 'none' : 'left';
-    await cdp().send('Input.dispatchMouseEvent', { type, ...pagePointOf(element), button, clickCount: 1 });
+export async function forcePseudoClasses(element, pseudoClasses) {
+    const session = cdp();
+    await session.send('DOM.enable');
+    await session.send('CSS.enable');
+
+    // The protocol addresses a node by an id of its own. The search finds the element by a marker
+    // attribute; unlike a selector query it also looks into iframes (a test file runs in one) and
+    // shadow roots.
+    const marker = `forced-state-${crypto.randomUUID()}`;
+    element.setAttribute('data-test-marker', marker);
+    await session.send('DOM.getDocument', { depth: 0 });
+    const { searchId, resultCount } = await session.send('DOM.performSearch', {
+        query: marker,
+        includeUserAgentShadowDOM: true,
+    });
+    if (resultCount < 1) throw new Error('forcePseudoClasses: the element is not in the document');
+    const { nodeIds } = await session.send('DOM.getSearchResults', { searchId, fromIndex: 0, toIndex: 1 });
+    await session.send('DOM.discardSearchResults', { searchId });
+    element.removeAttribute('data-test-marker');
+
+    await session.send('CSS.forcePseudoState', { nodeId: nodeIds[0], forcedPseudoClasses: pseudoClasses });
     await nextFrame();
-}
-
-/**
- * Puts a finger on the center of an element and lifts it after `duration` milliseconds. Needs
- * `useTouchScreen()`. The promise resolves once the finger is up.
- * @param {Element} element
- * @param {number} duration
- * @returns {Promise<void>}
- */
-export function touchAndHold(element, duration) {
-    return cdp().send('Input.synthesizeTapGesture', { ...pagePointOf(element), duration, gestureSourceType: 'touch' });
 }
 
 /**
