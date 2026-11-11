@@ -49,7 +49,13 @@ export const Dialog = {
         await step('closes via the built-in close button', async () => {
             // Synthetic key events don't trigger the UA's native dialog cancel, so drive the
             // close button (which routes through the same request-close flow as Escape).
-            const closeButton = dialog.shadowRoot.querySelector('[data-dialog-close]');
+            // The shadow root only exists after the first render. `open` is already true before
+            // that, so on a busy machine the step above can finish while it is still missing.
+            const closeButton = await waitFor(() => {
+                const button = dialog.shadowRoot?.querySelector('[data-dialog-close]');
+                expect(button).toBeTruthy();
+                return button;
+            });
             await userEvent.click(closeButton);
             await waitFor(() => expect(dialog.open).toBe(false));
         });
