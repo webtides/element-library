@@ -41,6 +41,8 @@ import style from './slider.style.js';
  * @property {boolean} autoSelect - When `true`, navigation skips items that are already fully
  *   visible.
  * @property {boolean} dots - Whether to render the dot pager.
+ * @property {string} dotLabel - Accessible label of a pager dot, followed by the number of its item
+ *   (`'Go to item 2'`). Default `'Go to item'`.
  * @property {boolean} arrows - Whether to render the previous/next arrow buttons.
  * @property {boolean} setIndexAfterResize - When `true`, the slider re-aligns to
  *   `selectedIndex` after the host resizes.
@@ -70,6 +72,7 @@ export default class Slider extends TemplateElement {
             selectedIndex: 0,
             autoSelect: false,
             dots: true,
+            dotLabel: 'Go to item',
             arrows: true,
             setIndexAfterResize: true,
             manualScrollEndDelay: 200,
@@ -286,7 +289,7 @@ export default class Slider extends TemplateElement {
 
     template() {
         return html`
-            <div ref="scroller" part="scroller" class="scroller">
+            <div ref="scroller" part="scroller" class="scroller" tabindex="0">
                 <slot></slot>
             </div>
             ${this.dots ? html` <div part="controls dots">${this.dotsTemplate()}</div> ` : null}
@@ -301,6 +304,7 @@ export default class Slider extends TemplateElement {
                 <button
                     part="dot ${this.selectedIndex === index ? 'selected-dot' : ''}"
                     class="dot"
+                    aria-label="${this.dotLabel} ${index + 1}"
                     aria-pressed="${this.selectedIndex === index ? 'true' : 'false'}"
                 ></button>
             `;

@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - On a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high (36 px high with the default theme before). Unchanged on a fine pointer and without the token.
 
+### Fixed
+
+- A disabled link is exposed as disabled: the element sets `aria-disabled="true"` on itself while it has the `disabled` attribute. Before, it was only greyed out, and axe counted the reduced contrast as a failure. ([#94](https://github.com/webtides/element-library/issues/94))
+
 ## [0.1.0] - 2026-06-03
 
 ### Changed

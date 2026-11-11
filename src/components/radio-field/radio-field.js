@@ -89,7 +89,7 @@ export default class RadioField extends FormField {
         return html`
             <fieldset
                 class="field ${this.classes().field}"
-                aria-describedby="${this.name}-help-message"
+                aria-describedby="${this._describedBy()}"
                 aria-errormessage="${this.name}-error-message"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
             >
@@ -125,7 +125,7 @@ export default class RadioField extends FormField {
                         ?checked="${checked}"
                         ?disabled="${optionDisabled}"
                         ?required="${this.required}"
-                        aria-describedby="${this.name}-help-message"
+                        aria-describedby="${this._describedBy()}"
                     />
                     <span class="radio-indicator" aria-hidden="true"></span>
                     <span class="option-label">${label}</span>

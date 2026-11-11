@@ -72,3 +72,4 @@ On a touch screen (`@media (any-pointer: coarse)`) the label of every option, wh
 - Uses a native `<fieldset>` + `<legend>`, so the group is announced with its label and radios are mutually exclusive with native arrow-key navigation.
 - The native radio stays in the accessibility tree and focusable; it is only hidden visually, with keyboard focus reflected onto the custom indicator via `:focus-visible`.
 - Validation messages surface only once the group is `touched`.
+- The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the group while it is shown: a screen reader announces it when it appears and reads it again when the group gets focus.

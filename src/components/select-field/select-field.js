@@ -41,7 +41,7 @@ export default class SelectField extends FormField {
                 value="${this.value}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
-                aria-describedby="${this.name}-help-message"
+                aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
                 aria-errormessage="${this.name}-error-message"
             >

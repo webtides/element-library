@@ -87,7 +87,7 @@ _None_ - The component generates its own textarea element internally
 - Links labels to textareas via `for` attribute
 - Supports screen reader only labels
 - Visual validity indicators (✓ for valid, × for invalid) appear after field is touched
-- Error messages are properly associated with the textarea field
+- The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the textarea while it is shown: a screen reader announces it when it appears and reads it again when the textarea gets focus
 - Help messages are linked via `aria-describedby`
 
 ## Keyboard and autofill hints

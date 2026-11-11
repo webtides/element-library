@@ -51,6 +51,20 @@ describe('Feature | PasswordField', () => {
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
 
+    // The danger colour is the default theme's: without a theme the message is `red`, 3.99 : 1 on white.
+    it('announces its error message and has no a11y violations in the error state', async () => {
+        const el = await passwordFixture(
+            'error-message="Enter your password" valid="false" style="--el-color-danger: #dc2626"',
+        );
+        await nextFrame();
+        const message = el.querySelector('.error-message');
+
+        expect(message.getAttribute('role')).toBe('alert');
+        expect(el.querySelector('input').getAttribute('aria-describedby').split(' ')).toContain(message.id);
+        const results = await axe.run(el);
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
     it('keeps the text entry attributes on the input when the toggle renders it again', async () => {
         const el = await passwordFixture('autocomplete="new-password" autocapitalize="none" spellcheck="false"');
         const expected = { autocomplete: 'new-password', autocapitalize: 'none', spellcheck: 'false' };

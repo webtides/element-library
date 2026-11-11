@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import axe from 'axe-core';
 import { fixture, forcePseudoClasses, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './button.js';
 define();
@@ -71,6 +72,30 @@ describe('Feature | Button', () => {
 
         const button = await fixture(`<el-button>Save</el-button>`);
         expect(controlTag(button, 'button')).not.toMatch(/\s(name|value)=/);
+    });
+
+    // The fill writes dark text on --el-color-warning, so the token is a light colour; as the
+    // label of the outline variant it would be 3.19 : 1 on white.
+    it('keeps the label of an outline warning button readable in a light and a dark scheme', async () => {
+        const schemes = [
+            { bg: '#ffffff', fg: '#111827' },
+            { bg: '#0f1115', fg: '#f3f4f6' },
+        ];
+        for (const { bg, fg } of schemes) {
+            const wrapper = await fixture(`
+                <div style="--el-color-warning: #d97706; --el-color-fg: ${fg}; background: ${bg}; padding: 8px">
+                    <el-button variant="warning" outline="true">Careful</el-button>
+                    <el-button variant="warning">Careful</el-button>
+                </div>
+            `);
+            const results = await axe.run(wrapper, { runOnly: ['color-contrast'] });
+
+            expect(results.violations, bg).toEqual([]);
+            expect(
+                results.passes.flatMap((pass) => pass.nodes),
+                bg,
+            ).toHaveLength(2);
+        }
     });
 
     it('ignores --el-touch-target on a fine pointer', async () => {

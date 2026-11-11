@@ -80,7 +80,7 @@ export default class SwitchField extends FormField {
                     type="checkbox"
                     role="switch"
                     id="switch-${this.uuid}"
-                    aria-describedby="${this.name}-help-message"
+                    aria-describedby="${this._describedBy()}"
                     value="${this.value}"
                     name="${this.name}"
                     ?disabled="${this.disabled}"

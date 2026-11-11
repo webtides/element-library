@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### amount-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the plus and minus buttons are at least `--el-touch-target` wide, and the input is as high as the buttons. With the default theme the buttons were 33 and 29 px wide and the input 34 px high. The height of the buttons follows the token on every pointer, as before. Unchanged on a fine pointer and without the token.
+- Changed: the `label` is rendered: a `<label>` above the stepper, inside the shadow root, that names the number input. Style it with `::part(label)`. Before, the field took the attribute and showed nothing, and the input had no accessible name (axe `label`). ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### button
 
@@ -38,23 +39,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the button is at least `--el-touch-target` wide and high, in every size and shape. With the default theme a small button was 32 px high, a medium one 42 px and a small `circle` 32 × 32 px. A circle stays round. Unchanged on a fine pointer and without the token.
 - Fixed: a server-rendered `el-button` no longer writes unset attributes as the string `undefined` onto its control. A link button (`href` set) carried `target='undefined'`, `rel='undefined'` and `download='undefined'` in the Declarative Shadow DOM, and a `download` attribute makes the browser save the link target instead of navigating to it. A native button carried `name='undefined'` and `value='undefined'`. The fix is in `@webtides/element-js` 1.3.1 ([element-js#192](https://github.com/webtides/element-js/issues/192)), which the library now requires.
 - Fixed: no hover style stays on the button after a tap. A touch screen leaves `:hover` on the element that was tapped last, so the button looked hovered until the next tap elsewhere. The hover styles now only apply where the pointer can hover (`@media (hover: hover)`).
+- Fixed: the label of an outline `warning` button is readable on a light background. Its colour is `--el-color-warning` mixed half and half with `--el-color-fg` now, which makes it darker in a light scheme and lighter in a dark one; the border keeps the token. Before, the label had the colour of the token, which has to be light for the dark text of the filled button: `#d97706` was 3.18 : 1 on white as a label and is 7.86 : 1 now. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### carousel
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high (28 × 22 px before). The bullets keep their size of 13 px: each gets a hit area of `--el-touch-target` around its dot, and the bullets move apart by as much, so that the areas do not overlap. The row of bullets wraps when it gets wider than the carousel. Unchanged on a fine pointer and without the token.
+- Fixed: the arrow buttons have an accessible name when their slots are empty: "Previous slide" and "Next slide", for screen readers only. What is put into the `arrow-left` and `arrow-right` slots replaces that name, as it named the button before. An arrow with an empty slot was a button without a name (axe `button-name`). ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### checkbox-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
+- Fixed: the error message is an alert (`role="alert"`), so a screen reader announces it the moment it appears. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### dialog
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (20 × 20 px before). Its icon keeps its size, and the header grows with the button. Unchanged on a fine pointer and without the token.
 
+### form-field
+
+- Fixed: the error message is announced by screen readers. It is an alert now (`role="alert"`), so it is read the moment it appears, and the fields name it in the `aria-describedby` of their control while it is shown, so it is read again when the control gets focus. Before, a control pointed at the message with `aria-errormessage` at most, which few screen readers read and which axe reports (`aria-valid-attr-value`). The alert reaches every field that shows the message; `aria-describedby` is set by `el-input-field`, `el-password-field`, `el-select-field`, `el-radio-field`, `el-textarea-field` and `el-switch-field`. ([#94](https://github.com/webtides/element-library/issues/94))
+
 ### input-field
 
 - Added: `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<input>`, in server-rendered markup and on every render. Set them as attributes or properties on the element; one that is not set is left out on the `<input>`. Before, the field dropped them, so a password manager and the on-screen keyboard got no hints.
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high (42 px with the default theme before), and the clear cross of an invalid field at least that wide and high (9 × 18 px before). The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Unchanged on a fine pointer and without the token.
+- Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### notification
 
@@ -67,26 +76,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<input>`, in server-rendered markup and on every render, the one the reveal toggle triggers included. Set them as attributes or properties on the element; one that is not set is left out on the `<input>`. Before, the field dropped them, so a password manager and the on-screen keyboard got no hints. `autocomplete="current-password"` and `autocomplete="new-password"` now reach the input.
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least `--el-touch-target` wide and high (20 × 20 px before), the input at least that high, and the clear cross of an invalid field at least that wide and high. Unchanged on a fine pointer and without the token. Known limit: when an `el-input-field` connects before the first `el-password-field` of a page, element-js gives the password field the style sheet of the input field ([element-js#198](https://github.com/webtides/element-js/issues/198)). The reveal button then has none of its styles, this size included.
+- Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### radio-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the label of every option, which is its hit area, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
+- Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the group, like each of its radios, names it in `aria-describedby` while it is shown. Before, the group pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### select-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high (42 px with the default theme before). Unchanged on a fine pointer and without the token.
+- Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the select names it in `aria-describedby` while it is shown. Before, the select pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### slider
 
+- Added: `dot-label` (`dotLabel`): the accessible label of a pager dot, followed by the number of its item. Default `'Go to item'`, which names the dots "Go to item 1", "Go to item 2" and so on. ([#94](https://github.com/webtides/element-library/issues/94))
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high (29 × 34 px and 41 × 40 px with the default theme before). The glyphs keep their size. The row of dots wraps when it gets wider than the slider. Unchanged on a fine pointer and without the token.
+- Fixed: the pager dots have an accessible name (see `dot-label`); they were buttons without one (axe `button-name`). The scroller can be reached with the keyboard (`tabindex="0"`), where the arrow keys scroll it (axe `scrollable-region-focusable`). ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### switch-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the switch, is at least `--el-touch-target` wide and high. Before, it was as high as the switch. Unchanged on a fine pointer and without the token.
+- Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the switch names it in `aria-describedby` while it is shown. Before, nothing connected the message with the switch. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### tab-link
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high (36 px high with the default theme before). Unchanged on a fine pointer and without the token.
+- Fixed: a disabled link is exposed as disabled: the element sets `aria-disabled="true"` on itself while it has the `disabled` attribute. Before, it was only greyed out, and axe counted the reduced contrast as a failure. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ### textarea-field
 
@@ -95,6 +111,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: a server-rendered `el-textarea-field` shows its value before its JavaScript runs, and without JavaScript. The value is now rendered as the content of the `<textarea>`; before, it was written as a `value` attribute, which a textarea does not have, so the field stayed empty and submitting the form sent an empty text. Known limit: a line break at the very start of the value is missing until the element has started, because the HTML parser drops a line break that directly follows `<textarea>`.
 - Fixed: a re-render no longer overwrites text typed since the last change the field has seen. Before, every render wrote `value` back into the control.
 - Fixed: `aria-describedby` on the textarea now names the help message (`<name>-help-message`). It pointed at `<name>-help`, an id that does not exist.
+- Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the textarea names it in `aria-describedby` while it is shown. Before, nothing connected the message with the textarea. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ## [0.2.0] - 2026-06-10
 

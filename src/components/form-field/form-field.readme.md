@@ -41,7 +41,7 @@ This component is typically used as a base class for other form field components
 | `disabled` | `boolean` | `false` | Whether the field is disabled. |
 | `label` | `string` | `''` | The label text displayed for the field. |
 | `labelScreenReaderOnly` | `boolean` | `false` | Whether to hide the label visually (but keep it accessible to screen readers). |
-| `errorMessage` | `string` | `''` | Error message to display when validation fails and field is touched. |
+| `errorMessage` | `string` | `''` | Error message to display when validation fails and field is touched. Rendered as an alert (`role="alert"`), so screen readers announce it. |
 | `helpMessage` | `string` | `''` | Helper text to display below the field. |
 | `valid` | `boolean` | `true` | Whether the field passes validation. |
 | `touched` | `boolean` | `false` | Whether the field has been interacted with (focused and blurred). |

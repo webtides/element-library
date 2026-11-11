@@ -1,6 +1,12 @@
 const css = String.raw;
 
 export default css`
+    [part='label'] {
+        display: block;
+        margin-bottom: var(--el-space-1, 0);
+        color: var(--el-color-fg, inherit);
+    }
+
     [part='wrapper'] {
         display: flex;
         flex-direction: row;

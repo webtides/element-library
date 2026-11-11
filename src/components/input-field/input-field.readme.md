@@ -101,7 +101,7 @@ Removing one of these attributes later leaves it empty (`autocomplete=""`) on th
 - Links labels to inputs via `for` attribute
 - Supports screen reader only labels
 - Visual validity indicators (✓ for valid, × for invalid)
-- Error messages are properly associated with the input field
+- The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the input while it is shown: a screen reader announces it when it appears and reads it again when the input gets focus
 
 ## Validation
 

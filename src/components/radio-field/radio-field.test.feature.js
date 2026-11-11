@@ -74,6 +74,17 @@ describe('Feature | RadioField', () => {
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
 
+    it('announces its error message and has no a11y violations in the error state', async () => {
+        const el = await radioFixture('required="true" valid="false" error-message="Choose a plan"');
+        await nextFrame();
+        const message = el.querySelector('.error-message');
+
+        expect(message.getAttribute('role')).toBe('alert');
+        expect(el.querySelector('fieldset').getAttribute('aria-describedby').split(' ')).toContain(message.id);
+        const results = await axe.run(el);
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
     it('ignores --el-touch-target on a fine pointer', async () => {
         const wrapper = await fixture(
             `<div style="--el-touch-target: 44px"><el-radio-field name="a" label="Plan"></el-radio-field></div>`,

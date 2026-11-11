@@ -116,7 +116,7 @@ _None_ - The component generates its own select element and options internally
 - Includes proper ARIA attributes (`aria-describedby`, `aria-invalid`, `aria-errormessage`)
 - Links labels to select elements via `for` attribute
 - Supports screen reader only labels
-- Error messages are properly associated with the select field
+- The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the select while it is shown: a screen reader announces it when it appears and reads it again when the select gets focus
 - Placeholder option is disabled to prevent invalid submissions
 
 ## Validation

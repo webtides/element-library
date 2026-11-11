@@ -103,7 +103,7 @@ export default class TextareaField extends FormField {
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
                 ${spreadAttributes(textEntryAttributes(this))}
-                aria-describedby="${this.name}-help-message"
+                aria-describedby="${this._describedBy()}"
             >${this.value ?? ''}</textarea>
             ${
                 this.touched

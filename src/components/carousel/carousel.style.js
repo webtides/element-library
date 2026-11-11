@@ -96,6 +96,16 @@ export default css`
         opacity: 0.33;
     }
 
+    /* The name of an arrow whose slot is empty: read by screen readers, not shown. */
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
     /* --- Glide theme: bullets --- */
     .glide__bullets {
         position: absolute;

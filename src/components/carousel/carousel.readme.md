@@ -53,11 +53,11 @@ import '@webtides/element-library/carousel/define';
 
 #### Slots
 
-| Name          | Description                                                                              |
-| ------------- | ---------------------------------------------------------------------------------------- |
-| _(default)_   | Direct children become slides (unless they have a `slot` attribute or are Glide clones). |
-| `arrow-left`  | Content of the "previous" navigation button.                                             |
-| `arrow-right` | Content of the "next" navigation button.                                                 |
+| Name | Description |
+| --- | --- |
+| _(default)_ | Direct children become slides (unless they have a `slot` attribute or are Glide clones). |
+| `arrow-left` | Content of the "previous" navigation button; it names the button. Left empty, the button is named "Previous slide" for screen readers and shows nothing. |
+| `arrow-right` | Content of the "next" navigation button; it names the button. Left empty, the button is named "Next slide" for screen readers and shows nothing. |
 
 #### CSS Parts
 

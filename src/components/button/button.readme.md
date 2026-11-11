@@ -93,3 +93,5 @@ Reads the standard library design tokens (`--el-color-accent`, `--el-color-bg`, 
 On a touch screen (`@media (any-pointer: coarse)`) the button is at least `--el-touch-target` wide and high, in every size and shape; a `circle` stays round. Without that token, and on a fine pointer, the sizes stay as they are.
 
 A pressed button (`:active`) is darker than a hovered one; the `text` and `outline` variants get a tint of their text color instead. The hover styles only apply where the pointer can hover (`@media (hover: hover)`), so none stays behind after a tap on a touch screen.
+
+The label of an outline `warning` button is `--el-color-warning` mixed half and half with `--el-color-fg`; the border keeps the token. A warning colour that carries dark text as a fill is too light for text on a light background.

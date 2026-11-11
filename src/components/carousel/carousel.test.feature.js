@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import axe from 'axe-core';
 import { aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './carousel.js';
 define();
@@ -21,6 +22,38 @@ describe('Feature | Carousel', () => {
     it('can connect without errors', async () => {
         await fixture(`<el-carousel></el-carousel>`);
         await nextFrame();
+    });
+
+    it('names its arrows when their slots are empty', async () => {
+        const el = await carouselFixture();
+        const [previous, next] = el.shadowRoot.querySelectorAll('[part~="arrow"]');
+
+        expect(previous.textContent.trim()).toBe('Previous slide');
+        expect(next.textContent.trim()).toBe('Next slide');
+        // The names are for screen readers only.
+        expect(sizeOf(previous.querySelector('.visually-hidden'))).toEqual({ width: 1, height: 1 });
+        const results = await axe.run(el, { runOnly: ['button-name'] });
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    it('leaves the name of an arrow to what is in its slot', async () => {
+        const wrapper = await fixture(`
+            <div style="width: 320px">
+                <el-carousel>
+                    <div>1</div>
+                    <div>2</div>
+                    <span slot="arrow-left">Zurück</span>
+                    <span slot="arrow-right">Weiter</span>
+                </el-carousel>
+            </div>
+        `);
+        await nextFrame();
+        const slots = wrapper.querySelector('el-carousel').shadowRoot.querySelectorAll('[part~="arrow"] slot');
+
+        expect([...slots].map((slot) => slot.assignedNodes({ flatten: true })[0].textContent)).toEqual([
+            'Zurück',
+            'Weiter',
+        ]);
     });
 
     it('ignores --el-touch-target on a fine pointer', async () => {

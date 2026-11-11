@@ -195,11 +195,37 @@ export default class FormField extends TemplateElement {
         return html` <span id="${this.name}-help-message" class="message help-message">${this.helpMessage}</span> `;
     }
 
-    /** @private */
-    errorTemplate() {
-        if (!(this.touched && this.errorMessage && !this.valid)) return null;
+    /**
+     * Whether the error message is rendered: the field has been touched, is invalid and has a message.
+     * @private
+     * @returns {boolean}
+     */
+    _showsError() {
+        return !!(this.touched && this.errorMessage && !this.valid);
+    }
 
-        return html` <span id="${this.name}-error-message" class="message error-message">${this.errorMessage}</span> `;
+    /**
+     * The value of `aria-describedby` for the control: the help message, and the error message while
+     * it is rendered, so that a screen reader reads the error when the control gets focus.
+     * @private
+     * @returns {string}
+     */
+    _describedBy() {
+        const ids = [`${this.name}-help-message`];
+        if (this._showsError()) ids.push(`${this.name}-error-message`);
+        return ids.join(' ');
+    }
+
+    /**
+     * The error message is an alert, so that a screen reader announces it the moment it appears.
+     * @private
+     */
+    errorTemplate() {
+        if (!this._showsError()) return null;
+
+        return html`
+            <span id="${this.name}-error-message" class="message error-message" role="alert">${this.errorMessage}</span>
+        `;
     }
 }
 

@@ -5,13 +5,14 @@ import style from './amount-field.style.js';
 /**
  * Numeric amount stepper input. Renders a readonly `<input type="number">` flanked by
  * increment (`+`) and decrement (`-`) buttons, with optional `min` and `max` bounds.
- * Extends `FormField` and inherits its label, help and validation surface.
+ * Extends `FormField`: the `label` is rendered above the stepper and names the input.
  *
  * @element el-amount-field
  *
  * @slot plus - Replaces the default `+` glyph in the increment button.
  * @slot minus - Replaces the default `-` glyph in the decrement button.
  *
+ * @csspart label - The label above the stepper. Only rendered when `label` is set.
  * @csspart wrapper - The outer container around the input and stepper buttons.
  * @csspart button - Applied to both stepper buttons.
  * @csspart plus - Applied to the increment button (in addition to `button`).
@@ -58,8 +59,21 @@ export default class AmountField extends FormField {
         };
     }
 
+    /**
+     * The label is rendered inside the shadow root: a `<label for>` only reaches an input in the
+     * same root.
+     * @private
+     */
+    labelTemplate() {
+        if (!this.label) return null;
+        return html`
+            <label part="label" for="input-${this.name}" class="${this.classes().label}">${this.label}</label>
+        `;
+    }
+
     template() {
         return html`
+            ${this.labelTemplate()}
             <div part="wrapper">
                 <button ref="plus" part="button plus" ?disabled="${this.max !== false && this.value >= this.max}">
                     <slot name="plus">+</slot>

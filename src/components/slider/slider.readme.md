@@ -37,6 +37,7 @@ import '@webtides/element-library/slider/define';
 | `selectedIndex` | `number` | `0` | Currently focused item index. |
 | `autoSelect` | `boolean` | `false` | When `true`, navigation skips items that are already fully visible. |
 | `dots` | `boolean` | `true` | Whether to render the dot pager. |
+| `dotLabel` | `string` | `'Go to item'` | Accessible label of a pager dot, followed by the number of its item (`'Go to item 2'`). Set it as `dot-label`. |
 | `arrows` | `boolean` | `true` | Whether to render the previous/next arrow buttons. |
 | `setIndexAfterResize` | `boolean` | `true` | When `true`, the slider re-aligns to `selectedIndex` after the host resizes. |
 | `manualScrollEndDelay` | `number` | `200` | Debounce window (ms) used to detect the end of a manual scroll. |
@@ -87,3 +88,8 @@ import '@webtides/element-library/slider/define';
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-border`, `--el-radius-md`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
 On a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high. The glyphs keep their size, and the row of dots wraps when it gets wider than the slider. Without that token, and on a fine pointer, the sizes stay as they are.
+
+## Accessibility
+
+- The scroller can be focused with the keyboard, where the arrow keys scroll it.
+- Each pager dot is a button named by `dot-label` and the number of its item; `aria-pressed` marks the dot of the selected item.

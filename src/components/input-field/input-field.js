@@ -66,7 +66,7 @@ export default class InputField extends FormField {
                 ?disabled="${this.disabled}"
                 ${optionalAttribute(this.pattern, 'pattern', this.pattern)}
                 ${spreadAttributes(textEntryAttributes(this))}
-                aria-describedby="${this.name}-help-message"
+                aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
                 aria-errormessage="${this.name}-error-message"
             />

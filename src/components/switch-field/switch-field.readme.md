@@ -58,3 +58,4 @@ On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit a
 
 - The native control is a `<input type="checkbox" role="switch">`, so it is announced as a switch with an on/off state and is keyboard-operable (Space toggles).
 - The native input stays in the accessibility tree and focusable; it is only hidden visually, with keyboard focus reflected onto the custom track via `:focus-visible`.
+- The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the switch while it is shown: a screen reader announces it when it appears and reads it again when the switch gets focus.

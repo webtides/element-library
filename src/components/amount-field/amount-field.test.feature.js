@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import axe from 'axe-core';
 import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './amount-field.js';
 define();
@@ -7,6 +8,25 @@ describe('Feature | AmountField', () => {
     it('can connect without errors', async () => {
         const el = await fixture(`<el-amount-field></el-amount-field>`);
         await nextFrame();
+    });
+
+    it('renders its label and names the input by it', async () => {
+        const el = await fixture(`<el-amount-field name="quantity" label="Quantity"></el-amount-field>`);
+        await nextFrame();
+        const label = el.shadowRoot.querySelector('[part="label"]');
+        const input = el.shadowRoot.querySelector('[part="input"]');
+
+        expect(label.textContent.trim()).toBe('Quantity');
+        expect(input.labels[0]).toBe(label);
+        const results = await axe.run(el);
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    it('renders no label when there is none', async () => {
+        const el = await fixture(`<el-amount-field name="quantity"></el-amount-field>`);
+        await nextFrame();
+
+        expect(el.shadowRoot.querySelector('label')).toBeNull();
     });
 
     it('keeps the width of its buttons on a fine pointer', async () => {

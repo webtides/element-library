@@ -173,9 +173,12 @@ export default css`
         color: var(--el-color-fg, currentColor);
     }
 
+    /* One warning colour cannot be both a fill under dark text and text on a light background.
+       The outline label is therefore the token mixed half and half with the text colour: darker
+       in a light scheme, lighter in a dark one. The border keeps the token. */
     .button--outline.button--warning {
         border-color: var(--el-color-warning, #f59e0b);
-        color: var(--el-color-warning, #b45309);
+        color: color-mix(in srgb, var(--el-color-warning, #f59e0b), var(--el-color-fg, #1c1917));
     }
 
     @media (hover: hover) {

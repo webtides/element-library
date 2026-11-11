@@ -37,7 +37,7 @@ import '@webtides/element-library/tab-link/define';
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `for` | `string \| undefined` | `undefined` | Name of the panel this link activates (matches an `<el-tab-panel>`'s `name`). |
-| `disabled` | `boolean` | `false` | When present, the link does not dispatch `tab-select` on click. |
+| `disabled` | `boolean` | `false` | When present, the link does not dispatch `tab-select` on click and is exposed as disabled (`aria-disabled="true"`). |
 
 #### Methods
 

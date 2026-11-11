@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - On a touch screen (`@media (any-pointer: coarse)`) the label of every option, which is its hit area, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
 
+### Fixed
+
+- The error message is announced by screen readers: it is an alert (`role="alert"`), and the group, like each of its radios, names it in `aria-describedby` while it is shown. Before, the group pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
+
 ## [0.1.0] - 2026-06-03
 
 ### Added

@@ -62,3 +62,4 @@ On a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least
 
 - The reveal button is a real `<button>` with an `aria-label` that flips between "Show password" and "Hide password", and an `aria-pressed` state, so its purpose and state are announced.
 - Validation messages surface only once the field is `touched` (inherited from `form-field`).
+- The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the input while it is shown: a screen reader announces it when it appears and reads it again when the input gets focus.

@@ -19,10 +19,27 @@ import style from './tab-link.style.js';
  *
  * @property {string | undefined} for - Name of the panel this link activates (matches a
  *   `<el-tab-panel>`'s `name`).
+ * @attribute {boolean} disabled - When present, the link does not dispatch `tab-select` on click
+ *   and is exposed as disabled (`aria-disabled="true"`).
  */
 export default class TabLink extends StyledElement {
+    static observedAttributes = ['disabled'];
+
     constructor() {
         super({ styles: [style] });
+    }
+
+    attributeChangedCallback() {
+        this._syncDisabled();
+    }
+
+    /**
+     * Tells assistive technology what the `disabled` attribute says.
+     * @private
+     */
+    _syncDisabled() {
+        if (this.hasAttribute('disabled')) this.setAttribute('aria-disabled', 'true');
+        else this.removeAttribute('aria-disabled');
     }
 
     properties() {

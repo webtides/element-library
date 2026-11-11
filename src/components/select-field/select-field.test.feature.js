@@ -42,6 +42,25 @@ describe('Feature | SelectField', () => {
         expect(results.violations).toEqual([]);
     });
 
+    it('announces its error message and has no a11y violations in the error state', async () => {
+        const el = await fixture(`
+            <el-select-field
+                name="country"
+                label="Country"
+                options='["USA", "Canada", "Mexico"]'
+                error-message="Select a country"
+                valid="false"
+            ></el-select-field>
+        `);
+        await nextFrame();
+        const message = el.querySelector('.error-message');
+
+        expect(message.getAttribute('role')).toBe('alert');
+        expect(el.querySelector('select').getAttribute('aria-describedby').split(' ')).toContain(message.id);
+        const results = await axe.run(el);
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 

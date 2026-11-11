@@ -1,6 +1,6 @@
 # AmountField
 
-`amount-field` is a numeric amount stepper input. It renders a readonly `<input type="number">` flanked by increment (`+`) and decrement (`-`) buttons, with optional `min` and `max` bounds. It extends the base `FormField` component and inherits its label, help and validation surface.
+`amount-field` is a numeric amount stepper input. It renders a readonly `<input type="number">` flanked by increment (`+`) and decrement (`-`) buttons, with optional `min` and `max` bounds. It extends the base `FormField` component: the `label` is rendered above the stepper and names the input. Help and error messages are not rendered.
 
 ## How to use
 
@@ -52,13 +52,14 @@ _Inherits methods from the `FormField` component._
 
 #### CSS Parts
 
-| Name      | Description                                                |
-| --------- | ---------------------------------------------------------- |
-| `wrapper` | The outer container around the input and stepper buttons.  |
-| `button`  | Applied to both stepper buttons.                           |
-| `plus`    | Applied to the increment button (in addition to `button`). |
-| `minus`   | Applied to the decrement button (in addition to `button`). |
-| `input`   | The numeric input element.                                 |
+| Name      | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| `label`   | The label above the stepper. Only rendered when `label` is set. |
+| `wrapper` | The outer container around the input and stepper buttons.       |
+| `button`  | Applied to both stepper buttons.                                |
+| `plus`    | Applied to the increment button (in addition to `button`).      |
+| `minus`   | Applied to the decrement button (in addition to `button`).      |
+| `input`   | The numeric input element.                                      |
 
 #### CSS Custom Properties
 

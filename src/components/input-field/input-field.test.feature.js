@@ -50,6 +50,37 @@ describe('Feature | InputField', () => {
         expect(results.violations).toEqual([]);
     });
 
+    // The danger colour is the default theme's: without a theme the message is `red`, 3.99 : 1 on white.
+    it('announces its error message and has no a11y violations in the error state', async () => {
+        const el = await fixture(`
+            <el-input-field
+                name="email"
+                label="Email address"
+                error-message="Enter an email address"
+                valid="false"
+                style="--el-color-danger: #dc2626"
+            ></el-input-field>
+        `);
+        await nextFrame();
+        const message = el.querySelector('.error-message');
+
+        expect(message.textContent).toBe('Enter an email address');
+        expect(message.getAttribute('role')).toBe('alert');
+        expect(el.querySelector('input').getAttribute('aria-describedby').split(' ')).toContain(message.id);
+        const results = await axe.run(el);
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    it('describes the input by the help message alone while there is no error', async () => {
+        const el = await fixture(`
+            <el-input-field name="email" label="Email address" error-message="Enter an email address"></el-input-field>
+        `);
+        await nextFrame();
+
+        expect(el.querySelector('.error-message')).toBeNull();
+        expect(el.querySelector('input').getAttribute('aria-describedby')).toBe('email-help-message');
+    });
+
     it('passes the text entry attributes on to the input', async () => {
         const el = await fixture(`<el-input-field name="code" ${textEntryMarkup}></el-input-field>`);
         await nextFrame();

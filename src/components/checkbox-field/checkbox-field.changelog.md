@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
 
+### Fixed
+
+- The error message is an alert (`role="alert"`), so a screen reader announces it the moment it appears. ([#94](https://github.com/webtides/element-library/issues/94))
+
 ## [0.1.0] - 2026-06-03
 
 ### Added

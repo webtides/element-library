@@ -15,6 +15,7 @@ export default {
         },
     },
     args: {
+        label: 'Quantity',
         value: 0,
         min: Number.MIN_VALUE,
         max: Number.MAX_VALUE,
@@ -31,6 +32,6 @@ export const AmountField = {
         },
     },
     decorators: [],
-    render: ({ value, min, max }) =>
-        html`<el-amount-field value="${value}" min="${min}" max="${max}"></el-amount-field>`,
+    render: ({ label, value, min, max }) =>
+        html`<el-amount-field label="${label}" value="${value}" min="${min}" max="${max}"></el-amount-field>`,
 };

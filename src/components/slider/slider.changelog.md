@@ -12,9 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `dot-label` (`dotLabel`): the accessible label of a pager dot, followed by the number of its item. Default `'Go to item'`, which names the dots "Go to item 1", "Go to item 2" and so on. ([#94](https://github.com/webtides/element-library/issues/94))
+
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high (29 × 34 px and 41 × 40 px with the default theme before). The glyphs keep their size. The row of dots wraps when it gets wider than the slider. Unchanged on a fine pointer and without the token.
+
+### Fixed
+
+- The pager dots have an accessible name (see `dot-label`); they were buttons without one (axe `button-name`). The scroller can be reached with the keyboard (`tabindex="0"`), where the arrow keys scroll it (axe `scrollable-region-focusable`). ([#94](https://github.com/webtides/element-library/issues/94))
 
 ## [0.1.0] - 2026-06-03
 

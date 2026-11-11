@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - On a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high (42 px with the default theme before), and the clear cross of an invalid field at least that wide and high (9 × 18 px before). The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Unchanged on a fine pointer and without the token.
 
+### Fixed
+
+- The error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
+
 ## [0.1.0] - 2026-06-03
 
 ### Changed
