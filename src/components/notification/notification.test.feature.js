@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
+import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './notification.js';
 define();
 
@@ -91,5 +91,20 @@ describe('Feature | Notification', () => {
         );
         const results = await axe.run(el);
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the close button at least --el-touch-target in both directions', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px">
+                    <el-notification open="true" closable="true">Saved.</el-notification>
+                </div>
+            `);
+            const close = wrapper.querySelector('el-notification').shadowRoot.querySelector('[part~="close-button"]');
+            const { width, height } = sizeOf(close);
+            expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+        });
     });
 });

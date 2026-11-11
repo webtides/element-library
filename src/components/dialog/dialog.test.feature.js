@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
+import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './dialog.js';
 define();
 
@@ -137,5 +137,30 @@ describe('Feature | Dialog', () => {
         const results = await axe.run(el);
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
         await el.hide();
+    });
+
+    it('ignores --el-touch-target on a fine pointer', async () => {
+        const wrapper = await fixture(
+            `<div style="--el-touch-target: 44px"><el-dialog label="Dialog title"><p>Dialog body content.</p></el-dialog></div>`,
+        );
+        const el = wrapper.querySelector('el-dialog');
+        await el.show();
+        expect(sizeOf(el.shadowRoot.querySelector('[part~="close-button"]'))).toEqual({ width: 20, height: 20 });
+        await el.hide();
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the close button at least --el-touch-target in both directions', async () => {
+            const wrapper = await fixture(
+                `<div style="--el-touch-target: 44px"><el-dialog label="Dialog title"><p>Dialog body content.</p></el-dialog></div>`,
+            );
+            const el = wrapper.querySelector('el-dialog');
+            await el.show();
+            const { width, height } = sizeOf(el.shadowRoot.querySelector('[part~="close-button"]'));
+            expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+            await el.hide();
+        });
     });
 });

@@ -99,6 +99,8 @@ Headless by default; reads the library's `--el-*` design tokens (e.g. `--el-colo
 
 See the Storybook _Docs / Theming_ page for the full token reference.
 
+On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high. Its icon keeps its size, and the header grows with the button. Without that token, and on a fine pointer, the sizes stay as they are.
+
 ## Accessibility
 
 - Opening calls `showModal()`, so focus is trapped, the rest of the page is `inert`, and focus is restored to the previously focused element on close.

@@ -65,6 +65,8 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 Headless by default; reads the library's `--el-*` design tokens (`--el-color-accent`, `--el-color-border`, `--el-color-bg`, `--el-space-*`, `--el-border-width`, `--el-focus-ring-width`, `--el-duration-md`, `--el-ease`, `--el-color-fg-muted`, `--el-color-danger`). Skin it via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the label of every option, which is its hit area, is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 ## Accessibility
 
 - Uses a native `<fieldset>` + `<legend>`, so the group is announced with its label and radios are mutually exclusive with native arrow-key navigation.

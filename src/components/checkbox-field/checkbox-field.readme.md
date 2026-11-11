@@ -61,6 +61,8 @@ Also inherits the `valid` / `invalid` / `touched` states from [`form-field`](../
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-border`, `--el-radius-sm`, `--el-focus-ring-width`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 #### Slots
 
 _None_

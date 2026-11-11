@@ -47,9 +47,18 @@ export default css`
         display: contents;
     }
 
-    .button:hover {
-        /* Subtle, token-free hover that works on any background fill. */
-        filter: brightness(0.95);
+    /* Hover styles only where the pointer can hover. A touch screen keeps :hover on the button
+       after a tap until the next tap lands elsewhere, so there they would stay behind. */
+    @media (hover: hover) {
+        .button:hover {
+            /* Subtle, token-free hover that works on any background fill. */
+            filter: brightness(0.95);
+        }
+    }
+
+    /* Pressed: one step darker than hover, and the only feedback a touch screen gets. */
+    .button:active {
+        filter: brightness(0.88);
     }
 
     .button:focus-visible {
@@ -120,7 +129,15 @@ export default css`
         color: var(--el-color-accent, currentColor);
     }
 
-    .button--text:hover {
+    @media (hover: hover) {
+        .button--text:hover {
+            filter: none;
+            text-decoration: underline;
+        }
+    }
+
+    .button--text:active {
+        background: color-mix(in srgb, currentColor 12%, transparent);
         filter: none;
         text-decoration: underline;
     }
@@ -161,9 +178,16 @@ export default css`
         color: var(--el-color-warning, #b45309);
     }
 
-    .button--outline:hover {
-        /* Fill on hover by lifting the brightness of a faint tint of the current text color. */
-        background: color-mix(in srgb, currentColor 12%, transparent);
+    @media (hover: hover) {
+        .button--outline:hover {
+            /* Fill on hover by lifting the brightness of a faint tint of the current text color. */
+            background: color-mix(in srgb, currentColor 12%, transparent);
+            filter: none;
+        }
+    }
+
+    .button--outline:active {
+        background: color-mix(in srgb, currentColor 24%, transparent);
         filter: none;
     }
 
@@ -190,6 +214,30 @@ export default css`
     .button--circle.button--large {
         width: calc(var(--el-control-height, 2.5rem) * 1.25);
         height: calc(var(--el-control-height, 2.5rem) * 1.25);
+    }
+
+    /* ── Touch screens ────────────────────────────────────────────────────── */
+
+    /* On a coarse pointer no size or shape falls below --el-touch-target in either direction.
+       Without the token the sizes stay as they are. */
+    @media (any-pointer: coarse) {
+        .button {
+            min-width: var(--el-touch-target, auto);
+            min-height: max(var(--el-control-height, 2.5rem), var(--el-touch-target, 0px));
+        }
+
+        .button--small {
+            min-height: max(calc(var(--el-control-height, 2.5rem) * 0.8), var(--el-touch-target, 0px));
+        }
+
+        .button--large {
+            min-height: max(calc(var(--el-control-height, 2.5rem) * 1.25), var(--el-touch-target, 0px));
+        }
+
+        /* A circle has a fixed width and height. The minimum wins over both, so it stays round. */
+        .button--circle {
+            min-height: var(--el-touch-target, auto);
+        }
     }
 
     /* ── Caret ────────────────────────────────────────────────────────────── */

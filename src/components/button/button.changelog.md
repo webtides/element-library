@@ -12,9 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- A pressed style: a button that is pressed (`:active`) is darker than a hovered one; the `text` and `outline` variants get a tint of their text color instead. Before, pressing a button on a touch screen showed nothing.
+
+### Changed
+
+- On a touch screen (`@media (any-pointer: coarse)`) the button is at least `--el-touch-target` wide and high, in every size and shape. With the default theme a small button was 32 px high, a medium one 42 px and a small `circle` 32 × 32 px. A circle stays round. Unchanged on a fine pointer and without the token.
+
 ### Fixed
 
 - A server-rendered `el-button` no longer writes unset attributes as the string `undefined` onto its control. A link button (`href` set) carried `target='undefined'`, `rel='undefined'` and `download='undefined'` in the Declarative Shadow DOM, and a `download` attribute makes the browser save the link target instead of navigating to it. A native button carried `name='undefined'` and `value='undefined'`. The fix is in `@webtides/element-js` 1.3.1 ([element-js#192](https://github.com/webtides/element-js/issues/192)), which the library now requires.
+- No hover style stays on the button after a tap. A touch screen leaves `:hover` on the element that was tapped last, so the button looked hovered until the next tap elsewhere. The hover styles now only apply where the pointer can hover (`@media (hover: hover)`).
 
 ## [0.1.0] - 2026-06-03
 

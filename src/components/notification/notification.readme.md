@@ -94,6 +94,8 @@ An open notification rendered on the server (Declarative Shadow DOM) is visible 
 
 Reads `--el-color-bg` / `--el-color-fg`, `--el-color-border`, the variant colors (`--el-color-accent` / `--el-color-success` / `--el-color-danger` / `--el-color-warning` / `--el-color-fg-muted`), `--el-radius-md`, `--el-shadow-lg`, `--el-space-*`, `--el-duration-md` and `--el-ease`. See the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high. Its icon keeps its size. Without that token, and on a fine pointer, the sizes stay as they are.
+
 ## Accessibility
 
 - The host is a live region: `role="alert"` + `aria-live="assertive"` for `danger` / `warning`, `role="status"` + `aria-live="polite"` otherwise — so a toast is announced when it appears.

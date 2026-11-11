@@ -90,6 +90,15 @@ export default css`
         height: 1.25rem;
     }
 
+    /* Touch screens: the close button is at least --el-touch-target, the icon keeps its size.
+       Without the token the sizes stay as they are. */
+    @media (any-pointer: coarse) {
+        [part~='close-button'] {
+            min-width: var(--el-touch-target, auto);
+            min-height: var(--el-touch-target, auto);
+        }
+    }
+
     [part~='body'] {
         flex: 1 1 auto;
         overflow: auto;

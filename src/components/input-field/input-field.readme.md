@@ -73,6 +73,8 @@ import '@webtides/element-library/input-field/define';
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`, `--el-space-2`), on top of the styling it inherits from `FormField`. Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high, and the clear cross of an invalid field at least that wide and high. The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Without that token, and on a fine pointer, the sizes stay as they are.
+
 #### Slots
 
 _None_ - The component generates its own input element internally

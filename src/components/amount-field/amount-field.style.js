@@ -55,4 +55,16 @@ export default css`
     input[type='number']::-webkit-inner-spin-button {
         -webkit-appearance: none;
     }
+
+    /* Touch screens: the buttons are at least --el-touch-target wide as well, and the input fills
+       the height of the wrapper, which the buttons set. */
+    @media (any-pointer: coarse) {
+        [part~='button'] {
+            min-width: var(--el-touch-target, auto);
+        }
+
+        [part='input'] {
+            align-self: stretch;
+        }
+    }
 `;

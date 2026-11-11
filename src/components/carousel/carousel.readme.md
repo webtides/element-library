@@ -75,4 +75,4 @@ import '@webtides/element-library/carousel/define';
 
 #### CSS Custom Properties
 
-_None_
+`--el-touch-target` is the only design token this component reads. On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least that wide and high. The bullets keep their size: each gets a hit area of `--el-touch-target` around its dot, the bullets move apart by as much, and their row wraps when it gets wider than the carousel. Without that token, and on a fine pointer, the sizes stay as they are.

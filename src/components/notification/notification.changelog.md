@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - A notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, `toast()`, setting `open`) still animates.
+- On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (18 × 18 px before). Its icon keeps its size, and a one-line notification grows with the button. Unchanged on a fine pointer and without the token.
 
 ### Fixed
 

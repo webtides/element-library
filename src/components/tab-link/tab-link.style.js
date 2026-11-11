@@ -28,5 +28,13 @@ export default css`
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Touch screens: the tab is at least --el-touch-target in both directions. The block
+           padding grows around one line of text, so the label stays centered; the minimum width
+           leaves out the inline padding, which comes on top. Without the token the sizes stay as they are. */
+        @media (any-pointer: coarse) {
+            min-width: calc(var(--el-touch-target, 0px) - 2 * var(--el-space-3, 0px));
+            padding-block: max(var(--el-space-2, 0px), calc((var(--el-touch-target, 0px) - 1lh) / 2));
+        }
     }
 `;

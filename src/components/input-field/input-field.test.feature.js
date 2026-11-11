@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './input-field.js';
 define();
 
@@ -132,5 +132,45 @@ describe('Feature | InputField', () => {
         await nextFrame();
         await nextFrame();
         expect(textEntryOn(serverInput)).toEqual({ ...TEXT_ENTRY, enterkeyhint: 'go' });
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        const touchedField = async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px"><el-input-field name="email" label="Email"></el-input-field></div>
+            `);
+            const el = wrapper.querySelector('el-input-field');
+            el.touched = true;
+            await nextFrame();
+            await nextFrame();
+            return el;
+        };
+
+        it('makes the input at least --el-touch-target high', async () => {
+            const el = await touchedField();
+            expect(sizeOf(el.querySelector('input')).height).toBeGreaterThanOrEqual(44);
+        });
+
+        it('makes the clear cross at least --el-touch-target in both directions', async () => {
+            const el = await touchedField();
+            el.valid = false;
+            await nextFrame();
+            await nextFrame();
+            const { width, height } = sizeOf(el.querySelector('[data-clear-input]'));
+            expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+        });
+
+        it('keeps the width of the input when the validity changes', async () => {
+            const el = await touchedField();
+            // As a theme does: the input takes the room that the mark beside it leaves.
+            el.querySelector('input').style.width = '100%';
+            const whileValid = sizeOf(el.querySelector('input')).width;
+            el.valid = false;
+            await nextFrame();
+            await nextFrame();
+            expect(sizeOf(el.querySelector('input')).width).toBe(whileValid);
+        });
     });
 });

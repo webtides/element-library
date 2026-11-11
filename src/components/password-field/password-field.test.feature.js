@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './password-field.js';
 define();
 
@@ -68,5 +68,25 @@ describe('Feature | PasswordField', () => {
         el.querySelector('[data-password-toggle]').click();
         await nextFrame();
         expect(onInput()).toEqual(expected);
+    });
+
+    it('ignores --el-touch-target on a fine pointer', async () => {
+        const wrapper = await fixture(
+            `<div style="--el-touch-target: 44px"><el-password-field name="password" label="Password"></el-password-field></div>`,
+        );
+        expect(sizeOf(wrapper.querySelector('[data-password-toggle]')).width).toBeLessThan(44);
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the toggle and the input at least --el-touch-target', async () => {
+            const wrapper = await fixture(
+                `<div style="--el-touch-target: 44px"><el-password-field name="password" label="Password"></el-password-field></div>`,
+            );
+            const toggle = sizeOf(wrapper.querySelector('[data-password-toggle]'));
+            expect(Math.min(toggle.width, toggle.height)).toBeGreaterThanOrEqual(44);
+            expect(sizeOf(wrapper.querySelector('input')).height).toBeGreaterThanOrEqual(44);
+        });
     });
 });

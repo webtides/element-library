@@ -27,6 +27,14 @@ export default css`
         border-bottom-color: var(--el-color-border, transparent);
     }
 
+    /* Touch screens: the header is at least --el-touch-target high. Its padding grows around one
+       line of text, so the header stays centered. Without the token the sizes stay as they are. */
+    @media (any-pointer: coarse) {
+        [part~='title'] {
+            padding-block: max(var(--el-space-3, 0px), calc((var(--el-touch-target, 0px) - 1lh) / 2));
+        }
+    }
+
     .icon {
         display: flex;
         flex-shrink: 0;

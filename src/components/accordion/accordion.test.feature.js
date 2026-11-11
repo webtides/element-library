@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './accordion.js';
 define();
 
@@ -47,5 +47,22 @@ describe('Feature | Accordion', () => {
 
         window.removeEventListener('error', onError);
         expect(errors).toEqual([]);
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the header at least --el-touch-target high', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px">
+                    <el-accordion>
+                        <div slot="header">Header</div>
+                        <div slot="content">Content</div>
+                    </el-accordion>
+                </div>
+            `);
+            const title = wrapper.querySelector('el-accordion').shadowRoot.querySelector('[part~="title"]');
+            expect(sizeOf(title).height).toBeGreaterThanOrEqual(44);
+        });
     });
 });

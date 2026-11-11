@@ -89,3 +89,7 @@ _None custom — native `click`, `focus` and `blur` behave as usual._
 #### CSS Custom Properties
 
 Reads the standard library design tokens (`--el-color-accent`, `--el-color-bg`, `--el-color-border`, `--el-control-height`, `--el-radius-md`, `--el-space-*`, `--el-font-*`, `--el-focus-ring-*`, …). Skin the button by setting these at the document level via a theme.
+
+On a touch screen (`@media (any-pointer: coarse)`) the button is at least `--el-touch-target` wide and high, in every size and shape; a `circle` stays round. Without that token, and on a fine pointer, the sizes stay as they are.
+
+A pressed button (`:active`) is darker than a hovered one; the `text` and `outline` variants get a tint of their text color instead. The hover styles only apply where the pointer can hover (`@media (hover: hover)`), so none stays behind after a tap on a touch screen.

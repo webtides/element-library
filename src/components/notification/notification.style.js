@@ -122,6 +122,15 @@ export default css`
         height: 1.1rem;
     }
 
+    /* Touch screens: the close button is at least --el-touch-target, the icon keeps its size.
+       Without the token the sizes stay as they are. */
+    @media (any-pointer: coarse) {
+        .close-button {
+            min-width: var(--el-touch-target, auto);
+            min-height: var(--el-touch-target, auto);
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
         [part~='base'] {
             transition-duration: 0s;

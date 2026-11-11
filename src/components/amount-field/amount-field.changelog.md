@@ -10,9 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
+## Unreleased
+
 <!-- ### Added -->
-<!-- ### Changed -->
+
+### Changed
+
+- On a touch screen (`@media (any-pointer: coarse)`) the plus and minus buttons are at least `--el-touch-target` wide, and the input is as high as the buttons. With the default theme the buttons were 33 and 29 px wide and the input 34 px high. The height of the buttons follows the token on every pointer, as before. Unchanged on a fine pointer and without the token.
+
 <!-- ### Removed -->
 <!-- ### Fixed -->
 

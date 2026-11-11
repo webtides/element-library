@@ -16,7 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<textarea>`, in server-rendered markup and on every render. Set them as attributes or properties on the element; one that is not set is left out on the `<textarea>`. Before, the field dropped them.
 
-<!-- ### Changed -->
+### Changed
+
+- On a touch screen (`@media (any-pointer: coarse)`) the textarea is at least `--el-touch-target` high, which matters for `rows="1"`, and the clear cross of an invalid field at least that wide and high (9 × 18 px before). Unchanged on a fine pointer and without the token.
+
 <!-- ### Removed -->
 
 ### Fixed

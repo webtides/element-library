@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Changed
+
+- On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high (28 × 22 px before). The bullets keep their size of 13 px: each gets a hit area of `--el-touch-target` around its dot, and the bullets move apart by as much, so that the areas do not overlap. The row of bullets wraps when it gets wider than the carousel. Unchanged on a fine pointer and without the token.
+
 ## [0.1.1] - 2026-06-04
 
 ### Fixed

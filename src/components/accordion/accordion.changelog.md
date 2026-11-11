@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Changed
+
+- On a touch screen (`@media (any-pointer: coarse)`) the header is at least `--el-touch-target` high. With the default and the sketchy theme it already was; with the high-contrast theme it was 46 px with a target of 48 px. Unchanged on a fine pointer and without the token.
+
 ### Fixed
 
 - `collapse()` no longer throws `Cannot read properties of undefined (reading 'style')` when the accordion is removed from the DOM before its two animation frames have run (for example a closed accordion that is connected and removed again right away). The content node is now captured up front instead of being read from `$refs` inside the frames, which element-js clears on disconnect.

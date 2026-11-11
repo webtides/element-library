@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
+import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './radio-field.js';
 define();
 
@@ -72,5 +72,32 @@ describe('Feature | RadioField', () => {
         await nextFrame();
         const results = await axe.run(el);
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    it('ignores --el-touch-target on a fine pointer', async () => {
+        const wrapper = await fixture(
+            `<div style="--el-touch-target: 44px"><el-radio-field name="a" label="Plan"></el-radio-field></div>`,
+        );
+        wrapper.querySelector('el-radio-field').options = ['a', 'b'];
+        await nextFrame();
+        await nextFrame();
+        expect(sizeOf(wrapper.querySelector('.option')).height).toBeLessThan(44);
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the label of every option, which is its hit area, at least --el-touch-target in both directions', async () => {
+            const wrapper = await fixture(
+                `<div style="--el-touch-target: 44px"><el-radio-field name="a" label="Plan"></el-radio-field></div>`,
+            );
+            wrapper.querySelector('el-radio-field').options = ['a', 'b'];
+            await nextFrame();
+            await nextFrame();
+            for (const label of wrapper.querySelectorAll('.option')) {
+                const { width, height } = sizeOf(label);
+                expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+            }
+        });
     });
 });

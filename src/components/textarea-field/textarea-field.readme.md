@@ -75,6 +75,8 @@ import '@webtides/element-library/textarea-field/define';
 
 This component is headless by default and inherits its styling — and the `--el-*` design tokens it reads — from `FormField`. Skin it by setting those tokens via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the textarea is at least `--el-touch-target` high, which matters for `rows="1"`, and the clear cross of an invalid field at least that wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 #### Slots
 
 _None_ - The component generates its own textarea element internally

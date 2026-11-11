@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './textarea-field.js';
 define();
 
@@ -95,5 +95,26 @@ describe('Feature | TextareaField', () => {
         ]) {
             expect(textarea.hasAttribute(name), name).toBe(false);
         }
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the textarea and the clear cross at least --el-touch-target', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px">
+                    <el-textarea-field name="note" label="Note" rows="1"></el-textarea-field>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-textarea-field');
+            el.touched = true;
+            el.valid = false;
+            await nextFrame();
+            await nextFrame();
+
+            expect(sizeOf(el.querySelector('textarea')).height).toBeGreaterThanOrEqual(44);
+            const { width, height } = sizeOf(el.querySelector('[data-clear-input]'));
+            expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+        });
     });
 });

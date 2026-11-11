@@ -20,5 +20,12 @@ export default css`
             width: 1em;
             height: 1em;
         }
+
+        /* Touch screens: the control is at least --el-touch-target high. Without the token the sizes stay as they are. */
+        @media (any-pointer: coarse) {
+            select {
+                min-height: max(var(--el-control-height, 0px), var(--el-touch-target, 0px));
+            }
+        }
     }
 `;

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './select-field.js';
 define();
 
@@ -40,5 +40,18 @@ describe('Feature | SelectField', () => {
         await nextFrame();
         const results = await axe.run(el);
         expect(results.violations).toEqual([]);
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the select at least --el-touch-target high', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px">
+                    <el-select-field name="size" label="Size" options='["S", "M"]'></el-select-field>
+                </div>
+            `);
+            expect(sizeOf(wrapper.querySelector('select')).height).toBeGreaterThanOrEqual(44);
+        });
     });
 });

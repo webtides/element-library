@@ -52,6 +52,8 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 Headless by default; reads the library's `--el-*` design tokens (`--el-color-accent`, `--el-color-border`, `--el-color-bg`, `--el-space-2`, `--el-border-width`, `--el-focus-ring-width`, `--el-duration-md`, `--el-ease`, `--el-color-fg-muted`, `--el-color-danger`). Skin it via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the switch, is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 ## Accessibility
 
 - The native control is a `<input type="checkbox" role="switch">`, so it is announced as a switch with an on/off state and is keyboard-operable (Space toggles).

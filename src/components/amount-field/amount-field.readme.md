@@ -63,3 +63,5 @@ _Inherits methods from the `FormField` component._
 #### CSS Custom Properties
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-bg`, `--el-color-border`, `--el-radius-md`, `--el-touch-target`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
+
+The buttons are at least `--el-touch-target` high on every pointer. On a touch screen (`@media (any-pointer: coarse)`) they are at least that wide as well, and the input is as high as the buttons.

@@ -105,6 +105,8 @@ When using objects:
 
 This component is headless by default and inherits its styling — and the `--el-*` design tokens it reads — from `FormField`, plus a custom dropdown indicator. Skin it by setting those tokens via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 #### Slots
 
 _None_ - The component generates its own select element and options internally

@@ -19,31 +19,79 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: the shipped type declarations (`types/**`) are generated with TypeScript 7 (was 6). Component declarations now keep their `extends` clause and import the base class from `@webtides/element-js`, and `index.d.ts` imports the names it re-exports. `@webtides/element-js` ships no declarations of its own, so a project that type-checks declaration files (`skipLibCheck: false`) with `noImplicitAny` now gets TS7016 from the component declarations as well; before, it got unresolved-name errors from `index.d.ts` only. With `skipLibCheck: true` the declarations behave as before.
 - Added: the `./catalog` export ships a type declaration (`catalog.d.ts`). `import catalog from '@webtides/element-library/catalog'` now type-checks under `strict` without a `declare module` shim; before, it failed with TS7016. The default export is typed as a map from tag to lazy loader (`Record<string, () => Promise<unknown>>`), a shape the `resolve` option of `@webtides/element-js-ssr-renderer` accepts.
 
+### Theming
+
+- Changed: `--el-touch-target` now reaches every control. On a touch screen (`@media (any-pointer: coarse)`) no control of the library is smaller than the token in either direction; before, only `el-amount-field` read it, for the height of its buttons. That covers `el-button` in every size and shape, the text fields and the select, the password toggle and the clear cross of a field, the labels of `el-checkbox-field`, `el-switch-field` and `el-radio-field`, the close buttons of `el-dialog` and `el-notification`, the buttons and the input of `el-amount-field`, the arrows and dots of `el-slider` and `el-carousel`, `el-tab-link` and the header of `el-accordion`; the entries below have the details. With the shipped themes the token is 44 px (48 px in the high-contrast theme), so layouts get higher and wider on a touch screen: a small button is as high as a medium one, a checkbox row is 44 px high, the header of a dialog grows with its close button. With a mouse or trackpad alone, and without the token (no theme), every size is as before. A theme of your own only has to set `--el-touch-target`. Note that `any-pointer: coarse` also matches a laptop with a touch screen. ([#91](https://github.com/webtides/element-library/issues/91), [#95](https://github.com/webtides/element-library/issues/95))
+
 ### accordion
 
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the header is at least `--el-touch-target` high. With the default and the sketchy theme it already was; with the high-contrast theme it was 46 px with a target of 48 px. Unchanged on a fine pointer and without the token.
 - Fixed: `collapse()` no longer throws `Cannot read properties of undefined (reading 'style')` when the accordion is removed from the DOM before its two animation frames have run (for example a closed accordion that is connected and removed again right away). The content node is now captured up front instead of being read from `$refs` inside the frames, which element-js clears on disconnect.
+
+### amount-field
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the plus and minus buttons are at least `--el-touch-target` wide, and the input is as high as the buttons. With the default theme the buttons were 33 and 29 px wide and the input 34 px high. The height of the buttons follows the token on every pointer, as before. Unchanged on a fine pointer and without the token.
 
 ### button
 
+- Added: a pressed style: a button that is pressed (`:active`) is darker than a hovered one; the `text` and `outline` variants get a tint of their text color instead. Before, pressing a button on a touch screen showed nothing.
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the button is at least `--el-touch-target` wide and high, in every size and shape. With the default theme a small button was 32 px high, a medium one 42 px and a small `circle` 32 × 32 px. A circle stays round. Unchanged on a fine pointer and without the token.
 - Fixed: a server-rendered `el-button` no longer writes unset attributes as the string `undefined` onto its control. A link button (`href` set) carried `target='undefined'`, `rel='undefined'` and `download='undefined'` in the Declarative Shadow DOM, and a `download` attribute makes the browser save the link target instead of navigating to it. A native button carried `name='undefined'` and `value='undefined'`. The fix is in `@webtides/element-js` 1.3.1 ([element-js#192](https://github.com/webtides/element-js/issues/192)), which the library now requires.
+- Fixed: no hover style stays on the button after a tap. A touch screen leaves `:hover` on the element that was tapped last, so the button looked hovered until the next tap elsewhere. The hover styles now only apply where the pointer can hover (`@media (hover: hover)`).
+
+### carousel
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high (28 × 22 px before). The bullets keep their size of 13 px: each gets a hit area of `--el-touch-target` around its dot, and the bullets move apart by as much, so that the areas do not overlap. The row of bullets wraps when it gets wider than the carousel. Unchanged on a fine pointer and without the token.
+
+### checkbox-field
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
+
+### dialog
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (20 × 20 px before). Its icon keeps its size, and the header grows with the button. Unchanged on a fine pointer and without the token.
 
 ### input-field
 
 - Added: `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<input>`, in server-rendered markup and on every render. Set them as attributes or properties on the element; one that is not set is left out on the `<input>`. Before, the field dropped them, so a password manager and the on-screen keyboard got no hints.
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high (42 px with the default theme before), and the clear cross of an invalid field at least that wide and high (9 × 18 px before). The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Unchanged on a fine pointer and without the token.
 
 ### notification
 
-- Fixed: a server-rendered open notification (Declarative Shadow DOM) is visible before its JavaScript runs, and stays visible without JavaScript. It used to be transparent until `connected()` added the `showing` class, and then faded in. A server-rendered closed notification no longer reserves its height before the element is connected. Until the element is connected the resting state follows the `open` attribute; afterwards `show()` / `hide()` / `toast()` animate as before.
 - Changed: a notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, `toast()`, setting `open`) still animates.
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (18 × 18 px before). Its icon keeps its size, and a one-line notification grows with the button. Unchanged on a fine pointer and without the token.
+- Fixed: a server-rendered open notification (Declarative Shadow DOM) is visible before its JavaScript runs, and stays visible without JavaScript. It used to be transparent until `connected()` added the `showing` class, and then faded in. A server-rendered closed notification no longer reserves its height before the element is connected. Until the element is connected the resting state follows the `open` attribute; afterwards `show()` / `hide()` / `toast()` animate as before.
 - Fixed: the default variant icon is drawn again when the element is rendered in the browser (a toast, or a notification a framework creates after load). The icon shapes were a template nested inside the `<svg>`, which put them into the HTML namespace on client render, so the icon was an empty box; server-rendered notifications were not affected. Each variant now renders one complete `<svg>` template.
 
 ### password-field
 
 - Added: `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<input>`, in server-rendered markup and on every render, the one the reveal toggle triggers included. Set them as attributes or properties on the element; one that is not set is left out on the `<input>`. Before, the field dropped them, so a password manager and the on-screen keyboard got no hints. `autocomplete="current-password"` and `autocomplete="new-password"` now reach the input.
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least `--el-touch-target` wide and high (20 × 20 px before), the input at least that high, and the clear cross of an invalid field at least that wide and high. Unchanged on a fine pointer and without the token. Known limit: when an `el-input-field` connects before the first `el-password-field` of a page, element-js gives the password field the style sheet of the input field ([element-js#198](https://github.com/webtides/element-js/issues/198)). The reveal button then has none of its styles, this size included.
+
+### radio-field
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the label of every option, which is its hit area, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
+
+### select-field
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high (42 px with the default theme before). Unchanged on a fine pointer and without the token.
+
+### slider
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high (29 × 34 px and 41 × 40 px with the default theme before). The glyphs keep their size. The row of dots wraps when it gets wider than the slider. Unchanged on a fine pointer and without the token.
+
+### switch-field
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the switch, is at least `--el-touch-target` wide and high. Before, it was as high as the switch. Unchanged on a fine pointer and without the token.
+
+### tab-link
+
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high (36 px high with the default theme before). Unchanged on a fine pointer and without the token.
 
 ### textarea-field
 
 - Added: `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<textarea>`, in server-rendered markup and on every render. Set them as attributes or properties on the element; one that is not set is left out on the `<textarea>`. Before, the field dropped them.
+- Changed: on a touch screen (`@media (any-pointer: coarse)`) the textarea is at least `--el-touch-target` high, which matters for `rows="1"`, and the clear cross of an invalid field at least that wide and high (9 × 18 px before). Unchanged on a fine pointer and without the token.
 - Fixed: a server-rendered `el-textarea-field` shows its value before its JavaScript runs, and without JavaScript. The value is now rendered as the content of the `<textarea>`; before, it was written as a `value` attribute, which a textarea does not have, so the field stayed empty and submitting the form sent an empty text. Known limit: a line break at the very start of the value is missing until the element has started, because the HTML parser drops a line break that directly follows `<textarea>`.
 - Fixed: a re-render no longer overwrites text typed since the last change the field has seen. Before, every render wrote `value` back into the control.
 - Fixed: `aria-describedby` on the textarea now names the help message (`<name>-help-message`). It pointed at `<name>-help`, an id that does not exist.

@@ -53,6 +53,8 @@ _None_
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-fg`, `--el-border-width`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 #### CSS States
 
 | Name | Description |

@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Changed
+
+- On a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high (29 × 34 px and 41 × 40 px with the default theme before). The glyphs keep their size. The row of dots wraps when it gets wider than the slider. Unchanged on a fine pointer and without the token.
+
 ## [0.1.0] - 2026-06-03
 
 ### Changed

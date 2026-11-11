@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { fixture, nextFrame, sendMouse, sizeOf } from '../../test-helpers.js';
 import { define } from './button.js';
 define();
 
@@ -71,5 +71,28 @@ describe('Feature | Button', () => {
 
         const button = await fixture(`<el-button>Save</el-button>`);
         expect(controlTag(button, 'button')).not.toMatch(/\s(name|value)=/);
+    });
+
+    it('ignores --el-touch-target on a fine pointer', async () => {
+        const wrapper = await fixture(`
+            <div style="--el-touch-target: 44px"><el-button size="small">OK</el-button></div>
+        `);
+        const control = wrapper.querySelector('el-button').shadowRoot.querySelector('[part="base"]');
+        expect(sizeOf(control).height).toBe(32);
+    });
+
+    it('shows a hover and a pressed style to a mouse', async () => {
+        const el = await fixture(`<el-button variant="primary">Save</el-button>`);
+        const control = el.shadowRoot.querySelector('[part="base"]');
+        expect(getComputedStyle(control).filter).toBe('none');
+
+        await sendMouse('mouseMoved', control);
+        expect(getComputedStyle(control).filter).toBe('brightness(0.95)');
+
+        await sendMouse('mousePressed', control);
+        expect(getComputedStyle(control).filter).toBe('brightness(0.88)');
+
+        await sendMouse('mouseReleased', control);
+        expect(getComputedStyle(control).filter).toBe('brightness(0.95)');
     });
 });

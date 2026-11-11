@@ -94,5 +94,14 @@ export default css`
         .error-message {
             color: var(--el-color-danger, inherit);
         }
+
+        /* Touch screens: the label is the hit area and at least --el-touch-target in both
+           directions. Without the token the sizes stay as they are. */
+        @media (any-pointer: coarse) {
+            .field > label {
+                min-width: var(--el-touch-target, auto);
+                min-height: var(--el-touch-target, auto);
+            }
+        }
     }
 `;

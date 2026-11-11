@@ -63,6 +63,8 @@ import '@webtides/element-library/accordion/define';
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-bg`, `--el-color-border`, `--el-radius-md`, `--el-space-3`, `--el-duration-md`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the header is at least `--el-touch-target` high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 #### Slots
 
 | Name      | Description                                                                                      |

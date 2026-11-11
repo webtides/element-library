@@ -104,4 +104,19 @@ export default css`
             right: 0;
         }
     }
+
+    /* Touch screens: dots and arrows are at least --el-touch-target, the glyphs keep their size.
+       The row of dots wraps, since that many dots at that size can be wider than the slider.
+       Without the token the sizes stay as they are. */
+    @media (any-pointer: coarse) {
+        [part~='dots'] {
+            flex-wrap: wrap;
+        }
+
+        [part~='dot'],
+        [part~='arrow'] {
+            min-width: var(--el-touch-target, auto);
+            min-height: var(--el-touch-target, auto);
+        }
+    }
 `;

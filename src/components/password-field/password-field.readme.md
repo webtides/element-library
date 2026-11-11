@@ -56,6 +56,8 @@ Set `autocomplete` so that a password manager can tell a login from a sign-up: `
 
 Headless by default; the reveal button reads `--el-color-fg-muted`, `--el-color-accent`, `--el-focus-ring-width` and `--el-radius-sm`, and the field inherits `input-field`'s tokens (`--el-color-success`, `--el-color-danger`, `--el-font-size-sm`, `--el-space-*`). Skin it via a theme — see the Storybook _Docs / Theming_ page.
 
+On a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least `--el-touch-target` wide and high, the input at least that high, and the clear cross of an invalid field at least that wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
+
 ## Accessibility
 
 - The reveal button is a real `<button>` with an `aria-label` that flips between "Show password" and "Hide password", and an `aria-pressed` state, so its purpose and state are announced.

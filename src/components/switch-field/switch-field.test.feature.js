@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
+import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './switch-field.js';
 define();
 
@@ -53,5 +53,26 @@ describe('Feature | SwitchField', () => {
         const el = await switchFixture();
         const results = await axe.run(el);
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    it('ignores --el-touch-target on a fine pointer', async () => {
+        const wrapper = await fixture(
+            `<div style="--el-touch-target: 44px"><el-switch-field name="a" label="a"></el-switch-field></div>`,
+        );
+        expect(sizeOf(wrapper.querySelector('.field > label')).height).toBeLessThan(44);
+    });
+
+    describe('on a touch screen', () => {
+        useTouchScreen();
+
+        it('makes the label, which is the hit area, at least --el-touch-target in both directions', async () => {
+            const wrapper = await fixture(
+                `<div style="--el-touch-target: 44px"><el-switch-field name="a" label="a"></el-switch-field></div>`,
+            );
+            for (const label of wrapper.querySelectorAll('.field > label')) {
+                const { width, height } = sizeOf(label);
+                expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+            }
+        });
     });
 });

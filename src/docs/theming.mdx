@@ -144,6 +144,21 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 | `--el-control-height`    | `2.5rem`      | `2.75rem`           |
 | `--el-touch-target`      | `2.75rem`     | `3rem`              |
 
+`--el-control-height` is the minimum height of the text fields, the select and a medium `el-button`; a small button is 0.8 times, a large one 1.25 times as high.
+
+`--el-touch-target` is the smallest size a control may have where a finger operates it. It takes effect on a touch screen, that is under `@media (any-pointer: coarse)`: there no control of the library is smaller than the token in either direction.
+
+- A control with a shape of its own grows to that size: `el-button` in every size and shape (a circle stays round), the text fields and the select, the buttons and the input of `el-amount-field`, the arrows of `el-slider` and `el-carousel`, `el-tab-link` and the header of `el-accordion`.
+- A control that is an icon or a glyph grows around it: the password toggle, the clear cross of an invalid field, the close buttons of `el-dialog` and `el-notification`, the dots of `el-slider`.
+- The label of `el-checkbox-field`, `el-switch-field` and of every option of `el-radio-field` is the hit area and gets that size.
+- The bullets of `el-carousel` keep their size. Each gets a hit area of that size around its dot, and the bullets move apart by as much.
+
+With a mouse or trackpad alone the sizes follow `--el-control-height` and the paddings. `el-amount-field` is the one exception: the height of its buttons follows `--el-touch-target` on every pointer. `any-pointer: coarse` also matches a laptop with a touch screen.
+
+Without the token, as in the headless default, the sizes stay as they are on a touch screen too. A theme of your own only has to set `--el-touch-target` to get these sizes.
+
+`el-button` also knows the difference in its states: its hover styles only apply where the pointer can hover (`@media (hover: hover)`), because a touch screen leaves `:hover` on the button after a tap. A pressed button (`:active`) is darkened on every pointer.
+
 ### Component tokens
 
 A few components add their own tokens on top of the shared vocabulary above. They have null-ish or sensible fallbacks, so they're optional — set them in a theme to tune that component.

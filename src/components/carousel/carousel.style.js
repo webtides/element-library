@@ -133,6 +133,40 @@ export default css`
         background-color: white;
     }
 
+    /* Touch screens: arrows and bullets are at least --el-touch-target. An arrow grows to that
+       size. A bullet stays the dot it is: its hit area grows around it, and the bullets move
+       apart so that these areas do not overlap. The row wraps, since that many bullets at that
+       distance can be wider than the carousel. Without the token the sizes stay as they are. */
+    @media (any-pointer: coarse) {
+        .glide__arrow {
+            min-width: var(--el-touch-target, auto);
+            min-height: var(--el-touch-target, auto);
+        }
+
+        .glide__bullets {
+            flex-wrap: wrap;
+            justify-content: center;
+            row-gap: max(0px, calc(var(--el-touch-target, 0px) - 13px));
+            width: max-content;
+            max-width: 100%;
+        }
+
+        .glide__bullet {
+            position: relative;
+            margin-inline: max(0.25em, calc((var(--el-touch-target, 0px) - 13px) / 2));
+        }
+
+        .glide__bullet::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: max(100%, var(--el-touch-target, 0px));
+            height: max(100%, var(--el-touch-target, 0px));
+            transform: translate(-50%, -50%);
+        }
+    }
+
     .glide--swipeable {
         cursor: grab;
     }
