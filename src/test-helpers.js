@@ -10,6 +10,10 @@ import { cdp } from 'vite-plus/test/browser';
  * Makes the page a touch screen for the tests of the surrounding `describe`: `(any-pointer: coarse)`
  * matches and `(hover: hover)` does not. Switched off again after the last of these tests.
  * Chromium only.
+ *
+ * Switching off does not bring a mouse back everywhere. Headless Chromium on Linux, which the CI
+ * runs, has no pointer at all afterwards, and test files share a page. `(any-pointer: coarse)` is
+ * false again, but no test may rely on `(hover: hover)` being true.
  * @returns {void}
  */
 export function useTouchScreen() {
