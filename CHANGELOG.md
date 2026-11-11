@@ -33,6 +33,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: a notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, `toast()`, setting `open`) still animates.
 - Fixed: the default variant icon is drawn again when the element is rendered in the browser (a toast, or a notification a framework creates after load). The icon shapes were a template nested inside the `<svg>`, which put them into the HTML namespace on client render, so the icon was an empty box; server-rendered notifications were not affected. Each variant now renders one complete `<svg>` template.
 
+### textarea-field
+
+- Fixed: a server-rendered `el-textarea-field` shows its value before its JavaScript runs, and without JavaScript. The value is now rendered as the content of the `<textarea>`; before, it was written as a `value` attribute, which a textarea does not have, so the field stayed empty and submitting the form sent an empty text. Known limit: a line break at the very start of the value is missing until the element has started, because the HTML parser drops a line break that directly follows `<textarea>`.
+- Fixed: a re-render no longer overwrites text typed since the last change the field has seen. Before, every render wrote `value` back into the control.
+- Fixed: `aria-describedby` on the textarea now names the help message (`<name>-help-message`). It pointed at `<name>-help`, an id that does not exist.
+
 ## [0.2.0] - 2026-06-10
 
 ### Packaging

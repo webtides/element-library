@@ -10,11 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
+## Unreleased
+
 <!-- ### Added -->
 <!-- ### Changed -->
 <!-- ### Removed -->
-<!-- ### Fixed -->
+
+### Fixed
+
+- A server-rendered `el-textarea-field` shows its value before its JavaScript runs, and without JavaScript. The value is now rendered as the content of the `<textarea>`; before, it was written as a `value` attribute, which a textarea does not have, so the field stayed empty and submitting the form sent an empty text. Known limit: a line break at the very start of the value is missing until the element has started, because the HTML parser drops a line break that directly follows `<textarea>`.
+- A re-render no longer overwrites text typed since the last change the field has seen. Before, every render wrote `value` back into the control.
+- `aria-describedby` on the textarea now names the help message (`<name>-help-message`). It pointed at `<name>-help`, an id that does not exist.
 
 ## [0.1.0] - 2026-06-03
 

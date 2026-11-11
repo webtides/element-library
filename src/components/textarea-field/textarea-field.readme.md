@@ -82,6 +82,12 @@ _None_ - The component generates its own textarea element internally
 - Error messages are properly associated with the textarea field
 - Help messages are linked via `aria-describedby`
 
+## Server rendering
+
+The value is rendered as the content of the `<textarea>`. A server-rendered field therefore shows its value before the element has started, and a form submits it without JavaScript.
+
+A line break at the very start of the value is missing until the element has started: the HTML parser drops a line break that directly follows `<textarea>`.
+
 ## Validation
 
 The component provides real-time validation feedback:
