@@ -24,7 +24,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 - **External Dependencies**:
     - `@glidejs/glide` for carousel functionality (pinned at `~3.6.2`; patched via `patch-package`)
     - `lozad` for lazy loading
-    - `@floating-ui/dom` for the place of the popover's panel
+    - `@floating-ui/dom` for the place of the popover's panel and of the tooltip (through `src/utils/floating.js`)
 
 ## Project Structure
 
@@ -80,6 +80,7 @@ element-library/
 - **tab-panel**: Tab content panel
 - **tag**: Label for a keyword or a filter, removable
 - **textarea-field**: Textarea input
+- **tooltip**: Text that explains its anchor, on hover and keyboard focus (the element is a native popover, placed with Floating UI)
 - **transition-classes**: CSS transition helper
 
 ### Planned Components

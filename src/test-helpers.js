@@ -110,6 +110,16 @@ export async function accessibleDescription(element) {
 }
 
 /**
+ * The role of an element as the browser computes it, from the element itself, a `role` attribute
+ * or the role a custom element gives itself: `await accessibleRole(tooltip)`. Chromium only.
+ * @param {Element} element - May be inside a shadow root.
+ * @returns {Promise<string>}
+ */
+export async function accessibleRole(element) {
+    return (await accessibilityNode(element))?.role?.value ?? '';
+}
+
+/**
  * The node of an element in the accessibility tree of the browser.
  * @param {Element} element - May be inside a shadow root.
  * @returns {Promise<object | undefined>}
