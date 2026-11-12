@@ -24,6 +24,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 - **External Dependencies**:
     - `@glidejs/glide` for carousel functionality (pinned at `~3.6.2`; patched via `patch-package`)
     - `lozad` for lazy loading
+    - `@floating-ui/dom` for the place of the popover's panel
 
 ## Project Structure
 
@@ -67,6 +68,7 @@ element-library/
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
 - **scroll-to**: Scroll to target element
+- **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
 - **slider**: CSS-only slider
