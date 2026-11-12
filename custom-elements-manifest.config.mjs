@@ -213,6 +213,51 @@ function inferTagNames() {
 }
 
 /**
+ * SUBCLASS-DOCS — what a component says about itself wins over what the analyzer copies from its
+ * superclass. `el-drawer` extends `el-dialog`, and the analyzer gives a class everything its
+ * superclass has. Two things come out wrong without this step:
+ *
+ * - The events. The drawer fires the events of the dialog under names of its own, `drawer-show`
+ *   where the dialog fires `dialog-show`, and would be listed with both. An inherited event that
+ *   carries the name of the component it comes from is taken out when the class documents the same
+ *   event under its own name. Every other inherited event stays.
+ * - The descriptions of the attributes. A class that documents an inherited property itself
+ *   (`@property {boolean} open - Whether the drawer is open.`) gets that text on the field, but
+ *   the attribute keeps the text of the superclass. An attribute has the description of its field.
+ */
+function subclassDocsPlugin() {
+    return {
+        name: 'element-js - SUBCLASS-DOCS',
+        packageLinkPhase({ customElementsManifest }) {
+            const classes = (customElementsManifest.modules ?? [])
+                .flatMap((module) => module.declarations ?? [])
+                .filter((declaration) => declaration.kind === 'class');
+            const byName = new Map(classes.map((klass) => [klass.name, klass]));
+
+            classes.forEach((klass) => {
+                if (klass.events && klass.tagNameWithoutPrefix) {
+                    const own = new Set(
+                        klass.events.filter((event) => !event.inheritedFrom).map((event) => event.name),
+                    );
+                    klass.events = klass.events.filter((event) => {
+                        const origin = byName.get(event.inheritedFrom?.name)?.tagNameWithoutPrefix;
+                        if (!origin || !event.name.startsWith(`${origin}-`)) return true;
+                        const renamed = `${klass.tagNameWithoutPrefix}-${event.name.slice(origin.length + 1)}`;
+                        return !own.has(renamed);
+                    });
+                }
+
+                klass.attributes?.forEach((attribute) => {
+                    if (!attribute.inheritedFrom || !attribute.fieldName) return;
+                    const field = klass.members?.find((member) => member.name === attribute.fieldName);
+                    if (field?.description) attribute.description = field.description;
+                });
+            });
+        },
+    };
+}
+
+/**
  * CUSTOM-WEB-TYPES — emits web-types.json (JetBrains/WebStorm autocomplete)
  * with source paths so "Go to Definition" jumps into the component file.
  */
@@ -271,6 +316,7 @@ export default {
         memberDenyListPlugin(),
         staticPropertiesPlugin(),
         inferTagNames(),
+        subclassDocsPlugin(),
         customWebTypesPlugin(),
     ],
 };

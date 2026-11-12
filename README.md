@@ -65,6 +65,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field     |                                                                               | `0.1.1` |
 | dialog             | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
+| drawer             | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |
 | dropdown           | A dropdown element                                                            | `0.1.0` |
 | form-field         |                                                                               | `0.1.0` |
 | input-field        |                                                                               | `0.1.0` |
@@ -92,14 +93,12 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |
 | bottom-sheet         |                                                 | TBD  |
-| side-sheet           |                                                 | TBD  |
 | breadcrumb-element   |                                                 | TBD  |
 | horizontal-scroll    |                                                 | TBD  |
 | load-more            | show/load more                                  | TBD  |
 | show-hide            |                                                 | TBD  |
 | progress-bar         |                                                 | TBD  |
 | star-rating          |                                                 | TBD  |
-| navigation-drawer ?! |                                                 | TBD  |
 | hover-indicator      |                                                 | TBD  |
 | pinch-zoom           |                                                 | TBD  |
 | cookie-consent       |                                                 | TBD  |

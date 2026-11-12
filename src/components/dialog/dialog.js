@@ -162,8 +162,8 @@ export default class Dialog extends TemplateElement {
     }
 
     /**
-     * Requests that the dialog close, emitting the cancelable `dialog-request-close` event. When a
-     * listener calls `preventDefault()` the dialog stays open and plays a short deny animation.
+     * Requests that the dialog close, emitting its cancelable request-close event. When a listener
+     * calls `preventDefault()` the dialog stays open and plays a short deny animation.
      * @param {'close-button' | 'keyboard' | 'overlay'} source - What triggered the request.
      * @returns {void}
      */

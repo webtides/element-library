@@ -63,6 +63,8 @@ element-library/
 - **button**: Themeable button
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
+- **dialog**: Modal dialog built on the native `<dialog>` element
+- **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
 - **dropdown**: Dropdown component
 - **form-field**: Base form field
 - **input-field**: Text input field
