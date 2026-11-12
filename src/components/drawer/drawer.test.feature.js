@@ -401,6 +401,47 @@ describe('Feature | Drawer', () => {
             expect(opacity).toBe('1');
         });
 
+        it('turns round when it is opened again while it slides out', async () => {
+            const { el, dialog } = await drawerFixture({ tokens: '--el-drawer-size: 200px; --el-duration-md: 200ms' });
+            await el.show();
+            const log = [];
+            for (const what of ['show', 'initial-focus', 'after-show', 'hide', 'after-hide']) {
+                el.addEventListener(`drawer-${what}`, () => log.push(what));
+            }
+
+            const hidden = el.hide();
+            await aTimeout(60);
+            const shown = el.show();
+            await Promise.all([hidden, shown]);
+
+            expect(log).toEqual(['hide', 'show', 'after-show']);
+            expect(el.open).toBe(true);
+            expect(dialog.matches(':modal')).toBe(true);
+            // Back at its edge.
+            expect(box(dialog).left).toBe(innerWidth - 200);
+            expect(document.documentElement.style.overflow).toBe('hidden');
+        });
+
+        it('turns back when it is closed while it slides in', async () => {
+            const { el, dialog } = await drawerFixture({ tokens: '--el-drawer-size: 200px; --el-duration-md: 200ms' });
+            const before = document.documentElement.style.overflow;
+            const log = [];
+            for (const what of ['show', 'initial-focus', 'after-show', 'hide', 'after-hide']) {
+                el.addEventListener(`drawer-${what}`, () => log.push(what));
+            }
+
+            const shown = el.show();
+            await aTimeout(60);
+            const hidden = el.hide();
+            await Promise.all([shown, hidden]);
+
+            expect(log).toEqual(['show', 'initial-focus', 'hide', 'after-hide']);
+            expect(el.open).toBe(false);
+            expect(dialog.open).toBe(false);
+            expect(dialog.classList.contains('showing')).toBe(false);
+            expect(document.documentElement.style.overflow).toBe(before);
+        });
+
         it('follows the open attribute and the open property', async () => {
             const { el, dialog } = await drawerFixture();
 

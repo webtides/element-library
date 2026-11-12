@@ -45,8 +45,8 @@ Open and close it imperatively with the `show()` / `hide()` methods (both return
 
 | Name                   | Returns         | Description                                                    |
 | ---------------------- | --------------- | -------------------------------------------------------------- |
-| `show()`               | `Promise<void>` | Opens the dialog; resolves after the open transition.          |
-| `hide()`               | `Promise<void>` | Closes the dialog; resolves after the close transition.        |
+| `show()`               | `Promise<void>` | Opens the dialog; resolves once it has come to rest.           |
+| `hide()`               | `Promise<void>` | Closes the dialog; resolves once it has come to rest.          |
 | `requestClose(source)` | `void`          | Requests a close, emitting the cancelable request-close event. |
 
 #### Events
@@ -59,6 +59,15 @@ Open and close it imperatively with the `show()` / `hide()` methods (both return
 | `dialog-after-hide` | no | — | The close transition has finished. |
 | `dialog-initial-focus` | yes | — | Focus has moved into the dialog; prevent to override. |
 | `dialog-request-close` | yes | `{ source: 'close-button' \| 'keyboard' \| 'overlay' }` | A close was requested; `preventDefault()` to keep open. |
+
+#### Opening and closing in quick succession
+
+`open` can change while the dialog is on its way in or out, by a button that is clicked twice for example. The last value wins:
+
+- A dialog that is closed on its way in turns back. One that is opened on its way out turns round and is shown again; it has kept the focus and the lock on the page.
+- `dialog-after-show` and `dialog-after-hide` fire when the dialog has got there. A way that is cut short has none: after `dialog-show` comes `dialog-after-show` or `dialog-hide`, after `dialog-hide` comes `dialog-after-hide` or `dialog-show`. `dialog-initial-focus` fires when the platform has moved the focus, which it does not for a dialog that turns round.
+- The promises of `show()` and `hide()` resolve when the dialog is at rest, and never reject. When the other call has overtaken, that is at the other end, so read `open` afterwards where it matters.
+- A change of `open` takes effect with the next frame. Two changes before that which cancel each other do nothing.
 
 #### Slots
 

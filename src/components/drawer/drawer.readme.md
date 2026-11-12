@@ -35,7 +35,7 @@ import '@webtides/element-library/drawer/define';
 </el-drawer>
 ```
 
-Open and close it with `show()` and `hide()`, which both return a promise that resolves once the drawer has slid in or out, or with the `open` attribute or property.
+Open and close it with `show()` and `hide()`, which both return a promise that resolves once the drawer has come to rest, or with the `open` attribute or property.
 
 > Boolean attributes are passed as strings (`no-header="true"`), matching the rest of the library.
 
@@ -57,8 +57,8 @@ The properties of the last two are `noHeader` and `closeLabel`.
 
 | Name                   | Returns         | Description                                                         |
 | ---------------------- | --------------- | ------------------------------------------------------------------- |
-| `show()`               | `Promise<void>` | Opens the drawer. Resolves once it has slid in.                     |
-| `hide()`               | `Promise<void>` | Closes the drawer. Resolves once it has slid out.                   |
+| `show()`               | `Promise<void>` | Opens the drawer. Resolves once it has come to rest.                |
+| `hide()`               | `Promise<void>` | Closes the drawer. Resolves once it has come to rest.               |
 | `requestClose(source)` | `void`          | Asks for a close with `drawer-request-close`, which can be refused. |
 
 #### Events
@@ -147,6 +147,7 @@ el-drawer::part(base) {
 - `show()`, or `open` set, opens the drawer. `hide()`, or `open` taken back, closes it, whatever a listener says.
 - **The close button**, **`Escape`** and **a click on the backdrop** ask for a close: they fire `drawer-request-close` with what asked in `detail.source`. A listener that calls `preventDefault()` keeps the drawer open, to protect unsaved input for example. The drawer then grows a little for a moment, to show that the request arrived. `requestClose(source)` asks the same from a script.
 - The drawer slides in `--el-duration-md`. Without that token, and for a user who prefers reduced motion, it is in its place at once.
+- `open` can change while the drawer slides, by a button that is clicked twice for example. The last value wins: a drawer that is closed on its way in turns back, one that is opened on its way out turns round. `drawer-after-show` and `drawer-after-hide` fire when the drawer has got there, so a way that is cut short has none: after `drawer-show` comes `drawer-after-show` or `drawer-hide`, after `drawer-hide` comes `drawer-after-hide` or `drawer-show`. The promises of `show()` and `hide()` resolve when the drawer is at rest, at whichever end, and never reject.
 - A `<form method="dialog">` inside the drawer does not close it: the form is in the page, the `<dialog>` in the shadow root. Close the drawer from the `submit` listener.
 
 ## Focus

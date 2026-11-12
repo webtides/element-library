@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vite-plus/test';
+import { describe, it, expect, afterEach } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { fixture, nextFrame, aTimeout, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './dialog.js';
 define();
 
@@ -162,6 +163,8 @@ describe('Feature | Dialog', () => {
         await nextFrame();
 
         expect(el.open).toBe(true);
+        // An open dialog keeps the page locked and inert for the tests that follow.
+        await el.hide();
     });
 
     it('treats a click outside the panel as an overlay close', async () => {
@@ -270,6 +273,238 @@ describe('Feature | Dialog', () => {
             const { width, height } = sizeOf(el.shadowRoot.querySelector('[part~="close-button"]'));
             expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
             await el.hide();
+        });
+    });
+
+    describe('opened and closed in quick succession', () => {
+        const wrappers = [];
+        afterEach(() => {
+            for (const wrapper of wrappers.splice(0)) wrapper.remove();
+        });
+
+        /**
+         * A dialog whose way in and out takes `duration`, with a log of its events and a button
+         * before it in the page.
+         */
+        async function tracked(duration = '200ms') {
+            // A test before this one that left a dialog open would make every state here wrong.
+            expect(document.documentElement.style.overflow, 'the page is locked before the test').not.toBe('hidden');
+            const wrapper = await fixture(`
+                <div style="--el-duration-md: ${duration}">
+                    <button class="toggle" type="button">Toggle</button>
+                    <el-dialog label="Dialog title"><p>Dialog body content.</p></el-dialog>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            const el = wrapper.querySelector('el-dialog');
+            const dialog = el.shadowRoot.querySelector('dialog');
+            const log = [];
+            for (const what of ['show', 'initial-focus', 'after-show', 'hide', 'after-hide']) {
+                el.addEventListener(`dialog-${what}`, () => log.push(what));
+            }
+            const state = () => ({
+                open: el.open,
+                native: dialog.open,
+                showing: dialog.classList.contains('showing'),
+                state: el.matches(':state(open)'),
+                locked: document.documentElement.style.overflow === 'hidden',
+            });
+            return { wrapper, el, dialog, log, state, toggle: wrapper.querySelector('.toggle') };
+        }
+
+        const SHOWN = { open: true, native: true, showing: true, state: true, locked: true };
+        const CLOSED = { open: false, native: false, showing: false, state: false, locked: false };
+
+        /** What may follow an event. A log that ends at rest ends with one of the two `after-` events. */
+        const FOLLOWS = {
+            show: ['initial-focus', 'after-show', 'hide'],
+            'initial-focus': ['after-show', 'hide'],
+            'after-show': ['hide'],
+            hide: ['after-hide', 'show'],
+            'after-hide': ['show'],
+        };
+        function expectInOrder(log) {
+            log.forEach((event, index) => {
+                const next = log[index + 1];
+                if (next) expect(FOLLOWS[event], `${event} before ${next} in ${log.join(' > ')}`).toContain(next);
+            });
+            if (log.length > 0) expect(['after-show', 'after-hide'], log.join(' > ')).toContain(log.at(-1));
+        }
+
+        it('does nothing when it is opened and closed again before the next frame', async () => {
+            const { el, log, state } = await tracked();
+            await Promise.all([el.show(), el.hide()]);
+            expect(log).toEqual([]);
+            expect(state()).toEqual(CLOSED);
+
+            // And it has its way in the next time.
+            await el.show();
+            expect(log).toEqual(['show', 'initial-focus', 'after-show']);
+            expect(state()).toEqual(SHOWN);
+        });
+
+        it('does nothing when it is closed and opened again before the next frame', async () => {
+            const { el, dialog, log, state } = await tracked();
+            await el.show();
+            log.length = 0;
+
+            await Promise.all([el.hide(), el.show()]);
+            expect(log).toEqual([]);
+            expect(state()).toEqual(SHOWN);
+            expect(dialog.matches(':modal')).toBe(true);
+        });
+
+        it('turns back when it is closed on its way in', async () => {
+            const { el, log, state } = await tracked();
+            const shown = el.show();
+            await aTimeout(60);
+            const hidden = el.hide();
+            await Promise.all([shown, hidden]);
+
+            expect(log).toEqual(['show', 'initial-focus', 'hide', 'after-hide']);
+            expect(state()).toEqual(CLOSED);
+        });
+
+        it('closes at once when it is closed before it has begun to come in', async () => {
+            const { el, log, state } = await tracked('2s');
+            // The way in has begun for the component, and waits for its frames.
+            el.addEventListener('dialog-show', () => el.hide(), { once: true });
+
+            const started = performance.now();
+            await el.show();
+            expect(performance.now() - started).toBeLessThan(1000);
+            expect(log).toEqual(['show', 'initial-focus', 'hide', 'after-hide']);
+            expect(state()).toEqual(CLOSED);
+
+            // The way in that was cut short wakes up after its frames, and leaves everything alone.
+            await aTimeout(100);
+            expect(log).toEqual(['show', 'initial-focus', 'hide', 'after-hide']);
+            expect(state()).toEqual(CLOSED);
+        });
+
+        it('turns round when it is opened on its way out', async () => {
+            const { el, dialog, log, state } = await tracked();
+            await el.show();
+            log.length = 0;
+
+            const hidden = el.hide();
+            await aTimeout(60);
+            const shown = el.show();
+            await Promise.all([hidden, shown]);
+
+            // It was never closed, so the platform has not moved the focus again.
+            expect(log).toEqual(['hide', 'show', 'after-show']);
+            expect(state()).toEqual(SHOWN);
+            expect(dialog.matches(':modal')).toBe(true);
+            expect(getComputedStyle(dialog).opacity).toBe('1');
+        });
+
+        it('opens anew when the close was over, as without a transition', async () => {
+            const { el, log, state } = await tracked('0s');
+            await el.show();
+            log.length = 0;
+
+            const hidden = el.hide();
+            await aTimeout(60);
+            const shown = el.show();
+            await Promise.all([hidden, shown]);
+
+            expect(log).toEqual(['hide', 'after-hide', 'show', 'initial-focus', 'after-show']);
+            expect(state()).toEqual(SHOWN);
+        });
+
+        it('resolves show() and hide() when the dialog is at rest, wherever that is', async () => {
+            const { el, state } = await tracked();
+            const atRest = [];
+            const shown = el.show().then(() => atRest.push(state()));
+            await aTimeout(60);
+            el.hide();
+            await shown;
+            expect(atRest).toEqual([CLOSED]);
+
+            await el.show();
+            const hidden = el.hide().then(() => atRest.push(state()));
+            await aTimeout(60);
+            el.show();
+            await hidden;
+            expect(atRest).toEqual([CLOSED, SHOWN]);
+        });
+
+        it('lets a second show() wait for the way in that is under way', async () => {
+            const { el, state } = await tracked();
+            el.show();
+            await aTimeout(60);
+
+            let done = false;
+            const second = el.show().then(() => (done = true));
+            await aTimeout(20);
+            expect(done).toBe(false);
+
+            await second;
+            expect(state()).toEqual(SHOWN);
+        });
+
+        it('keeps the promises waiting when a close and an open cancel each other on the way in', async () => {
+            const { el, log, state } = await tracked('600ms');
+            el.show();
+            await aTimeout(60);
+
+            let done = false;
+            const both = Promise.all([el.hide(), el.show()]).then(() => (done = true));
+            // The watchers of the two changes have run by now, and found nothing to do. The way in
+            // is still under way.
+            await aTimeout(100);
+            expect(done).toBe(false);
+
+            await both;
+            expect(log).toEqual(['show', 'initial-focus', 'after-show']);
+            expect(state()).toEqual(SHOWN);
+        });
+
+        it('ends where `open` says after many changes, with every event in its place', async () => {
+            for (const [duration, last] of [
+                ['200ms', true],
+                ['200ms', false],
+                ['0s', true],
+                ['0s', false],
+            ]) {
+                const { el, log, state } = await tracked(duration);
+                for (const open of [true, false, true, true, false, true, false, !last, last]) {
+                    el.open = open;
+                    await aTimeout(30);
+                }
+                await (last ? el.show() : el.hide());
+
+                expect(state(), `${duration}, ${last}: ${log.join(' > ')}`).toEqual(last ? SHOWN : CLOSED);
+                expectInOrder(log);
+                await el.hide();
+            }
+        });
+
+        it('is closed after a double click on a button that toggles it', async () => {
+            const { el, toggle, log, state } = await tracked();
+            toggle.addEventListener('click', () => (el.open = !el.open));
+
+            // The second click reaches the button again, or the backdrop when the dialog is there
+            // by then. Either way it closes what the first one opened.
+            await userEvent.dblClick(toggle);
+            await aTimeout(400);
+            await el.hide();
+
+            expect(state()).toEqual(CLOSED);
+            expectInOrder(log);
+        });
+
+        it('resolves show() and fires no after-show when it is removed on its way in', async () => {
+            const { el, log } = await tracked();
+            const shown = el.show();
+            await aTimeout(60);
+            el.remove();
+            await shown;
+            await aTimeout(300);
+
+            expect(log).toEqual(['show', 'initial-focus']);
+            expect(document.documentElement.style.overflow).not.toBe('hidden');
         });
     });
 });

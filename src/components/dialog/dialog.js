@@ -5,6 +5,18 @@ import { lockBodyScroll, unlockBodyScroll } from '../../utils/body-scroll.js';
 import { afterTransition, nextFrame } from '../../utils/transitions.js';
 
 /**
+ * A promise together with the function that resolves it.
+ * @returns {{ promise: Promise<void>, resolve: () => void }}
+ */
+function pending() {
+    let resolve;
+    const promise = new Promise((done) => {
+        resolve = done;
+    });
+    return { promise, resolve };
+}
+
+/**
  * A modal dialog built on the native `<dialog>` element, so the platform owns focus trapping,
  * background `inert`, top-layer rendering, focus restoration and `<form method="dialog">`
  * auto-close. The component adds an animated, cancelable open/close lifecycle and ref-counted
@@ -58,6 +70,24 @@ export default class Dialog extends TemplateElement {
             ...options,
             propertyOptions: { open: { reflect: true }, noHeader: { reflect: true }, ...options.propertyOptions },
         });
+
+        /**
+         * Counts the ways the dialog has set out on. See `_sync()`.
+         * @private
+         */
+        this._run = 0;
+
+        /**
+         * Where the dialog is, or is on its way to: shown (`true`) or closed.
+         * @private
+         */
+        this._heading = false;
+
+        /**
+         * Whether it is on its way, with a transition still to wait for.
+         * @private
+         */
+        this._moving = false;
     }
 
     /**
@@ -89,7 +119,7 @@ export default class Dialog extends TemplateElement {
         // The watcher does not run during initial hydration, so honour a declaratively-open dialog here.
         if (this.open) {
             this._internals.states.add('open');
-            this._applyOpen();
+            this._sync();
         }
     }
 
@@ -97,25 +127,28 @@ export default class Dialog extends TemplateElement {
         // A dialog that leaves the page while it is open: the platform takes it out of the top
         // layer, but the `<dialog>` stays open and the page stays locked. Both are undone here, so
         // that the page scrolls again and the dialog can open as a modal when it comes back.
-        // element-js has emptied `$refs` by now; the element is the one `_applyOpen()` kept.
+        // element-js has emptied `$refs` by now; the element is the one `_sync()` kept.
+        // Whatever way was under way ends here.
+        this._run++;
+        this._heading = false;
         const dialog = this._shown;
-        if (!dialog) return;
-        this._shown = undefined;
-        dialog.classList.remove('showing');
-        if (dialog.open) dialog.close();
-        this._unlockScroll();
+        if (dialog) {
+            dialog.classList.remove('showing');
+            this._close(dialog);
+            // It was on its way out, and it is out now.
+            if (!this.open) this.dispatch(this._eventNames.AFTER_HIDE);
+        }
+        this._settle();
     }
 
     watch() {
         return {
-            open: (open) => {
-                if (open) {
-                    this._internals.states.add('open');
-                    this._applyOpen();
-                } else {
-                    this._internals.states.delete('open');
-                    this._applyClose();
-                }
+            // element-js calls a watcher after the next render, a frame after the change, and once
+            // for every change. So what counts is the value `open` has now, not the one of the call.
+            open: () => {
+                if (this.open) this._internals.states.add('open');
+                else this._internals.states.delete('open');
+                this._sync();
             },
         };
     }
@@ -141,24 +174,22 @@ export default class Dialog extends TemplateElement {
 
     /**
      * Opens the dialog.
-     * @returns {Promise<void>} Resolves after the open transition has finished.
+     * @returns {Promise<void>} Resolves once the dialog has come to rest. That is after the open
+     *   transition as a rule; when a `hide()` overtakes it, it is once the dialog is closed again.
+     *   It never rejects.
      */
     show() {
-        if (this.open) return Promise.resolve();
-        const done = this._once(this._eventNames.AFTER_SHOW);
-        this.open = true;
-        return done;
+        return this._setOpen(true);
     }
 
     /**
      * Closes the dialog.
-     * @returns {Promise<void>} Resolves after the close transition has finished.
+     * @returns {Promise<void>} Resolves once the dialog has come to rest. That is after the close
+     *   transition as a rule; when a `show()` overtakes it, it is once the dialog is shown again.
+     *   It never rejects.
      */
     hide() {
-        if (!this.open) return Promise.resolve();
-        const done = this._once(this._eventNames.AFTER_HIDE);
-        this.open = false;
-        return done;
+        return this._setOpen(false);
     }
 
     /**
@@ -185,36 +216,115 @@ export default class Dialog extends TemplateElement {
         this.open = false;
     }
 
-    /** @private */
-    async _applyOpen() {
-        const dialog = this.$refs.dialog;
-        if (!dialog || dialog.open) return;
-
-        this._shown = dialog;
-        this.dispatch(this._eventNames.SHOW);
-        this._lockScroll();
-        dialog.showModal();
-        // The platform has now moved focus inside the dialog; let consumers redirect it.
-        this.dispatch(this._eventNames.INITIAL_FOCUS);
-
-        await nextFrame();
-        dialog.classList.add('showing');
-        await afterTransition(dialog);
-        this.dispatch(this._eventNames.AFTER_SHOW);
+    /**
+     * Sets `open` and hands out the promise for the moment the dialog is at rest again.
+     * @private
+     * @param {boolean} open
+     * @returns {Promise<void>}
+     */
+    _setOpen(open) {
+        // Outside of the page nothing moves, so there is nothing to wait for.
+        if (!this.isConnected) {
+            this.open = open;
+            return Promise.resolve();
+        }
+        // The watcher runs a frame later. The promise has to be there before that.
+        if (!!this.open !== open) this._rest ??= pending();
+        this.open = open;
+        return this._rest?.promise ?? Promise.resolve();
     }
 
-    /** @private */
-    async _applyClose() {
+    /**
+     * Brings the `<dialog>` to what `open` says, with the transition on the way.
+     *
+     * Every time the dialog has to turn, it sets out on a new way with a number of its own. A way
+     * waits, for two frames and for the transition, and when it goes on it first looks whether a
+     * later way has begun. If so it stops: the last value of `open` wins, and no way finishes
+     * work that is out of date.
+     *
+     * `…-after-show` and `…-after-hide` are fired by the way that gets there. A way that is cut
+     * short has none: after `…-show` comes `…-after-show` or `…-hide`, after `…-hide` comes
+     * `…-after-hide` or `…-show`.
+     * @private
+     */
+    async _sync() {
+        const wanted = !!this.open;
         const dialog = this.$refs.dialog;
-        if (!dialog || !dialog.open) return;
+        if (!dialog) {
+            // Not rendered yet, or not in the page. A dialog that is `open` is shown when it
+            // connects; until then only a closed one is at rest.
+            if (!wanted || !this.isConnected) this._settle();
+            return;
+        }
 
-        this.dispatch(this._eventNames.HIDE);
-        dialog.classList.remove('showing');
-        await afterTransition(dialog);
-        dialog.close();
+        // It is there already, or on its way there. `open` can change twice between two frames.
+        if (wanted === this._heading) {
+            if (!this._moving) this._settle();
+            return;
+        }
+
+        const run = ++this._run;
+        const overtaken = () => run !== this._run;
+        this._heading = wanted;
+        this._moving = true;
+        // What `show()` and `hide()` hand out: one promise for all the ways until it is at rest.
+        this._rest ??= pending();
+
+        const names = this._eventNames;
+        if (wanted) {
+            this.dispatch(names.SHOW);
+            if (!dialog.open) {
+                this._shown = dialog;
+                this._lockScroll();
+                dialog.showModal();
+                // The platform has now moved focus inside the dialog; let consumers redirect it.
+                this.dispatch(names.INITIAL_FOCUS);
+
+                // The look before it is shown has to be painted, or the transition has no start.
+                await nextFrame();
+                if (overtaken()) return;
+            }
+            // Also the way back from a close that was under way: the `<dialog>` is still open then,
+            // and the transition turns round where it is.
+            dialog.classList.add('showing');
+            await afterTransition(dialog);
+            if (overtaken()) return;
+            this.dispatch(names.AFTER_SHOW);
+        } else {
+            this.dispatch(names.HIDE);
+            // A dialog that has not begun to come in has no way out to wait for.
+            const shown = dialog.classList.contains('showing');
+            dialog.classList.remove('showing');
+            if (shown) {
+                await afterTransition(dialog);
+                if (overtaken()) return;
+            }
+            this._close(dialog);
+            this.dispatch(names.AFTER_HIDE);
+        }
+
+        this._settle();
+    }
+
+    /**
+     * Closes the `<dialog>` for the platform and gives the page back.
+     * @private
+     * @param {HTMLDialogElement} dialog
+     */
+    _close(dialog) {
+        if (dialog.open) dialog.close();
         this._shown = undefined;
         this._unlockScroll();
-        this.dispatch(this._eventNames.AFTER_HIDE);
+    }
+
+    /**
+     * The dialog is at rest, shown or closed: whoever waits for that can go on.
+     * @private
+     */
+    _settle() {
+        this._moving = false;
+        this._rest?.resolve();
+        this._rest = undefined;
     }
 
     /**
@@ -270,11 +380,6 @@ export default class Dialog extends TemplateElement {
             .assignedNodes({ flatten: true })
             .some((node) => node.nodeType === Node.ELEMENT_NODE || node.textContent.trim() !== '');
         this.$refs.footer?.classList.toggle('is-empty', !hasContent);
-    }
-
-    /** @private */
-    _once(name) {
-        return new Promise((resolve) => this.addEventListener(name, () => resolve(), { once: true }));
     }
 
     /** @private */
