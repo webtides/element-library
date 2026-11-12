@@ -76,6 +76,7 @@ element-library/
 - **tab-group**: Tab container
 - **tab-link**: Individual tab link
 - **tab-panel**: Tab content panel
+- **tag**: Label for a keyword or a filter, removable
 - **textarea-field**: Textarea input
 - **transition-classes**: CSS transition helper
 

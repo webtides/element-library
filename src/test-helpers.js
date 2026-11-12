@@ -80,26 +80,53 @@ export async function emulateReducedMotion(enabled) {
  */
 export async function forcePseudoClasses(element, pseudoClasses) {
     const session = cdp();
-    await session.send('DOM.enable');
+    // Enables the DOM domain, which the CSS domain needs before it can be enabled itself.
+    const nodeId = await protocolNodeId(session, element);
     await session.send('CSS.enable');
 
-    // The protocol addresses a node by an id of its own. The search finds the element by a marker
-    // attribute; unlike a selector query it also looks into iframes (a test file runs in one) and
-    // shadow roots.
-    const marker = `forced-state-${crypto.randomUUID()}`;
+    await session.send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: pseudoClasses });
+    await nextFrame();
+}
+
+/**
+ * The accessible name of an element as the browser computes it, which is what a screen reader
+ * announces: `await accessibleName(button)`. It follows `aria-labelledby` and slots, which the
+ * attributes of the element alone do not tell. Chromium only.
+ * @param {Element} element - May be inside a shadow root.
+ * @returns {Promise<string>}
+ */
+export async function accessibleName(element) {
+    const session = cdp();
+    const nodeId = await protocolNodeId(session, element);
+    const { nodes } = await session.send('Accessibility.getPartialAXTree', { nodeId, fetchRelatives: false });
+    return nodes[0]?.name?.value ?? '';
+}
+
+/**
+ * The id by which the DevTools protocol addresses an element. Every call fetches the document
+ * again, which makes the ids of earlier calls invalid.
+ * @param {ReturnType<typeof cdp>} session
+ * @param {Element} element - May be inside a shadow root.
+ * @returns {Promise<number>}
+ */
+async function protocolNodeId(session, element) {
+    await session.send('DOM.enable');
+
+    // The search finds the element by a marker attribute; unlike a selector query it also looks
+    // into iframes (a test file runs in one) and shadow roots.
+    const marker = `test-marker-${crypto.randomUUID()}`;
     element.setAttribute('data-test-marker', marker);
     await session.send('DOM.getDocument', { depth: 0 });
     const { searchId, resultCount } = await session.send('DOM.performSearch', {
         query: marker,
         includeUserAgentShadowDOM: true,
     });
-    if (resultCount < 1) throw new Error('forcePseudoClasses: the element is not in the document');
+    if (resultCount < 1) throw new Error('The element is not in the document');
     const { nodeIds } = await session.send('DOM.getSearchResults', { searchId, fromIndex: 0, toIndex: 1 });
     await session.send('DOM.discardSearchResults', { searchId });
     element.removeAttribute('data-test-marker');
 
-    await session.send('CSS.forcePseudoState', { nodeId: nodeIds[0], forcedPseudoClasses: pseudoClasses });
-    await nextFrame();
+    return nodeIds[0];
 }
 
 /**

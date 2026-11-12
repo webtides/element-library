@@ -83,6 +83,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
 | tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
 | tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
+| tag                | A label for a keyword or a filter, with variants, sizes and a remove button   | `0.1.0` |
 | textarea-field     |                                                                               | `0.1.0` |
 | transition-classes | An element that applies classes for various stages of a transition            | `0.1.0` |
 

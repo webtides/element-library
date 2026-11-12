@@ -159,6 +159,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: the panel has `role="tabpanel"`, and its `el-tab-group` labels it by its link (`aria-labelledby`). A role the page sets itself is kept. ([#97](https://github.com/webtides/element-library/issues/97))
 
+### tag
+
+- Added: `el-tag`, a new component: a label for one of several things that belong to something, a keyword or a filter that is set. It has the `variant`, the `appearance` and the `size` of the shared vocabulary, all reflected, and `pill` for fully rounded ends. A tag is 0.7 times as high as a control of the same size, so that it fits into a field. `removable` renders a remove button that fires `tag-remove`; the tag does not remove itself, the page decides what removing means. The button is a native button in the tab order, named with `remove-label` ("Remove" by default) and the text of the tag ("Remove TypeScript"), and on a touch screen it is at least `--el-touch-target` wide and high. A text that does not fit is cut off with an ellipsis. ([#75](https://github.com/webtides/element-library/issues/75))
+
 ### textarea-field
 
 - Added: `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<textarea>`, in server-rendered markup and on every render. Set them as attributes or properties on the element; one that is not set is left out on the `<textarea>`. Before, the field dropped them.
