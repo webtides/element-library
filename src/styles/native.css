@@ -1,0 +1,117 @@
+/*
+ * @webtides/element-library — the native controls of the fields
+ *
+ * Opt-in stylesheet that gives the native control of a field the look of the
+ * design tokens: border, radius, padding, colours, focus ring. It reaches the
+ * input of el-input-field and el-password-field, the textarea of
+ * el-textarea-field and the select of el-select-field. Import it together
+ * with a theme, which sets the tokens:
+ *
+ *     import '@webtides/element-library/themes/default.css';
+ *     import '@webtides/element-library/styles/native.css';
+ *
+ * Without this file a control keeps the look of the browser, with or without
+ * a theme: the library stays headless. Native controls of the page that are
+ * not in a field are never touched.
+ *
+ * The rules are in no cascade layer, on purpose. A page often has a reset
+ * that is in none (Tailwind 3, a classic reset.css), and a rule in a layer
+ * loses against it whatever its selector: the controls would lose their
+ * border and padding again. Outside a layer, the tag of the field in front of
+ * the control is enough to win over a reset.
+ */
+
+/*
+ * A field with a `size` sets the --_el-size-* properties; a field without one
+ * has the medium size.
+ */
+el-input-field input,
+el-password-field input,
+el-textarea-field textarea,
+el-select-field select {
+  box-sizing: border-box;
+  width: 100%;
+  border: var(--el-border-width) solid var(--el-color-border);
+  border-radius: var(--el-radius-md);
+  padding: var(--_el-size-padding-block, var(--el-space-2)) var(--el-space-3);
+  background: var(--el-color-bg);
+  color: var(--el-color-fg);
+  font-family: var(--el-font-family);
+  font-size: var(--_el-size-font-size, var(--el-font-size-md));
+  line-height: var(--el-line-height);
+  transition:
+    border-color var(--el-duration-md) var(--el-ease),
+    box-shadow var(--el-duration-md) var(--el-ease);
+}
+
+el-input-field input,
+el-password-field input,
+el-select-field select {
+  min-height: calc(var(--el-control-height) * var(--_el-size-scale, 1));
+}
+
+/*
+ * Touch screens: no control is lower than --el-touch-target. The fields have
+ * the same rule in their own stylesheets, with the same weight as the one
+ * above. Stated here as well, the result is the same whichever of the two
+ * stylesheets comes later in the page.
+ */
+@media (any-pointer: coarse) {
+  el-input-field input,
+  el-password-field input,
+  el-select-field select {
+    min-height: max(calc(var(--el-control-height) * var(--_el-size-scale, 1)), var(--el-touch-target, 0px));
+  }
+}
+
+el-input-field input:focus,
+el-password-field input:focus,
+el-textarea-field textarea:focus,
+el-select-field select:focus {
+  outline: none;
+  border-color: var(--el-color-focus-ring);
+  box-shadow:
+    0 0 0 var(--el-focus-ring-offset) var(--el-color-bg),
+    0 0 0 calc(var(--el-focus-ring-offset) + var(--el-focus-ring-width)) var(--el-color-focus-ring);
+}
+
+el-input-field:state(invalid) input,
+el-password-field:state(invalid) input,
+el-textarea-field:state(invalid) textarea,
+el-select-field:state(invalid) select {
+  border-color: var(--el-color-danger);
+}
+
+/*
+ * A select paints a chevron of its own, and el-select-field renders one of its
+ * own, hidden as long as the select has the look of the browser. Here the
+ * native one goes and the field shows its own inside the select, so a
+ * decorated select has a single chevron that follows the tokens.
+ *
+ * The field shows its chevron through a property, not through a rule here: a
+ * rule would have the same weight as the rule of the field that hides it, and
+ * the later of the two would win.
+ */
+el-select-field {
+  --_el-select-indicator-display: flex;
+}
+
+el-select-field .field {
+  position: relative;
+}
+
+el-select-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: calc(var(--el-space-3) * 2 + var(--el-space-2));
+}
+
+el-select-field .dropdown-indicator {
+  align-items: center;
+  pointer-events: none;
+  position: absolute;
+  right: var(--el-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--el-select-indicator-color, var(--el-color-fg-muted));
+}

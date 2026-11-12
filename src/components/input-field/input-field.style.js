@@ -1,5 +1,6 @@
 import hostStyle from '../../styles/host.style.js';
 import formControlStyle from '../../styles/form-control.style.js';
+import sizeStyle from '../../styles/size.style.js';
 
 const css = String.raw;
 
@@ -17,12 +18,16 @@ const style = css`
             }
         }
 
-        /* Touch screens: the control and the clear cross are at least --el-touch-target. The mark
-           beside the input keeps that width in both states, so the input does not jump when the
-           validity changes. Without the token the sizes stay as they are. */
+        /* Touch screens: the control and the clear cross are at least --el-touch-target, whatever
+           the size of the field. The mark beside the input keeps that width in both states, so the
+           input does not jump when the validity changes. Without the token the sizes stay as they
+           are. */
         @media (any-pointer: coarse) {
             input {
-                min-height: max(var(--el-control-height, 0px), var(--el-touch-target, 0px));
+                min-height: max(
+                    calc(var(--el-control-height, 0px) * var(--_el-size-scale, 1)),
+                    var(--el-touch-target, 0px)
+                );
             }
 
             .validity,
@@ -39,4 +44,9 @@ const style = css`
     }
 `;
 
-export default [hostStyle('el-input-field'), formControlStyle('el-input-field'), style].join('\n');
+export default [
+    hostStyle('el-input-field'),
+    formControlStyle('el-input-field'),
+    sizeStyle('el-input-field'),
+    style,
+].join('\n');

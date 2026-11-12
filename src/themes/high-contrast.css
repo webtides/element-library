@@ -10,140 +10,81 @@
  *
  * Uses light-dark() so both color schemes are supported — the theme follows
  * the user's color-scheme like default.css does.
+ *
+ * Like every theme it sets tokens only. Import styles/native.css as well to
+ * decorate the controls of the library's fields with them (see default.css).
  */
 
-:root {
-  color-scheme: light dark;
+@layer el-tokens, el-utilities;
 
-  /* Color — surfaces & text (near pure black/white for maximum contrast) */
-  --el-color-fg: light-dark(#000000, #ffffff);
-  --el-color-fg-muted: light-dark(#262626, #d4d4d4);
-  --el-color-bg: light-dark(#ffffff, #000000);
-  --el-color-bg-muted: light-dark(#f4f4f4, #1a1a1a);
-  --el-color-border: light-dark(#000000, #ffffff);
-
-  /* Color — interactive & semantic (WCAG-AAA against bg) */
-  --el-color-accent: light-dark(#0040c0, #6cb6ff);
-  --el-color-success: light-dark(#006e2c, #4ade80);
-  /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
-  --el-color-warning: #f59e0b;
-  --el-color-danger: light-dark(#a8000d, #ff6b6b);
-  --el-color-focus-ring: var(--el-color-accent);
-
-  /* Spacing — same scale as default */
-  --el-space-1: 0.25rem;
-  --el-space-2: 0.5rem;
-  --el-space-3: 0.75rem;
-  --el-space-4: 1rem;
-  --el-space-5: 1.5rem;
-
-  /* Radius — square-ish for a no-nonsense look */
-  --el-radius-sm: 0;
-  --el-radius-md: 2px;
-  --el-radius-lg: 4px;
-
-  /* Border — thicker for clarity */
-  --el-border-width: 2px;
-
-  /* Typography */
-  --el-font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --el-font-size-sm: 0.875rem;
-  --el-font-size-md: 1rem;
-  --el-line-height: 1.5;
-
-  /* Shadow — none. High-contrast designs use borders, not depth. */
-  --el-shadow-md: none;
-  --el-shadow-lg: none;
-
-  /* Motion — slightly faster, helps users who set prefers-reduced-motion read intent */
-  --el-duration-md: 150ms;
-  --el-ease: cubic-bezier(0.2, 0, 0, 1);
-
-  /* Focus ring — larger and offset further for visibility */
-  --el-focus-ring-width: 3px;
-  --el-focus-ring-offset: 2px;
-
-  /* Sizing — bumped touch target to comfortably exceed WCAG 2.1 (44px) */
-  --el-control-height: 2.75rem;
-  --el-touch-target: 3rem;
-
-  /* Dialog — a heavier scrim for an unambiguous separation from the background */
-  --el-dialog-width: 31rem;
-  --el-dialog-overlay-background: light-dark(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85));
-}
-
-/*
- * Native form controls (input / textarea / select) live in light DOM, so the
- * theme decorates them directly. Mirrors the rule set in default.css.
- */
-el-input-field input,
-el-password-field input,
-el-textarea-field textarea,
-el-select-field select {
-  box-sizing: border-box;
-  width: 100%;
-  border: var(--el-border-width) solid var(--el-color-border);
-  border-radius: var(--el-radius-md);
-  padding: var(--el-space-2) var(--el-space-3);
-  background: var(--el-color-bg);
-  color: var(--el-color-fg);
-  font-family: var(--el-font-family);
-  font-size: var(--el-font-size-md);
-  line-height: var(--el-line-height);
-  transition:
-    border-color var(--el-duration-md) var(--el-ease),
-    box-shadow var(--el-duration-md) var(--el-ease);
-}
-
-el-input-field input,
-el-password-field input,
-el-select-field select {
-  min-height: var(--el-control-height);
-}
-
-el-input-field input:focus,
-el-password-field input:focus,
-el-textarea-field textarea:focus,
-el-select-field select:focus {
-  outline: none;
-  border-color: var(--el-color-focus-ring);
-  box-shadow:
-    0 0 0 var(--el-focus-ring-offset) var(--el-color-bg),
-    0 0 0 calc(var(--el-focus-ring-offset) + var(--el-focus-ring-width)) var(--el-color-focus-ring);
-}
-
-el-input-field:state(invalid) input,
-el-password-field:state(invalid) input,
-el-textarea-field:state(invalid) textarea,
-el-select-field:state(invalid) select {
-  border-color: var(--el-color-danger);
-}
-
-/* select-field chevron — see default.css for rationale */
-el-select-field .field {
-  position: relative;
-}
-
-el-select-field select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: calc(var(--el-space-3) * 2 + var(--el-space-2));
-}
-
-el-select-field .dropdown-indicator {
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  position: absolute;
-  right: var(--el-space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--el-color-fg);
-}
-
-/* Respect user motion preference (contrast is already at its ceiling) */
-@media (prefers-reduced-motion: reduce) {
+@layer el-tokens {
   :root {
-    --el-duration-md: 0s;
+    color-scheme: light dark;
+
+    /* Color — surfaces & text (near pure black/white for maximum contrast) */
+    --el-color-fg: light-dark(#000000, #ffffff);
+    --el-color-fg-muted: light-dark(#262626, #d4d4d4);
+    --el-color-bg: light-dark(#ffffff, #000000);
+    --el-color-bg-muted: light-dark(#f4f4f4, #1a1a1a);
+    --el-color-border: light-dark(#000000, #ffffff);
+
+    /* Color — interactive & semantic (WCAG-AAA against bg) */
+    --el-color-accent: light-dark(#0040c0, #6cb6ff);
+    --el-color-success: light-dark(#006e2c, #4ade80);
+    /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
+    --el-color-warning: #f59e0b;
+    --el-color-danger: light-dark(#a8000d, #ff6b6b);
+    --el-color-focus-ring: var(--el-color-accent);
+
+    /* Spacing — same scale as default */
+    --el-space-1: 0.25rem;
+    --el-space-2: 0.5rem;
+    --el-space-3: 0.75rem;
+    --el-space-4: 1rem;
+    --el-space-5: 1.5rem;
+
+    /* Radius — square-ish for a no-nonsense look */
+    --el-radius-sm: 0;
+    --el-radius-md: 2px;
+    --el-radius-lg: 4px;
+
+    /* Border — thicker for clarity */
+    --el-border-width: 2px;
+
+    /* Typography */
+    --el-font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --el-font-size-sm: 0.875rem;
+    --el-font-size-md: 1rem;
+    --el-line-height: 1.5;
+
+    /* Shadow — none. High-contrast designs use borders, not depth. */
+    --el-shadow-md: none;
+    --el-shadow-lg: none;
+
+    /* Motion — slightly faster, helps users who set prefers-reduced-motion read intent */
+    --el-duration-md: 150ms;
+    --el-ease: cubic-bezier(0.2, 0, 0, 1);
+
+    /* Focus ring — larger and offset further for visibility */
+    --el-focus-ring-width: 3px;
+    --el-focus-ring-offset: 2px;
+
+    /* Sizing — bumped touch target to comfortably exceed WCAG 2.1 (44px) */
+    --el-control-height: 2.75rem;
+    --el-touch-target: 3rem;
+
+    /* Dialog — a heavier scrim for an unambiguous separation from the background */
+    --el-dialog-width: 31rem;
+    --el-dialog-overlay-background: light-dark(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85));
+
+    /* Select — the chevron of a decorated select in the text colour, not the muted one */
+    --el-select-indicator-color: var(--el-color-fg);
+  }
+
+  /* Respect user motion preference (contrast is already at its ceiling) */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --el-duration-md: 0s;
+    }
   }
 }

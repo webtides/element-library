@@ -37,6 +37,7 @@ import '@webtides/element-library/input-field/define';
 | `name` | `string` | `''` | The name attribute for the input field, used for form submission and identification |
 | `value` | `string` | `null` | The current value of the input field |
 | `type` | `string` | `'text'` | The type of input field (e.g., 'text', 'email', 'password', 'tel', 'url', etc.) |
+| `size` | `string` | `'medium'` | `small`, `medium` or `large`: the height, the padding and the font size of the control. Reflected. Shows once `styles/native.css` decorates the control. |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the input is empty |
 | `pattern` | `string\|boolean` | `false` | Regular expression pattern for input validation. If false, allows any input |
 | `autocomplete` | `string` | `null` | Passed on to the control as `autocomplete` (e.g. `email`, `current-password`, `one-time-code`) |
@@ -72,6 +73,8 @@ import '@webtides/element-library/input-field/define';
 #### CSS Custom Properties
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`, `--el-space-2`), on top of the styling it inherits from `FormField`. Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
+
+The control itself (border, radius, padding, focus ring) is decorated by `styles/native.css`, which you import beside the theme; without it the control keeps the look of the browser. The `size` changes that decorated control: a small one is 0.8 times `--el-control-height` high, a large one 1.25 times.
 
 On a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high, and the clear cross of an invalid field at least that wide and high. The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Without that token, and on a fine pointer, the sizes stay as they are.
 

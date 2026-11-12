@@ -1,6 +1,7 @@
 import defaultThemeCSS from '../src/themes/default.css?raw';
 import highContrastThemeCSS from '../src/themes/high-contrast.css?raw';
 import sketchyThemeCSS from '../src/themes/sketchy.css?raw';
+import nativeCSS from '../src/styles/native.css?raw';
 
 function makeSheet(css) {
     const sheet = new CSSStyleSheet();
@@ -14,12 +15,16 @@ const themeSheets = {
     sketchy: makeSheet(sketchyThemeCSS),
 };
 
-const allThemeSheets = Object.values(themeSheets);
+// A theme sets the tokens; native.css decorates native inputs, textareas and selects with them.
+// It goes along with every theme, as a page that wants the themed look loads both.
+const nativeSheet = makeSheet(nativeCSS);
+
+const allThemeSheets = [...Object.values(themeSheets), nativeSheet];
 
 function applyTheme(theme) {
     const adopted = document.adoptedStyleSheets.filter((s) => !allThemeSheets.includes(s));
     const sheet = themeSheets[theme];
-    document.adoptedStyleSheets = sheet ? [...adopted, sheet] : adopted;
+    document.adoptedStyleSheets = sheet ? [...adopted, sheet, nativeSheet] : adopted;
 
     // Mirror the theme's surface onto the Storybook iframe body so the page
     // background flips with the theme / color-scheme. Stays inside Storybook —

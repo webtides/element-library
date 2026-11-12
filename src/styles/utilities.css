@@ -1,0 +1,30 @@
+/*
+ * @webtides/element-library — utilities
+ *
+ * Opt-in stylesheet with utility classes for the page. All of them are in the
+ * layer el-utilities (see styles/layers.css):
+ *
+ *     import '@webtides/element-library/styles/utilities.css';
+ */
+
+@layer el-tokens, el-utilities;
+
+@layer el-utilities {
+  /*
+   * Takes an element off the screen and keeps it for assistive technology: a
+   * label that sighted users do not need, a heading for a region. It is
+   * important, because a class like this is meant to win over the styles of
+   * the element it is put on.
+   */
+  .el-visually-hidden:not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+  }
+}

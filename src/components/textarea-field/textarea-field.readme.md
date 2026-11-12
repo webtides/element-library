@@ -75,6 +75,8 @@ import '@webtides/element-library/textarea-field/define';
 
 This component is headless by default and inherits its styling — and the `--el-*` design tokens it reads — from `FormField`. Skin it by setting those tokens via a theme — see the Storybook _Docs / Theming_ page.
 
+The control itself (border, radius, padding, focus ring) is decorated by `styles/native.css`, which you import beside the theme; without it the control keeps the look of the browser.
+
 On a touch screen (`@media (any-pointer: coarse)`) the textarea is at least `--el-touch-target` high, which matters for `rows="1"`, and the clear cross of an invalid field at least that wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
 
 #### Slots

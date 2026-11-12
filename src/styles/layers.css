@@ -1,0 +1,31 @@
+/*
+ * @webtides/element-library — cascade layers
+ *
+ * The order of the library's layers, lowest priority first:
+ *
+ *   el-tokens     the design tokens of a theme (themes/*.css)
+ *   el-utilities  utility classes (styles/utilities.css)
+ *
+ * Every stylesheet of the library that uses a layer starts with this
+ * statement, so the order is the same whichever of them a page loads first.
+ * Import this file on its own only to place the layers among your own, for
+ * example before the layers of another library:
+ *
+ *     import '@webtides/element-library/styles/layers.css';
+ *
+ * What a layer buys: a rule of the page that is in no layer wins over it
+ * whatever its specificity or position. `:root { --el-color-accent: … }` in
+ * your own stylesheet overrides a theme, also when it is loaded before the
+ * theme.
+ *
+ * Two things are in no layer, because a layer loses against every rule of the
+ * page that is in none, a reset included:
+ *
+ * - styles/native.css. A reset would take the border and the padding of the
+ *   controls away again.
+ * - The styles of the components. element-js adopts the stylesheets of the
+ *   page into every shadow root, where a component in a layer would lose
+ *   against any rule of the page.
+ */
+
+@layer el-tokens, el-utilities;

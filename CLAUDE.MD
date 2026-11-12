@@ -41,8 +41,8 @@ element-library/
 │           ├── [component-name].changelog.md    # Component changelog
 │           ├── [component-name].test.unit.js    # Unit tests
 │           └── [component-name].test.feature.js # Feature tests
-│   ├── styles/            # Shared style modules (host, size, variants, appearance, form-control)
-│   ├── themes/            # Opt-in themes: the --el-* tokens at :root
+│   ├── styles/            # Shared style modules (*.style.js) and opt-in stylesheets (native.css, utilities.css, layers.css)
+│   ├── themes/            # Opt-in themes: the --el-* tokens at :root, nothing that decorates a control
 │   └── utils/             # Shared runtime helpers
 ├── .storybook/           # Storybook configuration
 ├── patches/              # patch-package patches (Glide deep-import fix)
@@ -164,7 +164,24 @@ Rules:
 1. **Host as argument**: every module is a function of the host selector, `':host'` by default, or the tag for a component without a shadow root (`formControlStyle('el-input-field')`).
 2. **Reflect the attribute**: the modules select the host by attribute, so the component declares `variant`, `appearance` and `size` with `reflect: true`.
 3. **Internal properties**: what a module sets on the host starts with `--_el-`. These are not tokens; themes set `--el-*` only.
-4. **No cascade layers yet**: `layers.css`, `native.css`, palettes and themes as pure token overrides are the next stage of issue #69.
+4. **Component styles are in no cascade layer**: element-js adopts the stylesheets of the page into every shadow root, where a component in a layer would lose against any rule of the page that is in none.
+
+### Stylesheets for the Page
+
+Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
+
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field.
+- **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
+- **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
+
+Rules:
+
+1. **A theme sets tokens** (layer `el-tokens`) and does not decorate controls. A rule that every theme would have to copy belongs in `native.css` or in the component. A theme may bring what no token can carry (`sketchy.css`: a `@font-face`, `::part()` rules).
+2. **A field that renders a native input, textarea or select** is decorated by `native.css`, not by its own stylesheet: without that file the control keeps the look of the browser. Add the tag of the field to each of its rules there.
+3. **`native.css` stays out of a layer.** A layer loses against every rule of the page that is in none, a reset included; the Storybook has such a reset (Tailwind 3 from a CDN). The open question is issue #106.
+4. **`native.css` and the stylesheet of a field have rules of the same weight.** Never let the order decide between them: state the same value in both (the touch target), or let `native.css` set an internal property that the field reads (`--_el-select-indicator-display`).
+5. **Check a change to the cascade in a page that has a reset.** The tests have none. Look at a themed field in the Storybook, and measure both orders: the stylesheets before the styles of the fields (`<style>` in `head`) and after them (`document.adoptedStyleSheets`).
+6. **Tests** for these files are next to them (`native.test.feature.js`, `utilities.test.feature.js`) and load the CSS with `?raw` into a `<style>`.
 
 ### Code Style
 

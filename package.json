@@ -28,6 +28,7 @@
       "default": "./src/components/*/*.define.js"
     },
     "./themes/*.css": "./src/themes/*.css",
+    "./styles/*.css": "./src/styles/*.css",
     "./custom-elements.json": "./custom-elements.json",
     "./web-types.json": "./web-types.json",
     "./package.json": "./package.json"
@@ -45,6 +46,8 @@
     "!src/components/**/*.test.*.js",
     "src/utils/**/*.js",
     "src/styles/**/*.js",
+    "!src/styles/**/*.test.*.js",
+    "src/styles/*.css",
     "src/themes/*.css",
     "types/**/*.d.ts",
     "all.js",

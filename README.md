@@ -43,11 +43,15 @@ import { Accordion } from '@webtides/element-library/accordion';
 Components are **headless by default** — no theme imported means no opinionated colors, borders, or shadows. To opt in to a coherent look, import one of the shipped themes:
 
 ```js
+// A theme sets the tokens: pick one
 import '@webtides/element-library/themes/default.css'; // neutral, system-feeling
 import '@webtides/element-library/themes/high-contrast.css'; // WCAG-AAA-leaning
+
+// Decorates the inputs, textareas and selects of the library's fields with the tokens
+import '@webtides/element-library/styles/native.css';
 ```
 
-Each theme defines the library's `--el-*` design-token contract at `:root` and uses `light-dark()`, so a single import covers both light and dark color schemes. You can override individual tokens to customize, or ship a full custom theme using the same pattern — see the [Theming guide](https://webtides.github.io/element-library/?path=/docs/docs-theming--docs) in the live Storybook for the token reference, custom states, and CSS Parts.
+Each theme defines the library's `--el-*` design-token contract at `:root` and uses `light-dark()`, so a single import covers both light and dark color schemes. `native.css` is separate, so that a page can take the tokens and keep the browser's own form controls. You can override individual tokens to customize, or ship a full custom theme using the same pattern — see the [Theming guide](https://webtides.github.io/element-library/?path=/docs/docs-theming--docs) in the live Storybook for the token reference, custom states, and CSS Parts.
 
 ## Components
 

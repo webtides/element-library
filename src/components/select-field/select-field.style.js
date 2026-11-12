@@ -5,14 +5,14 @@ export default css`
         display: block;
 
         /*
-         * Hide the custom .dropdown-indicator by default — the unthemed native
-         * <select> already paints its own chevron, so showing both would
-         * duplicate. Themes (default.css, high-contrast.css) un-hide and
-         * position the custom indicator, AND suppress the native chevron via
-         * appearance: none, so the result is a single, theme-able glyph.
+         * The field renders a chevron of its own, hidden by default: the native <select> of the
+         * browser already paints one, and showing both would duplicate. styles/native.css takes
+         * the native one away and sets this property, so a decorated select has a single chevron
+         * that follows the tokens. A property, not a rule there: a rule would have the same
+         * weight as this one, and the later of the two would win.
          */
         .dropdown-indicator {
-            display: none;
+            display: var(--_el-select-indicator-display, none);
         }
 
         .dropdown-indicator svg {

@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 
 - `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect` and `spellcheck` are passed on to the native `<input>`, in server-rendered markup and on every render. Set them as attributes or properties on the element; one that is not set is left out on the `<input>`. Before, the field dropped them, so a password manager and the on-screen keyboard got no hints.
+- `size` (`small`, `medium` by default, `large`): the height, the padding and the font size of the control, 0.8 and 1.25 times `--el-control-height` for small and large. Reflected to the attribute. It shows once `styles/native.css` decorates the control; a control with the look of the browser keeps its size. ([#69](https://github.com/webtides/element-library/issues/69))
 
 ### Changed
 

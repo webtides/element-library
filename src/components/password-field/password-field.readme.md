@@ -2,7 +2,7 @@
 
 `password-field` is a masked password input with an optional show/hide reveal toggle. It extends `input-field` (and therefore `form-field`), inheriting the label, help text, error message, `required` and validation surface; it pins the input `type` to `password` and flips it to `text` while revealed.
 
-It is headless by default, like `input-field` — the native input keeps its browser look until a theme decorates it.
+It is headless by default, like `input-field` — the native input keeps its browser look until `styles/native.css` decorates it with the tokens of a theme.
 
 ## How to use
 
@@ -29,7 +29,7 @@ import '@webtides/element-library/password-field/define';
 
 #### Properties/Attributes
 
-Inherits all of `input-field`'s properties (`name`, `value`, `placeholder`, `required`, `disabled`, `label`, `labelScreenReaderOnly`, `errorMessage`, `helpMessage`, `pattern`, `valid`, `touched`, and the keyboard and autofill hints `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect`, `spellcheck`) and adds:
+Inherits all of `input-field`'s properties (`name`, `value`, `size`, `placeholder`, `required`, `disabled`, `label`, `labelScreenReaderOnly`, `errorMessage`, `helpMessage`, `pattern`, `valid`, `touched`, and the keyboard and autofill hints `autocomplete`, `inputmode`, `enterkeyhint`, `autocapitalize`, `autocorrect`, `spellcheck`) and adds:
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |

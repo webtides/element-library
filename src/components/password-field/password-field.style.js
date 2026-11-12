@@ -1,16 +1,12 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+import sizeStyle from '../../styles/size.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     el-password-field {
-        display: flex;
-        flex-direction: column;
-        gap: var(--el-space-1, 4px);
-
         .field {
-            display: flex;
-            align-items: center;
-            gap: var(--el-space-2, 8px);
-
             .validity {
                 .valid {
                     color: var(--el-color-success, green);
@@ -51,20 +47,15 @@ export default css`
             height: 1.25em;
         }
 
-        .message {
-            font-size: var(--el-font-size-sm, 14px);
-
-            &.error-message {
-                color: var(--el-color-danger, red);
-            }
-        }
-
         /* Touch screens: the control, the toggle and the clear cross are at least
            --el-touch-target. The mark beside the input keeps that width in both states, so the
            input does not jump when the validity changes. Without the token the sizes stay as they are. */
         @media (any-pointer: coarse) {
             input {
-                min-height: max(var(--el-control-height, 0px), var(--el-touch-target, 0px));
+                min-height: max(
+                    calc(var(--el-control-height, 0px) * var(--_el-size-scale, 1)),
+                    var(--el-touch-target, 0px)
+                );
             }
 
             .password-toggle {
@@ -85,3 +76,10 @@ export default css`
         }
     }
 `;
+
+export default [
+    hostStyle('el-password-field'),
+    formControlStyle('el-password-field'),
+    sizeStyle('el-password-field'),
+    style,
+].join('\n');

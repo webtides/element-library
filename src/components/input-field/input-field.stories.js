@@ -19,6 +19,7 @@ export default {
         name: 'name',
         value: '',
         type: 'text',
+        size: 'medium',
         placeholder: 'Placeholder',
         required: true,
         disabled: false,
@@ -31,6 +32,7 @@ export default {
             options: ['text', 'email'],
             control: { type: 'select' },
         },
+        size: { options: ['small', 'medium', 'large'], control: { type: 'inline-radio' } },
     },
 };
 
@@ -43,11 +45,12 @@ export const InputField = {
         },
     },
     decorators: [],
-    render: ({ name, type, value, placeholder, required, disabled, label, helpMessage, errorMessage }) => html`
+    render: ({ name, type, size, value, placeholder, required, disabled, label, helpMessage, errorMessage }) => html`
         <el-input-field
             name="${name}"
             value="${value}"
             type="${type}"
+            size="${size}"
             placeholder="${placeholder}"
             required="${required ? 'true' : 'false'}"
             disabled="${disabled ? 'true' : 'false'}"
@@ -93,4 +96,22 @@ export const BrowserInputField = {
     decorators: [],
     render: ({ label, placeholder }) =>
         html`<label>${label}<br /><input type="text" placeholder="${placeholder}" /></label>`,
+};
+
+export const Sizes = {
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'The three sizes. They show once `styles/native.css` decorates the control, which this Storybook loads with every theme.',
+            },
+        },
+    },
+    render: () => html`
+        <div style="display:grid;gap:1rem;max-width:20rem">
+            <el-input-field name="size-small" label="Small" size="small" placeholder="Small"></el-input-field>
+            <el-input-field name="size-medium" label="Medium" placeholder="Medium"></el-input-field>
+            <el-input-field name="size-large" label="Large" size="large" placeholder="Large"></el-input-field>
+        </div>
+    `,
 };

@@ -8,160 +8,99 @@
  *
  * Without this (or another) theme imported, components fall back to the
  * null-ish defaults baked into each component's stylesheet — i.e. they stay
- * headless (no borders, no decorative backgrounds, native controls untouched).
+ * headless (no borders, no decorative backgrounds).
+ *
+ * A theme sets tokens and nothing else. The inputs, textareas and selects of
+ * the library's fields keep the look of the browser until you also import the
+ * stylesheet that decorates them with these tokens:
+ *
+ *     import '@webtides/element-library/styles/native.css';
+ *
+ * The tokens are in the cascade layer el-tokens (see styles/layers.css): a
+ * rule of your own that is in no layer overrides them, wherever it is loaded.
  *
  * Surface colors use light-dark(), so the theme automatically adapts when
  * the page declares color-scheme. The :root rule below opts the document
  * into both schemes; override on a parent if you need to force one mode.
  */
 
-:root {
-  color-scheme: light dark;
+@layer el-tokens, el-utilities;
 
-  /* Color — surfaces & text */
-  --el-color-fg: light-dark(#111827, #f3f4f6);
-  --el-color-fg-muted: light-dark(#6b7280, #9ca3af);
-  --el-color-bg: light-dark(#ffffff, #0f1115);
-  --el-color-bg-muted: light-dark(#f3f4f6, #1c1f24);
-  --el-color-border: light-dark(#d1d5db, #2d3138);
-
-  /* Color — interactive & semantic */
-  --el-color-accent: light-dark(#2563eb, #60a5fa);
-  --el-color-success: light-dark(#16a34a, #4ade80);
-  /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
-  --el-color-warning: #f59e0b;
-  --el-color-danger: light-dark(#dc2626, #f87171);
-  --el-color-focus-ring: var(--el-color-accent);
-
-  /* Spacing — 4px base */
-  --el-space-1: 0.25rem;
-  --el-space-2: 0.5rem;
-  --el-space-3: 0.75rem;
-  --el-space-4: 1rem;
-  --el-space-5: 1.5rem;
-
-  /* Radius */
-  --el-radius-sm: 2px;
-  --el-radius-md: 6px;
-  --el-radius-lg: 12px;
-
-  /* Border */
-  --el-border-width: 1px;
-
-  /* Typography — inherits system stack by default */
-  --el-font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --el-font-size-sm: 0.875rem;
-  --el-font-size-md: 1rem;
-  --el-line-height: 1.5;
-
-  /* Shadow */
-  --el-shadow-md: 0 4px 12px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.4));
-  --el-shadow-lg: 0 12px 24px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.5));
-
-  /* Motion */
-  --el-duration-md: 200ms;
-  --el-ease: cubic-bezier(0.2, 0, 0, 1);
-
-  /* Focus ring */
-  --el-focus-ring-width: 2px;
-  --el-focus-ring-offset: 2px;
-
-  /* Sizing */
-  --el-control-height: 2.5rem;
-  --el-touch-target: 2.75rem;
-
-  /* Dialog — overlay scrim dims the inert background; the panel reads the shared surface tokens */
-  --el-dialog-width: 31rem;
-  --el-dialog-overlay-background: light-dark(rgba(17, 24, 39, 0.5), rgba(0, 0, 0, 0.6));
-}
-
-/*
- * Native form controls (input / textarea / select) live in light DOM, so the
- * theme decorates them directly. Without this rule, consumers get the browser's
- * native input look (headless default).
- */
-el-input-field input,
-el-password-field input,
-el-textarea-field textarea,
-el-select-field select {
-  box-sizing: border-box;
-  width: 100%;
-  border: var(--el-border-width) solid var(--el-color-border);
-  border-radius: var(--el-radius-md);
-  padding: var(--el-space-2) var(--el-space-3);
-  background: var(--el-color-bg);
-  color: var(--el-color-fg);
-  font-family: var(--el-font-family);
-  font-size: var(--el-font-size-md);
-  line-height: var(--el-line-height);
-  transition:
-    border-color var(--el-duration-md) var(--el-ease),
-    box-shadow var(--el-duration-md) var(--el-ease);
-}
-
-el-input-field input,
-el-password-field input,
-el-select-field select {
-  min-height: var(--el-control-height);
-}
-
-el-input-field input:focus,
-el-password-field input:focus,
-el-textarea-field textarea:focus,
-el-select-field select:focus {
-  outline: none;
-  border-color: var(--el-color-focus-ring);
-  box-shadow:
-    0 0 0 var(--el-focus-ring-offset) var(--el-color-bg),
-    0 0 0 calc(var(--el-focus-ring-offset) + var(--el-focus-ring-width)) var(--el-color-focus-ring);
-}
-
-el-input-field:state(invalid) input,
-el-password-field:state(invalid) input,
-el-textarea-field:state(invalid) textarea,
-el-select-field:state(invalid) select {
-  border-color: var(--el-color-danger);
-}
-
-/*
- * select-field renders both a native chevron AND a custom .dropdown-indicator.
- * Suppress the native one and float the indicator inside the select so themed
- * selects show a single, theme-able chevron.
- */
-el-select-field .field {
-  position: relative;
-}
-
-el-select-field select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: calc(var(--el-space-3) * 2 + var(--el-space-2));
-}
-
-el-select-field .dropdown-indicator {
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  position: absolute;
-  right: var(--el-space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--el-color-fg-muted);
-}
-
-/* Respect user motion + contrast preferences */
-
-@media (prefers-reduced-motion: reduce) {
+@layer el-tokens {
   :root {
-    --el-duration-md: 0s;
+    color-scheme: light dark;
+
+    /* Color — surfaces & text */
+    --el-color-fg: light-dark(#111827, #f3f4f6);
+    --el-color-fg-muted: light-dark(#6b7280, #9ca3af);
+    --el-color-bg: light-dark(#ffffff, #0f1115);
+    --el-color-bg-muted: light-dark(#f3f4f6, #1c1f24);
+    --el-color-border: light-dark(#d1d5db, #2d3138);
+
+    /* Color — interactive & semantic */
+    --el-color-accent: light-dark(#2563eb, #60a5fa);
+    --el-color-success: light-dark(#16a34a, #4ade80);
+    /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
+    --el-color-warning: #f59e0b;
+    --el-color-danger: light-dark(#dc2626, #f87171);
+    --el-color-focus-ring: var(--el-color-accent);
+
+    /* Spacing — 4px base */
+    --el-space-1: 0.25rem;
+    --el-space-2: 0.5rem;
+    --el-space-3: 0.75rem;
+    --el-space-4: 1rem;
+    --el-space-5: 1.5rem;
+
+    /* Radius */
+    --el-radius-sm: 2px;
+    --el-radius-md: 6px;
+    --el-radius-lg: 12px;
+
+    /* Border */
+    --el-border-width: 1px;
+
+    /* Typography — inherits system stack by default */
+    --el-font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --el-font-size-sm: 0.875rem;
+    --el-font-size-md: 1rem;
+    --el-line-height: 1.5;
+
+    /* Shadow */
+    --el-shadow-md: 0 4px 12px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.4));
+    --el-shadow-lg: 0 12px 24px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.5));
+
+    /* Motion */
+    --el-duration-md: 200ms;
+    --el-ease: cubic-bezier(0.2, 0, 0, 1);
+
+    /* Focus ring */
+    --el-focus-ring-width: 2px;
+    --el-focus-ring-offset: 2px;
+
+    /* Sizing */
+    --el-control-height: 2.5rem;
+    --el-touch-target: 2.75rem;
+
+    /* Dialog — overlay scrim dims the inert background; the panel reads the shared surface tokens */
+    --el-dialog-width: 31rem;
+    --el-dialog-overlay-background: light-dark(rgba(17, 24, 39, 0.5), rgba(0, 0, 0, 0.6));
   }
-}
 
-@media (prefers-contrast: more) {
-  :root {
-    --el-color-fg: light-dark(#000000, #ffffff);
-    --el-color-border: light-dark(#000000, #ffffff);
-    --el-border-width: 2px;
-    --el-focus-ring-width: 3px;
+  /* Respect user motion + contrast preferences */
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --el-duration-md: 0s;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --el-color-fg: light-dark(#000000, #ffffff);
+      --el-color-border: light-dark(#000000, #ffffff);
+      --el-border-width: 2px;
+      --el-focus-ring-width: 3px;
+    }
   }
 }

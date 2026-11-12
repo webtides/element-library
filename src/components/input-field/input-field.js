@@ -15,6 +15,9 @@ import style from './input-field.style.js';
  *
  * @property {string} type - Native `type` attribute of the underlying `<input>` (e.g.
  *   `'text'`, `'email'`, `'password'`, `'tel'`, `'url'`).
+ * @property {'small'|'medium'|'large'} size - Size of the control: its height, its padding and its
+ *   font size. Default `'medium'`. Reflected to the `size` attribute. It shows once the control is
+ *   decorated (`styles/native.css`); a control with the look of the browser keeps its size.
  * @property {string} placeholder - Placeholder text shown while the input is empty.
  * @property {string | false} pattern - Regular expression used as the input's `pattern`
  *   attribute. When `false` (the default), the `pattern` attribute is omitted entirely, so
@@ -33,7 +36,13 @@ import style from './input-field.style.js';
  */
 export default class InputField extends FormField {
     constructor(options) {
-        super({ shadowRender: false, styles: [style], ...options });
+        super({
+            shadowRender: false,
+            styles: [style],
+            // The size module selects the host by this attribute.
+            propertyOptions: { size: { reflect: true } },
+            ...options,
+        });
         shadowNativeTextEntryProperties(this);
     }
 
@@ -41,6 +50,7 @@ export default class InputField extends FormField {
         return {
             ...super.properties(),
             type: 'text',
+            size: 'medium',
             placeholder: '',
             pattern: false,
             autocomplete: null,

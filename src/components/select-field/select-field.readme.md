@@ -105,6 +105,8 @@ When using objects:
 
 This component is headless by default and inherits its styling — and the `--el-*` design tokens it reads — from `FormField`, plus a custom dropdown indicator. Skin it by setting those tokens via a theme — see the Storybook _Docs / Theming_ page.
 
+The control itself (border, radius, padding, focus ring) is decorated by `styles/native.css`, which you import beside the theme; without it the control keeps the look of the browser. The field renders a chevron of its own, hidden as long as the select has the look of the browser. `native.css` takes the native chevron away and shows that one, in `--el-select-indicator-color` (by default `--el-color-fg-muted`).
+
 On a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high. Without that token, and on a fine pointer, the sizes stay as they are.
 
 #### Slots
