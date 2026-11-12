@@ -42,6 +42,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the plus and minus buttons are at least `--el-touch-target` wide, and the input is as high as the buttons. With the default theme the buttons were 33 and 29 px wide and the input 34 px high. The height of the buttons follows the token on every pointer, as before. Unchanged on a fine pointer and without the token.
 - Changed: the `label` is rendered: a `<label>` above the stepper, inside the shadow root, that names the number input. Style it with `::part(label)`. Before, the field took the attribute and showed nothing, and the input had no accessible name (axe `label`). ([#94](https://github.com/webtides/element-library/issues/94))
 
+### badge
+
+- Added: `el-badge`, a new component: a short label that marks something with a status or a count ("New", "3"). Pure presentation, without a role and without behaviour. It has the `variant` and the `appearance` of the shared vocabulary, both reflected, `pill` for fully rounded ends and `pulse` for a ring that spreads from the badge to catch the eye; the pulse stands still for a user who prefers reduced motion. A badge is three quarters of the font size of the text it stands in, so it has no `size`. With a single character it is as wide as it is high: a square, and a circle as a pill. ([#74](https://github.com/webtides/element-library/issues/74))
+
 ### button
 
 - Added: `appearance` (`filled` by default, `outlined` or `plain`): how the colours of the variant are painted. It works with every variant, so a `plain` button, text only, exists in every colour; before, only the `text` variant in the brand colour did. ([#69](https://github.com/webtides/element-library/issues/69))

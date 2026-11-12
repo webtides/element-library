@@ -60,6 +60,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | accordion          | Single Accordion element                                                      | `0.1.0` |
 | accordion-group    | Accordion group to hold multiple elements                                     | `0.1.0` |
 | amount-field       | A simple element to create amount stepping input fields                       | `0.1.1` |
+| badge              | A short label for a status or a count, with variants and appearances          | `0.1.0` |
 | button             | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
 | carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field     |                                                                               | `0.1.1` |

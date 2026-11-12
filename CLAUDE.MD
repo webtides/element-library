@@ -58,6 +58,7 @@ element-library/
 - **accordion**: Single accordion element
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
+- **badge**: Label for a status or a count
 - **button**: Themeable button
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
