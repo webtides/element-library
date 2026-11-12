@@ -21,6 +21,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - Put the links into an element of their own (for example a `<div>`), so that the group can make it the `tablist`. Links that are direct children of the group still work, with the keyboard too, but have no `tablist` around them, which axe reports (`aria-required-parent`). The group cannot be the list itself, because it holds the panels as well. ([#97](https://github.com/webtides/element-library/issues/97))
+- The group no longer sets the `active` state on its links; it sets `aria-selected`, and `el-tab-link` takes its state from that. Nothing changes for `el-tab-link`. An element of your own that is used as a link (`link-selector`) no longer gets `:state(active)` from the group: style it with `[aria-selected='true']`. Before, such an element had to be an element-js element, any other made the group throw; now any element can be a link. ([#99](https://github.com/webtides/element-library/issues/99))
+
+### Fixed
+
+- The group no longer throws when it connects before `el-tab-link` is defined (`TypeError: Cannot read properties of undefined (reading 'states')`), and the first selection reaches the links all the same. That order comes up with lazy definition, where each tag is loaded by itself. The group only writes attributes and styles now, which a link or a panel takes whether its tag is defined or not. ([#99](https://github.com/webtides/element-library/issues/99))
+- With no `selected` and panels that are not defined yet, the first panel is selected. The group read the `name` property, which a panel only has once it is defined, so every panel stayed hidden; it reads the attribute now. ([#99](https://github.com/webtides/element-library/issues/99))
+- Links and panels that are added to the group later are taken in: they get their states, a new panel is labelled by its link, and a group that had no panel at first selects the first one that comes. Before, the group looked for its parts once, when it connected. ([#99](https://github.com/webtides/element-library/issues/99))
 
 ## [0.1.0] - 2026-06-03
 

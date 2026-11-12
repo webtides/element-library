@@ -14,6 +14,9 @@ let tabLinkIds = 0;
  * the one they land on. The element around the links becomes the `tablist`, so put the links
  * into an element of their own.
  *
+ * The links and panels need not be defined, or be there, when the group connects: it marks the
+ * selection with attributes and styles, and takes in parts that are added later.
+ *
  * @element el-tab-group
  *
  * @slot - Default slot containing `<el-tab-link>` and `<el-tab-panel>` children.
@@ -31,6 +34,8 @@ export default class TabGroup extends StyledElement {
     tabLinks = [];
     /** @private */
     tabPanels = [];
+    /** @private */
+    _tabsObserver = null;
 
     constructor() {
         super({ styles: [style], propertyOptions: { selected: { reflect: true } } });
@@ -57,19 +62,44 @@ export default class TabGroup extends StyledElement {
     }
 
     connected() {
+        this._syncTabs();
+
+        // Links and panels that come later: added by the page or a framework, or not parsed yet
+        // when the group connected.
+        this._tabsObserver = new MutationObserver(() => {
+            const same = (now, before) => now.length === before.length && [...now].every((n, i) => n === before[i]);
+            if (same(this.queryTabLinks(), this.tabLinks) && same(this.queryTabPanels(), this.tabPanels)) return;
+            this._syncTabs();
+        });
+        this._tabsObserver.observe(this, { childList: true, subtree: true });
+
+        // this.setAttribute('cloak', 'false');
+    }
+
+    disconnected() {
+        this._tabsObserver?.disconnect();
+        this._tabsObserver = null;
+    }
+
+    /**
+     * Finds the links and panels and brings them in line with the selection. Everything the group
+     * tells them is an attribute or a style, so it reaches a link or a panel whose tag is not
+     * defined yet as well.
+     * @private
+     */
+    _syncTabs() {
         this.tabLinks = this.queryTabLinks();
         this.tabPanels = this.queryTabPanels();
 
         // select first tab if none was selected declarative
         if (!this.selected && this.tabPanels.length > 0) {
             const firstPanel = this.tabPanels[0];
-            this.selectTab(firstPanel.name);
+            // The attribute is there before the panel is defined, the property is not.
+            this.selectTab(firstPanel.getAttribute('name') ?? firstPanel.name);
         }
 
         this.updateSelection();
         this._syncTabList();
-
-        // this.setAttribute('cloak', 'false');
     }
 
     events() {
@@ -105,11 +135,7 @@ export default class TabGroup extends StyledElement {
 
         for (const tabLink of tabLinks) {
             const isSelected = tabLink.getAttribute('for') === this.selected;
-            if (isSelected) {
-                tabLink._internals.states.add('active');
-            } else {
-                tabLink._internals.states.delete('active');
-            }
+            // An el-tab-link shows its `active` state from this attribute.
             tabLink.setAttribute('aria-selected', isSelected ? 'true' : 'false');
             tabLink.setAttribute('tabindex', tabLink === tabStop ? '0' : '-1');
         }

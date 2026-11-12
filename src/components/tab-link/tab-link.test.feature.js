@@ -68,6 +68,17 @@ describe('Feature | TabLink', () => {
         expect(el.hasAttribute('aria-disabled')).toBe(false);
     });
 
+    it('is active while it is selected', async () => {
+        const el = await fixture(`<el-tab-link for="a">a</el-tab-link>`);
+        expect(el.matches(':state(active)')).toBe(false);
+
+        el.setAttribute('aria-selected', 'true');
+        expect(el.matches(':state(active)')).toBe(true);
+
+        el.setAttribute('aria-selected', 'false');
+        expect(el.matches(':state(active)')).toBe(false);
+    });
+
     it('does not mark a link that is not disabled', async () => {
         const el = await fixture(`<el-tab-link for="a">a</el-tab-link>`);
 

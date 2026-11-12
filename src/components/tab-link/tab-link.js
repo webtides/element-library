@@ -15,8 +15,8 @@ import style from './tab-link.style.js';
  *
  * @slot - Default slot for the tab label content.
  *
- * @cssstate active - Set by the parent `<el-tab-group>` while this link's panel is the
- *   selected one. Style with `el-tab-link:state(active) { … }`.
+ * @cssstate active - Set while the link is selected (`aria-selected="true"`), which the parent
+ *   `<el-tab-group>` keeps up to date. Style with `el-tab-link:state(active) { … }`.
  *
  * @property {string | undefined} for - Name of the panel this link activates (matches a
  *   `<el-tab-panel>`'s `name`).
@@ -24,7 +24,7 @@ import style from './tab-link.style.js';
  *   and is exposed as disabled (`aria-disabled="true"`).
  */
 export default class TabLink extends StyledElement {
-    static observedAttributes = ['disabled'];
+    static observedAttributes = ['disabled', 'aria-selected'];
 
     constructor() {
         super({ styles: [style] });
@@ -32,6 +32,7 @@ export default class TabLink extends StyledElement {
 
     attributeChangedCallback() {
         this._syncDisabled();
+        this._syncActive();
     }
 
     connected() {
@@ -45,6 +46,17 @@ export default class TabLink extends StyledElement {
     _syncDisabled() {
         if (this.hasAttribute('disabled')) this.setAttribute('aria-disabled', 'true');
         else this.removeAttribute('aria-disabled');
+    }
+
+    /**
+     * The `active` state follows `aria-selected`. The group only writes the attribute, which it
+     * can do before this element is defined: the browser reports the attributes that are already
+     * there when it upgrades the element.
+     * @private
+     */
+    _syncActive() {
+        if (this.getAttribute('aria-selected') === 'true') this._internals.states.add('active');
+        else this._internals.states.delete('active');
     }
 
     properties() {

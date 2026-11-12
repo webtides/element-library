@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
 import { fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './tab-group.js';
-import { define as defineTabLink } from '../tab-link/tab-link.js';
-import { define as defineTabPanel } from '../tab-panel/tab-panel.js';
+import TabLink, { define as defineTabLink } from '../tab-link/tab-link.js';
+import TabPanel, { define as defineTabPanel } from '../tab-panel/tab-panel.js';
 defineTabLink();
 defineTabPanel();
 define();
@@ -54,6 +54,8 @@ describe('Feature | TabGroup', () => {
         expect(tabStops(el)).toEqual(['b']);
         expect(link(el, 'a').getAttribute('aria-selected')).toBe('false');
         expect(link(el, 'a').getAttribute('tabindex')).toBe('-1');
+        expect(link(el, 'b').matches(':state(active)')).toBe(true);
+        expect(link(el, 'a').matches(':state(active)')).toBe(false);
     });
 
     it('moves the mark and the tab stop with the selection', async () => {
@@ -206,5 +208,139 @@ describe('Feature | TabGroup', () => {
         const results = await axe.run(el);
 
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    describe('with parts that are not defined yet', () => {
+        // With lazy definition the tag of the group can be defined before the tags of its links
+        // and panels. A tag cannot be taken back, so every fixture gets link and panel tags of
+        // its own, which the test defines when it wants to.
+        let lateTags = 0;
+        const lateFixture = async (attrs = 'selected="b"') => {
+            const id = ++lateTags;
+            const tags = { link: `late-tab-link-${id}`, panel: `late-tab-panel-${id}` };
+            const el = await fixture(`
+                <el-tab-group ${attrs} link-selector="${tags.link}" panel-selector="${tags.panel}">
+                    <div>
+                        <${tags.link} for="a">A</${tags.link}>
+                        <${tags.link} for="b">B</${tags.link}>
+                    </div>
+                    <${tags.panel} name="a">Panel A</${tags.panel}>
+                    <${tags.panel} name="b">Panel B</${tags.panel}>
+                </el-tab-group>
+            `);
+            await nextFrame();
+            return {
+                el,
+                links: () => [...el.querySelectorAll(tags.link)],
+                panels: () => [...el.querySelectorAll(tags.panel)],
+                defineParts: async () => {
+                    customElements.define(tags.link, class extends TabLink {});
+                    customElements.define(tags.panel, class extends TabPanel {});
+                    await nextFrame();
+                    await nextFrame();
+                },
+            };
+        };
+
+        it('throws nothing', async () => {
+            const errors = [];
+            const onError = (event) => {
+                event.preventDefault();
+                errors.push(event.message ?? String(event.reason));
+            };
+            window.addEventListener('error', onError);
+            window.addEventListener('unhandledrejection', onError);
+
+            await lateFixture();
+            await nextFrame();
+
+            window.removeEventListener('error', onError);
+            window.removeEventListener('unhandledrejection', onError);
+            expect(errors).toEqual([]);
+        });
+
+        it('selects the first panel when none is selected', async () => {
+            const { el, panels } = await lateFixture('');
+
+            expect(el.selected).toBe('a');
+            expect(panels().map((panel) => panel.style.display)).toEqual(['block', 'none']);
+        });
+
+        it('shows the selection on the links and panels once they are defined', async () => {
+            const { el, links, panels, defineParts } = await lateFixture();
+            await defineParts();
+            const [linkA, linkB] = links();
+            const [panelA, panelB] = panels();
+
+            expect(links().map((link) => link.matches(':state(active)'))).toEqual([false, true]);
+            expect(links().map((link) => link.getAttribute('aria-selected'))).toEqual(['false', 'true']);
+            expect(links().map((link) => link.getAttribute('tabindex'))).toEqual(['-1', '0']);
+            expect(links().map((link) => link.getAttribute('role'))).toEqual(['tab', 'tab']);
+            expect(linkA.parentElement.getAttribute('role')).toBe('tablist');
+            expect(panels().map((panel) => panel.style.display)).toEqual(['none', 'block']);
+            expect(panels().map((panel) => panel.getAttribute('role'))).toEqual(['tabpanel', 'tabpanel']);
+            expect(panelA.getAttribute('aria-labelledby')).toBe(linkA.id);
+            expect(panelB.getAttribute('aria-labelledby')).toBe(linkB.id);
+
+            // And the selection moves as in a group whose parts were there first.
+            linkA.click();
+            await nextFrame();
+
+            expect(el.selected).toBe('a');
+            expect(links().map((link) => link.matches(':state(active)'))).toEqual([true, false]);
+            expect(links().map((link) => link.getAttribute('aria-selected'))).toEqual(['true', 'false']);
+            expect(links().map((link) => link.getAttribute('tabindex'))).toEqual(['0', '-1']);
+            expect(panels().map((panel) => panel.style.display)).toEqual(['block', 'none']);
+        });
+    });
+
+    describe('with parts that are added later', () => {
+        it('takes in a link and a panel', async () => {
+            const el = await tabsFixture();
+
+            link(el, 'a').parentElement.insertAdjacentHTML('beforeend', '<el-tab-link for="e">E</el-tab-link>');
+            el.insertAdjacentHTML('beforeend', '<el-tab-panel name="e">Panel E</el-tab-panel>');
+            await nextFrame();
+            await nextFrame();
+
+            expect(selected(el)).toEqual(['b']);
+            expect(link(el, 'e').getAttribute('aria-selected')).toBe('false');
+            expect(link(el, 'e').getAttribute('tabindex')).toBe('-1');
+            expect(panel(el, 'e').style.display).toBe('none');
+            expect(panel(el, 'e').getAttribute('aria-labelledby')).toBe(link(el, 'e').id);
+
+            link(el, 'e').click();
+            await nextFrame();
+
+            expect(selected(el)).toEqual(['e']);
+            expect(tabStops(el)).toEqual(['e']);
+            expect(link(el, 'e').matches(':state(active)')).toBe(true);
+            expect(link(el, 'b').matches(':state(active)')).toBe(false);
+            expect(panel(el, 'e').style.display).toBe('block');
+            expect(panel(el, 'b').style.display).toBe('none');
+        });
+
+        it('selects the first panel of a group that was empty at first', async () => {
+            const el = await fixture(`<el-tab-group></el-tab-group>`);
+            await nextFrame();
+
+            el.innerHTML = `
+                <div>
+                    <el-tab-link for="a">A</el-tab-link>
+                    <el-tab-link for="b">B</el-tab-link>
+                </div>
+                <el-tab-panel name="a">Panel A</el-tab-panel>
+                <el-tab-panel name="b">Panel B</el-tab-panel>
+            `;
+            await nextFrame();
+            await nextFrame();
+
+            expect(el.selected).toBe('a');
+            expect(selected(el)).toEqual(['a']);
+            expect(tabStops(el)).toEqual(['a']);
+            expect(link(el, 'a').parentElement.getAttribute('role')).toBe('tablist');
+            expect(panel(el, 'a').style.display).toBe('block');
+            expect(panel(el, 'b').style.display).toBe('none');
+        });
     });
 });

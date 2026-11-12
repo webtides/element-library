@@ -63,7 +63,7 @@ A link that has the keyboard focus shows the focus ring of the library (`--el-fo
 
 | Name | Description |
 | --- | --- |
-| `active` | Set by the parent `<el-tab-group>` while this link's panel is the selected one. Style with `el-tab-link:state(active) { … }`. |
+| `active` | Set while the link is selected (`aria-selected="true"`), which the parent `<el-tab-group>` keeps up to date. Style with `el-tab-link:state(active) { … }`. |
 
 #### Slots
 

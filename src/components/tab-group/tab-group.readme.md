@@ -65,6 +65,14 @@ _None_
 | ----------- | -------------------------------------------------- |
 | _(default)_ | The `<el-tab-link>` and `<el-tab-panel>` children. |
 
+## Lazy definition and parts that come later
+
+The group does not need its links and panels to be defined, or to be there, when it starts.
+
+- `el-tab-group`, `el-tab-link` and `el-tab-panel` can be defined in any order, for example each by itself when a loader finds its tag on the page. The group marks the selection with attributes and styles, which reach a link or a panel before its tag is defined; `el-tab-link` shows its `active` state from `aria-selected` as soon as it is defined.
+- Links and panels that are added to the group later are taken in. A group that has no panel at first selects the first one that comes, unless `selected` is set.
+- An element of your own that is used as a link (`link-selector`) gets `aria-selected` and `tabindex` from the group as well. The `active` state is set by `el-tab-link` only; style another element with `[aria-selected='true']`.
+
 ## Accessibility
 
 - The element around the links gets `role="tablist"` and `aria-orientation`, unless the page gave it another role. Links that are direct children of the group have no such element; the group cannot be the list itself, because it holds the panels as well. Their keys and states work all the same, but a `tab` outside a `tablist` is not valid ARIA, and axe reports it (`aria-required-parent`).

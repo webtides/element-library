@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the tab is at least `--el-touch-target` wide and high (36 px high with the default theme before). Unchanged on a fine pointer and without the token.
+- The link sets its `active` state itself, while it has `aria-selected="true"`. Before, the `el-tab-group` set the state from outside, which failed when the link was not defined yet. In a group nothing changes: the group keeps `aria-selected` up to date. A link outside a group is active while the page sets `aria-selected="true"` on it. ([#99](https://github.com/webtides/element-library/issues/99))
 
 ### Fixed
 
