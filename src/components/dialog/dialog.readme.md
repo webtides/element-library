@@ -111,7 +111,7 @@ On a touch screen (`@media (any-pointer: coarse)`) the close button is at least 
 
 ## Scroll locking
 
-While a dialog is open, page scrolling is locked (ref-counted, so stacked dialogs cooperate). Hiding the scrollbar would normally widen the page and cause a layout shift, so the dialog pads the document by the removed scrollbar's width to keep the content steady. This is a no-op on overlay-scrollbar systems (e.g. macOS), where the scrollbar takes no layout space.
+While a dialog is open, page scrolling is locked (ref-counted, so stacked dialogs cooperate). A dialog that is taken out of the page while it is open gives its lock back, and opens as a modal again when it is put back while `open`. Hiding the scrollbar would normally widen the page and cause a layout shift, so the dialog pads the document by the removed scrollbar's width to keep the content steady. This is a no-op on overlay-scrollbar systems (e.g. macOS), where the scrollbar takes no layout space.
 
 This compensation covers normal page content, but `position: fixed` elements pinned to the right edge (a floating action button, a sticky toolbar) are positioned against the viewport and still shift by the scrollbar width when it disappears. To avoid that entirely, reserve the scrollbar gutter on your document up front:
 

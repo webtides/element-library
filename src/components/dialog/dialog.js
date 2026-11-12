@@ -88,10 +88,16 @@ export default class Dialog extends TemplateElement {
     }
 
     disconnected() {
-        // Release the scroll lock we took if the dialog is torn down while open.
-        if (this.$refs.dialog?.open) {
-            unlockBodyScroll();
-        }
+        // A dialog that leaves the page while it is open: the platform takes it out of the top
+        // layer, but the `<dialog>` stays open and the page stays locked. Both are undone here, so
+        // that the page scrolls again and the dialog can open as a modal when it comes back.
+        // element-js has emptied `$refs` by now; the element is the one `_applyOpen()` kept.
+        const dialog = this._shown;
+        if (!dialog) return;
+        this._shown = undefined;
+        dialog.classList.remove('showing');
+        if (dialog.open) dialog.close();
+        this._unlockScroll();
     }
 
     watch() {
@@ -178,8 +184,9 @@ export default class Dialog extends TemplateElement {
         const dialog = this.$refs.dialog;
         if (!dialog || dialog.open) return;
 
+        this._shown = dialog;
         this.dispatch(this._eventNames.SHOW);
-        lockBodyScroll();
+        this._lockScroll();
         dialog.showModal();
         // The platform has now moved focus inside the dialog; let consumers redirect it.
         this.dispatch(this._eventNames.INITIAL_FOCUS);
@@ -199,8 +206,30 @@ export default class Dialog extends TemplateElement {
         dialog.classList.remove('showing');
         await afterTransition(dialog);
         dialog.close();
-        unlockBodyScroll();
+        this._shown = undefined;
+        this._unlockScroll();
         this.dispatch(this._eventNames.AFTER_HIDE);
+    }
+
+    /**
+     * Takes the lock on the scrolling of the page, once for this dialog.
+     * @private
+     */
+    _lockScroll() {
+        if (this._scrollLocked) return;
+        this._scrollLocked = true;
+        lockBodyScroll();
+    }
+
+    /**
+     * Gives the lock back, if this dialog holds it. The lock counts its holders, so a dialog must
+     * not give back more than it took.
+     * @private
+     */
+    _unlockScroll() {
+        if (!this._scrollLocked) return;
+        this._scrollLocked = false;
+        unlockBodyScroll();
     }
 
     /** @private */

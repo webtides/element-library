@@ -80,6 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### dialog
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (20 × 20 px before). Its icon keeps its size, and the header grows with the button. Unchanged on a fine pointer and without the token.
+- Fixed: a dialog that is taken out of the page while it is open gives the page its scrolling back. Before, the page stayed locked (`overflow: hidden` on the document) with no dialog left to close, and a dialog opened later did not unlock it either, because the lock counts its holders. Put back into the page while `open`, the dialog opens as a modal again; before, it was shown in the flow of the page, without a backdrop and without taking the focus.
 
 ### form-field
 

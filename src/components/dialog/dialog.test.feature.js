@@ -59,6 +59,71 @@ describe('Feature | Dialog', () => {
         expect(root.style.paddingRight).toBe(paddingBefore);
     });
 
+    it('gives the page its scrolling back when it is removed while it is open', async () => {
+        const root = document.documentElement;
+        const overflowBefore = root.style.overflow;
+        const paddingBefore = root.style.paddingRight;
+
+        const el = await dialogFixture();
+        await el.show();
+        expect(root.style.overflow).toBe('hidden');
+
+        el.remove();
+        expect(root.style.overflow).toBe(overflowBefore);
+        expect(root.style.paddingRight).toBe(paddingBefore);
+        expect(el.shadowRoot.querySelector('dialog').open).toBe(false);
+    });
+
+    it('leaves the lock of another dialog alone when it is removed while it is open or closing', async () => {
+        const root = document.documentElement;
+        const overflowBefore = root.style.overflow;
+
+        const below = await dialogFixture();
+        await below.show();
+
+        const removedOpen = await dialogFixture();
+        await removedOpen.show();
+        removedOpen.remove();
+        expect(root.style.overflow).toBe('hidden');
+
+        // Removed during the transition out: the close that is under way finishes afterwards, and
+        // must not give back a lock that the removal has given back already.
+        const wrapper = await fixture(
+            `<div style="--el-duration-md: 100ms"><el-dialog label="Dialog title"><p>Dialog body content.</p></el-dialog></div>`,
+        );
+        const removedClosing = wrapper.querySelector('el-dialog');
+        await removedClosing.show();
+        const closed = oneEvent(removedClosing, 'dialog-after-hide');
+        removedClosing.open = false;
+        await nextFrame();
+        removedClosing.remove();
+        await closed;
+        expect(root.style.overflow).toBe('hidden');
+
+        await below.hide();
+        expect(root.style.overflow).toBe(overflowBefore);
+    });
+
+    it('opens as a modal again when it comes back into the page while `open`', async () => {
+        const root = document.documentElement;
+        const overflowBefore = root.style.overflow;
+
+        const el = await dialogFixture();
+        await el.show();
+        const parent = el.parentNode;
+        el.remove();
+
+        const shown = oneEvent(el, 'dialog-after-show');
+        parent.append(el);
+        await shown;
+        expect(el.open).toBe(true);
+        expect(el.shadowRoot.querySelector('dialog').matches(':modal')).toBe(true);
+        expect(root.style.overflow).toBe('hidden');
+
+        await el.hide();
+        expect(root.style.overflow).toBe(overflowBefore);
+    });
+
     it('emits a cancelable dialog-request-close and closes on the close button', async () => {
         const el = await dialogFixture();
         await el.show();
