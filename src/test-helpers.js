@@ -32,6 +32,42 @@ export async function emulateTouchScreen(enabled) {
 }
 
 /**
+ * Makes `(prefers-reduced-motion: reduce)` match for the tests of the surrounding `describe`, and
+ * takes that back after the last of them. Chromium only.
+ *
+ * Test files share a page, and the themes and several components behave differently under that
+ * media query. So the helper fails loudly if the page does not get its own setting back.
+ * @returns {void}
+ */
+export function useReducedMotion() {
+    const query = '(prefers-reduced-motion: reduce)';
+    let before;
+    beforeAll(async () => {
+        before = matchMedia(query).matches;
+        await emulateReducedMotion(true);
+    });
+    afterAll(async () => {
+        await emulateReducedMotion(false);
+        if (matchMedia(query).matches !== before) {
+            throw new Error('useReducedMotion: the page did not get its own setting back');
+        }
+    });
+}
+
+/**
+ * Switches the emulation of `(prefers-reduced-motion: reduce)` on or off.
+ * @param {boolean} enabled
+ * @returns {Promise<void>}
+ */
+export async function emulateReducedMotion(enabled) {
+    await cdp().send('Emulation.setEmulatedMedia', {
+        // An empty value takes the emulation of that one feature back.
+        features: [{ name: 'prefers-reduced-motion', value: enabled ? 'reduce' : '' }],
+    });
+    await nextFrame();
+}
+
+/**
  * Puts an element into the given states, as "Force element state" in the developer tools does:
  * `forcePseudoClasses(button, ['hover', 'active'])`. Chromium only. Use a fresh element per test:
  * after a state is taken back, `getComputedStyle()` can still report the forced style.

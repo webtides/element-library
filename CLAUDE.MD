@@ -69,6 +69,7 @@ element-library/
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
 - **slider**: CSS-only slider
+- **spinner**: Spinner for a wait of unknown length
 - **sticky**: Sticky positioning element
 - **svg-use**: SVG icon element
 - **tab-group**: Tab container

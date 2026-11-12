@@ -16,6 +16,7 @@ import './src/components/scroll-to/scroll-to.define.js';
 import './src/components/scroll-to-top/scroll-to-top.define.js';
 import './src/components/select-field/select-field.define.js';
 import './src/components/slider/slider.define.js';
+import './src/components/spinner/spinner.define.js';
 import './src/components/sticky/sticky.define.js';
 import './src/components/svg-use/svg-use.define.js';
 import './src/components/switch-field/switch-field.define.js';

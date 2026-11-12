@@ -101,7 +101,7 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 
 ### Variants, appearances and sizes
 
-Components that carry a meaning in their colour share one vocabulary for it. `el-button` speaks all of it; `el-input-field` and `el-password-field` have the `size`, which shows once `native.css` decorates their control.
+Components that carry a meaning in their colour share one vocabulary for it. `el-button` speaks all of it; `el-input-field` and `el-password-field` have the `size`, which shows once `native.css` decorates their control. `el-spinner` has the `size` as well, as a factor on the font size that it takes its size from.
 
 | Attribute    | Values                                                       | What it picks                                                           |
 | ------------ | ------------------------------------------------------------ | ----------------------------------------------------------------------- |
@@ -195,12 +195,14 @@ Without the token, as in the headless default, the sizes stay as they are on a t
 
 A few components add their own tokens on top of the shared vocabulary above. They have null-ish or sensible fallbacks, so they're optional — set them in a theme to tune that component.
 
-| Token                            | Default theme                                                | Fallback (headless)        | Used by                                                                   |
-| -------------------------------- | ------------------------------------------------------------ | -------------------------- | ------------------------------------------------------------------------- |
-| `--el-dialog-width`              | `31rem`                                                      | `31rem`                    | `el-dialog` panel width.                                                  |
-| `--el-dialog-overlay-background` | `rgba(17, 24, 39, 0.5)` (dark scrim)                         | `transparent`              | `el-dialog` `::backdrop` (the overlay scrim).                             |
-| `--el-dialog-enter-offset`       | _(unset)_                                                    | `0.5rem`                   | Vertical distance the dialog animates in from.                            |
-| `--el-select-indicator-color`    | _(unset)_; the high-contrast theme sets `var(--el-color-fg)` | `var(--el-color-fg-muted)` | The chevron of `el-select-field`, once `native.css` decorates the select. |
+| Token                            | Default theme                                                | Fallback (headless)                            | Used by                                                                   |
+| -------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------- |
+| `--el-dialog-width`              | `31rem`                                                      | `31rem`                                        | `el-dialog` panel width.                                                  |
+| `--el-dialog-overlay-background` | `rgba(17, 24, 39, 0.5)` (dark scrim)                         | `transparent`                                  | `el-dialog` `::backdrop` (the overlay scrim).                             |
+| `--el-dialog-enter-offset`       | _(unset)_                                                    | `0.5rem`                                       | Vertical distance the dialog animates in from.                            |
+| `--el-select-indicator-color`    | _(unset)_; the high-contrast theme sets `var(--el-color-fg)` | `var(--el-color-fg-muted)`                     | The chevron of `el-select-field`, once `native.css` decorates the select. |
+| `--el-spinner-indicator-color`   | _(unset)_                                                    | `var(--el-color-accent)`, then the text colour | The quarter of `el-spinner` that turns.                                   |
+| `--el-spinner-track-color`       | _(unset)_                                                    | a fifth of the text colour                     | The ring of `el-spinner`.                                                 |
 
 Because the overlay scrim falls back to `transparent`, an **unthemed** `el-dialog` has no visible backdrop — it stays headless like every other component. Import a theme (or set `--el-dialog-overlay-background` yourself) to get the dimmed background.
 

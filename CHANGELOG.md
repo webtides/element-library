@@ -123,6 +123,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high (29 × 34 px and 41 × 40 px with the default theme before). The glyphs keep their size. The row of dots wraps when it gets wider than the slider. Unchanged on a fine pointer and without the token.
 - Fixed: the pager dots have an accessible name (see `dot-label`); they were buttons without one (axe `button-name`). The scroller can be reached with the keyboard (`tabindex="0"`), where the arrow keys scroll it (axe `scrollable-region-focusable`). ([#94](https://github.com/webtides/element-library/issues/94))
 
+### spinner
+
+- Added: `el-spinner`, a new component: a spinner for a wait of unknown length, on its own, for a section or a page that is loading. A ring with a quarter that turns, exposed as a progress bar without a value (`role="progressbar"`) and named by `label`, "Loading" by default. It is as large as the text it stands in (`1em`), so the font size sizes it; `size` (`small`, `medium`, `large`) steps from there by 0.8 and 1.25. The quarter that turns has the accent colour of the theme, and the text colour without a theme; `--el-spinner-indicator-color` and `--el-spinner-track-color` set the two colours. For a user who prefers reduced motion it turns at half the speed. ([#78](https://github.com/webtides/element-library/issues/78), [#82](https://github.com/webtides/element-library/issues/82))
+
 ### switch-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the switch, is at least `--el-touch-target` wide and high. Before, it was as high as the switch. Unchanged on a fine pointer and without the token.
