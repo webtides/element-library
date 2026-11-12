@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - A dialog that is taken out of the page while it is open gives the page its scrolling back. Before, the page stayed locked (`overflow: hidden` on the document) with no dialog left to close, and a dialog opened later did not unlock it either, because the lock counts its holders. Put back into the page while `open`, the dialog opens as a modal again; before, it was shown in the flow of the page, without a backdrop and without taking the focus.
+- An empty footer takes no room. The footer was meant to be left out without content, but the rule for it never matched, so a dialog without a footer had the padding of the footer (`--el-space-4`, 16 px with the shipped themes) as extra room under its body. A footer that gets content later appears with it, and the footer of a server-rendered dialog is shown.
 
 ## [0.1.2] - 2026-06-04
 

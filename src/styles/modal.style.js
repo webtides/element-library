@@ -129,8 +129,10 @@ export default function modalStyle() {
             padding-top: 0;
         }
 
-        /* Collapse the footer entirely when nothing is slotted into it. */
-        [part~='footer']:not(:has(*)) {
+        /* The footer is left out when nothing is slotted into it. The component sets the class:
+           the footer always has its slot as a child, and a stylesheet cannot ask a slot whether
+           it is empty in every browser yet. */
+        [part~='footer'].is-empty {
             display: none;
         }
 

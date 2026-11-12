@@ -80,6 +80,12 @@ export default class Dialog extends TemplateElement {
     }
 
     connected() {
+        // What is in the footer slot right now. A `slotchange` tells of every later change, but the
+        // first one can be over before the listener is there: in server-rendered markup the browser
+        // fills the slots while it parses.
+        const footerSlot = this.$refs.footer?.querySelector('slot');
+        if (footerSlot) this._syncFooter(footerSlot);
+
         // The watcher does not run during initial hydration, so honour a declaratively-open dialog here.
         if (this.open) {
             this._internals.states.add('open');

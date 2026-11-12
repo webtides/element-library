@@ -196,6 +196,50 @@ describe('Feature | Dialog', () => {
         expect(withoutFooter.shadowRoot.querySelector('[part="footer"]').classList.contains('is-empty')).toBe(true);
     });
 
+    it('gives an empty footer no room, and one that gets content its room', async () => {
+        const el = await fixture(`<el-dialog label="Title"><p>Body only.</p></el-dialog>`);
+        await el.show();
+        const part = (name) => el.shadowRoot.querySelector(`[part="${name}"]`);
+        const heightOf = (node) => node.getBoundingClientRect().height;
+
+        expect(getComputedStyle(part('footer')).display).toBe('none');
+        expect(heightOf(part('base'))).toBe(heightOf(part('header')) + heightOf(part('body')));
+
+        el.insertAdjacentHTML('beforeend', '<button slot="footer" type="button">OK</button>');
+        await nextFrame();
+        expect(getComputedStyle(part('footer')).display).toBe('flex');
+        expect(heightOf(part('footer'))).toBeGreaterThan(0);
+
+        el.querySelector('[slot="footer"]').remove();
+        await nextFrame();
+        expect(getComputedStyle(part('footer')).display).toBe('none');
+        await el.hide();
+    });
+
+    it('shows the footer of a server-rendered dialog', async () => {
+        // The markup the SSR renderer writes: the template of the element as a Declarative Shadow
+        // DOM. The browser fills the slots while it parses, before the element takes over.
+        const source = document.createElement('el-dialog');
+        Object.assign(source, source.properties(), { label: 'Title' });
+        const wrapper = document.createElement('div');
+        document.body.append(wrapper);
+        wrapper.setHTMLUnsafe(`
+            <el-dialog label="Title">
+                <template shadowrootmode="open">${source.template().toString()}</template>
+                <p>Body</p>
+                <button slot="footer" type="button">OK</button>
+            </el-dialog>
+        `);
+        const el = wrapper.querySelector('el-dialog');
+        await nextFrame();
+        await nextFrame();
+
+        await el.show();
+        expect(getComputedStyle(el.shadowRoot.querySelector('[part="footer"]')).display).toBe('flex');
+        await el.hide();
+        wrapper.remove();
+    });
+
     it('has no detectable a11y violations while open', async () => {
         const el = await dialogFixture();
         await el.show();
