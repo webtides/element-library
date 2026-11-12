@@ -71,6 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: the readme says how the fields take part in a native `<form>` ("In a form"): what is submitted, what `disabled` and `required` do, and what does not work yet. Every statement there is covered by a test of the field. ([#69](https://github.com/webtides/element-library/issues/69))
 - Fixed: the error message is announced by screen readers. It is an alert now (`role="alert"`), so it is read the moment it appears, and the fields name it in the `aria-describedby` of their control while it is shown, so it is read again when the control gets focus. Before, a control pointed at the message with `aria-errormessage` at most, which few screen readers read and which axe reports (`aria-valid-attr-value`). The alert reaches every field that shows the message; `aria-describedby` is set by `el-input-field`, `el-password-field`, `el-select-field`, `el-radio-field`, `el-textarea-field` and `el-switch-field`. ([#94](https://github.com/webtides/element-library/issues/94))
+- Fixed: a field has its own stylesheet when its parent class was connected before it. element-js keeps the stylesheets of an element on its class, and a field found the ones of its parent class there and never built its own. On a page with an `el-input-field` before an `el-password-field`, the password field had the styles of the input field only, and its toggle looked like a native button; every field after an `el-form-field` had the styles of that one only. Each field class now has a place of its own for its stylesheets.
 
 ### input-field
 
@@ -93,6 +94,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: `show-label` and `hide-label` (`showLabel`, `hideLabel`): the two accessible labels of the reveal button. Defaults `'Show password'` and `'Hide password'`, the texts that were fixed before. ([#98](https://github.com/webtides/element-library/issues/98))
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least `--el-touch-target` wide and high (20 × 20 px before), the input at least that high, and the clear cross of an invalid field at least that wide and high. Unchanged on a fine pointer and without the token. Known limit: when an `el-input-field` connects before the first `el-password-field` of a page, element-js gives the password field the style sheet of the input field ([element-js#198](https://github.com/webtides/element-js/issues/198)). The reveal button then has none of its styles, this size included.
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
+- Fixed: the field has its own styles when an `el-input-field` is on the page before it. Before, it took over the stylesheet of the input field in that order and lost its own: the reveal button looked like a native button, with a border and a background. See `form-field`.
 
 ### radio-field
 

@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A field has its own stylesheet when its parent class was connected before it. element-js keeps the stylesheets of an element on its class, and a field found the ones of its parent class there and never built its own. On a page with an `el-input-field` before an `el-password-field`, the password field had the styles of the input field only, and its toggle looked like a native button; every field after an `el-form-field` had the styles of that one only. Each field class now has a place of its own for its stylesheets.
 - The error message is announced by screen readers. It is an alert now (`role="alert"`), so it is read the moment it appears, and the fields name it in the `aria-describedby` of their control while it is shown, so it is read again when the control gets focus. Before, a control pointed at the message with `aria-errormessage` at most, which few screen readers read and which axe reports (`aria-valid-attr-value`). The alert reaches every field that shows the message; `aria-describedby` is set by `el-input-field`, `el-password-field`, `el-select-field`, `el-radio-field`, `el-textarea-field` and `el-switch-field`. ([#94](https://github.com/webtides/element-library/issues/94))
 
 ## [0.1.0] - 2026-06-03

@@ -36,6 +36,15 @@ import style from './form-field.style.js';
 export default class FormField extends TemplateElement {
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
+
+        // element-js keeps the stylesheets of an element on its class, and looks them up there
+        // without asking whose they are. A field whose parent class was connected first found the
+        // stylesheets of that parent and never built its own: an el-password-field after an
+        // el-input-field had the styles of the input field only. A property of its own on every
+        // class makes the lookup stop there.
+        if (!Object.hasOwn(this.constructor, 'elementStyleSheets')) {
+            this.constructor.elementStyleSheets = undefined;
+        }
     }
 
     connected() {
