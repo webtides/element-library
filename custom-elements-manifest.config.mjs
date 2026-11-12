@@ -131,6 +131,10 @@ function handleStaticProperties(ts, classNode, moduleDoc, context, mixinName = n
         const propertiesObject = getPropertiesObject(ts, member);
 
         propertiesObject?.properties?.forEach((property) => {
+            // `...super.properties()` is not a property. The analyzer adds the properties of the
+            // superclass itself, with where they come from.
+            if (ts.isSpreadAssignment(property)) return;
+
             let classMember = {
                 kind: 'field',
                 name: property?.name?.getText() || '',
