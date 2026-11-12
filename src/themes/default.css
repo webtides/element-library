@@ -28,6 +28,8 @@
   /* Color — interactive & semantic */
   --el-color-accent: light-dark(#2563eb, #60a5fa);
   --el-color-success: light-dark(#16a34a, #4ade80);
+  /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
+  --el-color-warning: #f59e0b;
   --el-color-danger: light-dark(#dc2626, #f87171);
   --el-color-focus-ring: var(--el-color-accent);
 

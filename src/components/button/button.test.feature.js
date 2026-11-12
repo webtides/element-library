@@ -75,8 +75,8 @@ describe('Feature | Button', () => {
     });
 
     // The fill writes dark text on --el-color-warning, so the token is a light colour; as the
-    // label of the outline variant it would be 3.19 : 1 on white.
-    it('keeps the label of an outline warning button readable in a light and a dark scheme', async () => {
+    // label of the outlined button it would be 3.19 : 1 on white.
+    it('keeps the label of an outlined warning button readable in a light and a dark scheme', async () => {
         const schemes = [
             { bg: '#ffffff', fg: '#111827' },
             { bg: '#0f1115', fg: '#f3f4f6' },
@@ -84,7 +84,7 @@ describe('Feature | Button', () => {
         for (const { bg, fg } of schemes) {
             const wrapper = await fixture(`
                 <div style="--el-color-warning: #d97706; --el-color-fg: ${fg}; background: ${bg}; padding: 8px">
-                    <el-button variant="warning" outline="true">Careful</el-button>
+                    <el-button variant="warning" appearance="outlined">Careful</el-button>
                     <el-button variant="warning">Careful</el-button>
                 </div>
             `);
@@ -98,6 +98,145 @@ describe('Feature | Button', () => {
         }
     });
 
+    describe('variant, appearance and size', () => {
+        const base = (el) => el.shadowRoot.querySelector('[part="base"]');
+        const paint = (el) => {
+            const { backgroundColor, borderTopColor, color } = getComputedStyle(base(el));
+            return { background: backgroundColor, border: borderTopColor, text: color };
+        };
+        const TRANSPARENT = 'rgba(0, 0, 0, 0)';
+        const tokens = `
+            --el-color-bg: rgb(255, 255, 255);
+            --el-color-bg-muted: rgb(240, 240, 240);
+            --el-color-fg: rgb(10, 10, 10);
+            --el-color-border: rgb(200, 200, 200);
+            --el-color-accent: rgb(0, 0, 255);
+            --el-color-success: rgb(0, 128, 0);
+            --el-color-warning: rgb(255, 165, 0);
+            --el-color-danger: rgb(255, 0, 0);
+        `;
+
+        it('is neutral, filled and medium by default, and says so on the host', async () => {
+            const el = await fixture(`<el-button>Save</el-button>`);
+            expect(el.getAttribute('variant')).toBe('neutral');
+            expect(el.getAttribute('appearance')).toBe('filled');
+            expect(el.getAttribute('size')).toBe('medium');
+        });
+
+        it('reads one colour token per variant for the fill', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    <el-button>a</el-button>
+                    <el-button variant="brand">a</el-button>
+                    <el-button variant="success">a</el-button>
+                    <el-button variant="warning">a</el-button>
+                    <el-button variant="danger">a</el-button>
+                </div>
+            `);
+            const [neutral, brand, success, warning, danger] = [...wrapper.children].map(paint);
+
+            expect(neutral).toEqual({
+                background: 'rgb(240, 240, 240)',
+                border: 'rgb(200, 200, 200)',
+                text: 'rgb(10, 10, 10)',
+            });
+            expect(brand).toEqual({
+                background: 'rgb(0, 0, 255)',
+                border: 'rgb(0, 0, 255)',
+                text: 'rgb(255, 255, 255)',
+            });
+            expect(success.background).toBe('rgb(0, 128, 0)');
+            expect(warning.background).toBe('rgb(255, 165, 0)');
+            expect(danger.background).toBe('rgb(255, 0, 0)');
+        });
+
+        it('paints the variant as a fill, as an outline or as text only', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    <el-button variant="danger" appearance="filled">a</el-button>
+                    <el-button variant="danger" appearance="outlined">a</el-button>
+                    <el-button variant="danger" appearance="plain">a</el-button>
+                    <el-button appearance="outlined">a</el-button>
+                    <el-button appearance="plain">a</el-button>
+                </div>
+            `);
+            const [filled, outlined, plain, neutralOutlined, neutralPlain] = [...wrapper.children].map(paint);
+
+            expect(filled).toEqual({
+                background: 'rgb(255, 0, 0)',
+                border: 'rgb(255, 0, 0)',
+                text: 'rgb(255, 255, 255)',
+            });
+            expect(outlined).toEqual({ background: TRANSPARENT, border: 'rgb(255, 0, 0)', text: 'rgb(255, 0, 0)' });
+            expect(plain).toEqual({ background: TRANSPARENT, border: TRANSPARENT, text: 'rgb(255, 0, 0)' });
+            expect(neutralOutlined).toEqual({
+                background: TRANSPARENT,
+                border: 'rgb(200, 200, 200)',
+                text: 'rgb(10, 10, 10)',
+            });
+            expect(neutralPlain).toEqual({ background: TRANSPARENT, border: TRANSPARENT, text: 'rgb(10, 10, 10)' });
+        });
+
+        it('takes a variant, an appearance and a size set from a script', async () => {
+            const wrapper = await fixture(`<div style="${tokens}"><el-button>a</el-button></div>`);
+            const el = wrapper.firstElementChild;
+            const mediumFontSize = getComputedStyle(base(el)).fontSize;
+
+            el.variant = 'brand';
+            el.appearance = 'outlined';
+            el.size = 'small';
+            await nextFrame();
+
+            expect(el.getAttribute('variant')).toBe('brand');
+            expect(el.getAttribute('appearance')).toBe('outlined');
+            expect(el.getAttribute('size')).toBe('small');
+            expect(paint(el)).toEqual({ background: TRANSPARENT, border: 'rgb(0, 0, 255)', text: 'rgb(0, 0, 255)' });
+            expect(mediumFontSize).toBe('16px');
+            expect(getComputedStyle(base(el)).fontSize).toBe('14px');
+        });
+
+        it('has three sizes', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <el-button size="small">a</el-button>
+                    <el-button size="medium">a</el-button>
+                    <el-button size="large">a</el-button>
+                    <el-button size="small" circle="true">a</el-button>
+                    <el-button size="large" circle="true">a</el-button>
+                </div>
+            `);
+            const [small, medium, large, smallCircle, largeCircle] = [...wrapper.children].map(base);
+
+            expect([small, medium, large].map((control) => getComputedStyle(control).fontSize)).toEqual([
+                '14px',
+                '16px',
+                '18px',
+            ]);
+            expect(sizeOf(small).height).toBeLessThan(sizeOf(medium).height);
+            expect(sizeOf(medium).height).toBeLessThan(sizeOf(large).height);
+            // A circle is as wide and high as the control height of its size: 0.8 and 1.25 times 40px.
+            expect(sizeOf(smallCircle)).toEqual({ width: 32, height: 32 });
+            expect(sizeOf(largeCircle)).toEqual({ width: 50, height: 50 });
+        });
+
+        // The values of the API before the shared vocabulary. They are not mapped.
+        it('is neutral and filled for a variant it does not know', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    <el-button variant="primary" outline="true">a</el-button>
+                    <el-button>a</el-button>
+                </div>
+            `);
+            const [unknown, neutral] = [...wrapper.children].map(paint);
+            expect(unknown).toEqual(neutral);
+        });
+    });
+
+    it('is hidden by the hidden attribute', async () => {
+        const el = await fixture(`<el-button hidden>Save</el-button>`);
+        expect(getComputedStyle(el).display).toBe('none');
+    });
+
     it('ignores --el-touch-target on a fine pointer', async () => {
         const wrapper = await fixture(`
             <div style="--el-touch-target: 44px"><el-button size="small">OK</el-button></div>
@@ -107,7 +246,7 @@ describe('Feature | Button', () => {
     });
 
     it('shows a pressed style without a touch screen', async () => {
-        const el = await fixture(`<el-button variant="primary">Save</el-button>`);
+        const el = await fixture(`<el-button variant="brand">Save</el-button>`);
         const control = el.shadowRoot.querySelector('[part="base"]');
         expect(getComputedStyle(control).filter).toBe('none');
 
@@ -129,7 +268,7 @@ describe('Feature | Button', () => {
                     <el-button size="small" circle="true">a</el-button>
                     <el-button circle="true">a</el-button>
                     <el-button size="large" circle="true">a</el-button>
-                    <el-button size="small" variant="text">a</el-button>
+                    <el-button size="small" variant="brand" appearance="plain">a</el-button>
                     <el-button size="small" href="#target">a</el-button>
                 </div>
             `);
@@ -153,7 +292,7 @@ describe('Feature | Button', () => {
         });
 
         it('shows a pressed style, and no hover style for the :hover that a tap leaves behind', async () => {
-            const el = await fixture(`<el-button variant="primary">Save</el-button>`);
+            const el = await fixture(`<el-button variant="brand">Save</el-button>`);
             const control = el.shadowRoot.querySelector('[part="base"]');
 
             // A touch screen keeps :hover on the element that was tapped last.

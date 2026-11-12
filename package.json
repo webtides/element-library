@@ -44,6 +44,7 @@
     "!src/components/**/*.stories.js",
     "!src/components/**/*.test.*.js",
     "src/utils/**/*.js",
+    "src/styles/**/*.js",
     "src/themes/*.css",
     "types/**/*.d.ts",
     "all.js",

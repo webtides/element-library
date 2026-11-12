@@ -3,9 +3,9 @@ import style from './button.style.js';
 
 /**
  * A themeable button that renders a native `<button>` — or an `<a>` when `href` is set — and
- * decorates it with the `--el-*` design tokens. Supports semantic variants, sizes, outline /
- * pill / circle shapes, an optional dropdown caret and a loading spinner. API modelled on
- * Shoelace's `<sl-button>`.
+ * decorates it with the `--el-*` design tokens. Speaks the library's shared vocabulary: a semantic
+ * `variant`, an `appearance` and a `size`. Also supports pill / circle shapes, an optional
+ * dropdown caret and a loading spinner.
  *
  * @element el-button
  *
@@ -20,10 +20,13 @@ import style from './button.style.js';
  * @csspart caret - The dropdown caret, present only while `caret` is `true`.
  * @csspart spinner - The loading spinner, present only while `loading` is `true`.
  *
- * @property {'default'|'primary'|'success'|'neutral'|'warning'|'danger'|'text'} variant - Visual
- *   variant. Default `'default'`.
- * @property {'small'|'medium'|'large'} size - Button size. Default `'medium'`.
- * @property {boolean} outline - Draws the button as an outline (transparent fill, colored border).
+ * @property {'neutral'|'brand'|'success'|'warning'|'danger'} variant - Semantic variant, which
+ *   picks the colours. Default `'neutral'`. Reflected to the `variant` attribute.
+ * @property {'filled'|'outlined'|'plain'} appearance - How the colours of the variant are painted:
+ *   as a fill, as a border around a transparent button, or as text only. Default `'filled'`.
+ *   Reflected to the `appearance` attribute.
+ * @property {'small'|'medium'|'large'} size - Button size. Default `'medium'`. Reflected to the
+ *   `size` attribute.
  * @property {boolean} pill - Fully rounded ends.
  * @property {boolean} circle - Renders a square, fully-rounded icon button (use with a single icon).
  * @property {boolean} caret - Appends a dropdown caret after the label.
@@ -40,14 +43,23 @@ import style from './button.style.js';
  */
 export default class Button extends TemplateElement {
     constructor() {
-        super({ styles: [style], shadowRender: true });
+        super({
+            styles: [style],
+            shadowRender: true,
+            // The shared style modules select the host by these attributes.
+            propertyOptions: {
+                variant: { reflect: true },
+                appearance: { reflect: true },
+                size: { reflect: true },
+            },
+        });
     }
 
     properties() {
         return {
-            variant: 'default',
+            variant: 'neutral',
+            appearance: 'filled',
             size: 'medium',
-            outline: false,
             pill: false,
             circle: false,
             caret: false,
@@ -119,9 +131,6 @@ export default class Button extends TemplateElement {
     template() {
         const classes = {
             button: true,
-            [`button--${this.variant}`]: true,
-            [`button--${this.size}`]: true,
-            'button--outline': !!this.outline,
             'button--pill': !!this.pill,
             'button--circle': !!this.circle,
             'button--loading': !!this.loading,

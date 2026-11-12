@@ -111,7 +111,7 @@ const lazyGallery = (title, caption) => html`
 const scrollTopButton = html`
     <div style="position:fixed;right:1.5rem;bottom:1.5rem;z-index:50">
         <el-scroll-to-top duration="600">
-            <el-button variant="primary" circle="true" size="large" aria-label="Scroll to top"> ↑ </el-button>
+            <el-button variant="brand" circle="true" size="large" aria-label="Scroll to top"> ↑ </el-button>
         </el-scroll-to-top>
     </div>
 `;
@@ -220,18 +220,13 @@ export const Page = {
                     </p>
                     <div class="flex items-center justify-center gap-3 flex-wrap">
                         <el-scroll-to selector="#start">
-                            <el-button variant="primary" size="large">Get the kit</el-button>
+                            <el-button variant="brand" size="large">Get the kit</el-button>
                         </el-scroll-to>
 
                         <!-- A modal built from the library itself: form-field + buttons inside el-dialog.
                              The trigger opens its adjacent dialog; the scrim + panel re-skin with the theme. -->
                         <span class="inline-block">
-                            <el-button
-                                variant="default"
-                                size="large"
-                                outline="true"
-                                onclick="this.nextElementSibling.show()"
-                            >
+                            <el-button appearance="outlined" size="large" onclick="this.nextElementSibling.show()">
                                 Book a walkthrough
                             </el-button>
                             <el-dialog label="Book a walkthrough">
@@ -247,13 +242,12 @@ export const Page = {
                                 ></el-input-field>
                                 <el-button
                                     slot="footer"
-                                    variant="default"
-                                    outline="true"
+                                    appearance="outlined"
                                     onclick="this.closest('el-dialog').hide()"
                                 >
                                     Maybe later
                                 </el-button>
-                                <el-button slot="footer" variant="primary" onclick="this.closest('el-dialog').hide()">
+                                <el-button slot="footer" variant="brand" onclick="this.closest('el-dialog').hide()">
                                     Confirm
                                 </el-button>
                             </el-dialog>
@@ -428,7 +422,7 @@ export const Page = {
                         </div>
 
                         <div class="sm:col-span-2">
-                            <el-button type="submit" variant="primary" size="large"> Request access </el-button>
+                            <el-button type="submit" variant="brand" size="large"> Request access </el-button>
                         </div>
                     </form>
 

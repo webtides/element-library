@@ -25,6 +25,8 @@
   /* Color — interactive & semantic (WCAG-AAA against bg) */
   --el-color-accent: light-dark(#0040c0, #6cb6ff);
   --el-color-success: light-dark(#006e2c, #4ade80);
+  /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
+  --el-color-warning: #f59e0b;
   --el-color-danger: light-dark(#a8000d, #ff6b6b);
   --el-color-focus-ring: var(--el-color-accent);
 

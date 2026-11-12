@@ -1,16 +1,11 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     el-input-field {
-        display: flex;
-        flex-direction: column;
-        gap: var(--el-space-1, 4px);
-
         .field {
-            display: flex;
-            align-items: center;
-            gap: var(--el-space-2, 8px);
-
             .validity {
                 .valid {
                     color: var(--el-color-success, green);
@@ -19,14 +14,6 @@ export default css`
                 .invalid {
                     color: var(--el-color-danger, red);
                 }
-            }
-        }
-
-        .message {
-            font-size: var(--el-font-size-sm, 14px);
-
-            &.error-message {
-                color: var(--el-color-danger, red);
             }
         }
 
@@ -51,3 +38,5 @@ export default css`
         }
     }
 `;
+
+export default [hostStyle('el-input-field'), formControlStyle('el-input-field'), style].join('\n');

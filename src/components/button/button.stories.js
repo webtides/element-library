@@ -3,7 +3,8 @@ import readme from './button.readme.md?raw';
 import { define } from './button.js';
 define();
 
-const variants = ['default', 'primary', 'success', 'neutral', 'warning', 'danger', 'text'];
+const variants = ['neutral', 'brand', 'success', 'warning', 'danger'];
+const appearances = ['filled', 'outlined', 'plain'];
 
 export default {
     title: 'Components/Button',
@@ -18,9 +19,9 @@ export default {
     },
     args: {
         label: 'Button',
-        variant: 'primary',
+        variant: 'brand',
+        appearance: 'filled',
         size: 'medium',
-        outline: false,
         pill: false,
         circle: false,
         caret: false,
@@ -29,16 +30,17 @@ export default {
     },
     argTypes: {
         variant: { options: variants, control: { type: 'select' } },
+        appearance: { options: appearances, control: { type: 'inline-radio' } },
         size: { options: ['small', 'medium', 'large'], control: { type: 'inline-radio' } },
     },
 };
 
 export const Playground = {
-    render: ({ label, variant, size, outline, pill, circle, caret, loading, disabled }) => html`
+    render: ({ label, variant, appearance, size, pill, circle, caret, loading, disabled }) => html`
         <el-button
             variant="${variant}"
+            appearance="${appearance}"
             size="${size}"
-            outline="${outline ? 'true' : 'false'}"
             pill="${pill ? 'true' : 'false'}"
             circle="${circle ? 'true' : 'false'}"
             caret="${caret ? 'true' : 'false'}"
@@ -59,13 +61,27 @@ export const Variants = {
     `,
 };
 
-export const Outline = {
-    parameters: { controls: { disable: true } },
+export const Appearances = {
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'Every variant in every appearance: `filled` paints the fill of the variant, `outlined` its border and text, `plain` its text only.',
+            },
+        },
+    },
     render: () => html`
-        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
-            ${variants
-                .filter((v) => v !== 'text')
-                .map((variant) => html`<el-button variant="${variant}" outline="true">${variant}</el-button>`)}
+        <div style="display:grid;gap:0.75rem">
+            ${appearances.map(
+                (appearance) => html`
+                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
+                        ${variants.map(
+                            (variant) =>
+                                html`<el-button variant="${variant}" appearance="${appearance}">${variant}</el-button>`,
+                        )}
+                    </div>
+                `,
+            )}
         </div>
     `,
 };
@@ -74,9 +90,9 @@ export const Sizes = {
     parameters: { controls: { disable: true } },
     render: () => html`
         <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
-            <el-button variant="primary" size="small">Small</el-button>
-            <el-button variant="primary" size="medium">Medium</el-button>
-            <el-button variant="primary" size="large">Large</el-button>
+            <el-button variant="brand" size="small">Small</el-button>
+            <el-button variant="brand" size="medium">Medium</el-button>
+            <el-button variant="brand" size="large">Large</el-button>
         </div>
     `,
 };
@@ -86,9 +102,9 @@ export const Shapes = {
     parameters: { controls: { disable: true } },
     render: () => html`
         <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
-            <el-button variant="primary" pill="true">Pill button</el-button>
-            <el-button variant="primary" circle="true" aria-label="Add">+</el-button>
-            <el-button variant="default" circle="true" outline="true" aria-label="Settings">⚙</el-button>
+            <el-button variant="brand" pill="true">Pill button</el-button>
+            <el-button variant="brand" circle="true" aria-label="Add">+</el-button>
+            <el-button appearance="outlined" circle="true" aria-label="Settings">⚙</el-button>
         </div>
     `,
 };
@@ -98,15 +114,15 @@ export const WithIcons = {
     parameters: { controls: { disable: true } },
     render: () => html`
         <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
-            <el-button variant="primary">
+            <el-button variant="brand">
                 <span slot="prefix" aria-hidden="true">★</span>
                 Favorite
             </el-button>
-            <el-button variant="default">
+            <el-button>
                 Continue
                 <span slot="suffix" aria-hidden="true">→</span>
             </el-button>
-            <el-button variant="default" caret="true">Menu</el-button>
+            <el-button caret="true">Menu</el-button>
         </div>
     `,
 };
@@ -115,8 +131,8 @@ export const Loading = {
     parameters: { controls: { disable: true } },
     render: () => html`
         <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
-            <el-button variant="primary" loading="true">Saving</el-button>
-            <el-button variant="default" loading="true">Loading</el-button>
+            <el-button variant="brand" loading="true">Saving</el-button>
+            <el-button loading="true">Loading</el-button>
         </div>
     `,
 };
@@ -125,8 +141,8 @@ export const Disabled = {
     parameters: { controls: { disable: true } },
     render: () => html`
         <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
-            <el-button variant="primary" disabled="true">Disabled</el-button>
-            <el-button variant="default" outline="true" disabled="true">Disabled</el-button>
+            <el-button variant="brand" disabled="true">Disabled</el-button>
+            <el-button appearance="outlined" disabled="true">Disabled</el-button>
         </div>
     `,
 };
@@ -135,7 +151,7 @@ export const AsLink = {
     name: 'As a link',
     parameters: { controls: { disable: true } },
     render: () => html`
-        <el-button variant="primary" href="https://webtides.github.io/element-library" target="_blank">
+        <el-button variant="brand" href="https://webtides.github.io/element-library" target="_blank">
             Open the docs
             <span slot="suffix" aria-hidden="true">↗</span>
         </el-button>

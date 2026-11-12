@@ -84,12 +84,39 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 
 ### Color — interactive & semantic
 
-| Token                   | Default value (light / dark) | Used for                    |
-| ----------------------- | ---------------------------- | --------------------------- |
-| `--el-color-accent`     | `#2563eb` / `#60a5fa`        | Brand / interactive accent. |
-| `--el-color-success`    | `#16a34a` / `#4ade80`        | Validity OK indicators.     |
-| `--el-color-danger`     | `#dc2626` / `#f87171`        | Validity error indicators.  |
-| `--el-color-focus-ring` | `var(--el-color-accent)`     | Focus outline color.        |
+| Token                   | Default value (light / dark) | Used for                                                       |
+| ----------------------- | ---------------------------- | -------------------------------------------------------------- |
+| `--el-color-accent`     | `#2563eb` / `#60a5fa`        | Brand / interactive accent. The colour of the `brand` variant. |
+| `--el-color-success`    | `#16a34a` / `#4ade80`        | Validity OK indicators. The colour of the `success` variant.   |
+| `--el-color-warning`    | `#f59e0b` (both)             | The colour of the `warning` variant.                           |
+| `--el-color-danger`     | `#dc2626` / `#f87171`        | Validity error indicators. The colour of the `danger` variant. |
+| `--el-color-focus-ring` | `var(--el-color-accent)`     | Focus outline color.                                           |
+
+`--el-color-warning` is one value for both colour schemes. A warning fill carries dark text, so the colour has to stay light; where it is the text itself, on the page background, a component mixes it half and half with `--el-color-fg`.
+
+### Variants, appearances and sizes
+
+Components that carry a meaning in their colour share one vocabulary for it. `el-button` is the first one that speaks it.
+
+| Attribute    | Values                                                       | What it picks                                                           |
+| ------------ | ------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `variant`    | `neutral` (default), `brand`, `success`, `warning`, `danger` | The colours, see the table below.                                       |
+| `appearance` | `filled` (default), `outlined`, `plain`                      | How they are painted: as a fill, as a border and text, or as text only. |
+| `size`       | `small`, `medium` (default), `large`                         | The height, the paddings and the font size.                             |
+
+A theme does not set anything per appearance or per size: one colour per variant is enough, and the sizes derive from `--el-control-height`, the spacing scale and the two font sizes.
+
+| `variant` | Fill                                                        | Text on the fill    | Border and text without a fill                            |
+| --------- | ----------------------------------------------------------- | ------------------- | --------------------------------------------------------- |
+| `neutral` | `--el-color-bg-muted`, with a border in `--el-color-border` | `--el-color-fg`     | `--el-color-border` and `--el-color-fg`                   |
+| `brand`   | `--el-color-accent`                                         | `--el-color-bg`     | `--el-color-accent`                                       |
+| `success` | `--el-color-success`                                        | `--el-color-bg`     | `--el-color-success`                                      |
+| `warning` | `--el-color-warning`                                        | a fixed dark colour | `--el-color-warning`; the text mixed with `--el-color-fg` |
+| `danger`  | `--el-color-danger`                                         | `--el-color-bg`     | `--el-color-danger`                                       |
+
+The text on a brand, success or danger fill is `--el-color-bg`: these colours are dark in a light scheme and light in a dark one, and the background colour is the other way round.
+
+The three attributes are on the host, so a stylesheet can select them: `el-button[variant='danger']`, `el-button[appearance='plain']`.
 
 ### Spacing — 4px base scale
 

@@ -41,6 +41,9 @@ element-library/
 │           ├── [component-name].changelog.md    # Component changelog
 │           ├── [component-name].test.unit.js    # Unit tests
 │           └── [component-name].test.feature.js # Feature tests
+│   ├── styles/            # Shared style modules (host, size, variants, appearance, form-control)
+│   ├── themes/            # Opt-in themes: the --el-* tokens at :root
+│   └── utils/             # Shared runtime helpers
 ├── .storybook/           # Storybook configuration
 ├── patches/              # patch-package patches (Glide deep-import fix)
 ├── all.js                # Side-effect entry: registers every component
@@ -141,6 +144,27 @@ All components follow this pattern:
     - `.test.unit.js` for unit tests
     - `.test.feature.js` for feature/integration tests
     - Optional `.events.js` for event constants
+
+### Shared Style Modules
+
+`src/styles/` holds the style a component shares with others. A component composes the modules into its own `*.style.js` instead of carrying a copy (see `button.style.js` and `input-field.style.js`):
+
+```js
+export default [hostStyle(), sizeStyle(), variantsStyle(), appearanceStyle('.button'), style].join('\n');
+```
+
+- **`host`**: the `hidden` attribute, and `box-sizing: border-box` inside a shadow root.
+- **`size`**: resolves the `size` attribute (`small` / `medium` / `large`) to internal properties.
+- **`variants`**: resolves the `variant` attribute (`neutral` / `brand` / `success` / `warning` / `danger`) to the colours of five roles.
+- **`appearance`**: paints those colours on a surface as `filled`, `outlined` or `plain`.
+- **`form-control`**: the layout of a field around its control (label, help, `.field`, error).
+
+Rules:
+
+1. **Host as argument**: every module is a function of the host selector, `':host'` by default, or the tag for a component without a shadow root (`formControlStyle('el-input-field')`).
+2. **Reflect the attribute**: the modules select the host by attribute, so the component declares `variant`, `appearance` and `size` with `reflect: true`.
+3. **Internal properties**: what a module sets on the host starts with `--_el-`. These are not tokens; themes set `--el-*` only.
+4. **No cascade layers yet**: `layers.css`, `native.css`, palettes and themes as pure token overrides are the next stage of issue #69.
 
 ### Code Style
 

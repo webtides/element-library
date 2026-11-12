@@ -41,6 +41,29 @@ describe('Feature | InputField', () => {
         await nextFrame();
     });
 
+    it('is hidden by the hidden attribute', async () => {
+        const el = await fixture(`<el-input-field name="hidden-field" label="Hidden" hidden></el-input-field>`);
+        expect(getComputedStyle(el).display).toBe('none');
+    });
+
+    it('stacks the label, the help message, the control and the error message', async () => {
+        const el = await fixture(`
+            <el-input-field
+                name="stacked-field"
+                label="Email address"
+                help-message="We only use it to sign you in."
+                error-message="Please enter your email address."
+                valid="false"
+                touched="true"
+            ></el-input-field>
+        `);
+        const tops = ['label', '.help-message', '.field', '.error-message'].map(
+            (selector) => el.querySelector(selector).getBoundingClientRect().top,
+        );
+        expect(tops).toEqual([...tops].sort((a, b) => a - b));
+        expect(new Set(tops).size).toBe(4);
+    });
+
     it('has no detectable a11y violations when rendered with a label', async () => {
         const el = await fixture(`
             <el-input-field name="email" label="Email address"></el-input-field>
