@@ -95,6 +95,51 @@ describe('Feature | RadioField', () => {
         expect(sizeOf(wrapper.querySelector('.option')).height).toBeLessThan(44);
     });
 
+    describe('in a native form', () => {
+        const data = (form) => Object.fromEntries(new FormData(form));
+        const inForm = (name, attributes = '') =>
+            fixture(
+                `<form><el-radio-field name="${name}" label="Plan" options='["free", "pro", "team"]' ${attributes}></el-radio-field></form>`,
+            );
+
+        it('submits the selected option under its name, and nothing while none is selected', async () => {
+            const selected = await inForm('form-value', 'value="pro"');
+            expect(data(selected)).toEqual({ 'form-value': 'pro' });
+
+            const none = await inForm('form-none');
+            expect(data(none)).toEqual({});
+        });
+
+        it('submits an option that a script selects, and one that the user picks', async () => {
+            const form = await inForm('form-change', 'value="free"');
+            const el = form.firstElementChild;
+
+            el.value = 'pro';
+            await nextFrame();
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'pro' });
+
+            el.querySelector('input[value="team"]').click();
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'team' });
+            expect(el.value).toBe('team');
+        });
+
+        it('is left out while it is disabled', async () => {
+            const form = await inForm('form-disabled', 'value="pro" disabled="true"');
+            expect(data(form)).toEqual({});
+        });
+
+        it('keeps the form from being submitted while it is required and nothing is selected', async () => {
+            const form = await inForm('form-required', 'required="true"');
+            expect(form.checkValidity()).toBe(false);
+
+            form.querySelector('input[value="pro"]').click();
+            await nextFrame();
+            expect(form.checkValidity()).toBe(true);
+        });
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 

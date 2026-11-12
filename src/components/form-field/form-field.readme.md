@@ -78,3 +78,21 @@ This component is headless by default and reads the library's `--el-*` design to
 #### Slots
 
 _None_ (Component uses template methods instead of slots)
+
+## In a form
+
+The fields that render into the page take part in a native `<form>` through their native control: `el-input-field`, `el-password-field`, `el-textarea-field`, `el-select-field`, `el-checkbox-field`, `el-switch-field` and `el-radio-field`. The control carries the `name` and belongs to the form like any other control, so no script has to collect the values.
+
+- The value is submitted under the `name`, whether the user entered it or a script set it on the element. A checkbox or a switch submits its `value` while it is checked (`on` if it has none) and nothing while it is not; a radio group submits the selected option.
+- A `disabled` field is left out.
+- A `required` field that is empty keeps the form from being submitted. That is the validation of the browser.
+
+The elements themselves are not form-associated custom elements: the control already is part of the form, and a second entry under the same name would be submitted twice.
+
+What does not work yet:
+
+- `form.reset()` leaves a field as it is: its value, and its `touched` and `valid` state.
+- When the browser refuses a submit, a field that was not touched shows no error message of its own, only the bubble of the browser.
+- `el-select-field`: a `value` set on the element does not select the option. Mark the option as `selected` in `options` instead.
+- `el-amount-field` renders its input in a shadow root. It is not submitted, and `required` has no effect on the form.
+- `el-button type="submit"`: its `name` and `value` are not submitted, and Enter in a field does not submit the form.

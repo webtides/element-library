@@ -61,6 +61,53 @@ describe('Feature | SelectField', () => {
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
 
+    describe('in a native form', () => {
+        const data = (form) => Object.fromEntries(new FormData(form));
+        const inForm = (name, attributes = `options='["S", "M", "L"]'`) =>
+            fixture(`<form><el-select-field name="${name}" label="Size" ${attributes}></el-select-field></form>`);
+
+        it('submits the option the user picks under its name', async () => {
+            const form = await inForm('form-value');
+            const el = form.firstElementChild;
+            // Like a native select, the first option counts until another one is picked.
+            expect(data(form)).toEqual({ 'form-value': 'S' });
+
+            const select = el.querySelector('select');
+            select.value = 'L';
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-value': 'L' });
+            expect(el.value).toBe('L');
+        });
+
+        it('submits the option that is marked as selected', async () => {
+            const form = await inForm(
+                'form-selected',
+                `options='[{ "value": "s", "label": "Small" }, { "value": "m", "label": "Medium", "selected": true }]'`,
+            );
+            expect(data(form)).toEqual({ 'form-selected': 'm' });
+        });
+
+        it('is left out while it is disabled', async () => {
+            const form = await inForm('form-disabled', `options='["S", "M", "L"]' disabled="true"`);
+            expect(data(form)).toEqual({});
+        });
+
+        it('keeps the form from being submitted while it is required and only the placeholder is selected', async () => {
+            const form = await inForm(
+                'form-required',
+                `options='["S", "M", "L"]' placeholder="Pick a size" required="true"`,
+            );
+            expect(form.checkValidity()).toBe(false);
+
+            const select = form.querySelector('select');
+            select.value = 'M';
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            await nextFrame();
+            expect(form.checkValidity()).toBe(true);
+        });
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 

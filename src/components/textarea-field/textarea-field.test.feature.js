@@ -97,6 +97,51 @@ describe('Feature | TextareaField', () => {
         }
     });
 
+    describe('in a native form', () => {
+        const data = (form) => Object.fromEntries(new FormData(form));
+        const inForm = (name, attributes = '') =>
+            fixture(
+                `<form><el-textarea-field name="${name}" label="Message" ${attributes}></el-textarea-field></form>`,
+            );
+
+        it('submits its value under its name', async () => {
+            const form = await inForm('form-value', 'value="First draft"');
+            expect(data(form)).toEqual({ 'form-value': 'First draft' });
+        });
+
+        it('submits a value that a script sets, and one that the user types', async () => {
+            const form = await inForm('form-change', 'value="First draft"');
+            const el = form.firstElementChild;
+
+            el.value = 'Second draft';
+            await nextFrame();
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'Second draft' });
+
+            const control = el.querySelector('textarea');
+            control.value = 'Third draft';
+            control.dispatchEvent(new Event('change', { bubbles: true }));
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'Third draft' });
+            expect(el.value).toBe('Third draft');
+        });
+
+        it('is left out while it is disabled', async () => {
+            const form = await inForm('form-disabled', 'value="First draft" disabled="true"');
+            expect(data(form)).toEqual({});
+        });
+
+        it('keeps the form from being submitted while it is required and empty', async () => {
+            const form = await inForm('form-required', 'required="true"');
+            expect(form.checkValidity()).toBe(false);
+
+            form.firstElementChild.value = 'First draft';
+            await nextFrame();
+            await nextFrame();
+            expect(form.checkValidity()).toBe(true);
+        });
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 

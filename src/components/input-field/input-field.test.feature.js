@@ -188,6 +188,49 @@ describe('Feature | InputField', () => {
         expect(textEntryOn(serverInput)).toEqual({ ...TEXT_ENTRY, enterkeyhint: 'go' });
     });
 
+    describe('in a native form', () => {
+        const data = (form) => Object.fromEntries(new FormData(form));
+        const inForm = (name, attributes = '') =>
+            fixture(`<form><el-input-field name="${name}" label="Email" ${attributes}></el-input-field></form>`);
+
+        it('submits its value under its name', async () => {
+            const form = await inForm('form-value', 'value="ada@example.com"');
+            expect(data(form)).toEqual({ 'form-value': 'ada@example.com' });
+        });
+
+        it('submits a value that a script sets, and one that the user types', async () => {
+            const form = await inForm('form-change', 'value="ada@example.com"');
+            const el = form.firstElementChild;
+
+            el.value = 'grace@example.com';
+            await nextFrame();
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'grace@example.com' });
+
+            const control = el.querySelector('input');
+            control.value = 'joan@example.com';
+            control.dispatchEvent(new Event('change', { bubbles: true }));
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'joan@example.com' });
+            expect(el.value).toBe('joan@example.com');
+        });
+
+        it('is left out while it is disabled', async () => {
+            const form = await inForm('form-disabled', 'value="ada@example.com" disabled="true"');
+            expect(data(form)).toEqual({});
+        });
+
+        it('keeps the form from being submitted while it is required and empty', async () => {
+            const form = await inForm('form-required', 'required="true"');
+            expect(form.checkValidity()).toBe(false);
+
+            form.firstElementChild.value = 'ada@example.com';
+            await nextFrame();
+            await nextFrame();
+            expect(form.checkValidity()).toBe(true);
+        });
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 

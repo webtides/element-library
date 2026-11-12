@@ -101,6 +101,51 @@ describe('Feature | PasswordField', () => {
         expect(sizeOf(wrapper.querySelector('[data-password-toggle]')).width).toBeLessThan(44);
     });
 
+    describe('in a native form', () => {
+        const data = (form) => Object.fromEntries(new FormData(form));
+        const inForm = (name, attributes = '') =>
+            fixture(
+                `<form><el-password-field name="${name}" label="Password" ${attributes}></el-password-field></form>`,
+            );
+
+        it('submits its value under its name', async () => {
+            const form = await inForm('form-value', 'value="first-secret"');
+            expect(data(form)).toEqual({ 'form-value': 'first-secret' });
+        });
+
+        it('submits a value that a script sets, and one that the user types', async () => {
+            const form = await inForm('form-change', 'value="first-secret"');
+            const el = form.firstElementChild;
+
+            el.value = 'second-secret';
+            await nextFrame();
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'second-secret' });
+
+            const control = el.querySelector('input');
+            control.value = 'third-secret';
+            control.dispatchEvent(new Event('change', { bubbles: true }));
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-change': 'third-secret' });
+            expect(el.value).toBe('third-secret');
+        });
+
+        it('is left out while it is disabled', async () => {
+            const form = await inForm('form-disabled', 'value="first-secret" disabled="true"');
+            expect(data(form)).toEqual({});
+        });
+
+        it('keeps the form from being submitted while it is required and empty', async () => {
+            const form = await inForm('form-required', 'required="true"');
+            expect(form.checkValidity()).toBe(false);
+
+            form.firstElementChild.value = 'first-secret';
+            await nextFrame();
+            await nextFrame();
+            expect(form.checkValidity()).toBe(true);
+        });
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 
