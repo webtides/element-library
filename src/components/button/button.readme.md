@@ -116,6 +116,35 @@ The three properties are independent of each other, and every combination works.
 
 The `hidden` attribute hides the button.
 
+## ARIA attributes
+
+The element itself has no role. What takes the focus and what a screen reader announces is the `<button>` or `<a>` inside it, so the ARIA attributes you put on `el-button` are passed on to that control:
+
+```html
+<!-- An icon button gets its name -->
+<el-button circle="true" aria-label="Add">+</el-button>
+
+<!-- A toggle, a button that opens something -->
+<el-button aria-pressed="true">Bold</el-button>
+<el-button aria-expanded="false" aria-controls="filters">Filters</el-button>
+
+<!-- Described by a text elsewhere in the page -->
+<el-button variant="danger" aria-describedby="delete-hint">Delete</el-button>
+<p id="delete-hint">This cannot be undone.</p>
+```
+
+| Attributes | How they reach the control |
+| --- | --- |
+| `aria-label`, `aria-description`, `aria-expanded`, `aria-haspopup`, `aria-pressed`, `aria-current` | As the same attribute, with every change. |
+| `aria-labelledby`, `aria-describedby`, `aria-controls` | As references to the elements they name. An id does not reach out of the shadow root the control is in. |
+
+- The attributes stay on the element as well, where a stylesheet can select them: `el-button[aria-pressed='true']`.
+- An empty attribute counts as not set.
+- `aria-disabled` and `aria-busy` are not passed on. The button sets them itself, from `disabled` and `loading`.
+- The elements behind an id are looked up in the document, or in the shadow root the button is used in, when the button renders. An element that comes into the page later is found once the attribute is set again.
+- The references need a browser that knows them (`ariaDescribedByElements`: Chrome 135, Firefox 136, Safari 16.4). In an older one the three relations are not there, as before; the other attributes work everywhere.
+- In server-rendered markup the first group is on the control from the start. The references need the JavaScript of the element.
+
 ## Migrating from the `variant` / `outline` API
 
 Before, the button had seven variants and an `outline` flag. The old values are not mapped; a button that still uses them is painted neutral and filled.

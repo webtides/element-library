@@ -118,7 +118,7 @@ The component has no hover mode and does not open on focus.
 ## Accessibility
 
 - Use a `<button>` as the anchor. It is what a keyboard can reach and activate, and the popover writes `aria-expanded` onto it, so that a screen reader announces whether the panel is open. A link, an element with a role of its own and a custom element get the attribute as well; an element that cannot carry it, a `<span>` for example, does not.
-- With an `el-button` as the anchor, the attribute is on the element and not on the control inside it, so a screen reader does not announce the state yet.
+- An `el-button` as the anchor passes the attribute on to the control inside it.
 - The panel has no role. Its content comes right after the anchor in the page, for the keyboard and for a screen reader: Tab from the anchor goes into the panel. The focus is not moved when the panel opens.
 - `Escape` closes the panel. If the focus was inside it, it goes back to the anchor. After a click beside the panel the focus stays where the click put it.
 - The component adds nothing that takes the focus itself, so the focus ring is the one of the anchor and of the content.

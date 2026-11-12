@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, forcePseudoClasses, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import {
+    accessibleDescription,
+    accessibleName,
+    fixture,
+    forcePseudoClasses,
+    nextFrame,
+    sizeOf,
+    useTouchScreen,
+} from '../../test-helpers.js';
 import { define } from './button.js';
 define();
 
@@ -235,6 +243,126 @@ describe('Feature | Button', () => {
     it('is hidden by the hidden attribute', async () => {
         const el = await fixture(`<el-button hidden>Save</el-button>`);
         expect(getComputedStyle(el).display).toBe('none');
+    });
+
+    // The control inside the shadow root is what has the focus and what a screen reader announces.
+    describe('ARIA attributes of the element', () => {
+        const control = (el) => el.shadowRoot.querySelector('[part="base"]');
+        // A changed attribute asks for a render, which is there after two frames.
+        const rendered = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+
+        it('names the control with the aria-label of the element', async () => {
+            const el = await fixture(`<el-button circle="true" aria-label="Add">+</el-button>`);
+            expect(control(el).getAttribute('aria-label')).toBe('Add');
+            expect(await accessibleName(control(el))).toBe('Add');
+        });
+
+        it('passes a state on to the control, and every change of it', async () => {
+            const el = await fixture(`<el-button aria-expanded="false" aria-haspopup="menu">Options</el-button>`);
+            expect(control(el).getAttribute('aria-expanded')).toBe('false');
+            expect(control(el).getAttribute('aria-haspopup')).toBe('menu');
+
+            el.setAttribute('aria-expanded', 'true');
+            await rendered();
+            expect(control(el).getAttribute('aria-expanded')).toBe('true');
+
+            // element-js writes an attribute that was there from the start back as an empty one when
+            // it is removed. For the control an empty one is none.
+            el.removeAttribute('aria-expanded');
+            await rendered();
+            expect(control(el).hasAttribute('aria-expanded')).toBe(false);
+            expect(control(el).getAttribute('aria-haspopup')).toBe('menu');
+
+            // The ARIA properties of the platform write the attribute, so they arrive as well.
+            el.ariaPressed = 'true';
+            await rendered();
+            expect(control(el).getAttribute('aria-pressed')).toBe('true');
+
+            // An attribute that came later goes for good.
+            el.removeAttribute('aria-pressed');
+            await rendered();
+            expect(el.hasAttribute('aria-pressed')).toBe(false);
+            expect(control(el).hasAttribute('aria-pressed')).toBe(false);
+        });
+
+        it('passes them on to the link of a link button', async () => {
+            const el = await fixture(`<el-button href="/docs" aria-current="page" aria-label="Docs">D</el-button>`);
+            expect(control(el).tagName).toBe('A');
+            expect(control(el).getAttribute('aria-current')).toBe('page');
+            expect(await accessibleName(control(el))).toBe('Docs');
+        });
+
+        it('keeps the attributes on the element, where a stylesheet can select them', async () => {
+            const el = await fixture(`<el-button aria-pressed="true">Bold</el-button>`);
+            expect(el.matches('el-button[aria-pressed="true"]')).toBe(true);
+        });
+
+        it('does not pass on what the button sets itself', async () => {
+            const el = await fixture(`<el-button aria-busy="true" aria-disabled="true">Save</el-button>`);
+            expect(control(el).getAttribute('aria-busy')).toBe('false');
+            expect(control(el).hasAttribute('aria-disabled')).toBe(false);
+        });
+
+        it('hands the control the elements that the element names by id', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <span id="aria-name">Remove the draft</span>
+                    <el-button aria-labelledby="aria-name" aria-describedby="aria-hint aria-more" aria-controls="aria-panel">
+                        x
+                    </el-button>
+                    <p id="aria-hint">This cannot be undone.</p>
+                    <p id="aria-more">The published version stays.</p>
+                    <div id="aria-panel"></div>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-button');
+            const byId = (id) => wrapper.querySelector(`#${id}`);
+
+            expect(control(el).ariaControlsElements).toEqual([byId('aria-panel')]);
+            expect(await accessibleName(control(el))).toBe('Remove the draft');
+            expect(await accessibleDescription(control(el))).toBe(
+                'This cannot be undone. The published version stays.',
+            );
+
+            el.setAttribute('aria-describedby', 'aria-more');
+            await rendered();
+            expect(await accessibleDescription(control(el))).toBe('The published version stays.');
+
+            el.removeAttribute('aria-describedby');
+            el.setAttribute('aria-controls', 'aria-nothing');
+            await rendered();
+            expect(await accessibleDescription(control(el))).toBe('');
+            expect(control(el).ariaControlsElements).toBeNull();
+        });
+
+        it('finds those elements in the shadow root the button is used in', async () => {
+            const host = await fixture(`<div></div>`);
+            const root = host.attachShadow({ mode: 'open' });
+            root.innerHTML = `<el-button aria-describedby="hint">Save</el-button><p id="hint">Saves the draft.</p>`;
+            await rendered();
+
+            expect(await accessibleDescription(control(root.querySelector('el-button')))).toBe('Saves the draft.');
+        });
+
+        it('has them in the server-rendered markup', async () => {
+            const el = await fixture(`<el-button circle="true" aria-label="Add" aria-expanded="false">+</el-button>`);
+            // `template().toString()` is the markup the SSR renderer puts into the Declarative Shadow DOM.
+            const markup = el.template().toString();
+            expect(markup).toMatch(/<button\s[^>]*\saria-label=['"]Add['"]/);
+            expect(markup).toMatch(/<button\s[^>]*\saria-expanded=['"]false['"]/);
+        });
+
+        it('has no detectable a11y violations as an icon button with a name', async () => {
+            const wrapper = await fixture(`
+                <div><el-button circle="true" aria-label="Add" aria-pressed="false">+</el-button></div>
+            `);
+            const results = await axe.run(wrapper);
+            expect(results.violations.map((violation) => violation.id)).toEqual([]);
+            expect(results.passes.find((pass) => pass.id === 'button-name').nodes).toHaveLength(1);
+        });
     });
 
     it('ignores --el-touch-target on a fine pointer', async () => {

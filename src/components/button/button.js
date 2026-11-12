@@ -2,10 +2,40 @@ import { TemplateElement, defineElement, html, classMap, spreadAttributes } from
 import style from './button.style.js';
 
 /**
+ * The ARIA attributes of the element that its control takes over. The control is what has the
+ * focus and what a screen reader announces; the element itself has no role. `aria-disabled` and
+ * `aria-busy` are not among them: the button sets those itself, from `disabled` and `loading`.
+ */
+const ARIA_ATTRIBUTES = [
+    'aria-label',
+    'aria-description',
+    'aria-expanded',
+    'aria-haspopup',
+    'aria-pressed',
+    'aria-current',
+];
+
+/**
+ * The ARIA attributes that name other elements by id, and the property of the control that takes
+ * those elements. An id does not reach out of the shadow root the control is in, a reference to
+ * the element does.
+ */
+const ARIA_RELATIONS = {
+    'aria-labelledby': 'ariaLabelledByElements',
+    'aria-describedby': 'ariaDescribedByElements',
+    'aria-controls': 'ariaControlsElements',
+};
+
+/**
  * A themeable button that renders a native `<button>` — or an `<a>` when `href` is set — and
  * decorates it with the `--el-*` design tokens. Speaks the library's shared vocabulary: a semantic
  * `variant`, an `appearance` and a `size`. Also supports pill / circle shapes, an optional
  * dropdown caret and a loading spinner.
+ *
+ * ARIA attributes on the element reach the control inside it, which is what has the focus and what
+ * a screen reader announces: `aria-label`, `aria-description`, `aria-expanded`, `aria-haspopup`,
+ * `aria-pressed` and `aria-current` as they are, `aria-labelledby`, `aria-describedby` and
+ * `aria-controls` as references to the elements they name.
  *
  * @element el-button
  *
@@ -42,6 +72,10 @@ import style from './button.style.js';
  * @property {string} download - Tells the browser to download the linked URL (link mode only).
  */
 export default class Button extends TemplateElement {
+    static get observedAttributes() {
+        return [...ARIA_ATTRIBUTES, ...Object.keys(ARIA_RELATIONS)];
+    }
+
     constructor() {
         super({
             styles: [style],
@@ -78,6 +112,19 @@ export default class Button extends TemplateElement {
     /** Whether the button renders as a link rather than a native button. */
     get isLink() {
         return !!this.href;
+    }
+
+    /**
+     * An ARIA attribute of the element was set, changed or removed. They are no properties of the
+     * component: the template reads them from the element, so a change asks for a new render.
+     * Before the first render there is nothing to do, it reads them anyway.
+     */
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue !== newValue && this.$refs?.control) this.requestUpdate();
+    }
+
+    afterUpdate() {
+        this._syncAriaRelations();
     }
 
     /** Focuses the underlying control. */
@@ -117,6 +164,37 @@ export default class Button extends TemplateElement {
         };
     }
 
+    /**
+     * The ARIA attributes of the element, for the control. An empty one counts as not set: none of
+     * them has an empty value, and element-js writes an attribute that was there from the start
+     * back as an empty one when it is removed.
+     * @private
+     * @returns {Object<string, string | undefined>}
+     */
+    _ariaAttributes() {
+        return Object.fromEntries(ARIA_ATTRIBUTES.map((name) => [name, this.getAttribute(name) || undefined]));
+    }
+
+    /**
+     * Hands the control the elements that the element names by id in `aria-labelledby`,
+     * `aria-describedby` and `aria-controls`. They are looked up when the button renders, so an
+     * element that comes into the page later is found once the attribute is set again.
+     * @private
+     */
+    _syncAriaRelations() {
+        const control = this.$refs.control;
+        if (!control) return;
+
+        const root = this.getRootNode();
+        for (const [attribute, property] of Object.entries(ARIA_RELATIONS)) {
+            // A browser without element references stays where it was: without the relation.
+            if (!(property in control)) continue;
+            const ids = this.getAttribute(attribute)?.trim().split(/\s+/) ?? [];
+            const elements = ids.map((id) => root.getElementById?.(id)).filter(Boolean);
+            control[property] = elements.length > 0 ? elements : null;
+        }
+    }
+
     /** @private */
     contentTemplate() {
         return html`
@@ -152,6 +230,7 @@ export default class Button extends TemplateElement {
                         target: this.target || undefined,
                         rel: this.target ? this.rel : undefined,
                         download: this.download || undefined,
+                        ...this._ariaAttributes(),
                     })}
                 >
                     ${this.contentTemplate()}
@@ -170,6 +249,7 @@ export default class Button extends TemplateElement {
                 ${spreadAttributes({
                     name: this.name || undefined,
                     value: this.value || undefined,
+                    ...this._ariaAttributes(),
                 })}
             >
                 ${this.contentTemplate()}

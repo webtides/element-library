@@ -96,10 +96,29 @@ export async function forcePseudoClasses(element, pseudoClasses) {
  * @returns {Promise<string>}
  */
 export async function accessibleName(element) {
+    return (await accessibilityNode(element))?.name?.value ?? '';
+}
+
+/**
+ * The accessible description of an element as the browser computes it, from `aria-describedby`
+ * or `aria-description`: `await accessibleDescription(button)`. Chromium only.
+ * @param {Element} element - May be inside a shadow root.
+ * @returns {Promise<string>}
+ */
+export async function accessibleDescription(element) {
+    return (await accessibilityNode(element))?.description?.value ?? '';
+}
+
+/**
+ * The node of an element in the accessibility tree of the browser.
+ * @param {Element} element - May be inside a shadow root.
+ * @returns {Promise<object | undefined>}
+ */
+async function accessibilityNode(element) {
     const session = cdp();
     const nodeId = await protocolNodeId(session, element);
     const { nodes } = await session.send('Accessibility.getPartialAXTree', { nodeId, fetchRelatives: false });
-    return nodes[0]?.name?.value ?? '';
+    return nodes[0];
 }
 
 /**

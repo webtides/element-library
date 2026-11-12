@@ -239,10 +239,16 @@ describe('Feature | Popover', () => {
                 anchor: `<el-button slot="anchor">Options</el-button>`,
             });
 
-            anchor.shadowRoot.querySelector('button').click();
+            const control = anchor.shadowRoot.querySelector('button');
+            // The button passes aria-expanded on to its control, which a screen reader announces.
+            expect(control.getAttribute('aria-expanded')).toBe('false');
+
+            control.click();
+            await settled();
             await settled();
             expect(el.open).toBe(true);
             expect(isShown(panel)).toBe(true);
+            expect(control.getAttribute('aria-expanded')).toBe('true');
         });
     });
 
