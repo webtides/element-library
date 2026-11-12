@@ -165,6 +165,7 @@ export default [hostStyle(), sizeStyle(), variantsStyle(), appearanceStyle('.but
 - **`appearance`**: paints those colours on a surface as `filled`, `outlined` or `plain`.
 - **`form-control`**: the layout of a field around its control (label, help, `.field`, error).
 - **`arrow`**: the arrow of a floating surface (popover, tooltip), on the edge that faces the anchor. Its argument is the surface, not the host; `placeAtAnchor()` in `src/utils/floating.js` sets the `data-placement` it selects by.
+- **`modal`**: a native `<dialog>` as a modal surface with a header, a body and a footer (dialog, drawer): the paint of the surface, the backdrop, the way from closed to shown (the class `showing`) and the parts. It takes no host, a dialog with slots needs a shadow root. The component adds the place, the size, the border and the look before it is shown, on the selector `dialog` and in properties the module does not set.
 
 Rules:
 

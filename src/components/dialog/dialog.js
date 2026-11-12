@@ -47,12 +47,27 @@ import { afterTransition, nextFrame } from '../../utils/transitions.js';
  * @property {string} closeLabel - Accessible label for the built-in close button. Default `'Close'`.
  */
 export default class Dialog extends TemplateElement {
-    constructor() {
+    /**
+     * @param {object} [options] - For a component that extends the dialog: its own `styles`, and
+     *   `propertyOptions` for the properties it adds.
+     */
+    constructor(options = {}) {
         super({
             shadowRender: true,
             styles: [style],
-            propertyOptions: { open: { reflect: true }, noHeader: { reflect: true } },
+            ...options,
+            propertyOptions: { open: { reflect: true }, noHeader: { reflect: true }, ...options.propertyOptions },
         });
+    }
+
+    /**
+     * The names of the events. A component that extends the dialog fires them under names of its
+     * own.
+     * @protected
+     * @returns {typeof Events}
+     */
+    get _eventNames() {
+        return Events;
     }
 
     properties() {
@@ -118,7 +133,7 @@ export default class Dialog extends TemplateElement {
      */
     show() {
         if (this.open) return Promise.resolve();
-        const done = this._once(Events.AFTER_SHOW);
+        const done = this._once(this._eventNames.AFTER_SHOW);
         this.open = true;
         return done;
     }
@@ -129,7 +144,7 @@ export default class Dialog extends TemplateElement {
      */
     hide() {
         if (!this.open) return Promise.resolve();
-        const done = this._once(Events.AFTER_HIDE);
+        const done = this._once(this._eventNames.AFTER_HIDE);
         this.open = false;
         return done;
     }
@@ -143,7 +158,7 @@ export default class Dialog extends TemplateElement {
     requestClose(source) {
         // element-js's dispatch() swallows the dispatchEvent() return value, so build the cancelable
         // event by hand to read defaultPrevented.
-        const event = new CustomEvent(Events.REQUEST_CLOSE, {
+        const event = new CustomEvent(this._eventNames.REQUEST_CLOSE, {
             bubbles: true,
             composed: true,
             cancelable: true,
@@ -163,16 +178,16 @@ export default class Dialog extends TemplateElement {
         const dialog = this.$refs.dialog;
         if (!dialog || dialog.open) return;
 
-        this.dispatch(Events.SHOW);
+        this.dispatch(this._eventNames.SHOW);
         lockBodyScroll();
         dialog.showModal();
         // The platform has now moved focus inside the dialog; let consumers redirect it.
-        this.dispatch(Events.INITIAL_FOCUS);
+        this.dispatch(this._eventNames.INITIAL_FOCUS);
 
         await nextFrame();
         dialog.classList.add('showing');
         await afterTransition(dialog);
-        this.dispatch(Events.AFTER_SHOW);
+        this.dispatch(this._eventNames.AFTER_SHOW);
     }
 
     /** @private */
@@ -180,12 +195,12 @@ export default class Dialog extends TemplateElement {
         const dialog = this.$refs.dialog;
         if (!dialog || !dialog.open) return;
 
-        this.dispatch(Events.HIDE);
+        this.dispatch(this._eventNames.HIDE);
         dialog.classList.remove('showing');
         await afterTransition(dialog);
         dialog.close();
         unlockBodyScroll();
-        this.dispatch(Events.AFTER_HIDE);
+        this.dispatch(this._eventNames.AFTER_HIDE);
     }
 
     /** @private */
