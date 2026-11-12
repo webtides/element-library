@@ -1,10 +1,7 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
-import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 import style from './popover.style.js';
 import Events from './popover.events.js';
-
-/** How close to the edge of the viewport the panel may come, and the arrow to a corner of the panel. */
-const EDGE_PADDING = 8;
+import { followAnchor, placeAtAnchor } from '../../utils/floating.js';
 
 /**
  * A panel that floats next to an anchor: a click on the anchor opens it, a second click, a click
@@ -219,7 +216,7 @@ export default class Popover extends TemplateElement {
      */
     _startPositioning() {
         this._stopPositioning();
-        this._stopAutoUpdate = autoUpdate(this._anchor(), this.$refs.panel, () => this._position());
+        this._stopAutoUpdate = followAnchor(this._anchor(), this.$refs.panel, () => this._position());
     }
 
     /** @private */
@@ -233,34 +230,11 @@ export default class Popover extends TemplateElement {
         const panel = this.$refs.panel;
         if (!panel || !this.open) return;
 
-        const arrowElement = this.$refs.arrow;
-        // The arrow is a square turned by 45 degrees with its middle on the edge of the panel, so
-        // half of its diagonal sticks out.
-        const arrowLength = arrowElement ? arrowElement.offsetWidth * Math.SQRT1_2 : 0;
-
-        const { x, y, placement, middlewareData } = await computePosition(this._anchor(), panel, {
+        await placeAtAnchor(this._anchor(), panel, {
             placement: this.placement,
-            strategy: 'fixed',
-            middleware: [
-                offset((Number(this.distance) || 0) + arrowLength),
-                flip(),
-                shift({ padding: EDGE_PADDING }),
-                ...(arrowElement ? [arrow({ element: arrowElement, padding: EDGE_PADDING })] : []),
-            ],
+            distance: this.distance,
+            arrowElement: this.$refs.arrow,
         });
-
-        Object.assign(panel.style, { left: `${x}px`, top: `${y}px` });
-        // The side the panel ended up at, which is not the one asked for when it had no room there.
-        // The stylesheet puts the arrow on the edge that faces the anchor by it.
-        panel.dataset.placement = placement;
-
-        if (arrowElement) {
-            const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {};
-            Object.assign(arrowElement.style, {
-                left: arrowX != null ? `${arrowX}px` : '',
-                top: arrowY != null ? `${arrowY}px` : '',
-            });
-        }
     }
 
     template() {

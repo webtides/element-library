@@ -163,6 +163,7 @@ export default [hostStyle(), sizeStyle(), variantsStyle(), appearanceStyle('.but
 - **`variants`**: resolves the `variant` attribute (`neutral` / `brand` / `success` / `warning` / `danger`) to the colours of five roles.
 - **`appearance`**: paints those colours on a surface as `filled`, `outlined` or `plain`.
 - **`form-control`**: the layout of a field around its control (label, help, `.field`, error).
+- **`arrow`**: the arrow of a floating surface (popover, tooltip), on the edge that faces the anchor. Its argument is the surface, not the host; `placeAtAnchor()` in `src/utils/floating.js` sets the `data-placement` it selects by.
 
 Rules:
 
