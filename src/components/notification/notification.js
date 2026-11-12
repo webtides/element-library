@@ -31,7 +31,7 @@ function getToastStack() {
 /**
  * A notification / alert that can be shown inline or as a transient toast. Built for both feedback
  * after an action and inline status messages. Semantic variants, an optional close button, and
- * optional auto-dismiss. API modelled on Shoelace's `<sl-alert>`.
+ * optional auto-dismiss.
  *
  * The host is exposed as an ARIA live region — `role="alert"` (assertive) for `danger` / `warning`
  * variants, `role="status"` (polite) otherwise — so toasts are announced when they appear.

@@ -1,6 +1,6 @@
 # Notification
 
-`notification` is an alert / notification that can be shown **inline** or as a transient **toast**. It carries a semantic variant, a leading icon, an optional close button and optional auto-dismiss. The host is exposed as an ARIA live region, so toasts are announced when they appear. API modelled on Shoelace's `<sl-alert>`.
+`notification` is an alert / notification that can be shown **inline** or as a transient **toast**. It carries a semantic variant, a leading icon, an optional close button and optional auto-dismiss. The host is exposed as an ARIA live region, so toasts are announced when they appear.
 
 It is headless-leaning by default: colors come from the `--el-*` tokens, with system-color fallbacks (`Canvas` / `CanvasText`) so an unthemed floating toast is still readable.
 

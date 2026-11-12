@@ -8,7 +8,7 @@ import { afterTransition, nextFrame } from '../../utils/transitions.js';
  * A modal dialog built on the native `<dialog>` element, so the platform owns focus trapping,
  * background `inert`, top-layer rendering, focus restoration and `<form method="dialog">`
  * auto-close. The component adds an animated, cancelable open/close lifecycle and ref-counted
- * body-scroll locking on top. API modelled on Shoelace's `<sl-dialog>`.
+ * body-scroll locking on top.
  *
  * @element el-dialog
  *

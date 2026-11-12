@@ -58,7 +58,7 @@ element-library/
 - **accordion**: Single accordion element
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
-- **button**: Themeable button (Shoelace-style)
+- **button**: Themeable button
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
 - **dropdown**: Dropdown component

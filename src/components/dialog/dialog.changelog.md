@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- Initial release of `el-dialog` — a modal dialog built on the native `<dialog>` element. The platform provides focus trapping, background `inert`, top-layer rendering, focus restoration and `<form method="dialog">` auto-close; the component adds an animated, cancelable open/close lifecycle and ref-counted body-scroll locking that compensates for the removed scrollbar width (no layout shift on open). API modelled on Shoelace's `<sl-dialog>`.
+- Initial release of `el-dialog` — a modal dialog built on the native `<dialog>` element. The platform provides focus trapping, background `inert`, top-layer rendering, focus restoration and `<form method="dialog">` auto-close; the component adds an animated, cancelable open/close lifecycle and ref-counted body-scroll locking that compensates for the removed scrollbar width (no layout shift on open).
 - Properties `open` (reflected), `label`, `no-header` (reflected) and `close-label`.
 - Methods `show()` / `hide()` (both resolve after their transition) and `requestClose(source)`.
 - Events `dialog-show`, `dialog-after-show`, `dialog-hide`, `dialog-after-hide`, the cancelable `dialog-initial-focus`, and the cancelable `dialog-request-close` (with `detail.source` of `'close-button' | 'keyboard' | 'overlay'`).
