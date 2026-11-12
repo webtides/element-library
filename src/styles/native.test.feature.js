@@ -182,6 +182,9 @@ describe('Feature | Styles | native.css', () => {
             const themeStyle = document.createElement('style');
             themeStyle.textContent = theme;
             document.head.append(own, themeStyle);
+            // element-js watches the page for new stylesheets and reads them a moment later. It has to
+            // find them still in the page, so they are not taken out again before that.
+            await nextFrame();
             try {
                 expect(getComputedStyle(document.documentElement).getPropertyValue('--el-color-accent').trim()).toBe(
                     'rgb(1, 2, 3)',
