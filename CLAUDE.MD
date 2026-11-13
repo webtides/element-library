@@ -75,6 +75,7 @@ element-library/
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
+- **skeleton**: Shape in the place of content that is still loading
 - **slider**: CSS-only slider
 - **spinner**: Spinner for a wait of unknown length
 - **sticky**: Sticky positioning element

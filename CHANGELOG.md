@@ -151,6 +151,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the select names it in `aria-describedby` while it is shown. Before, the select pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 - Fixed: a decorated select shows its chevron wherever the theme is loaded. The theme showed the field's own chevron with a rule of the same weight as the rule of the field that hides it, so the later one won: with the theme in the stylesheet of the page and the styles of the field after it, the select had no chevron at all, the native one taken away and its own hidden. The field now follows a property that `styles/native.css` sets. ([#69](https://github.com/webtides/element-library/issues/69))
 
+### skeleton
+
+- Added: `el-skeleton`, a new component: a quiet shape in the place of content that is still loading, a line of text, an image, an avatar. By default it is a line, as wide as its container and `1em` high; a width and a height on the element make it a block, `--el-skeleton-radius` a circle. `effect` is `none` (the default), `sheen` (a lighter band passes over the shape) or `pulse` (the shape fades and comes back), reflected; both stand still for a user who prefers reduced motion. The colour is an eighth of the text colour, so the skeleton shows on any background and without a theme; `--el-skeleton-color` and `--el-skeleton-sheen-color` set other ones. It has no role and no content: the region that loads says so with `aria-busy`. ([#77](https://github.com/webtides/element-library/issues/77))
+
 ### slider
 
 - Added: `dot-label` (`dotLabel`): the accessible label of a pager dot, followed by the number of its item. Default `'Go to item'`, which names the dots "Go to item 1", "Go to item 2" and so on. ([#94](https://github.com/webtides/element-library/issues/94))

@@ -79,6 +79,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | scroll-to          |                                                                               | `0.1.0` |
 | scroll-to-top      |                                                                               | `0.1.0` |
 | select-field       |                                                                               | `0.1.0` |
+| skeleton           | A shape in the place of content that is still loading, with sheen and pulse   | `0.1.0` |
 | slider             | CSS only slider element to slide child elements                               | `0.4.3` |
 | spinner            | A spinner for a wait of unknown length, sized by the font size                | `0.1.0` |
 | sticky             |                                                                               | `0.2.0` |
