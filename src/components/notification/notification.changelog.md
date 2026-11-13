@@ -18,12 +18,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
-- A notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, `toast()`, setting `open`) still animates.
+- BREAKING: `toast()` is gone, and with it the stack the method built at the top right of the page. `el-toast` shows a notification as a toast: `toast(note)` from `@webtides/element-library/toast` takes the place of `note.toast()`. It shows the notification as it is, in the region of the page, which has a place at every edge, a limit for the toasts that show at once, and lies in the top layer above dialogs. It returns the notification, not a promise: `notification-after-show` tells when it is shown. A page that styled `.el-toast-stack` sets `placement` and `--el-toast-inset` on `el-toast` instead. ([#118](https://github.com/webtides/element-library/issues/118))
+- A notification that is already open when it is first rendered in the browser now appears without the enter transition, the same way a server-rendered one does. Opening it later (`show()`, setting `open`) still animates.
 - On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (18 × 18 px before). Its icon keeps its size, and a one-line notification grows with the button. Unchanged on a fine pointer and without the token.
 
 ### Fixed
 
-- A server-rendered open notification (Declarative Shadow DOM) is visible before its JavaScript runs, and stays visible without JavaScript. It used to be transparent until `connected()` added the `showing` class, and then faded in. A server-rendered closed notification no longer reserves its height before the element is connected. Until the element is connected the resting state follows the `open` attribute; afterwards `show()` / `hide()` / `toast()` animate as before.
+- A server-rendered open notification (Declarative Shadow DOM) is visible before its JavaScript runs, and stays visible without JavaScript. It used to be transparent until `connected()` added the `showing` class, and then faded in. A server-rendered closed notification no longer reserves its height before the element is connected. Until the element is connected the resting state follows the `open` attribute; afterwards `show()` / `hide()` animate as before.
 - The default variant icon is drawn again when the element is rendered in the browser (a toast, or a notification a framework creates after load). The icon shapes were a template nested inside the `<svg>`, which put them into the HTML namespace on client render, so the icon was an empty box; server-rendered notifications were not affected. Each variant now renders one complete `<svg>` template.
 
 ## [0.1.2] - 2026-06-04

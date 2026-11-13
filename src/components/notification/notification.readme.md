@@ -1,6 +1,6 @@
 # Notification
 
-`notification` is an alert / notification that can be shown **inline** or as a transient **toast**. It carries a semantic variant, a leading icon, an optional close button and optional auto-dismiss. The host is exposed as an ARIA live region, so toasts are announced when they appear.
+`notification` is an alert / notification that is shown **inline**, or as a transient **toast** by [`el-toast`](../toast/toast.readme.md). It carries a semantic variant, a leading icon, an optional close button and optional auto-dismiss. The host is exposed as an ARIA live region, so toasts are announced when they appear.
 
 It is headless-leaning by default: colors come from the `--el-*` tokens, with system-color fallbacks (`Canvas` / `CanvasText`) so an unthemed floating toast is still readable.
 
@@ -26,13 +26,17 @@ import '@webtides/element-library/notification/define';
 
 #### As a toast
 
+The region `el-toast` shows a notification as a toast: at an edge of the viewport, in a stack, above everything of the page. Its function takes a text, or a notification of your own:
+
 ```js
+import { toast } from '@webtides/element-library/toast';
+
+toast('Saved to your library.', { variant: 'success', duration: 3000 });
+
 const note = document.createElement('el-notification');
 note.variant = 'success';
-note.closable = true;
-note.duration = 3000;
-note.textContent = 'Saved to your library.';
-note.toast(); // floats it into the shared top-right stack and shows it
+note.innerHTML = '<svg slot="icon" …></svg>Saved to your library.';
+toast(note);
 ```
 
 #### Server-rendered
@@ -53,11 +57,10 @@ An open notification rendered on the server (Declarative Shadow DOM) is visible 
 
 #### Methods
 
-| Name      | Returns         | Description                                                  |
-| --------- | --------------- | ------------------------------------------------------------ |
-| `show()`  | `Promise<void>` | Shows the notification; resolves after the open transition.  |
-| `hide()`  | `Promise<void>` | Hides the notification; resolves after the close transition. |
-| `toast()` | `Promise<void>` | Moves it into the shared top-right toast stack and shows it. |
+| Name     | Returns         | Description                                                  |
+| -------- | --------------- | ------------------------------------------------------------ |
+| `show()` | `Promise<void>` | Shows the notification; resolves after the open transition.  |
+| `hide()` | `Promise<void>` | Hides the notification; resolves after the close transition. |
 
 #### Events
 

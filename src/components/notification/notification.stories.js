@@ -31,7 +31,7 @@ export const Notification = {
     parameters: {
         docs: {
             description: {
-                story: 'An inline notification with a leading icon, a message and an optional close button. Shown inline here; call `toast()` to float it in the top-right corner instead.',
+                story: 'An inline notification with a leading icon, a message and an optional close button. Shown inline here; `el-toast` shows it as a toast at an edge of the viewport instead.',
             },
         },
     },
@@ -77,36 +77,4 @@ export const Variants = {
             )}
         </div>
     `,
-};
-
-export const Toast = {
-    parameters: {
-        docs: {
-            description: {
-                story: 'Calling `toast()` moves the notification into a shared, top-right stack and shows it. Here the button toasts a fresh notification that auto-dismisses after 3 seconds (the countdown pauses on hover).',
-            },
-        },
-    },
-    render: () => html`
-        <button type="button" onclick="this.nextElementSibling.cloneNode(true).toast()">Show toast</button>
-        <el-notification variant="success" closable="true" duration="3000"> Saved to your library. </el-notification>
-    `,
-    play: async ({ canvasElement, step }) => {
-        const trigger = canvasElement.querySelector('button');
-
-        await step('clicking the trigger floats a toast in the top-right stack', async () => {
-            await userEvent.click(trigger);
-            const toast = await waitFor(() => {
-                const node = document.querySelector('.el-toast-stack el-notification');
-                // role is set in the deferred connected() hook, so wait for it too.
-                if (!node || !node.open || node.getAttribute('role') !== 'status') {
-                    throw new Error('toast not ready yet');
-                }
-                return node;
-            });
-            await expect(toast).toHaveAttribute('role', 'status');
-            // Clean up so repeated runs don't accumulate toasts.
-            await toast.hide();
-        });
-    },
 };

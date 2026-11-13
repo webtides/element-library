@@ -73,7 +73,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | form-field         |                                                                               | `0.1.0` |
 | input-field        |                                                                               | `0.1.0` |
 | lazy-src           |                                                                               | `0.2.0` |
-| notification       | An inline alert / toast with variants, auto-dismiss and a live region         | `0.1.0` |
+| notification       | An alert with variants, auto-dismiss and a live region, inline or as a toast  | `0.1.0` |
 | pagination         | The way through a list that is split into pages, with a button per page       | `0.1.0` |
 | password-field     | A masked password input with an optional show/hide reveal toggle              | `0.1.0` |
 | popover            | A panel that floats next to an anchor, built on the native popover            | `0.1.0` |

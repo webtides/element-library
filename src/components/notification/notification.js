@@ -4,37 +4,12 @@ import Events from './notification.events.js';
 import { afterTransition, nextFrame } from '../../utils/transitions.js';
 
 /**
- * Lazily-created, shared toast container pinned to the top-right of the viewport. Toasts append
- * themselves to it; it is removed again once the last toast leaves.
- */
-let toastStack = null;
-
-function getToastStack() {
-    if (!toastStack) {
-        toastStack = document.createElement('div');
-        toastStack.className = 'el-toast-stack';
-        Object.assign(toastStack.style, {
-            position: 'fixed',
-            top: '1rem',
-            insetInlineEnd: '1rem',
-            zIndex: '9999',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            pointerEvents: 'none',
-        });
-        document.body.append(toastStack);
-    }
-    return toastStack;
-}
-
-/**
- * A notification / alert that can be shown inline or as a transient toast. Built for both feedback
- * after an action and inline status messages. Semantic variants, an optional close button, and
- * optional auto-dismiss.
+ * A notification / alert: feedback after an action, or a status message in the page. Semantic
+ * variants, an optional close button, and optional auto-dismiss. It is shown where it stands;
+ * `el-toast` shows it as a toast, at an edge of the viewport.
  *
  * The host is exposed as an ARIA live region — `role="alert"` (assertive) for `danger` / `warning`
- * variants, `role="status"` (polite) otherwise — so toasts are announced when they appear.
+ * variants, `role="status"` (polite) otherwise — so it is announced when it appears.
  *
  * @element el-notification
  *
@@ -78,7 +53,7 @@ export default class Notification extends TemplateElement {
     }
 
     connected() {
-        // Expose the host as a live region so toasts are announced. Assertive for danger/warning.
+        // Expose the host as a live region so it is announced. Assertive for danger/warning.
         const assertive = this.variant === 'danger' || this.variant === 'warning';
         this.setAttribute('role', assertive ? 'alert' : 'status');
         this.setAttribute('aria-live', assertive ? 'assertive' : 'polite');
@@ -111,7 +86,7 @@ export default class Notification extends TemplateElement {
                 click: () => this.hide(),
             },
             "[part~='base']": {
-                // Pause the auto-dismiss countdown while the user is interacting with the toast.
+                // Pause the auto-dismiss countdown while the user is interacting with it.
                 mouseenter: () => clearTimeout(this._autoHideTimer),
                 mouseleave: () => this._startAutoHide(),
                 focusin: () => clearTimeout(this._autoHideTimer),
@@ -140,15 +115,6 @@ export default class Notification extends TemplateElement {
         const done = this._once(Events.AFTER_HIDE);
         this.open = false;
         return done;
-    }
-
-    /**
-     * Moves the notification into the shared top-right toast stack and shows it.
-     * @returns {Promise<void>} Resolves after the open transition has finished.
-     */
-    toast() {
-        getToastStack().append(this);
-        return this.show();
     }
 
     /** @private */
@@ -183,7 +149,6 @@ export default class Notification extends TemplateElement {
 
         this._internals.states.delete('open');
         this.dispatch(Events.AFTER_HIDE);
-        this._removeFromToastStack();
     }
 
     /** @private */
@@ -191,17 +156,6 @@ export default class Notification extends TemplateElement {
         clearTimeout(this._autoHideTimer);
         if (this.open && Number.isFinite(this.duration)) {
             this._autoHideTimer = setTimeout(() => this.hide(), this.duration);
-        }
-    }
-
-    /** @private */
-    _removeFromToastStack() {
-        if (toastStack && this.parentElement === toastStack) {
-            this.remove();
-            if (toastStack.childElementCount === 0) {
-                toastStack.remove();
-                toastStack = null;
-            }
         }
     }
 

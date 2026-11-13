@@ -341,7 +341,7 @@ export const Page = {
                     <form
                         class="grid sm:grid-cols-2 gap-6 rounded-xl border p-6"
                         style="border-color:var(--el-color-border,#e5e7eb)"
-                        onsubmit="event.preventDefault(); this.parentElement.querySelector('[data-demo-toast]').cloneNode(true).toast();"
+                        onsubmit="event.preventDefault(); this.parentElement.querySelector('el-toast').toast(this.parentElement.querySelector('[data-demo-toast]').cloneNode(true));"
                     >
                         <el-input-field
                             name="name"
@@ -426,10 +426,11 @@ export const Page = {
                         </div>
                     </form>
 
-                    <!-- Toast template: submitting the form clones this and floats it via toast(). -->
+                    <!-- Toast template: submitting the form clones this and shows the copy in the region. -->
                     <el-notification data-demo-toast variant="success" closable="true" duration="4000">
                         Thanks! We'll be in touch shortly.
                     </el-notification>
+                    <el-toast></el-toast>
                 </section>
 
                 <!-- ───────── FAQ accordion ───────── -->

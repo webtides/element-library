@@ -63,21 +63,6 @@ describe('Feature | Notification', () => {
         expect(el.open).toBe(false);
     });
 
-    it('toast() floats it into the shared stack and removes it again on hide', async () => {
-        const el = await fixture(`<el-notification>Toast me</el-notification>`);
-
-        await el.toast();
-        const stack = document.querySelector('.el-toast-stack');
-        expect(stack).not.toBeNull();
-        expect(el.parentElement).toBe(stack);
-        expect(el.open).toBe(true);
-
-        await el.hide();
-        expect(el.parentElement).toBeNull();
-        // The stack is torn down once its last toast leaves.
-        expect(document.querySelector('.el-toast-stack')).toBeNull();
-    });
-
     it('draws the variant icon when the element is rendered in the browser', async () => {
         for (const variant of ['default', 'success', 'warning', 'danger']) {
             const el = await fixture(`<el-notification open="true" variant="${variant}">Message</el-notification>`);
