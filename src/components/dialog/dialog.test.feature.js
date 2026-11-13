@@ -483,6 +483,29 @@ describe('Feature | Dialog', () => {
             }
         });
 
+        it('waits in hide() and show() when `open` got its value just before the call', async () => {
+            const { el, log, state } = await tracked();
+            await el.show();
+
+            // Set by hand. The dialog begins to move with the next frame.
+            el.open = false;
+            await el.hide();
+            expect(state()).toEqual(CLOSED);
+
+            el.open = true;
+            await el.show();
+            expect(state()).toEqual(SHOWN);
+
+            // By a request to close, as the close button makes it.
+            el.requestClose('close-button');
+            await el.hide();
+            expect(state()).toEqual(CLOSED);
+
+            // In and out twice, each way to its end.
+            const inAndOut = ['show', 'initial-focus', 'after-show', 'hide', 'after-hide'];
+            expect(log).toEqual([...inAndOut, ...inAndOut]);
+        });
+
         it('is closed after a double click on a button that toggles it', async () => {
             const { el, toggle, log, state } = await tracked();
             toggle.addEventListener('click', () => (el.open = !el.open));

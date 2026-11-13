@@ -229,8 +229,10 @@ export default class Dialog extends TemplateElement {
             this.open = open;
             return Promise.resolve();
         }
-        // The watcher runs a frame later. The promise has to be there before that.
-        if (!!this.open !== open) this._rest ??= pending();
+        // The watcher runs a frame later. The promise has to be there before that, whenever the
+        // dialog is not where the call wants it. That is not read from `open`: it can have got its
+        // value just before, by hand or by a request to close, and the dialog has not moved yet.
+        if (this._heading !== open) this._rest ??= pending();
         this.open = open;
         return this._rest?.promise ?? Promise.resolve();
     }
