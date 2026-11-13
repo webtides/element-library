@@ -60,7 +60,7 @@ import '@webtides/element-library/textarea-field/define';
 
 | Name | Parameters | Description |
 | --- | --- | --- |
-| `clearInput()` | None | Clears the textarea content, focuses the field, and resets the touched state |
+| `clearInput()` | None | Clears the textarea content, focuses the field, and resets the touched state. `value` and `valid` follow, and `input-change` reports the empty value |
 | `onFocus()` | None | Internal method called when textarea receives focus, updates validation state |
 | `onBlur()` | None | Internal method called when textarea loses focus, marks field as touched and updates validation |
 | `onChange()` | None | Internal method called when textarea content changes, updates value and validation state |

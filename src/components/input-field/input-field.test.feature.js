@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './input-field.js';
@@ -186,6 +187,68 @@ describe('Feature | InputField', () => {
         await nextFrame();
         await nextFrame();
         expect(textEntryOn(serverInput)).toEqual({ ...TEXT_ENTRY, enterkeyhint: 'go' });
+    });
+
+    describe('with the cross of a field that is not valid', () => {
+        // Text that is no address, typed with real keys. Once the field was left it is touched and
+        // not valid, and renders the cross.
+        const withCross = async (name, attributes = '') => {
+            const form = await fixture(`
+                <form><el-input-field name="${name}" type="email" label="Mail" ${attributes}></el-input-field></form>
+            `);
+            const el = form.firstElementChild;
+            const input = el.querySelector('input');
+            await userEvent.click(input);
+            await userEvent.keyboard('abc');
+            input.blur();
+            await nextFrame();
+            await nextFrame();
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+            return { form, el, input, changes };
+        };
+        const state = ({ form, el, input }) => ({
+            control: input.value,
+            value: el.value,
+            submitted: new FormData(form).get(el.name),
+            valid: el.valid,
+            touched: el.touched,
+        });
+        const clear = async ({ el }, how) => {
+            if (how === 'a click on the cross') await userEvent.click(el.querySelector('[data-clear-input]'));
+            else el.clearInput();
+            await nextFrame();
+            await nextFrame();
+        };
+
+        for (const how of ['a click on the cross', 'clearInput()']) {
+            it(`empties the control and the value of the field, and reports it, with ${how}`, async () => {
+                const field = await withCross(`cross-${how.length}`);
+                expect(state(field)).toEqual({
+                    control: 'abc',
+                    value: 'abc',
+                    submitted: 'abc',
+                    valid: false,
+                    touched: true,
+                });
+
+                await clear(field, how);
+
+                // No address is required, so the empty field is valid.
+                expect(state(field)).toEqual({ control: '', value: '', submitted: '', valid: true, touched: false });
+                expect(field.changes).toEqual(['']);
+                expect(document.activeElement).toBe(field.input);
+            });
+        }
+
+        it('leaves a required field not valid, and without its mark', async () => {
+            const field = await withCross('cross-required', 'required="true"');
+
+            await clear(field, 'a click on the cross');
+
+            expect(state(field)).toEqual({ control: '', value: '', submitted: '', valid: false, touched: false });
+            expect(field.el.querySelector('.validity')).toBeNull();
+        });
     });
 
     describe('in a native form', () => {

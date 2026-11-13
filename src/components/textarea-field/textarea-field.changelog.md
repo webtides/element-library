@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The mark of a touched field (✓ or ✗) stands beside the textarea, at its top, and has the colours it has beside an input (`--el-color-success`, `--el-color-danger`). Before, it was a line of its own below the textarea: the field grew by that line when it was left for the first time, and what came after it moved down. A click on a button below the field was lost that way, when the button moved away between the press and the release. A textarea that is as wide as the field gets narrower by the mark and the gap. On a touch screen the mark has the width of `--el-touch-target` in both states, so the textarea keeps its width when the validity changes. ([#101](https://github.com/webtides/element-library/issues/101))
 - `aria-describedby` on the textarea now names the help message (`<name>-help-message`). It pointed at `<name>-help`, an id that does not exist.
 - The error message is announced by screen readers: it is an alert (`role="alert"`), and the textarea names it in `aria-describedby` while it is shown. Before, nothing connected the message with the textarea. ([#94](https://github.com/webtides/element-library/issues/94))
+- The cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty textarea. Before, only the textarea was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 
 ## [0.1.0] - 2026-06-03
 

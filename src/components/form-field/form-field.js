@@ -158,12 +158,16 @@ export default class FormField extends TemplateElement {
     }
 
     /**
-     * Clears the input value, refocuses it, and resets the touched state.
+     * Clears the input value, refocuses it, and resets the touched state. The field follows the
+     * control, as it does when the user deletes the text by hand: `value` is empty, `input-change`
+     * reports it, and `valid` is what the control says.
      * @returns {void}
      */
     clearInput() {
         this.$refs.input.focus();
         this.$refs.input.value = '';
+        // A value that a script sets fires no event, so the field has to be told.
+        this.onChange();
         this.touched = false;
     }
 

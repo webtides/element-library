@@ -273,6 +273,38 @@ describe('Feature | TextareaField', () => {
         });
     });
 
+    describe('with the cross of a field that is not valid', () => {
+        it('empties the textarea and the value of the field, and takes the same text again', async () => {
+            const el = await fixture(`<el-textarea-field name="cross-text" label="Message"></el-textarea-field>`);
+            const textarea = el.querySelector('textarea');
+            await userEvent.click(textarea);
+            await userEvent.keyboard('First draft');
+            textarea.blur();
+            await nextFrame();
+            // As a page marks a field for an error that the server found.
+            el.valid = false;
+            await nextFrame();
+            await nextFrame();
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+
+            await userEvent.click(el.querySelector('[data-clear-input]'));
+            await nextFrame();
+            await nextFrame();
+
+            expect(textarea.value).toBe('');
+            expect(el.value).toBe('');
+            expect(el.valid).toBe(true);
+            expect(changes).toEqual(['']);
+
+            // The field knows that it is empty, so the text it had is a new value.
+            el.value = 'First draft';
+            await nextFrame();
+            await nextFrame();
+            expect(textarea.value).toBe('First draft');
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const inForm = (name, attributes = '') =>

@@ -48,12 +48,12 @@ This component is typically used as a base class for other form field components
 
 #### Methods
 
-| Name           | Parameters | Description                                                              |
-| -------------- | ---------- | ------------------------------------------------------------------------ |
-| `onFocus()`    | None       | Called when the input receives focus. Updates validation state.          |
-| `onBlur()`     | None       | Called when the input loses focus. Marks field as touched and validates. |
-| `onChange()`   | None       | Called when the input value changes. Updates value and validation state. |
-| `clearInput()` | None       | Focuses the input, clears its value, and resets the touched state.       |
+| Name | Parameters | Description |
+| --- | --- | --- |
+| `onFocus()` | None | Called when the input receives focus. Updates validation state. |
+| `onBlur()` | None | Called when the input loses focus. Marks field as touched and validates. |
+| `onChange()` | None | Called when the input value changes. Updates value and validation state. |
+| `clearInput()` | None | Focuses the input, clears its value, and resets the touched state. `value` and `valid` of the field follow, and `input-change` reports the empty value. |
 
 #### Events
 

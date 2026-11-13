@@ -59,7 +59,7 @@ import '@webtides/element-library/input-field/define';
 
 | Name | Parameters | Description |
 | --- | --- | --- |
-| `clearInput()` | None | Clears the input value, focuses the field, and resets the touched state |
+| `clearInput()` | None | Clears the input value, focuses the field, and resets the touched state. `value` and `valid` follow, and `input-change` reports the empty value |
 | `onFocus()` | None | Internal method called when input receives focus, updates validation state |
 | `onBlur()` | None | Internal method called when input loses focus, marks field as touched and updates validation |
 | `onChange()` | None | Internal method called when input value changes, updates value and validation state |

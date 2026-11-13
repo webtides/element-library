@@ -98,6 +98,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: the readme says how the fields take part in a native `<form>` ("In a form"): what is submitted, what `disabled` and `required` do, and what does not work yet. Every statement there is covered by a test of the field. ([#69](https://github.com/webtides/element-library/issues/69))
 - Fixed: the error message is announced by screen readers. It is an alert now (`role="alert"`), so it is read the moment it appears, and the fields name it in the `aria-describedby` of their control while it is shown, so it is read again when the control gets focus. Before, a control pointed at the message with `aria-errormessage` at most, which few screen readers read and which axe reports (`aria-valid-attr-value`). The alert reaches every field that shows the message; `aria-describedby` is set by `el-input-field`, `el-password-field`, `el-select-field`, `el-radio-field`, `el-textarea-field` and `el-switch-field`. ([#94](https://github.com/webtides/element-library/issues/94))
 - Fixed: a field has its own stylesheet when its parent class was connected before it. element-js keeps the stylesheets of an element on its class, and a field found the ones of its parent class there and never built its own. On a page with an `el-input-field` before an `el-password-field`, the password field had the styles of the input field only, and its toggle looked like a native button; every field after an `el-form-field` had the styles of that one only. Each field class now has a place of its own for its stylesheets.
+- Fixed: the cross of a field that is not valid empties the field, not only its control: `clearInput()` sets `value` to the empty text, `input-change` reports it, and `valid` is what the empty control says. Before, the control was empty while `value` kept the old text and no event was fired, so a page that read `value` or listened to `input-change` had another text than the one the form submitted, and a field whose text had been the fault stayed not valid. This reaches the fields that render the cross: `el-input-field`, `el-password-field` and `el-textarea-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 
 ### input-field
 
@@ -106,6 +107,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high (42 px with the default theme before), and the clear cross of an invalid field at least that wide and high (9 × 18 px before). The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Unchanged on a fine pointer and without the token.
 - Fixed: the `hidden` attribute hides the field. Before, the `display` of the element won over it. ([#69](https://github.com/webtides/element-library/issues/69))
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
+- Fixed: the cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty input. Before, only the input was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 
 ### notification
 
@@ -124,6 +126,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 - Fixed: the field has its own styles when an `el-input-field` is on the page before it. Before, it took over the stylesheet of the input field in that order and lost its own: the reveal button looked like a native button, with a border and a background. See `form-field`.
 - Fixed: the `hidden` attribute hides the field. Before, the `display` of the element won over it. ([#69](https://github.com/webtides/element-library/issues/69))
+- Fixed: the cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty input. Before, only the input was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 
 ### popover
 
@@ -192,6 +195,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the mark of a touched field (✓ or ✗) stands beside the textarea, at its top, and has the colours it has beside an input (`--el-color-success`, `--el-color-danger`). Before, it was a line of its own below the textarea: the field grew by that line when it was left for the first time, and what came after it moved down. A click on a button below the field was lost that way, when the button moved away between the press and the release. A textarea that is as wide as the field gets narrower by the mark and the gap. On a touch screen the mark has the width of `--el-touch-target` in both states, so the textarea keeps its width when the validity changes. ([#101](https://github.com/webtides/element-library/issues/101))
 - Fixed: `aria-describedby` on the textarea now names the help message (`<name>-help-message`). It pointed at `<name>-help`, an id that does not exist.
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the textarea names it in `aria-describedby` while it is shown. Before, nothing connected the message with the textarea. ([#94](https://github.com/webtides/element-library/issues/94))
+- Fixed: the cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty textarea. Before, only the textarea was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 
 ### tooltip
 

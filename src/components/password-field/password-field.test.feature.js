@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './password-field.js';
@@ -99,6 +100,24 @@ describe('Feature | PasswordField', () => {
             `<div style="--el-touch-target: 44px"><el-password-field name="password" label="Password"></el-password-field></div>`,
         );
         expect(sizeOf(wrapper.querySelector('[data-password-toggle]')).width).toBeLessThan(44);
+    });
+
+    it('empties the input and its value with the cross of a field that is not valid', async () => {
+        const el = await passwordFixture('value="secret"');
+        // As a page marks a field for an error that the server found.
+        el.valid = false;
+        await nextFrame();
+        await nextFrame();
+        const changes = [];
+        el.addEventListener('input-change', (event) => changes.push(event.detail));
+
+        await userEvent.click(el.querySelector('[data-clear-input]'));
+        await nextFrame();
+        await nextFrame();
+
+        expect(el.querySelector('input').value).toBe('');
+        expect(el.value).toBe('');
+        expect(changes).toEqual(['']);
     });
 
     describe('in a native form', () => {
