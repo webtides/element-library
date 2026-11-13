@@ -103,6 +103,12 @@ export default class Pagination extends TemplateElement {
             '[data-page]': {
                 click: (event) => this._goTo(Number(event.currentTarget.dataset.page), event.currentTarget),
             },
+            // One page back or on from where the pagination is now, not from where it was when the
+            // row was rendered: two presses within one frame are two pages.
+            '[data-step]': {
+                click: (event) =>
+                    this._goTo(this._currentPage() + Number(event.currentTarget.dataset.step), event.currentTarget),
+            },
         };
     }
 
@@ -126,7 +132,9 @@ export default class Pagination extends TemplateElement {
      * @param {HTMLButtonElement} button - The button that asked for it.
      */
     _goTo(page, button) {
-        if (page === this._currentPage()) return;
+        // A page that is not there: a second press of an arrow button that reached the end with
+        // the first, before the row was rendered again and the button disabled.
+        if (page === this._currentPage() || page < 1 || page > this.pages) return;
 
         // Where the focus is, when it is on the button at all: a click with the mouse does not
         // put it there in every browser.
@@ -216,7 +224,7 @@ export default class Pagination extends TemplateElement {
                             type="button"
                             aria-label="${this.previousLabel}"
                             ?disabled="${current <= 1}"
-                            data-page="${current - 1}"
+                            data-step="-1"
                         >
                             <slot name="previous-icon">
                                 <svg
@@ -244,7 +252,7 @@ export default class Pagination extends TemplateElement {
                             type="button"
                             aria-label="${this.nextLabel}"
                             ?disabled="${current >= this.pages}"
-                            data-page="${current + 1}"
+                            data-step="1"
                         >
                             <slot name="next-icon">
                                 <svg

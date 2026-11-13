@@ -273,6 +273,44 @@ describe('Feature | Pagination', () => {
             el.remove();
         });
 
+        it('counts every press of an arrow button, also two within one frame', async () => {
+            const el = await fixture(`<el-pagination total="200" page="5"></el-pagination>`);
+            const pages = changes(el);
+
+            // Before the row is rendered again, the button still shows what it showed.
+            part(el, 'next').click();
+            part(el, 'next').click();
+            part(el, 'next').click();
+            await rendered();
+            expect(pages).toEqual([6, 7, 8]);
+            expect(current(el).textContent.trim()).toBe('8');
+
+            part(el, 'previous').click();
+            part(el, 'previous').click();
+            await rendered();
+            expect(pages).toEqual([6, 7, 8, 7, 6]);
+            expect(el.page).toBe(6);
+            el.remove();
+        });
+
+        it('stops at the ends when an arrow button is pressed faster than the row is rendered', async () => {
+            const [forth, back] = await themed(`
+                <el-pagination total="200" page="19"></el-pagination>
+                <el-pagination total="200" page="2"></el-pagination>
+            `);
+            const pages = [changes(forth), changes(back)];
+
+            for (let i = 0; i < 3; i++) {
+                part(forth, 'next').click();
+                part(back, 'previous').click();
+            }
+            await rendered();
+
+            expect(pages).toEqual([[20], [1]]);
+            expect([forth.page, back.page]).toEqual([20, 1]);
+            forth.parentElement.remove();
+        });
+
         it('has no page before the first and none after the last', async () => {
             const [first, last, only] = await themed(`
                 <el-pagination total="200" page="1"></el-pagination>
