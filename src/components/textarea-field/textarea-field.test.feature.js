@@ -205,6 +205,74 @@ describe('Feature | TextareaField', () => {
         });
     });
 
+    describe('with the mark of a touched field', () => {
+        // A field is touched once it was left. From then on it renders a check mark or a cross.
+        const fieldAboveButton = async (name, attributes = '') => {
+            const wrapper = await fixture(`
+                <div style="--el-color-success: rgb(1, 2, 3); --el-color-danger: rgb(4, 5, 6)">
+                    <el-textarea-field name="${name}" label="Message" ${attributes}></el-textarea-field>
+                    <button>Send</button>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-textarea-field');
+            return { el, textarea: el.querySelector('textarea'), button: wrapper.querySelector('button') };
+        };
+        const leave = async (textarea) => {
+            textarea.focus();
+            textarea.blur();
+            await nextFrame();
+            await nextFrame();
+        };
+
+        for (const [state, mark, attributes] of [
+            ['valid', '.valid', ''],
+            ['not valid', '.invalid', 'required="true"'],
+        ]) {
+            it(`is as high after it was left as before, ${state}`, async () => {
+                const { el, textarea, button } = await fieldAboveButton(`mark-height${mark}`, attributes);
+                // `offsetTop`, not the place in the viewport: the focus can scroll the page.
+                const before = { field: sizeOf(el).height, button: button.offsetTop };
+
+                await leave(textarea);
+
+                expect(el.querySelector(`.validity ${mark}`)).not.toBeNull();
+                expect({ field: sizeOf(el).height, button: button.offsetTop }).toEqual(before);
+            });
+        }
+
+        it('has the mark beside the textarea, at its top', async () => {
+            const { el, textarea } = await fieldAboveButton('mark-place');
+            await leave(textarea);
+            const mark = el.querySelector('.validity').getBoundingClientRect();
+            const control = textarea.getBoundingClientRect();
+
+            // With a gap between the two.
+            expect(mark.left).toBeGreaterThan(control.right);
+            expect(mark.top).toBeCloseTo(control.top, 1);
+        });
+
+        it('has the mark inside the field when the textarea is as wide as the field', async () => {
+            const { el, textarea } = await fieldAboveButton('mark-width');
+            // As a theme does: the textarea takes the room that the mark beside it leaves.
+            textarea.style.width = '100%';
+            await leave(textarea);
+            const mark = el.querySelector('.validity').getBoundingClientRect();
+
+            expect(mark.left).toBeGreaterThanOrEqual(textarea.getBoundingClientRect().right);
+            expect(mark.right).toBeLessThanOrEqual(el.getBoundingClientRect().right);
+        });
+
+        it('paints the mark in the colours of the tokens', async () => {
+            const valid = await fieldAboveButton('mark-colour-valid');
+            await leave(valid.textarea);
+            expect(getComputedStyle(valid.el.querySelector('.validity .valid')).color).toBe('rgb(1, 2, 3)');
+
+            const invalid = await fieldAboveButton('mark-colour-invalid', 'required="true"');
+            await leave(invalid.textarea);
+            expect(getComputedStyle(invalid.el.querySelector('.validity .invalid')).color).toBe('rgb(4, 5, 6)');
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const inForm = (name, attributes = '') =>
@@ -268,6 +336,29 @@ describe('Feature | TextareaField', () => {
             expect(sizeOf(el.querySelector('textarea')).height).toBeGreaterThanOrEqual(44);
             const { width, height } = sizeOf(el.querySelector('[data-clear-input]'));
             expect(Math.min(width, height)).toBeGreaterThanOrEqual(44);
+        });
+
+        it('keeps the size of the textarea and of the field when the validity changes', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-touch-target: 44px">
+                    <el-textarea-field name="note-validity" label="Note" rows="1"></el-textarea-field>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-textarea-field');
+            const textarea = el.querySelector('textarea');
+            // As a theme does: the textarea takes the room that the mark beside it leaves.
+            textarea.style.width = '100%';
+            el.touched = true;
+            await nextFrame();
+            await nextFrame();
+            const whileValid = { textarea: sizeOf(textarea), field: sizeOf(el) };
+
+            el.valid = false;
+            await nextFrame();
+            await nextFrame();
+
+            expect(el.querySelector('[data-clear-input]')).not.toBeNull();
+            expect({ textarea: sizeOf(textarea), field: sizeOf(el) }).toEqual(whileValid);
         });
     });
 });
