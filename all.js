@@ -15,6 +15,7 @@ import './src/components/form-field/form-field.define.js';
 import './src/components/input-field/input-field.define.js';
 import './src/components/lazy-src/lazy-src.define.js';
 import './src/components/notification/notification.define.js';
+import './src/components/pagination/pagination.define.js';
 import './src/components/password-field/password-field.define.js';
 import './src/components/popover/popover.define.js';
 import './src/components/radio-field/radio-field.define.js';

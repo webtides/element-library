@@ -73,6 +73,7 @@ element-library/
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
 - **scroll-to**: Scroll to target element
+- **pagination**: Way through a list that is split into pages: a `nav` with a button per page
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown

@@ -68,6 +68,42 @@ export async function emulateReducedMotion(enabled) {
 }
 
 /**
+ * Makes `(forced-colors: active)` match for the tests of the surrounding `describe`, as the
+ * contrast themes of Windows do, and takes that back after the last of them. Chromium only.
+ *
+ * Test files share a page, so the helper fails loudly if the page does not get its own setting
+ * back.
+ * @returns {void}
+ */
+export function useForcedColors() {
+    const query = '(forced-colors: active)';
+    let before;
+    beforeAll(async () => {
+        before = matchMedia(query).matches;
+        await emulateForcedColors(true);
+    });
+    afterAll(async () => {
+        await emulateForcedColors(false);
+        if (matchMedia(query).matches !== before) {
+            throw new Error('useForcedColors: the page did not get its own setting back');
+        }
+    });
+}
+
+/**
+ * Switches the emulation of `(forced-colors: active)` on or off.
+ * @param {boolean} enabled
+ * @returns {Promise<void>}
+ */
+export async function emulateForcedColors(enabled) {
+    await cdp().send('Emulation.setEmulatedMedia', {
+        // An empty value takes the emulation of that one feature back.
+        features: [{ name: 'forced-colors', value: enabled ? 'active' : '' }],
+    });
+    await nextFrame();
+}
+
+/**
  * Puts an element into the given states, as "Force element state" in the developer tools does:
  * `forcePseudoClasses(button, ['hover', 'active'])`. Chromium only. Use a fresh element per test:
  * after a state is taken back, `getComputedStyle()` can still report the forced style.
