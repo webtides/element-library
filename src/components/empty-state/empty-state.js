@@ -30,8 +30,8 @@ export default class EmptyState extends TemplateElement {
 
     events() {
         return {
-            // element-js renders again when a child comes or goes. An element that changes its
-            // `slot` attribute moves to another region without doing either.
+            // A template element does not render again when a child comes, goes or changes its
+            // `slot` attribute. The slot tells of all three, and the event bubbles to the base.
             "[part~='base']": {
                 slotchange: () => this.requestUpdate(),
             },

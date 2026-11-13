@@ -6,8 +6,9 @@
  * there are no slots to ask, and the markup rendered there has to leave the same regions out as
  * the browser does, or the page moves when the element takes over.
  *
- * element-js renders again when a child comes or goes. A child that changes its `slot` attribute
- * does neither: the component listens for `slotchange` and asks for an update.
+ * A template element of element-js does not render again when its children change. The component
+ * listens for `slotchange` and asks for an update: the event tells of a child that comes, goes or
+ * changes its `slot` attribute.
  *
  * A `<slot>` of another component that is passed on (`<slot name="title" slot="header">`) counts,
  * also while nothing is slotted into it.
