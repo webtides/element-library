@@ -366,8 +366,11 @@ describe('Feature | Toast', () => {
             const second = el.toast('Second', { duration: Infinity });
             await shown(first);
 
+            // Up to the event that says the toast has started to leave, and not a frame further:
+            // on a slow machine a frame can take longer than the toast needs to be gone.
+            const leaving = oneEvent(first, 'notification-hide');
             const gone = first.hide();
-            await rendered();
+            await leaving;
             expect(first.open).toBe(false);
             expect(texts(el)).toEqual(['First']);
             expect(second.isConnected).toBe(false);
