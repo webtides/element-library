@@ -4,8 +4,10 @@ import axe from 'axe-core';
 import { fixture, nextFrame, aTimeout, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './dialog.js';
 import { define as defineButton } from '../button/button.js';
+import { define as defineDrawer } from '../drawer/drawer.js';
 define();
 defineButton();
+defineDrawer();
 
 const dialogFixture = (attrs = '') =>
     fixture(`
@@ -243,6 +245,20 @@ describe('Feature | Dialog', () => {
         expect(getComputedStyle(el.shadowRoot.querySelector('[part="footer"]')).display).toBe('flex');
         await el.hide();
         wrapper.remove();
+    });
+
+    // element-js keeps the stylesheets of an element on its class. A drawer used to find the ones of
+    // the dialog there, when a dialog was connected first, and never built its own. No drawer is
+    // connected in this file before this test.
+    it('lets a component that extends it have its own stylesheet when a dialog was connected first', async () => {
+        await dialogFixture();
+        const drawer = await fixture(`<el-drawer label="Details"><p>Drawer body content.</p></el-drawer>`);
+        await drawer.show();
+
+        // From the stylesheet of el-drawer: the surface lies along an edge, from the top to the bottom.
+        const { top, height } = drawer.shadowRoot.querySelector('dialog').getBoundingClientRect();
+        await drawer.hide();
+        expect({ top, height }).toEqual({ top: 0, height: window.innerHeight });
     });
 
     it('has no detectable a11y violations while open', async () => {

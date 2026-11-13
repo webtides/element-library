@@ -71,6 +71,15 @@ export default class Dialog extends TemplateElement {
             propertyOptions: { open: { reflect: true }, noHeader: { reflect: true }, ...options.propertyOptions },
         });
 
+        // element-js keeps the stylesheets of an element on its class, and looks them up there
+        // without asking whose they are. A component that extends the dialog found the stylesheets
+        // of the dialog there, when a dialog was connected first, and never built its own: an
+        // el-drawer after an el-dialog was a dialog in the middle of the page. A property of its own
+        // on every class makes the lookup stop there. The fields have the same in FormField.
+        if (!Object.hasOwn(this.constructor, 'elementStyleSheets')) {
+            this.constructor.elementStyleSheets = undefined;
+        }
+
         /**
          * Counts the ways the dialog has set out on. See `_sync()`.
          * @private
