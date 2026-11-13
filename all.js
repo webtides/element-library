@@ -1,6 +1,7 @@
 import './src/components/accordion/accordion.define.js';
 import './src/components/accordion-group/accordion-group.define.js';
 import './src/components/amount-field/amount-field.define.js';
+import './src/components/avatar/avatar.define.js';
 import './src/components/badge/badge.define.js';
 import './src/components/button/button.define.js';
 import './src/components/card/card.define.js';

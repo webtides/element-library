@@ -59,6 +59,7 @@ element-library/
 - **accordion**: Single accordion element
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
+- **avatar**: Picture of a person or a thing: an image, initials or an icon
 - **badge**: Label for a status or a count
 - **button**: Themeable button
 - **card**: Surface that groups content, with media, header, body and footer regions
