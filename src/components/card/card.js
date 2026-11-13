@@ -1,4 +1,5 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
+import { hasSlotted } from '../../utils/slots.js';
 import style from './card.style.js';
 
 /**
@@ -55,25 +56,13 @@ export default class Card extends TemplateElement {
         };
     }
 
-    /**
-     * Whether an element is slotted into a region. The children are asked, not the slot: on a
-     * server there are no slots to ask, and the markup rendered there has to leave the same
-     * regions out as the browser does.
-     * @private
-     * @param {'media'|'header'|'footer'} region
-     * @returns {boolean}
-     */
-    _has(region) {
-        return [...this.children].some((child) => child.getAttribute('slot') === region);
-    }
-
     template() {
         return html`
             <div part="base" class="card">
-                <div part="media" ?hidden="${!this._has('media')}"><slot name="media"></slot></div>
-                <div part="header" ?hidden="${!this._has('header')}"><slot name="header"></slot></div>
+                <div part="media" ?hidden="${!hasSlotted(this, 'media')}"><slot name="media"></slot></div>
+                <div part="header" ?hidden="${!hasSlotted(this, 'header')}"><slot name="header"></slot></div>
                 <div part="body"><slot></slot></div>
-                <div part="footer" ?hidden="${!this._has('footer')}"><slot name="footer"></slot></div>
+                <div part="footer" ?hidden="${!hasSlotted(this, 'footer')}"><slot name="footer"></slot></div>
             </div>
         `;
     }

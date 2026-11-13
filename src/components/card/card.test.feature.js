@@ -114,6 +114,18 @@ describe('Feature | Card', () => {
             expect(shown(el)).toEqual(['body']);
         });
 
+        it('counts its own children only, not what is slotted into a component inside of it', async () => {
+            const el = await themed(`
+                <el-card>
+                    Body
+                    <el-card><span slot="header">Inner</span>Inner body</el-card>
+                </el-card>
+            `);
+
+            expect(shown(el)).toEqual(['body']);
+            expect(shown(el.querySelector('el-card'))).toEqual(['header', 'body']);
+        });
+
         it('leaves the same regions out in the server-rendered markup', async () => {
             const el = await fixture(`<el-card><span slot="header">Title</span>Body</el-card>`);
             // `template().toString()` is the markup the SSR renderer puts into the Declarative Shadow DOM.
