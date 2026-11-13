@@ -87,6 +87,7 @@ element-library/
 - **tab-panel**: Tab content panel
 - **tag**: Label for a keyword or a filter, removable
 - **textarea-field**: Textarea input
+- **toast**: Region where toasts appear: a stack of notifications at an edge of the viewport (a native popover while it has toasts), with `toast()` to show one
 - **tooltip**: Text that explains its anchor, on hover and keyboard focus (the element is a native popover, placed with Floating UI)
 - **transition-classes**: CSS transition helper
 

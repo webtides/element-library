@@ -33,5 +33,6 @@ import './src/components/tab-link/tab-link.define.js';
 import './src/components/tab-panel/tab-panel.define.js';
 import './src/components/tag/tag.define.js';
 import './src/components/textarea-field/textarea-field.define.js';
+import './src/components/toast/toast.define.js';
 import './src/components/tooltip/tooltip.define.js';
 import './src/components/transition-classes/transition-classes.define.js';
