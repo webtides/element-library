@@ -3,6 +3,7 @@ import './src/components/accordion-group/accordion-group.define.js';
 import './src/components/amount-field/amount-field.define.js';
 import './src/components/badge/badge.define.js';
 import './src/components/button/button.define.js';
+import './src/components/card/card.define.js';
 import './src/components/carousel/carousel.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
 import './src/components/dialog/dialog.define.js';

@@ -62,6 +62,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | amount-field       | A simple element to create amount stepping input fields                       | `0.1.1` |
 | badge              | A short label for a status or a count, with variants and appearances          | `0.1.0` |
 | button             | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
+| card               | A surface that groups content, with media, header, body and footer regions    | `0.1.0` |
 | carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field     |                                                                               | `0.1.1` |
 | dialog             | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |

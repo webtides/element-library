@@ -61,6 +61,7 @@ element-library/
 - **amount-field**: Amount stepping input field
 - **badge**: Label for a status or a count
 - **button**: Themeable button
+- **card**: Surface that groups content, with media, header, body and footer regions
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
 - **dialog**: Modal dialog built on the native `<dialog>` element
