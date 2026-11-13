@@ -9,6 +9,7 @@ import './src/components/checkbox-field/checkbox-field.define.js';
 import './src/components/dialog/dialog.define.js';
 import './src/components/drawer/drawer.define.js';
 import './src/components/dropdown/dropdown.define.js';
+import './src/components/empty-state/empty-state.define.js';
 import './src/components/form-field/form-field.define.js';
 import './src/components/input-field/input-field.define.js';
 import './src/components/lazy-src/lazy-src.define.js';

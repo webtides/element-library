@@ -68,6 +68,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | dialog             | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
 | drawer             | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |
 | dropdown           | A dropdown element                                                            | `0.1.0` |
+| empty-state        | A message in the place of a list that is empty, with an optional action       | `0.1.0` |
 | form-field         |                                                                               | `0.1.0` |
 | input-field        |                                                                               | `0.1.0` |
 | lazy-src           |                                                                               | `0.2.0` |
@@ -112,7 +113,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | chip-element       | Tag, Label ?! | TBD |
 | read-time ?!       |               | TBD |
 | code-tabs          |               | TBD |
-| empty-state ?!     |               | TBD |
 | compare-images     |               | TBD |
 | text-highlight     |               | TBD |
 | dropdown-field     |             | TBD  |

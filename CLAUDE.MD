@@ -67,6 +67,7 @@ element-library/
 - **dialog**: Modal dialog built on the native `<dialog>` element
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
 - **dropdown**: Dropdown component
+- **empty-state**: Message in the place of a list that is empty, with an optional action
 - **form-field**: Base form field
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
