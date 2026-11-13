@@ -123,6 +123,8 @@ The text on a brand, success or danger fill is `--el-color-bg`: these colours ar
 
 The three attributes are on the host, so a stylesheet can select them: `el-button[variant='danger']`, `el-button[appearance='plain']`.
 
+`el-card` has an `appearance` with the same three values and no `variant`: it paints a surface, not the colour of a meaning. `outlined`, its default, is a surface in `--el-color-bg` with a border in `--el-color-border` and the shadow `--el-shadow-md`; `filled` has `--el-color-bg-muted` instead; `plain` paints nothing.
+
 ### Spacing — 4px base scale
 
 | Token          | Value     |
@@ -158,7 +160,7 @@ The three attributes are on the host, so a stylesheet can select them: `el-butto
 | `--el-shadow-md` | `0 4px 12px light-dark(…)`  | `none`              |
 | `--el-shadow-lg` | `0 12px 24px light-dark(…)` | `none`              |
 
-`--el-shadow-lg` is used by floating surfaces (the panels of `el-dropdown`, `el-dialog`, `el-drawer` and `el-popover`). `--el-shadow-md` is part of the contract for inline elevation but isn't read by any current component — set it in your theme to ready it for future surfaces or your own overrides.
+`--el-shadow-lg` is used by floating surfaces (the panels of `el-dropdown`, `el-dialog`, `el-drawer` and `el-popover`). `--el-shadow-md` is the shadow of a surface that rests in the page: `el-card` reads it.
 
 ### Motion
 
@@ -197,6 +199,7 @@ A few components add their own tokens on top of the shared vocabulary above. The
 
 | Token                            | Default theme                                                | Fallback (headless)                             | Used by                                                                    |
 | -------------------------------- | ------------------------------------------------------------ | ----------------------------------------------- | -------------------------------------------------------------------------- |
+| `--el-card-padding`              | _(unset)_                                                    | `var(--el-space-4)`, then `1rem`                | The padding of the header, the body and the footer of `el-card`.           |
 | `--el-dialog-width`              | `31rem`                                                      | `31rem`                                         | `el-dialog` panel width.                                                   |
 | `--el-dialog-overlay-background` | `rgba(17, 24, 39, 0.5)` (dark scrim)                         | `transparent`                                   | `::backdrop` of `el-dialog` and `el-drawer` (the overlay scrim).           |
 | `--el-dialog-enter-offset`       | _(unset)_                                                    | `0.5rem`                                        | Vertical distance the dialog animates in from.                             |
