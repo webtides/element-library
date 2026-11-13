@@ -1,4 +1,4 @@
-import { html } from '@webtides/element-js';
+import { TemplateElement, defineElement, html } from '@webtides/element-js';
 
 // Register every component the way a real consumer would (single side-effect import).
 import '../../all.js';
@@ -15,7 +15,10 @@ export default {
                     'A single, somewhat realistic page — a design system built with the library itself — that wires up ' +
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
                     'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
-                    'tabs, a token-catalogue slider, a lazy-loaded pattern gallery, a request-access form built from ' +
+                    'tabs, a token-catalogue slider of cards, a list of the kit to browse (cards with an avatar, a ' +
+                    'badge and a tag, filters as removable tags with a popover to bring one back, a pagination, ' +
+                    'skeletons and a spinner while it loads, an empty state, and a drawer with the details), a ' +
+                    'lazy-loaded pattern gallery, a request-access form built from ' +
                     'the field components (submitting it floats a success toast), an FAQ accordion, and the ' +
                     'transition + scroll helpers. The design-system framing leans into the ' +
                     'theming story — flip the **Theme** and **Color scheme** toolbar switches to see the whole page ' +
@@ -111,10 +114,302 @@ const lazyGallery = (title, caption) => html`
 const scrollTopButton = html`
     <div style="position:fixed;right:1.5rem;bottom:1.5rem;z-index:50">
         <el-scroll-to-top duration="600">
-            <el-button variant="brand" circle="true" size="large" aria-label="Scroll to top"> ↑ </el-button>
+            <el-button id="demo-to-top" variant="brand" circle="true" size="large" aria-label="Scroll to top">
+                ↑
+            </el-button>
         </el-scroll-to-top>
+        <el-tooltip for="demo-to-top" placement="left">Back to the top of the page</el-tooltip>
     </div>
 `;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The kit to browse: an element of the page, built from the components of the library
+// ─────────────────────────────────────────────────────────────────────────────
+
+const categories = ['Forms', 'Overlays', 'Feedback', 'Navigation', 'Surfaces'];
+
+// A part of the kit, not all of it. `fresh` marks what came last.
+const kit = [
+    { tag: 'el-button', category: 'Forms', blurb: 'A button or a link, in five variants and three appearances.' },
+    { tag: 'el-input-field', category: 'Forms', blurb: 'A text input with a label, a help text and an error.' },
+    { tag: 'el-select-field', category: 'Forms', blurb: 'A native select with the look of the theme.' },
+    { tag: 'el-switch-field', category: 'Forms', blurb: 'A checkbox that reads as on or off.' },
+    { tag: 'el-dialog', category: 'Overlays', blurb: 'A modal on the native dialog: focus, backdrop and Escape.' },
+    { tag: 'el-drawer', category: 'Overlays', blurb: 'A panel that slides in from an edge of the viewport.' },
+    { tag: 'el-popover', category: 'Overlays', blurb: 'A panel that floats next to its anchor.' },
+    { tag: 'el-tooltip', category: 'Overlays', blurb: 'A text that explains its anchor, on hover and on focus.' },
+    { tag: 'el-notification', category: 'Feedback', blurb: 'An alert with variants and a live region.' },
+    { tag: 'el-toast', category: 'Feedback', blurb: 'The region where toasts appear, and leave again.', fresh: true },
+    { tag: 'el-spinner', category: 'Feedback', blurb: 'For a wait of unknown length.' },
+    { tag: 'el-skeleton', category: 'Feedback', blurb: 'A shape in the place of what still loads.', fresh: true },
+    { tag: 'el-empty-state', category: 'Feedback', blurb: 'A message where a list is empty.', fresh: true },
+    { tag: 'el-tab-group', category: 'Navigation', blurb: 'Tabs and their panels, with the arrow keys.' },
+    { tag: 'el-accordion', category: 'Navigation', blurb: 'A section that opens and closes.' },
+    { tag: 'el-dropdown', category: 'Navigation', blurb: 'A menu behind a trigger.' },
+    { tag: 'el-pagination', category: 'Navigation', blurb: 'The way through a list in pages.', fresh: true },
+    { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.', fresh: true },
+    { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.', fresh: true },
+    { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },
+    { tag: 'el-tag', category: 'Surfaces', blurb: 'A label for a keyword or a filter, removable.' },
+];
+
+const PER_PAGE = 6;
+const LOAD_TIME = 1200;
+
+// Two letters for the tile of a component: "el-empty-state" is "ES", "el-card" is "CA".
+const initialsOf = (tag) => {
+    const words = tag.slice(3).split('-');
+    return (words.length > 1 ? words[0][0] + words[1][0] : words[0].slice(0, 2)).toUpperCase();
+};
+
+// The header and the footer of a card place what is slotted into them: the name at the start and the
+// badge at the end, the tag at the start and the button at the end.
+const kitCard = (item) => html`
+    <li>
+        <el-card style="height:100%">
+            <span slot="header" class="flex items-center gap-3">
+                <el-avatar shape="rounded" size="small" initials="${initialsOf(item.tag)}"></el-avatar>
+                <h3 class="font-semibold"><code>${item.tag}</code></h3>
+            </span>
+            ${item.fresh ? html`<el-badge slot="header" variant="success">New</el-badge>` : ''}
+            <p class="text-sm opacity-80">${item.blurb}</p>
+            <el-tag slot="footer" size="small" appearance="outlined">${item.category}</el-tag>
+            <el-button
+                slot="footer"
+                size="small"
+                appearance="plain"
+                style="margin-inline-start:auto"
+                aria-label="Details of ${item.tag}"
+                data-details="${item.tag}"
+            >
+                Details
+            </el-button>
+        </el-card>
+    </li>
+`;
+
+// The same card while the list loads: a shape for the tile, the name, two lines and the tag.
+const kitSkeleton = () => html`
+    <li>
+        <el-card style="height:100%">
+            <el-skeleton slot="header" effect="sheen" style="width:2rem;height:2rem;flex:none"></el-skeleton>
+            <el-skeleton slot="header" effect="sheen" style="width:45%;margin-inline-end:auto"></el-skeleton>
+            <div class="grid gap-2">
+                <el-skeleton effect="sheen"></el-skeleton>
+                <el-skeleton effect="sheen" style="width:80%"></el-skeleton>
+            </div>
+            <span slot="footer" class="flex items-center" style="flex:1;min-height:2rem">
+                <el-skeleton effect="sheen" style="width:30%"></el-skeleton>
+            </span>
+        </el-card>
+    </li>
+`;
+
+/**
+ * The list of the kit: what a page writes itself around the components. It holds the state (the
+ * page, the categories that are shown, whether it loads, the entry of the drawer) and listens to
+ * the events of the components.
+ */
+class DemoKitBrowser extends TemplateElement {
+    properties() {
+        return {
+            page: 1,
+            shown: [...categories],
+            loading: false,
+            selected: null,
+        };
+    }
+
+    disconnected() {
+        clearTimeout(this._loadTimer);
+    }
+
+    events() {
+        return {
+            this: {
+                'tag-remove': (event) =>
+                    this._setShown(this.shown.filter((name) => name !== event.target.dataset.category)),
+                'pagination-change': (event) => {
+                    this.page = event.detail.page;
+                },
+            },
+            '[data-show]': {
+                click: (event) => {
+                    this.querySelector('el-popover').hide();
+                    // In the order of the categories, wherever the one that comes back was.
+                    const shown = [...this.shown, event.currentTarget.dataset.show];
+                    this._setShown(categories.filter((name) => shown.includes(name)));
+                },
+            },
+            '[data-reset]': { click: () => this._setShown([...categories]) },
+            '[data-reload]': { click: () => this._reload() },
+            '[data-details]': {
+                click: (event) => {
+                    this.selected = kit.find((item) => item.tag === event.currentTarget.dataset.details);
+                    this.querySelector('el-drawer').show();
+                },
+            },
+            '[data-done]': { click: () => this.querySelector('el-drawer').hide() },
+        };
+    }
+
+    afterUpdate() {
+        // The control that was pressed is gone with the change of the filter (the remove button of a
+        // tag, an entry of the popover, the button of the empty state): the focus goes to the button
+        // that brings a category back.
+        if (!this._focusFilter) return;
+        this._focusFilter = false;
+        this.querySelector('[data-filter]').focus();
+    }
+
+    /** @private */
+    _setShown(shown) {
+        this._focusFilter = true;
+        this.shown = shown;
+        this.page = 1;
+    }
+
+    /**
+     * Stands for a request to a server.
+     * @private
+     */
+    _reload() {
+        if (this.loading) return;
+        this.loading = true;
+        this._loadTimer = setTimeout(() => {
+            this.loading = false;
+        }, LOAD_TIME);
+    }
+
+    /** @private */
+    _list(items) {
+        if (this.loading) {
+            return html`
+                <ul role="list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-busy="true">
+                    ${Array.from({ length: PER_PAGE }, kitSkeleton)}
+                </ul>
+            `;
+        }
+        if (items.length === 0) {
+            return html`
+                <el-empty-state>
+                    <el-svg-use
+                        slot="icon"
+                        name="icon-layers"
+                        spritePath=""
+                        style="display:inline-block;width:3rem;height:3rem"
+                    ></el-svg-use>
+                    <h3 slot="heading" class="text-lg font-semibold">Nothing to show</h3>
+                    Every category is hidden. Bring one back, or show them all.
+                    <el-button slot="action" variant="brand" data-reset>Show every category</el-button>
+                </el-empty-state>
+            `;
+        }
+        const first = (this.page - 1) * PER_PAGE;
+        return html`
+            <ul role="list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${items.slice(first, first + PER_PAGE).map(kitCard)}
+            </ul>
+        `;
+    }
+
+    template() {
+        const items = kit.filter((item) => this.shown.includes(item.category));
+        const hidden = categories.filter((name) => !this.shown.includes(name));
+        const selected = this.selected;
+
+        return html`
+            <div class="flex items-center justify-between gap-4 mb-2">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-2xl font-bold">Browse the kit</h2>
+                    <el-badge variant="brand" pill="true">${items.length} components</el-badge>
+                </div>
+                <el-button
+                    id="demo-kit-reload"
+                    appearance="outlined"
+                    circle="true"
+                    aria-label="Reload the list"
+                    data-reload
+                >
+                    ↻
+                </el-button>
+                <el-tooltip for="demo-kit-reload" placement="left">Asks the server for the list again</el-tooltip>
+            </div>
+            <p class="opacity-70 mb-4 text-sm">
+                A part of what is in the box. Hide a category, or look at the details.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-2 mb-6">
+                <span class="text-sm opacity-70">Showing</span>
+                ${this.shown.map(
+                    (name) =>
+                        html`<el-tag removable="true" remove-label="Hide" data-category="${name}">${name}</el-tag>`,
+                )}
+                <el-popover placement="bottom-start" arrow="true">
+                    <el-button slot="anchor" size="small" appearance="plain" caret="true" data-filter>
+                        Add a category
+                    </el-button>
+                    <div class="grid gap-1 text-sm" style="min-width:10rem">
+                        ${
+                            hidden.length === 0
+                                ? html`<p class="opacity-70">Every category is shown.</p>`
+                                : hidden.map(
+                                      (name) =>
+                                          html`<el-button size="small" appearance="plain" data-show="${name}">
+                                              ${name}
+                                          </el-button>`,
+                                  )
+                        }
+                    </div>
+                </el-popover>
+                ${
+                    this.loading
+                        ? html`<span class="flex items-center gap-2 text-sm" style="margin-inline-start:auto">
+                              <el-spinner label="Loading the components"></el-spinner>
+                              <span class="opacity-70" aria-hidden="true">Loading the components…</span>
+                          </span>`
+                        : ''
+                }
+            </div>
+
+            ${this._list(items)}
+            ${
+                items.length > PER_PAGE
+                    ? html`<el-pagination
+                          class="block mt-6"
+                          label="Pages of the kit"
+                          page="${this.page}"
+                          total="${items.length}"
+                          per-page="${PER_PAGE}"
+                      ></el-pagination>`
+                    : ''
+            }
+
+            <el-drawer label="${selected ? selected.tag : 'Details'}">
+                ${
+                    selected
+                        ? html`
+                              <p class="opacity-80 mb-4">${selected.blurb}</p>
+                              <dl class="grid gap-3 text-sm">
+                                  <div>
+                                      <dt class="font-semibold mb-1">Category</dt>
+                                      <dd><el-tag size="small">${selected.category}</el-tag></dd>
+                                  </div>
+                                  <div>
+                                      <dt class="font-semibold mb-1">Import</dt>
+                                      <dd><code>@webtides/element-library/${selected.tag.slice(3)}/define</code></dd>
+                                  </div>
+                              </dl>
+                          `
+                        : ''
+                }
+                <el-button slot="footer" variant="brand" data-done>Done</el-button>
+            </el-drawer>
+        `;
+    }
+}
+
+defineElement('demo-kit-browser', DemoKitBrowser);
 
 // The page chrome: sticky header (brand + nav + dropdown), main, footer, scroll-to-top.
 const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownItems, children }) => html`
@@ -128,6 +423,11 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
                 right: 0;
                 margin-top: 0.5rem;
                 z-index: 50;
+            }
+
+            /* The pages of the kit stand in the middle below the list. */
+            demo-kit-browser el-pagination::part(list) {
+                justify-content: center;
             }
         </style>
 
@@ -207,8 +507,8 @@ export const Page = {
             dropdownLabel: 'Resources',
             dropdownItems: ['Figma kit', 'Tokens (JSON)', 'Changelog', 'GitHub ↗'],
             nav: html`
-                ${navLink('#features', 'Tokens')} ${navLink('#catalogue', 'Components')}
-                ${navLink('#start', 'Get the kit')} ${navLink('#faq', 'FAQ')}
+                ${navLink('#features', 'Tokens')} ${navLink('#kit', 'Components')} ${navLink('#start', 'Get the kit')}
+                ${navLink('#faq', 'FAQ')}
             `,
             children: html`
                 <!-- ───────── Hero with swatch carousel ───────── -->
@@ -313,20 +613,20 @@ export const Page = {
                         ${tokens.map(
                             (t) => html`
                                 <div class="item px-2">
-                                    <div
-                                        class="rounded-lg border overflow-hidden h-full"
-                                        style="border-color:var(--el-color-border,#e5e7eb);background:var(--el-color-surface,#fff)"
-                                    >
-                                        <div style="height:5rem;background:${t.swatch}"></div>
-                                        <div class="p-4">
-                                            <div class="font-semibold mb-1">${t.name}</div>
-                                            <div class="text-sm opacity-70">${t.blurb}</div>
-                                        </div>
-                                    </div>
+                                    <el-card style="height:100%">
+                                        <div slot="media" style="height:5rem;background:${t.swatch}"></div>
+                                        <h3 slot="header" class="font-semibold">${t.name}</h3>
+                                        <p class="text-sm opacity-70">${t.blurb}</p>
+                                    </el-card>
                                 </div>
                             `,
                         )}
                     </el-slider>
+                </section>
+
+                <!-- ───────── The kit to browse (cards, filters, pagination, drawer) ───────── -->
+                <section id="kit" class="py-12">
+                    <demo-kit-browser></demo-kit-browser>
                 </section>
 
                 ${lazyGallery(
@@ -337,7 +637,11 @@ export const Page = {
                 <!-- ───────── Request-access form ───────── -->
                 <section id="start" class="py-12">
                     <h2 class="text-2xl font-bold mb-2">Request the kit</h2>
-                    <p class="opacity-70 mb-6 text-sm">Tell us about your team and we'll send over access.</p>
+                    <p class="opacity-70 mb-4 text-sm">Tell us about your team and we'll send over access.</p>
+                    <p class="flex items-center gap-2 mb-6 text-sm">
+                        <el-avatar size="small" initials="MO"></el-avatar>
+                        <span><strong>Mira Okafor</strong> from the design systems team answers within a day.</span>
+                    </p>
                     <form
                         class="grid sm:grid-cols-2 gap-6 rounded-xl border p-6"
                         style="border-color:var(--el-color-border,#e5e7eb)"
