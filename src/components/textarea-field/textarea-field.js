@@ -59,8 +59,21 @@ export default class TextareaField extends FormField {
         return {
             ...watchers,
             value: (value, oldValue) => {
-                this._syncControlValue(value);
+                this._syncControlValue();
                 watchers.value(value, oldValue);
+            },
+        };
+    }
+
+    events() {
+        const events = super.events();
+        return {
+            ...events,
+            '[ref=input]': {
+                ...events['[ref=input]'],
+                // Text arrives without a key going up as well: a paste with the mouse, dictation, a
+                // suggestion of an on-screen keyboard, a script that fills the field.
+                input: () => this.onChange(),
             },
         };
     }
@@ -76,11 +89,14 @@ export default class TextareaField extends FormField {
      * been edited, the control no longer shows it. A value set from outside is therefore written to
      * the control as well. A value that came from the control itself is not written back, so text
      * typed between a change and the next render is kept.
+     *
+     * The watcher that calls this runs a frame after the change, once for every change. By then the
+     * value can have changed again, so it is the value of now that counts, not the one the watcher
+     * was called for: writing an older one moves the caret to the end of the text.
      * @private
-     * @param {string | null} value
      */
-    _syncControlValue(value) {
-        const controlValue = value ?? '';
+    _syncControlValue() {
+        const controlValue = this.value ?? '';
         if (!this.$refs.input || controlValue === this._controlValue) return;
         this._controlValue = controlValue;
         this.$refs.input.value = controlValue;

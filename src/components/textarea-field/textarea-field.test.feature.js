@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './textarea-field.js';
@@ -95,6 +96,113 @@ describe('Feature | TextareaField', () => {
         ]) {
             expect(textarea.hasAttribute(name), name).toBe(false);
         }
+    });
+
+    describe('with text that arrives without a key going up', () => {
+        // A paste with the mouse, dictation, a suggestion of an on-screen keyboard, a script that
+        // fills the field: the textarea has the text and fires `input`, and no key is involved.
+        const put = (textarea, text) => {
+            textarea.focus();
+            textarea.value = text;
+            textarea.dispatchEvent(new InputEvent('input', { bubbles: true }));
+        };
+
+        it('keeps it in a required field, which renders right after it got the focus', async () => {
+            const el = await fixture(`<el-textarea-field name="arrive-required" required="true"></el-textarea-field>`);
+            await nextFrame();
+            const textarea = el.querySelector('textarea');
+
+            put(textarea, 'Pasted');
+            await nextFrame();
+            await nextFrame();
+
+            expect(textarea.value).toBe('Pasted');
+            expect(el.valid).toBe(true);
+        });
+
+        it('keeps it in a field that renders again for another reason', async () => {
+            const el = await fixture(`<el-textarea-field name="arrive-plain" label="Note"></el-textarea-field>`);
+            await nextFrame();
+            const textarea = el.querySelector('textarea');
+
+            put(textarea, 'Pasted');
+            el.label = 'Message';
+            await nextFrame();
+            await nextFrame();
+
+            expect(el.querySelector('label').textContent.trim()).toBe('Message');
+            expect(textarea.value).toBe('Pasted');
+        });
+
+        it('takes it as its value and reports it with input-change', async () => {
+            const el = await fixture(`<el-textarea-field name="arrive-value"></el-textarea-field>`);
+            await nextFrame();
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+
+            put(el.querySelector('textarea'), 'Pasted');
+            await nextFrame();
+            await nextFrame();
+
+            expect(el.value).toBe('Pasted');
+            expect(changes).toEqual(['Pasted']);
+        });
+    });
+
+    describe('with text that goes into the middle of its value', () => {
+        const caret = (textarea) => [textarea.selectionStart, textarea.selectionEnd];
+        const withCaretAfterHello = async (name) => {
+            const el = await fixture(`<el-textarea-field name="${name}" value="Hello world"></el-textarea-field>`);
+            await nextFrame();
+            const textarea = el.querySelector('textarea');
+            textarea.focus();
+            textarea.setSelectionRange(5, 5);
+            return { el, textarea };
+        };
+
+        it('keeps the caret where it is while keys are typed', async () => {
+            const { el, textarea } = await withCaretAfterHello('caret-keys');
+
+            await userEvent.keyboard('XY');
+            await nextFrame();
+            await nextFrame();
+
+            expect(textarea.value).toBe('HelloXY world');
+            expect(el.value).toBe('HelloXY world');
+            expect(caret(textarea)).toEqual([7, 7]);
+        });
+
+        it('keeps the caret where it is when two characters come within one frame', async () => {
+            const { el, textarea } = await withCaretAfterHello('caret-frame');
+
+            // Fast typing, a key that repeats, a script that types: the field has seen the second
+            // character before it has rendered for the first.
+            for (const character of ['X', 'Y']) {
+                textarea.setRangeText(character, textarea.selectionStart, textarea.selectionEnd, 'end');
+                textarea.dispatchEvent(new InputEvent('input', { bubbles: true }));
+                textarea.dispatchEvent(new KeyboardEvent('keyup', { key: character, bubbles: true }));
+            }
+            await nextFrame();
+            await nextFrame();
+
+            expect(textarea.value).toBe('HelloXY world');
+            expect(el.value).toBe('HelloXY world');
+            expect(caret(textarea)).toEqual([7, 7]);
+        });
+
+        it('keeps the caret behind text that is pasted', async () => {
+            const { el, textarea } = await withCaretAfterHello('caret-paste');
+
+            // A paste with the mouse: no key goes up after it.
+            textarea.setRangeText(', dear', 5, 5, 'end');
+            textarea.dispatchEvent(new InputEvent('input', { bubbles: true }));
+            await nextFrame();
+            await nextFrame();
+
+            expect(textarea.value).toBe('Hello, dear world');
+            expect(el.value).toBe('Hello, dear world');
+            expect(caret(textarea)).toEqual([11, 11]);
+        });
     });
 
     describe('in a native form', () => {

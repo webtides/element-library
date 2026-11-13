@@ -67,9 +67,9 @@ import '@webtides/element-library/textarea-field/define';
 
 #### Events
 
-| Name           | Detail           | Description                                                              |
-| -------------- | ---------------- | ------------------------------------------------------------------------ |
-| `input-change` | `value` (string) | Dispatched when the textarea content changes. Bubbles up through the DOM |
+| Name | Detail | Description |
+| --- | --- | --- |
+| `input-change` | `value` (string) | Dispatched when the text changes, however it got in: typed, pasted, dictated. Once more when the field is left after a change. Bubbles up through the DOM |
 
 #### CSS Custom Properties
 
@@ -118,7 +118,7 @@ A line break at the very start of the value is missing until the element has sta
 
 The component provides real-time validation feedback:
 
-- Validation state updates on focus, blur, and change events
+- Validation state updates on focus, on blur and with every change of the text
 - Visual indicators (checkmark for valid, cross for invalid) appear after the field is touched
 - Error messages only display when field is touched and invalid
 - Supports HTML5 validation attributes (required, disabled)
