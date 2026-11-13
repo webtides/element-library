@@ -2,7 +2,9 @@ import { userEvent, expect, waitFor } from 'storybook/test';
 import { html } from '@webtides/element-js';
 import readme from './dialog.readme.md?raw';
 import { define } from './dialog.js';
+import { define as defineInputField } from '../input-field/input-field.js';
 define();
+defineInputField();
 
 export default {
     title: 'Components/Dialog',
@@ -138,6 +140,55 @@ export const PreventClose = {
         await step('closes via the explicit footer button', async () => {
             const footerButton = dialog.querySelector('[slot="footer"]');
             await userEvent.click(footerButton);
+            await waitFor(() => expect(dialog.open).toBe(false));
+        });
+    },
+};
+
+export const Form = {
+    name: 'Closing from a form',
+    parameters: {
+        docs: {
+            description: {
+                story: 'A form with `method="dialog"` closes the dialog when it is submitted: by a button that belongs to it, here in the footer through the `form` attribute, or by `Enter` in its field. Without a name the form is not valid, so "Save" leaves the dialog open; "Cancel" skips the validation with `formnovalidate`. Nothing is sent: a listener of `submit` reads the fields, and `event.submitter` is the button that was used.',
+            },
+        },
+    },
+    render: ({ label }) => html`
+        <button type="button" onclick="this.nextElementSibling.show()">Open dialog</button>
+        <el-dialog label="${label}">
+            <form id="dialog-story-form" method="dialog">
+                <el-input-field name="name" label="Name" required="true"></el-input-field>
+            </form>
+            <button slot="footer" form="dialog-story-form" value="cancel" formnovalidate>Cancel</button>
+            <button slot="footer" form="dialog-story-form" value="save">Save</button>
+        </el-dialog>
+    `,
+    play: async ({ canvasElement, step }) => {
+        const dialog = canvasElement.querySelector('el-dialog');
+        const trigger = canvasElement.querySelector('button');
+        const save = canvasElement.querySelector('button[value="save"]');
+
+        await step('opens when the trigger is clicked', async () => {
+            await userEvent.click(trigger);
+            await waitFor(() => expect(dialog.open).toBe(true));
+        });
+
+        await step('stays open while the name is missing', async () => {
+            // The dialog and the field render with the first frame. Before that the form has no
+            // field that could be missing, and the dialog is not there to close.
+            await waitFor(() => {
+                expect(dialog.shadowRoot?.querySelector('dialog')?.open).toBe(true);
+                expect(canvasElement.querySelector('input')).toBeTruthy();
+            });
+            await userEvent.click(save);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            await expect(dialog.open).toBe(true);
+        });
+
+        await step('closes when the form is submitted', async () => {
+            await userEvent.type(canvasElement.querySelector('input'), 'Ada');
+            await userEvent.click(save);
             await waitFor(() => expect(dialog.open).toBe(false));
         });
     },

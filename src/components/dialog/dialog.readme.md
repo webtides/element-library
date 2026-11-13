@@ -1,6 +1,6 @@
 # Dialog
 
-`dialog` is a modal dialog built on the native `<dialog>` element. The platform handles focus trapping, making the background `inert`, top-layer rendering (no `z-index` juggling), focus restoration on close, and `<form method="dialog">` auto-close. On top of that the component adds an animated, cancelable open/close lifecycle and ref-counted body-scroll locking.
+`dialog` is a modal dialog built on the native `<dialog>` element. The platform handles focus trapping, making the background `inert`, top-layer rendering (no `z-index` juggling) and focus restoration on close. On top of that the component adds an animated, cancelable open/close lifecycle and ref-counted body-scroll locking, and it closes for a `<form method="dialog">` inside it.
 
 It is headless by default — without a theme it imposes no colors, borders, shadows or backdrop. Opt in by importing a theme (or setting the `--el-*` tokens yourself).
 
@@ -68,6 +68,27 @@ Open and close it imperatively with the `show()` / `hide()` methods (both return
 - `dialog-after-show` and `dialog-after-hide` fire when the dialog has got there. A way that is cut short has none: after `dialog-show` comes `dialog-after-show` or `dialog-hide`, after `dialog-hide` comes `dialog-after-hide` or `dialog-show`. `dialog-initial-focus` fires when the platform has moved the focus, which it does not for a dialog that turns round.
 - The promises of `show()` and `hide()` resolve when the dialog is at rest, and never reject. When the other call has overtaken, that is at the other end, so read `open` afterwards where it matters.
 - A change of `open` takes effect with the next frame. Two changes before that which cancel each other do nothing.
+
+#### Closing from a form
+
+A form with `method="dialog"` inside the dialog closes it when it is submitted, as it does in a native `<dialog>`: by its submit button, by `Enter` in one of its fields, or by a button that belongs to it through the `form` attribute, in the footer for example. A button with `formmethod="dialog"` does the same in a form with another method.
+
+```html
+<el-dialog label="Rename">
+    <form id="rename" method="dialog">
+        <label>Name <input name="name" required /></label>
+    </form>
+    <button slot="footer" form="rename" value="cancel" formnovalidate>Cancel</button>
+    <button slot="footer" form="rename" value="save">Save</button>
+</el-dialog>
+```
+
+- Nothing is sent. Read the fields in a listener of `submit`; `event.submitter` is the button that was used. There is no `returnValue`.
+- A form that is not valid is not submitted, so the dialog stays open. A button with `formnovalidate` skips the validation.
+- It closes without `dialog-request-close`. A listener that calls `preventDefault()` on the `submit` keeps the dialog open.
+- An `el-button` of the type `submit` closes the dialog from inside the form. It has no `form` attribute, so a button in the footer for a form in the body has to be a native one.
+- In a dialog inside a dialog, the form closes the one it is in.
+- `form.submit()` from a script fires no `submit`, so the dialog stays open; call `hide()` there. The same goes for a form inside the shadow root of another component, whose `submit` does not leave it.
 
 #### Slots
 

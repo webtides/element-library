@@ -401,6 +401,25 @@ describe('Feature | Drawer', () => {
             expect(opacity).toBe('1');
         });
 
+        it('closes for a form with method="dialog" in it', async () => {
+            const { el, dialog } = await drawerFixture({
+                content: '<form method="dialog"><button>Apply</button></form>',
+            });
+            await el.show();
+            const log = [];
+            for (const what of ['request-close', 'hide', 'after-hide']) {
+                el.addEventListener(`drawer-${what}`, () => log.push(what));
+            }
+
+            const closed = oneEvent(el, 'drawer-after-hide');
+            await userEvent.click(el.querySelector('form button'));
+            await closed;
+
+            expect(el.open).toBe(false);
+            expect(dialog.open).toBe(false);
+            expect(log).toEqual(['hide', 'after-hide']);
+        });
+
         it('turns round when it is opened again while it slides out', async () => {
             const { el, dialog } = await drawerFixture({ tokens: '--el-drawer-size: 200px; --el-duration-md: 200ms' });
             await el.show();

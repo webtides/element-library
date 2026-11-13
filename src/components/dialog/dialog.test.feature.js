@@ -3,7 +3,9 @@ import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import { fixture, nextFrame, aTimeout, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './dialog.js';
+import { define as defineButton } from '../button/button.js';
 define();
+defineButton();
 
 const dialogFixture = (attrs = '') =>
     fixture(`
@@ -505,6 +507,221 @@ describe('Feature | Dialog', () => {
 
             expect(log).toEqual(['show', 'initial-focus']);
             expect(document.documentElement.style.overflow).not.toBe('hidden');
+        });
+    });
+
+    describe('with a form that has method="dialog" in it', () => {
+        const wrappers = [];
+        afterEach(() => {
+            for (const wrapper of wrappers.splice(0)) wrapper.remove();
+        });
+
+        /** An open dialog with `content` as its children, and a log of the events it fires from then on. */
+        async function opened(content) {
+            expect(document.documentElement.style.overflow, 'the page is locked before the test').not.toBe('hidden');
+            const wrapper = await fixture(`<div><el-dialog label="Dialog title">${content}</el-dialog></div>`);
+            wrappers.push(wrapper);
+            const el = wrapper.querySelector('el-dialog');
+            await el.show();
+            const log = [];
+            for (const what of ['show', 'after-show', 'request-close', 'hide', 'after-hide']) {
+                // The events of a dialog inside this one come by here too.
+                el.addEventListener(`dialog-${what}`, (event) => event.target === el && log.push(what));
+            }
+            return {
+                el,
+                log,
+                dialog: el.shadowRoot.querySelector('dialog'),
+                find: (selector) => wrapper.querySelector(selector),
+            };
+        }
+
+        /** A `submit` as a script fires it. Nothing of the platform follows it, a navigation least of all. */
+        const submit = (form, submitter = null) =>
+            form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true, submitter }));
+
+        it('closes when the button of the form is clicked, and asks nobody', async () => {
+            const { el, dialog, log, find } = await opened(`<form method="dialog"><button>OK</button></form>`);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('button'));
+            await closed;
+
+            expect(el.open).toBe(false);
+            expect(dialog.open).toBe(false);
+            expect(document.documentElement.style.overflow).not.toBe('hidden');
+            // No `dialog-request-close`: whoever wants it to stay open prevents the `submit`.
+            expect(log).toEqual(['hide', 'after-hide']);
+        });
+
+        it('closes for Enter in a field of the form', async () => {
+            const { el, find } = await opened(`
+                <form method="dialog"><input name="name" aria-label="Name" /><button>OK</button></form>
+            `);
+            find('input').focus();
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.keyboard('{Enter}');
+            await closed;
+
+            expect(el.open).toBe(false);
+        });
+
+        it('closes for a button in the footer that belongs to a form in the body', async () => {
+            const { el, find } = await opened(`
+                <form id="dialog-test-form" method="dialog"><input name="name" aria-label="Name" /></form>
+                <button slot="footer" form="dialog-test-form">Save</button>
+            `);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('button'));
+            await closed;
+
+            expect(el.open).toBe(false);
+        });
+
+        it('closes for a button that says so in a form with another method', async () => {
+            const { el, find } = await opened(`<form><button formmethod="dialog">Cancel</button></form>`);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('button'));
+            await closed;
+
+            expect(el.open).toBe(false);
+        });
+
+        it('reads the method in any case of its letters, and past a control with the name "method"', async () => {
+            const { el, find } = await opened(`
+                <form method="DIALOG"><input name="method" value="post" aria-label="Method" /><button>OK</button></form>
+            `);
+            // The property of the form is the control now.
+            expect(find('form').method).toBe(find('input'));
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('button'));
+            await closed;
+
+            expect(el.open).toBe(false);
+        });
+
+        it('stays open when a listener prevents the submit, wherever it listens', async () => {
+            for (const where of ['form', 'el-dialog', 'document']) {
+                const { el, log, find } = await opened(`<form method="dialog"><button>OK</button></form>`);
+                const target = where === 'document' ? document : find(where);
+                const prevent = (event) => event.preventDefault();
+                target.addEventListener('submit', prevent);
+
+                await userEvent.click(find('button'));
+                await aTimeout(100);
+                target.removeEventListener('submit', prevent);
+
+                expect(el.open, where).toBe(true);
+                expect(log, where).toEqual([]);
+                await el.hide();
+            }
+        });
+
+        it('stays open while the form is not valid', async () => {
+            const { el, log, find } = await opened(`
+                <form method="dialog"><input name="name" aria-label="Name" required /><button>OK</button></form>
+            `);
+
+            await userEvent.click(find('button'));
+            await aTimeout(100);
+            expect(el.open).toBe(true);
+            expect(log).toEqual([]);
+
+            find('input').value = 'Ada';
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('button'));
+            await closed;
+            expect(el.open).toBe(false);
+        });
+
+        it('closes for a button that skips the validation', async () => {
+            const { el, find } = await opened(`
+                <form method="dialog">
+                    <input name="name" aria-label="Name" required />
+                    <button class="cancel" formnovalidate>Cancel</button>
+                    <button>OK</button>
+                </form>
+            `);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('.cancel'));
+            await closed;
+            expect(el.open).toBe(false);
+        });
+
+        it('closes for an el-button of the type submit in the form', async () => {
+            const { el, find } = await opened(`
+                <form method="dialog"><el-button type="submit">OK</el-button></form>
+            `);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('el-button'));
+            await closed;
+            expect(el.open).toBe(false);
+        });
+
+        it('stays open for a submit with another method', async () => {
+            // The control: a `submit` fired by a script closes it like one of the platform.
+            const { el, find } = await opened(`<form method="dialog"><button>OK</button></form>`);
+            const closed = oneEvent(el, 'dialog-after-hide');
+            submit(find('form'), find('button'));
+            await closed;
+            expect(el.open).toBe(false);
+
+            for (const content of [
+                `<form><button>OK</button></form>`,
+                `<form method="post"><button>OK</button></form>`,
+                // The button decides before the form.
+                `<form method="dialog"><button formmethod="post">OK</button></form>`,
+                `<form method="dialog"><button formmethod="">OK</button></form>`,
+                // Not a form.
+                `<div class="form" method="dialog"><button>OK</button></div>`,
+            ]) {
+                const { el, log, find } = await opened(content);
+                submit(find('form, .form'), find('form button'));
+                await aTimeout(100);
+
+                expect(el.open, content).toBe(true);
+                expect(log, content).toEqual([]);
+                await el.hide();
+            }
+        });
+
+        it('closes the nearest dialog only', async () => {
+            const { el, log, find } = await opened(`
+                <p>Outer</p>
+                <el-dialog class="inner" label="Inner"><form method="dialog"><button>OK</button></form></el-dialog>
+            `);
+            const inner = find('.inner');
+            await inner.show();
+
+            const closed = oneEvent(inner, 'dialog-after-hide');
+            await userEvent.click(find('button'));
+            await closed;
+            await aTimeout(100);
+
+            expect(inner.open).toBe(false);
+            expect(el.open).toBe(true);
+            expect(log).toEqual([]);
+            await el.hide();
+        });
+
+        it('leaves a <dialog> of the page inside it to the platform', async () => {
+            const { el, log, find } = await opened(`
+                <dialog class="native" open><form method="dialog"><button>OK</button></form></dialog>
+            `);
+
+            await userEvent.click(find('button'));
+            await aTimeout(100);
+
+            expect(find('.native').open).toBe(false);
+            expect(el.open).toBe(true);
+            expect(log).toEqual([]);
+            await el.hide();
         });
     });
 });

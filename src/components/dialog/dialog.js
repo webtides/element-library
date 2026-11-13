@@ -18,9 +18,9 @@ function pending() {
 
 /**
  * A modal dialog built on the native `<dialog>` element, so the platform owns focus trapping,
- * background `inert`, top-layer rendering, focus restoration and `<form method="dialog">`
- * auto-close. The component adds an animated, cancelable open/close lifecycle and ref-counted
- * body-scroll locking on top.
+ * background `inert`, top-layer rendering and focus restoration. The component adds an animated,
+ * cancelable open/close lifecycle and ref-counted body-scroll locking on top, and closes for a
+ * `<form method="dialog">` in one of its slots.
  *
  * @element el-dialog
  *
@@ -168,6 +168,7 @@ export default class Dialog extends TemplateElement {
                     this.requestClose('keyboard');
                 },
                 click: (event) => this._handleOverlayClick(event),
+                submit: (event) => this._handleSubmit(event),
             },
         };
     }
@@ -361,6 +362,34 @@ export default class Dialog extends TemplateElement {
             event.clientY >= rect.top &&
             event.clientY <= rect.bottom;
         if (!inside) this.requestClose('overlay');
+    }
+
+    /**
+     * Closes the dialog for a form with `method="dialog"` in one of its slots, as the platform does
+     * for a form inside a `<dialog>`. The platform looks for the `<dialog>` above the form in the
+     * tree of the form, and a form in a slot is a child of the element, in the page. Its `submit`
+     * passes the `<dialog>` all the same, on its way up through the slot.
+     * @private
+     * @param {SubmitEvent} event
+     */
+    _handleSubmit(event) {
+        const path = event.composedPath();
+        const form = path[0];
+        if (!(form instanceof HTMLFormElement)) return;
+        // The nearest `<dialog>` above the form is the one that closes. One that is inside this
+        // one, of the platform or of a component, comes before it on the path.
+        if (path.find((node) => node.localName === 'dialog') !== event.currentTarget) return;
+
+        // The button decides before the form. Read from the attributes: a control with the name
+        // `method` takes the place of the property of the form.
+        const method = event.submitter?.getAttribute('formmethod') ?? form.getAttribute('method');
+        if (method?.toLowerCase() !== 'dialog') return;
+
+        // The platform acts once every listener has had the event, those further up included: on
+        // the element, on the document. So whether one of them has prevented it is known after that.
+        setTimeout(() => {
+            if (!event.defaultPrevented) this.open = false;
+        });
     }
 
     /** @private */
