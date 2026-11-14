@@ -55,54 +55,55 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 
 ## Components
 
-| Package            | Description                                                                   | Version |
-| ------------------ | ----------------------------------------------------------------------------- | ------- |
-| accordion          | Single Accordion element                                                      | `0.1.0` |
-| accordion-group    | Accordion group to hold multiple elements                                     | `0.1.0` |
-| amount-field       | A simple element to create amount stepping input fields                       | `0.1.1` |
-| avatar             | The picture of a person or a thing: an image, initials or an icon             | `0.1.0` |
-| badge              | A short label for a status or a count, with variants and appearances          | `0.1.0` |
-| breadcrumb         | The trail from the start page to the current page: a landmark with a list     | `0.1.0` |
-| breadcrumb-item    | One entry of a breadcrumb: a link with href, text without, with a separator   | `0.1.0` |
-| button             | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
-| button-group       | A row of buttons that reads as one control, a group with a name               | `0.1.0` |
-| card               | A surface that groups content, with media, header, body and footer regions    | `0.1.0` |
-| carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
-| checkbox-field     |                                                                               | `0.1.1` |
-| copy-button        | A button that copies a text to the clipboard and shows the outcome            | `0.1.0` |
-| dialog             | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
-| divider            | A line between two groups of content, horizontal or vertical                  | `0.1.0` |
-| drawer             | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |
-| dropdown           | A dropdown element                                                            | `0.1.0` |
-| empty-state        | A message in the place of a list that is empty, with an optional action       | `0.1.0` |
-| form-field         |                                                                               | `0.1.0` |
-| input-field        |                                                                               | `0.1.0` |
-| lazy-src           |                                                                               | `0.2.0` |
-| notification       | An alert with variants, auto-dismiss and a live region, inline or as a toast  | `0.1.0` |
-| pagination         | The way through a list that is split into pages, with a button per page       | `0.1.0` |
-| password-field     | A masked password input with an optional show/hide reveal toggle              | `0.1.0` |
-| popover            | A panel that floats next to an anchor, built on the native popover            | `0.1.0` |
-| progress-bar       | A track that fills with the progress of a task, with or without a value       | `0.1.0` |
-| progress-ring      | A ring that closes with the progress of a task, with room for a short text    | `0.1.0` |
-| radio-field        | A single-choice radio group built on a native fieldset                        | `0.1.0` |
-| range-field        | A number from a span, picked with the thumb of a native range                 | `0.1.0` |
-| scroll-to          |                                                                               | `0.1.0` |
-| scroll-to-top      |                                                                               | `0.1.0` |
-| select-field       |                                                                               | `0.1.0` |
-| skeleton           | A shape in the place of content that is still loading, with sheen and pulse   | `0.1.0` |
-| slider             | CSS only slider element to slide child elements                               | `0.4.3` |
-| spinner            | A spinner for a wait of unknown length, sized by the font size                | `0.1.0` |
-| sticky             |                                                                               | `0.2.0` |
-| svg-use            |                                                                               | `0.1.0` |
-| switch-field       | An on/off toggle backed by a native checkbox with role="switch"               | `0.1.0` |
-| tab-group          | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
-| tab-link           | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
-| tab-panel          | The element that contains the content associated with a tab                   | `0.1.0` |
-| tag                | A label for a keyword or a filter, with variants, sizes and a remove button   | `0.1.0` |
-| textarea-field     |                                                                               | `0.1.0` |
-| toast              | The region where toasts appear: a stack of notifications at an edge           | `0.1.0` |
-| tooltip            | A short text that explains its anchor, for the pointer and the keyboard       | `0.1.0` |
-| transition-classes | An element that applies classes for various stages of a transition            | `0.1.0` |
+| Package              | Description                                                                   | Version |
+| -------------------- | ----------------------------------------------------------------------------- | ------- |
+| accordion            | Single Accordion element                                                      | `0.1.0` |
+| accordion-group      | Accordion group to hold multiple elements                                     | `0.1.0` |
+| amount-field         | A simple element to create amount stepping input fields                       | `0.1.1` |
+| avatar               | The picture of a person or a thing: an image, initials or an icon             | `0.1.0` |
+| badge                | A short label for a status or a count, with variants and appearances          | `0.1.0` |
+| breadcrumb           | The trail from the start page to the current page: a landmark with a list     | `0.1.0` |
+| breadcrumb-item      | One entry of a breadcrumb: a link with href, text without, with a separator   | `0.1.0` |
+| button               | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
+| button-group         | A row of buttons that reads as one control, a group with a name               | `0.1.0` |
+| card                 | A surface that groups content, with media, header, body and footer regions    | `0.1.0` |
+| carousel             | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
+| checkbox-field       |                                                                               | `0.1.1` |
+| checkbox-group-field | A choice of any number of options: checkboxes in a native fieldset            | `0.1.0` |
+| copy-button          | A button that copies a text to the clipboard and shows the outcome            | `0.1.0` |
+| dialog               | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
+| divider              | A line between two groups of content, horizontal or vertical                  | `0.1.0` |
+| drawer               | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |
+| dropdown             | A dropdown element                                                            | `0.1.0` |
+| empty-state          | A message in the place of a list that is empty, with an optional action       | `0.1.0` |
+| form-field           |                                                                               | `0.1.0` |
+| input-field          |                                                                               | `0.1.0` |
+| lazy-src             |                                                                               | `0.2.0` |
+| notification         | An alert with variants, auto-dismiss and a live region, inline or as a toast  | `0.1.0` |
+| pagination           | The way through a list that is split into pages, with a button per page       | `0.1.0` |
+| password-field       | A masked password input with an optional show/hide reveal toggle              | `0.1.0` |
+| popover              | A panel that floats next to an anchor, built on the native popover            | `0.1.0` |
+| progress-bar         | A track that fills with the progress of a task, with or without a value       | `0.1.0` |
+| progress-ring        | A ring that closes with the progress of a task, with room for a short text    | `0.1.0` |
+| radio-field          | A single-choice radio group built on a native fieldset                        | `0.1.0` |
+| range-field          | A number from a span, picked with the thumb of a native range                 | `0.1.0` |
+| scroll-to            |                                                                               | `0.1.0` |
+| scroll-to-top        |                                                                               | `0.1.0` |
+| select-field         |                                                                               | `0.1.0` |
+| skeleton             | A shape in the place of content that is still loading, with sheen and pulse   | `0.1.0` |
+| slider               | CSS only slider element to slide child elements                               | `0.4.3` |
+| spinner              | A spinner for a wait of unknown length, sized by the font size                | `0.1.0` |
+| sticky               |                                                                               | `0.2.0` |
+| svg-use              |                                                                               | `0.1.0` |
+| switch-field         | An on/off toggle backed by a native checkbox with role="switch"               | `0.1.0` |
+| tab-group            | A tab group wraps a list of tab-links and tab-panels and shows one at a time  | `0.1.0` |
+| tab-link             | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
+| tab-panel            | The element that contains the content associated with a tab                   | `0.1.0` |
+| tag                  | A label for a keyword or a filter, with variants, sizes and a remove button   | `0.1.0` |
+| textarea-field       |                                                                               | `0.1.0` |
+| toast                | The region where toasts appear: a stack of notifications at an edge           | `0.1.0` |
+| tooltip              | A short text that explains its anchor, for the pointer and the keyboard       | `0.1.0` |
+| transition-classes   | An element that applies classes for various stages of a transition            | `0.1.0` |
 
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |

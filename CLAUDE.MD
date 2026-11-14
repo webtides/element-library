@@ -68,6 +68,7 @@ element-library/
 - **card**: Surface that groups content, with media, header, body and footer regions
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
+- **checkbox-group-field**: Choice of any number of options: a native `<fieldset>` with a checkbox per entry of `options`, under one name
 - **copy-button**: Button that copies a text to the clipboard and says whether that worked
 - **dialog**: Modal dialog built on the native `<dialog>` element
 - **divider**: Line between two groups of content, horizontal or vertical

@@ -11,6 +11,7 @@ import { define as defineCheckboxField } from '../checkbox-field/checkbox-field.
 import { define as defineSwitchField } from '../switch-field/switch-field.js';
 import { define as defineRadioField } from '../radio-field/radio-field.js';
 import { define as defineRangeField } from '../range-field/range-field.js';
+import { define as defineCheckboxGroupField } from '../checkbox-group-field/checkbox-group-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -23,6 +24,7 @@ defineCheckboxField();
 defineSwitchField();
 defineRadioField();
 defineRangeField();
+defineCheckboxGroupField();
 
 const frames = async () => {
     await nextFrame();
@@ -35,7 +37,7 @@ const settled = async () => {
 };
 
 // Every field that renders into the page, with the attributes it needs to have something to choose.
-// The radio group works out itself whether it is valid: it is required here, and nothing is selected.
+// A group works out itself whether it is valid: it is required here, and nothing is chosen.
 const FIELDS = {
     'el-input-field': '',
     'el-password-field': '',
@@ -45,6 +47,14 @@ const FIELDS = {
     'el-switch-field': '',
     'el-radio-field': `options='["free", "pro"]' required="true"`,
     'el-range-field': '',
+    'el-checkbox-group-field': `options='["news", "offers"]' required="true"`,
+};
+// The fields that are a group of choices: a fieldset with a legend around their options.
+const GROUPS = ['el-radio-field', 'el-checkbox-group-field'];
+// The same groups with a choice, which makes them valid.
+const CHOSEN = {
+    'el-radio-field': `options='["free", "pro"]' required="true" value="free"`,
+    'el-checkbox-group-field': `options='["news", "offers"]' required="true" value='["news"]'`,
 };
 
 const THEMES = [
@@ -104,6 +114,7 @@ describe('Feature | FormField', () => {
             checkbox: 'Accept the terms',
             switch: 'Give your consent',
             radio: 'Choose a plan',
+            checkboxes: 'Pick a topic',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -115,6 +126,7 @@ describe('Feature | FormField', () => {
                     <el-checkbox-field name="${prefix}-checkbox" label="Terms" required="true" error-message="${MESSAGES.checkbox}"></el-checkbox-field>
                     <el-switch-field name="${prefix}-switch" label="Consent" required="true" error-message="${MESSAGES.switch}"></el-switch-field>
                     <el-radio-field name="${prefix}-radio" label="Plan" required="true" options='["free", "pro"]' error-message="${MESSAGES.radio}"></el-radio-field>
+                    <el-checkbox-group-field name="${prefix}-checkboxes" label="Topics" required="true" options='["news", "offers"]' error-message="${MESSAGES.checkboxes}"></el-checkbox-group-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -186,6 +198,7 @@ describe('Feature | FormField', () => {
                 checkbox: 'input',
                 switch: 'input',
                 radio: 'fieldset',
+                checkboxes: 'fieldset',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');
@@ -264,13 +277,13 @@ describe('Feature | FormField', () => {
         const withTexts = (tag, name, help = 'help-message="Choose well"') =>
             `<${tag} name="${name}" label="Field" ${help} error-message="Not like this" valid="false" touched="true" ${FIELDS[tag] ?? ''}></${tag}>`;
 
-        // The rows of the column that are rendered, from top to bottom. The column of a radio group
-        // is its fieldset, and the row of its controls is the list of the options.
+        // The rows of the column that are rendered, from top to bottom. The column of a group is its
+        // fieldset, and the row of its controls is the list of the options.
         const rowsOf = (field) =>
             Object.entries({
                 label: field.querySelector(':scope > label, legend'),
                 help: field.querySelector('.help-message'),
-                control: field.querySelector(field.localName === 'el-radio-field' ? '.options' : '.field'),
+                control: field.querySelector(GROUPS.includes(field.localName) ? '.options' : '.field'),
                 error: field.querySelector('.error-message'),
             })
                 .filter(([, element]) => element?.getClientRects().length)
@@ -427,9 +440,9 @@ describe('Feature | FormField', () => {
     });
 
     describe('for assistive technology', () => {
-        // Where a field says whether it is valid: on its control, and a radio group on the group.
+        // Where a field says whether it is valid: on its control, and a group on its fieldset.
         const marked = (field) =>
-            field.querySelector(field.localName === 'el-radio-field' ? 'fieldset' : 'input, textarea, select');
+            field.querySelector(GROUPS.includes(field.localName) ? 'fieldset' : 'input, textarea, select');
 
         // A page with a sign-in form and a newsletter form has two fields with the name "email". A
         // name is unique in a form at most, an id in the whole page.
@@ -461,9 +474,8 @@ describe('Feature | FormField', () => {
                 ]);
             });
         }
-        // The radio group works out itself whether it is valid: here it has a value.
-        const validMarkup = (tag) =>
-            tag === 'el-radio-field' ? `options='["free", "pro"]' required="true" value="free"` : FIELDS[tag];
+        // A group works out itself whether it is valid: here it has a choice.
+        const validMarkup = (tag) => CHOSEN[tag] ?? FIELDS[tag];
 
         for (const tag of Object.keys(FIELDS)) {
             it(`says whether it is valid, in ${tag}`, async () => {
