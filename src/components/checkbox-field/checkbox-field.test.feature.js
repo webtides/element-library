@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
-import { aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import axe from 'axe-core';
+import { accessibleDescription, aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './checkbox-field.js';
 define();
 
@@ -7,6 +8,54 @@ describe('Feature | CheckboxField', () => {
     it('can connect without errors', async () => {
         const el = await fixture(`<el-checkbox-field></el-checkbox-field>`);
         await nextFrame();
+    });
+
+    describe('for a screen reader', () => {
+        const describedBy = (el) => el.querySelector('input').getAttribute('aria-describedby').split(' ');
+
+        it('names its help message, and not itself', async () => {
+            const el = await fixture(`
+                <el-checkbox-field name="described-help" label="Newsletter" help-message="Once a month"></el-checkbox-field>
+            `);
+            const input = el.querySelector('input');
+
+            expect(describedBy(el)).toEqual([el.querySelector('.help-message').id]);
+            expect(describedBy(el)).not.toContain(input.id);
+            expect(await accessibleDescription(input)).toBe('Once a month');
+        });
+
+        it('names its error message while it is shown, and has no a11y violations then', async () => {
+            const el = await fixture(`
+                <el-checkbox-field
+                    name="described-error"
+                    label="Terms"
+                    help-message="You can read them first"
+                    error-message="Accept the terms"
+                    required="true"
+                ></el-checkbox-field>
+            `);
+            const input = el.querySelector('input');
+            expect(describedBy(el)).toEqual(['described-error-help-message']);
+
+            input.focus();
+            input.blur();
+            await nextFrame();
+            await nextFrame();
+            const message = el.querySelector('.error-message');
+
+            expect(message.getAttribute('role')).toBe('alert');
+            expect(describedBy(el)).toEqual(['described-error-help-message', message.id]);
+            expect(await accessibleDescription(input)).toBe('You can read them first Accept the terms');
+            const results = await axe.run(el);
+            expect(results.violations.map((violation) => violation.id)).toEqual([]);
+
+            // Checked, it is valid: the message goes, and the checkbox no longer names it.
+            input.click();
+            await nextFrame();
+            await nextFrame();
+            expect(el.querySelector('.error-message')).toBeNull();
+            expect(describedBy(el)).toEqual(['described-error-help-message']);
+        });
     });
 
     it('ignores --el-touch-target on a fine pointer', async () => {

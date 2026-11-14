@@ -66,3 +66,10 @@ On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit a
 #### Slots
 
 _None_
+
+## Accessibility
+
+- The native control is an `<input type="checkbox">`, named by its label and keyboard-operable (Space toggles).
+- The native input stays in the accessibility tree and focusable; it is only hidden visually, with keyboard focus reflected onto the custom box via `:focus-visible`.
+- The checkbox names its help message in `aria-describedby`, and its error message while that is shown: a screen reader reads both when the checkbox gets focus.
+- The error message is an alert (`role="alert"`): a screen reader announces it when it appears.

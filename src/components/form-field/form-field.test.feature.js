@@ -139,14 +139,13 @@ describe('Feature | FormField', () => {
                 password: 'input',
                 textarea: 'textarea',
                 select: 'select',
+                checkbox: 'input',
                 switch: 'input',
                 radio: 'fieldset',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');
                 expect([kind, message.getAttribute('role')]).toEqual([kind, 'alert']);
-                // The checkbox does not name its message yet, after a blur either.
-                if (!describedBy[kind]) continue;
                 const control = refused.fieldOf(kind).querySelector(describedBy[kind]);
                 expect(control.getAttribute('aria-describedby').split(' ')).toContain(message.id);
             }

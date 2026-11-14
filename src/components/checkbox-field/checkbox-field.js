@@ -83,7 +83,7 @@ export default class CheckboxField extends FormField {
                     ref="input"
                     type="checkbox"
                     id="checkbox-${this.uuid}"
-                    aria-describedby="checkbox-${this.uuid}"
+                    aria-describedby="${this._describedBy()}"
                     value="${this.value}"
                     name="${this.name}"
                     ?disabled="${this.disabled}"

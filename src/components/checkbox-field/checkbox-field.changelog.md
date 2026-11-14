@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - The error message is an alert (`role="alert"`), so a screen reader announces it the moment it appears. ([#94](https://github.com/webtides/element-library/issues/94))
+- The checkbox names its help message and its error message. Its `aria-describedby` pointed at the checkbox itself, so a screen reader read neither message when the checkbox got focus; the error message was only announced the moment it appeared. It now names the help message, and the error message while that is shown, as the other fields do. ([#129](https://github.com/webtides/element-library/issues/129))
 
 ## [0.1.0] - 2026-06-03
 
