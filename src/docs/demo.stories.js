@@ -16,8 +16,10 @@ export default {
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
                     'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
                     'tabs, a token-catalogue slider of cards, a list of the kit to browse (cards with an avatar, a ' +
-                    'badge and a tag, filters as removable tags with a popover to bring one back, a pagination, ' +
-                    'skeletons and a spinner while it loads, an empty state, and a drawer with the details), a ' +
+                    'badge and a tag, filters as removable tags with a popover to bring one back, a button group ' +
+                    'that sorts, a progress ring for the share that is shown, a progress bar for the place in the ' +
+                    'list, a pagination, skeletons and a spinner while it loads, an empty state, and a drawer ' +
+                    'with the details: a breadcrumb, a divider and a copy button for the import path), a ' +
                     'lazy-loaded pattern gallery, a request-access form built from ' +
                     'the field components (submitting it floats a success toast), an FAQ accordion, and the ' +
                     'transition + scroll helpers. The design-system framing leans into the ' +
@@ -131,6 +133,8 @@ const categories = ['Forms', 'Overlays', 'Feedback', 'Navigation', 'Surfaces'];
 // A part of the kit, not all of it. `fresh` marks what came last.
 const kit = [
     { tag: 'el-button', category: 'Forms', blurb: 'A button or a link, in five variants and three appearances.' },
+    { tag: 'el-button-group', category: 'Forms', blurb: 'A row of buttons that reads as one control.', fresh: true },
+    { tag: 'el-copy-button', category: 'Forms', blurb: 'Copies a text and says whether that worked.', fresh: true },
     { tag: 'el-input-field', category: 'Forms', blurb: 'A text input with a label, a help text and an error.' },
     { tag: 'el-select-field', category: 'Forms', blurb: 'A native select with the look of the theme.' },
     { tag: 'el-switch-field', category: 'Forms', blurb: 'A checkbox that reads as on or off.' },
@@ -139,18 +143,27 @@ const kit = [
     { tag: 'el-popover', category: 'Overlays', blurb: 'A panel that floats next to its anchor.' },
     { tag: 'el-tooltip', category: 'Overlays', blurb: 'A text that explains its anchor, on hover and on focus.' },
     { tag: 'el-notification', category: 'Feedback', blurb: 'An alert with variants and a live region.' },
-    { tag: 'el-toast', category: 'Feedback', blurb: 'The region where toasts appear, and leave again.', fresh: true },
+    { tag: 'el-toast', category: 'Feedback', blurb: 'The region where toasts appear, and leave again.' },
     { tag: 'el-spinner', category: 'Feedback', blurb: 'For a wait of unknown length.' },
-    { tag: 'el-skeleton', category: 'Feedback', blurb: 'A shape in the place of what still loads.', fresh: true },
-    { tag: 'el-empty-state', category: 'Feedback', blurb: 'A message where a list is empty.', fresh: true },
+    {
+        tag: 'el-progress-bar',
+        category: 'Feedback',
+        blurb: 'A track that fills with the progress of a task.',
+        fresh: true,
+    },
+    { tag: 'el-progress-ring', category: 'Feedback', blurb: 'The same progress, in a ring.', fresh: true },
+    { tag: 'el-skeleton', category: 'Feedback', blurb: 'A shape in the place of what still loads.' },
+    { tag: 'el-empty-state', category: 'Feedback', blurb: 'A message where a list is empty.' },
     { tag: 'el-tab-group', category: 'Navigation', blurb: 'Tabs and their panels, with the arrow keys.' },
     { tag: 'el-accordion', category: 'Navigation', blurb: 'A section that opens and closes.' },
     { tag: 'el-dropdown', category: 'Navigation', blurb: 'A menu behind a trigger.' },
-    { tag: 'el-pagination', category: 'Navigation', blurb: 'The way through a list in pages.', fresh: true },
-    { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.', fresh: true },
-    { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.', fresh: true },
+    { tag: 'el-pagination', category: 'Navigation', blurb: 'The way through a list in pages.' },
+    { tag: 'el-breadcrumb', category: 'Navigation', blurb: 'The trail from the start page to this one.', fresh: true },
+    { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
+    { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.' },
     { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },
     { tag: 'el-tag', category: 'Surfaces', blurb: 'A label for a keyword or a filter, removable.' },
+    { tag: 'el-divider', category: 'Surfaces', blurb: 'A line between two groups of content.', fresh: true },
 ];
 
 const PER_PAGE = 6;
@@ -207,14 +220,15 @@ const kitSkeleton = () => html`
 
 /**
  * The list of the kit: what a page writes itself around the components. It holds the state (the
- * page, the categories that are shown, whether it loads, the entry of the drawer) and listens to
- * the events of the components.
+ * page, the categories that are shown, the order, whether it loads, the entry of the drawer) and
+ * listens to the events of the components.
  */
 class DemoKitBrowser extends TemplateElement {
     properties() {
         return {
             page: 1,
             shown: [...categories],
+            sort: 'category',
             loading: false,
             selected: null,
         };
@@ -243,6 +257,24 @@ class DemoKitBrowser extends TemplateElement {
             },
             '[data-reset]': { click: () => this._setShown([...categories]) },
             '[data-reload]': { click: () => this._reload() },
+            '[data-sort]': {
+                click: (event) => {
+                    this.sort = event.currentTarget.dataset.sort;
+                    this.page = 1;
+                },
+            },
+            // An entry of the breadcrumb in the drawer leads back into the list: to the whole kit, or
+            // to the one category. The link itself only says where that is.
+            '[data-crumb]': {
+                click: async (event) => {
+                    event.preventDefault();
+                    const only = event.currentTarget.dataset.crumb;
+                    // First the drawer, which gives the focus back when it has closed. Then the
+                    // filter, which takes it.
+                    await this.querySelector('el-drawer').hide();
+                    this._setShown(only === 'all' ? [...categories] : [only]);
+                },
+            },
             '[data-details]': {
                 click: (event) => {
                     this.selected = kit.find((item) => item.tag === event.currentTarget.dataset.details);
@@ -314,25 +346,51 @@ class DemoKitBrowser extends TemplateElement {
     }
 
     template() {
-        const items = kit.filter((item) => this.shown.includes(item.category));
+        const shown = kit.filter((item) => this.shown.includes(item.category));
+        const items = this.sort === 'name' ? [...shown].sort((a, b) => a.tag.localeCompare(b.tag)) : shown;
         const hidden = categories.filter((name) => !this.shown.includes(name));
+        const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
         const selected = this.selected;
+        // The order that is chosen is the filled button of the group, and the one that is pressed.
+        const sortButton = (sort, text) => html`
+            <el-button
+                size="small"
+                variant="${this.sort === sort ? 'brand' : 'neutral'}"
+                appearance="${this.sort === sort ? 'filled' : 'outlined'}"
+                aria-pressed="${this.sort === sort ? 'true' : 'false'}"
+                data-sort="${sort}"
+            >
+                ${text}
+            </el-button>
+        `;
 
         return html`
-            <div class="flex items-center justify-between gap-4 mb-2">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
                 <div class="flex items-center gap-3">
                     <h2 class="text-2xl font-bold">Browse the kit</h2>
                     <el-badge variant="brand" pill="true">${items.length} components</el-badge>
+                    <el-progress-ring
+                        value="${items.length}"
+                        max="${kit.length}"
+                        label="Share of the kit that is shown"
+                        style="--el-progress-ring-size:1.75rem;--el-progress-ring-track-width:0.25rem"
+                    ></el-progress-ring>
                 </div>
-                <el-button
-                    id="demo-kit-reload"
-                    appearance="outlined"
-                    circle="true"
-                    aria-label="Reload the list"
-                    data-reload
-                >
-                    ↻
-                </el-button>
+                <div class="flex items-center gap-3">
+                    <el-button-group label="Order of the list">
+                        ${sortButton('category', 'By category')} ${sortButton('name', 'A to Z')}
+                    </el-button-group>
+                    <el-divider orientation="vertical"></el-divider>
+                    <el-button
+                        id="demo-kit-reload"
+                        appearance="outlined"
+                        circle="true"
+                        aria-label="Reload the list"
+                        data-reload
+                    >
+                        ↻
+                    </el-button>
+                </div>
                 <el-tooltip for="demo-kit-reload" placement="left">Asks the server for the list again</el-tooltip>
             </div>
             <p class="opacity-70 mb-4 text-sm">
@@ -372,6 +430,14 @@ class DemoKitBrowser extends TemplateElement {
                 }
             </div>
 
+            <el-progress-bar
+                class="block mb-4"
+                style="--el-progress-bar-height:0.25rem"
+                label="Place in the list"
+                value="${items.length === 0 ? 0 : this.page}"
+                max="${pages}"
+                indeterminate="${this.loading}"
+            ></el-progress-bar>
             ${this._list(items)}
             ${
                 items.length > PER_PAGE
@@ -389,7 +455,15 @@ class DemoKitBrowser extends TemplateElement {
                 ${
                     selected
                         ? html`
-                              <p class="opacity-80 mb-4">${selected.blurb}</p>
+                              <el-breadcrumb label="Place in the kit" class="block mb-4 text-sm">
+                                  <el-breadcrumb-item href="#kit" data-crumb="all">Kit</el-breadcrumb-item>
+                                  <el-breadcrumb-item href="#kit" data-crumb="${selected.category}">
+                                      ${selected.category}
+                                  </el-breadcrumb-item>
+                                  <el-breadcrumb-item current="true">${selected.tag}</el-breadcrumb-item>
+                              </el-breadcrumb>
+                              <p class="opacity-80">${selected.blurb}</p>
+                              <el-divider class="my-4"></el-divider>
                               <dl class="grid gap-3 text-sm">
                                   <div>
                                       <dt class="font-semibold mb-1">Category</dt>
@@ -397,7 +471,17 @@ class DemoKitBrowser extends TemplateElement {
                                   </div>
                                   <div>
                                       <dt class="font-semibold mb-1">Import</dt>
-                                      <dd><code>@webtides/element-library/${selected.tag.slice(3)}/define</code></dd>
+                                      <dd class="flex items-center gap-2">
+                                          <code id="demo-kit-import" style="overflow-wrap:anywhere"
+                                              >@webtides/element-library/${selected.tag.slice(3)}/define</code
+                                          >
+                                          <el-copy-button
+                                              from="demo-kit-import"
+                                              size="small"
+                                              label="Copy the import path"
+                                              style="flex:none"
+                                          ></el-copy-button>
+                                      </dd>
                                   </div>
                               </dl>
                           `
