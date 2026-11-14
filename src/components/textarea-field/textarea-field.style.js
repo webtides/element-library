@@ -23,6 +23,12 @@ export default css`
             }
         }
 
+        /* The error message has the danger colour of the theme, as in every field. Without a theme
+           it has the colour of the text, which can be read on any background. */
+        .error-message {
+            color: var(--el-color-danger, inherit);
+        }
+
         /* Touch screens: the control and the clear cross are at least --el-touch-target. The mark
            beside the textarea keeps that width in both states, so the textarea does not jump when
            the validity changes. Without the token the sizes stay as they are. */

@@ -74,7 +74,6 @@ describe('Feature | InputField', () => {
         expect(results.violations).toEqual([]);
     });
 
-    // The danger colour is the default theme's: without a theme the message is `red`, 3.99 : 1 on white.
     it('announces its error message and has no a11y violations in the error state', async () => {
         const el = await fixture(`
             <el-input-field
@@ -82,7 +81,6 @@ describe('Feature | InputField', () => {
                 label="Email address"
                 error-message="Enter an email address"
                 valid="false"
-                style="--el-color-danger: #dc2626"
             ></el-input-field>
         `);
         await nextFrame();

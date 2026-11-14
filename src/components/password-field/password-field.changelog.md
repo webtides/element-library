@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least `--el-touch-target` wide and high (20 × 20 px before), the input at least that high, and the clear cross of an invalid field at least that wide and high. Unchanged on a fine pointer and without the token. Known limit: when an `el-input-field` connects before the first `el-password-field` of a page, element-js gives the password field the style sheet of the input field ([element-js#198](https://github.com/webtides/element-js/issues/198)). The reveal button then has none of its styles, this size included.
+- Without a theme the error message has the colour of the text. It was `red`, which is 4 : 1 on white and below the 4.5 : 1 that small text needs, and which no page with a dark background could rely on. Every field has this fallback now. With a theme, or with `--el-color-danger` set, nothing changes. ([#128](https://github.com/webtides/element-library/issues/128))
 
 ### Fixed
 

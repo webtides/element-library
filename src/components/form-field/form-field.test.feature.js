@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vite-plus/test';
+import { describe, it, expect, beforeAll, afterAll } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
+import axe from 'axe-core';
 import { aTimeout, fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './form-field.js';
 import { define as defineInputField } from '../input-field/input-field.js';
@@ -9,6 +10,9 @@ import { define as defineSelectField } from '../select-field/select-field.js';
 import { define as defineCheckboxField } from '../checkbox-field/checkbox-field.js';
 import { define as defineSwitchField } from '../switch-field/switch-field.js';
 import { define as defineRadioField } from '../radio-field/radio-field.js';
+import defaultTheme from '../../themes/default.css?raw';
+import highContrastTheme from '../../themes/high-contrast.css?raw';
+import sketchyTheme from '../../themes/sketchy.css?raw';
 define();
 defineInputField();
 definePasswordField();
@@ -204,6 +208,82 @@ describe('Feature | FormField', () => {
                 expect([kind, refused.fieldOf(kind).touched]).toEqual([kind, false]);
             }
         });
+    });
+
+    describe('with an error message', () => {
+        // Every field that shows one, touched and not valid. The radio group works out itself whether
+        // it is valid: it is required here, and nothing is selected.
+        const FIELDS = {
+            'el-input-field': '',
+            'el-password-field': '',
+            'el-textarea-field': '',
+            'el-select-field': `options='["S", "M"]'`,
+            'el-checkbox-field': '',
+            'el-switch-field': '',
+            'el-radio-field': `options='["free", "pro"]' required="true"`,
+        };
+        const withMessage = (tag, name) =>
+            `<${tag} name="${name}" label="Field" error-message="Not like this" valid="false" touched="true" ${FIELDS[tag]}></${tag}>`;
+        const colorOf = (field) => getComputedStyle(field.querySelector('.error-message')).color;
+
+        for (const tag of Object.keys(FIELDS)) {
+            it(`has the danger colour of the theme, and the colour of the text without one, in ${tag}`, async () => {
+                const wrapper = await fixture(`
+                    <div style="color: rgb(10, 20, 30)">
+                        <div style="--el-color-danger: rgb(200, 0, 0)">${withMessage(tag, `message-${tag}-themed`)}</div>
+                        <div>${withMessage(tag, `message-${tag}-plain`)}</div>
+                    </div>
+                `);
+                await frames();
+                const [themed, plain] = wrapper.querySelectorAll(tag);
+
+                expect(themed.querySelector('.error-message').textContent.trim()).toBe('Not like this');
+                expect(colorOf(themed)).toBe('rgb(200, 0, 0)');
+                expect(colorOf(plain)).toBe('rgb(10, 20, 30)');
+            });
+        }
+
+        // The message is small text: 4.5 : 1 against the background of the theme.
+        for (const [name, theme] of [
+            ['default', defaultTheme],
+            ['high-contrast', highContrastTheme],
+            ['sketchy', sketchyTheme],
+        ]) {
+            describe(`in the ${name} theme`, () => {
+                let style;
+                beforeAll(() => {
+                    style = document.createElement('style');
+                    style.textContent = theme;
+                    document.head.append(style);
+                });
+                afterAll(() => style.remove());
+
+                for (const scheme of ['light', 'dark']) {
+                    it(`can be read in every field, in a ${scheme} scheme`, async () => {
+                        const wrapper = await fixture(`
+                            <div style="color-scheme: ${scheme}; background: var(--el-color-bg); color: var(--el-color-fg); padding: 8px">
+                                ${Object.keys(FIELDS)
+                                    .map((tag) => withMessage(tag, `contrast-${name}-${scheme}-${tag}`))
+                                    .join('')}
+                            </div>
+                        `);
+                        await frames();
+                        const messages = [...wrapper.querySelectorAll('.error-message')];
+                        expect(messages).toHaveLength(7);
+                        // All seven have the colour of the theme, which is not the colour of the text.
+                        expect(new Set(messages.map((message) => getComputedStyle(message).color)).size).toBe(1);
+                        expect(getComputedStyle(messages[0]).color).not.toBe(getComputedStyle(wrapper).color);
+
+                        const results = await axe.run({ include: messages }, { runOnly: ['color-contrast'] });
+
+                        expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual(
+                            [],
+                        );
+                        expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(7);
+                    });
+                }
+            });
+        }
     });
 
     describe('with a value attribute that reads as a number or as JSON', () => {

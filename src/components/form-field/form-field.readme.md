@@ -75,6 +75,8 @@ Custom states reflected on the host (and inherited by `input-field`, `select-fie
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-fg`, `--el-color-fg-muted`, `--el-space-1`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
+The error message of every field has the danger colour of the theme (`--el-color-danger`). Without a theme it has the colour of the text, which can be read on any background: a red that the library picked could not be, on every page.
+
 #### Slots
 
 _None_ (Component uses template methods instead of slots)

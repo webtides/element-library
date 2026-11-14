@@ -77,6 +77,8 @@ This component is headless by default and inherits its styling — and the `--el
 
 The control itself (border, radius, padding, focus ring) is decorated by `styles/native.css`, which you import beside the theme; without it the control keeps the look of the browser.
 
+The error message has the danger colour of the theme (`--el-color-danger`). Without a theme it has the colour of the text, which can be read on any background.
+
 The mark of a touched field (✓ or ✗) stands beside the textarea, at its top, in `--el-color-success` and `--el-color-danger`. The field is as high with the mark as without it, so nothing below it moves when the field is left. One limit: a textarea of one row with the look of the browser is 21 px high, lower than a line of text in a page with a large line height (24 px for 16 px text at 1.5). There the field grows by the difference. A textarea that is as wide as the field, as `styles/native.css` makes it, gets narrower by the mark and the gap (`--el-space-2`).
 
 On a touch screen (`@media (any-pointer: coarse)`) the textarea is at least `--el-touch-target` high, which matters for `rows="1"`, and the clear cross of an invalid field at least that wide and high. The mark beside the textarea takes that width while the field is valid too, so the textarea keeps its width when the validity changes. Without that token, and on a fine pointer, the sizes stay as they are.

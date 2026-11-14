@@ -66,6 +66,12 @@ export default css`
             color: var(--el-color-bg, Canvas);
         }
 
+        /* The error message has the danger colour of the theme, as in every field. Without a theme
+           it has the colour of the text, which can be read on any background. */
+        .error-message {
+            color: var(--el-color-danger, inherit);
+        }
+
         /* Touch screens: the label is the hit area and at least --el-touch-target in both
            directions. Without the token the sizes stay as they are. */
         @media (any-pointer: coarse) {

@@ -62,11 +62,8 @@ describe('Feature | PasswordField', () => {
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
 
-    // The danger colour is the default theme's: without a theme the message is `red`, 3.99 : 1 on white.
     it('announces its error message and has no a11y violations in the error state', async () => {
-        const el = await passwordFixture(
-            'error-message="Enter your password" valid="false" style="--el-color-danger: #dc2626"',
-        );
+        const el = await passwordFixture('error-message="Enter your password" valid="false"');
         await nextFrame();
         const message = el.querySelector('.error-message');
 

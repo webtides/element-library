@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-touch-target` high (42 px with the default theme before), and the clear cross of an invalid field at least that wide and high (9 × 18 px before). The mark beside the input takes that width while the field is valid too, so the input keeps its width when the validity changes. Unchanged on a fine pointer and without the token.
+- Without a theme the error message has the colour of the text. It was `red`, which is 4 : 1 on white and below the 4.5 : 1 that small text needs, and which no page with a dark background could rely on. Every field has this fallback now. With a theme, or with `--el-color-danger` set, nothing changes. ([#128](https://github.com/webtides/element-library/issues/128))
 
 ### Fixed
 
