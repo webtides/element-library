@@ -47,6 +47,12 @@ export default class FormField extends TemplateElement {
      */
     _resetRoot = undefined;
 
+    /**
+     * The value the control and the `value` property last agreed on, see `_syncControlValue()`.
+     * @private
+     */
+    _controlValue = undefined;
+
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
 
@@ -218,8 +224,31 @@ export default class FormField extends TemplateElement {
      * @returns {void}
      */
     onChange() {
+        this._controlValue = this.$refs.input.value;
         this.value = this.$refs.input.value;
         this.valid = this.$refs.input.validity.valid;
+    }
+
+    /**
+     * Writes a value that was set from outside to the control. For the fields that take text
+     * (`InputField`, `PasswordField`, `TextareaField`), which call it from their `value` watcher.
+     *
+     * Such a field renders its value as the default of its control: the `value` attribute of an
+     * input, the text of a textarea. Once the user has typed, the browser no longer shows that
+     * default, so the control has to be told. A value that came from the control itself is not
+     * written back: text typed between a change and the next render is kept, and the caret stays
+     * where it is.
+     *
+     * The watcher runs a frame after the change, once for every change. By then the value can have
+     * changed again, so it is the value of now that counts, not the one the watcher was called
+     * for: writing an older one moves the caret to the end of the text.
+     * @private
+     */
+    _syncControlValue() {
+        const controlValue = String(this.value ?? '');
+        if (!this.$refs.input || controlValue === this._controlValue) return;
+        this._controlValue = controlValue;
+        this.$refs.input.value = controlValue;
     }
 
     /**

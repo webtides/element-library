@@ -29,12 +29,6 @@ import style from './textarea-field.style.js';
  * @property {boolean | string | null} spellcheck - Passed on as `spellcheck` (`true` or `false`).
  */
 export default class TextareaField extends FormField {
-    /**
-     * The value the control and the `value` property last agreed on, see `_syncControlValue()`.
-     * @private
-     */
-    _controlValue = undefined;
-
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
         shadowNativeTextEntryProperties(this);
@@ -59,6 +53,8 @@ export default class TextareaField extends FormField {
         return {
             ...watchers,
             value: (value, oldValue) => {
+                // The text of a textarea is only its default: a value set from outside has to be
+                // written to the control as well.
                 this._syncControlValue();
                 watchers.value(value, oldValue);
             },
@@ -76,30 +72,6 @@ export default class TextareaField extends FormField {
                 input: () => this.onChange(),
             },
         };
-    }
-
-    onChange() {
-        this._controlValue = this.$refs.input.value;
-        super.onChange();
-    }
-
-    /**
-     * The template renders the value as the text content of the textarea, so that server-rendered
-     * markup carries it. Text content is only the default value of a textarea: once the field has
-     * been edited, the control no longer shows it. A value set from outside is therefore written to
-     * the control as well. A value that came from the control itself is not written back, so text
-     * typed between a change and the next render is kept.
-     *
-     * The watcher that calls this runs a frame after the change, once for every change. By then the
-     * value can have changed again, so it is the value of now that counts, not the one the watcher
-     * was called for: writing an older one moves the caret to the end of the text.
-     * @private
-     */
-    _syncControlValue() {
-        const controlValue = this.value ?? '';
-        if (!this.$refs.input || controlValue === this._controlValue) return;
-        this._controlValue = controlValue;
-        this.$refs.input.value = controlValue;
     }
 
     /** @private */

@@ -251,6 +251,65 @@ describe('Feature | InputField', () => {
         });
     });
 
+    describe('with text that goes into the middle of its value', () => {
+        const caret = (input) => [input.selectionStart, input.selectionEnd];
+        const withCaretAfterHello = async (name) => {
+            const el = await fixture(
+                `<el-input-field name="${name}" label="Greeting" value="Hello world"></el-input-field>`,
+            );
+            await nextFrame();
+            const input = el.querySelector('input');
+            input.focus();
+            input.setSelectionRange(5, 5);
+            return { el, input };
+        };
+
+        it('keeps the caret where it is while keys are typed', async () => {
+            const { el, input } = await withCaretAfterHello('caret-keys');
+
+            await userEvent.keyboard('XY');
+            await nextFrame();
+            await nextFrame();
+
+            expect(input.value).toBe('HelloXY world');
+            expect(el.value).toBe('HelloXY world');
+            expect(caret(input)).toEqual([7, 7]);
+        });
+
+        it('keeps the caret where it is when two characters come within one frame', async () => {
+            const { el, input } = await withCaretAfterHello('caret-frame');
+
+            // Fast typing, a key that repeats, a script that types: the field has seen the second
+            // character before it has rendered for the first.
+            for (const character of ['X', 'Y']) {
+                input.setRangeText(character, input.selectionStart, input.selectionEnd, 'end');
+                input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+                input.dispatchEvent(new KeyboardEvent('keyup', { key: character, bubbles: true }));
+            }
+            await nextFrame();
+            await nextFrame();
+
+            expect(input.value).toBe('HelloXY world');
+            expect(el.value).toBe('HelloXY world');
+            expect(caret(input)).toEqual([7, 7]);
+        });
+
+        it('keeps text that no key brought when the field renders for another reason', async () => {
+            const { el, input } = await withCaretAfterHello('caret-render');
+
+            // A paste with the mouse: the input has the text, and the field does not know it yet.
+            input.setRangeText(', dear', 5, 5, 'end');
+            input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+            el.label = 'Salutation';
+            await nextFrame();
+            await nextFrame();
+
+            expect(el.querySelector('label').textContent.trim()).toBe('Salutation');
+            expect(input.value).toBe('Hello, dear world');
+            expect(caret(input)).toEqual([11, 11]);
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const inForm = (name, attributes = '') =>
@@ -284,6 +343,33 @@ describe('Feature | InputField', () => {
             await nextFrame();
             expect(data(form)).toEqual({ 'form-change': 'joan@example.com' });
             expect(el.value).toBe('joan@example.com');
+        });
+
+        it('shows and submits a value that a script sets after the user has typed', async () => {
+            const form = await inForm('form-after-typing', 'value="first"');
+            const el = form.firstElementChild;
+            const control = el.querySelector('input');
+            control.focus();
+            control.setSelectionRange(5, 5);
+            await userEvent.keyboard('x');
+            await nextFrame();
+            await nextFrame();
+            expect([control.value, el.value]).toEqual(['firstx', 'firstx']);
+
+            // The value attribute of the input is its default, which the browser no longer shows now.
+            el.value = 'outside';
+            await nextFrame();
+            await nextFrame();
+
+            expect(control.value).toBe('outside');
+            expect(data(form)).toEqual({ 'form-after-typing': 'outside' });
+            expect(el.value).toBe('outside');
+
+            // And the user goes on from there.
+            await userEvent.keyboard('!');
+            await nextFrame();
+            await nextFrame();
+            expect([control.value, el.value]).toEqual(['outside!', 'outside!']);
         });
 
         it('is left out while it is disabled', async () => {

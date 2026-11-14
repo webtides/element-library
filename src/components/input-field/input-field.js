@@ -62,6 +62,19 @@ export default class InputField extends FormField {
         };
     }
 
+    watch() {
+        const watchers = super.watch();
+        return {
+            ...watchers,
+            value: (value, oldValue) => {
+                // The value attribute of an input is only its default: once the user has typed, a
+                // value set from outside has to be written to the control as well.
+                this._syncControlValue();
+                watchers.value(value, oldValue);
+            },
+        };
+    }
+
     /** @private */
     fieldTemplate() {
         return html`

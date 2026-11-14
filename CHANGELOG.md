@@ -143,6 +143,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the `hidden` attribute hides the field. Before, the `display` of the element won over it. ([#69](https://github.com/webtides/element-library/issues/69))
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the input names it in `aria-describedby` while it is shown. Before, the input pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 - Fixed: the cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty input. Before, only the input was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
+- Fixed: a value that a script sets on the element reaches the input also after the user has typed. The field renders its value as the `value` attribute of the input, which is only the default of the control: once the user had typed, the browser no longer showed it. After `x` was typed into a field with "first", `el.value = 'outside'` left "firstx" in the input and in what the form submitted, while `value` said "outside". The field now writes a value that was set from outside to the control as well, as `el-textarea-field` does. Text the user types is not written back, so the caret stays where it is. ([#126](https://github.com/webtides/element-library/issues/126))
 
 ### notification
 
@@ -167,6 +168,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the field has its own styles when an `el-input-field` is on the page before it. Before, it took over the stylesheet of the input field in that order and lost its own: the reveal button looked like a native button, with a border and a background. See `form-field`.
 - Fixed: the `hidden` attribute hides the field. Before, the `display` of the element won over it. ([#69](https://github.com/webtides/element-library/issues/69))
 - Fixed: the cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty input. Before, only the input was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
+- Fixed: a value that a script sets on the element reaches the input also after the user has typed. The field renders its value as the `value` attribute of the input, which is only the default of the control: once the user had typed, the browser no longer showed it. After `x` was typed into a field with "first", `el.value = 'outside'` left "firstx" in the input and in what the form submitted, while `value` said "outside". The field now writes a value that was set from outside to the control as well, as `el-textarea-field` does. Text the user types is not written back, so the caret stays where it is. ([#126](https://github.com/webtides/element-library/issues/126))
 
 ### popover
 
