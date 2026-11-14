@@ -13,9 +13,9 @@ import style from './form-field.style.js';
  * @fires {CustomEvent<string>} input-change - Fired when the field's `value` changes.
  *   `detail` is the new value. Bubbles.
  *
- * @cssstate touched - Set on the host once the user has focused and blurred the field.
- *   Inherited by all subclasses (`InputField`, `CheckboxField`, `TextareaField`,
- *   `AmountField`, `SelectField`).
+ * @cssstate touched - Set on the host once the user has focused and blurred the field, or the
+ *   browser has refused a submit because of it. Inherited by all subclasses (`InputField`,
+ *   `CheckboxField`, `TextareaField`, `AmountField`, `SelectField`).
  * @cssstate valid - Set on the host while the field currently passes validation.
  * @cssstate invalid - Set on the host while the field currently fails validation.
  *
@@ -31,7 +31,8 @@ import style from './form-field.style.js';
  * @property {string} helpMessage - Helper text displayed below the field.
  * @property {boolean} valid - Whether the field currently passes validation.
  * @property {boolean} touched - Whether the user has interacted with the field (focused and
- *   blurred). Validation messages only surface when this is `true`.
+ *   blurred), or the browser has refused a submit because of it. Validation messages only surface
+ *   when this is `true`.
  */
 export default class FormField extends TemplateElement {
     constructor(options) {
@@ -113,6 +114,9 @@ export default class FormField extends TemplateElement {
                     this.onChange();
                     this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value);
                 },
+                invalid: (event) => {
+                    this._onInvalid(event.target);
+                },
             },
             '.is-invalid': {
                 focus: () => {
@@ -155,6 +159,27 @@ export default class FormField extends TemplateElement {
     onChange() {
         this.value = this.$refs.input.value;
         this.valid = this.$refs.input.validity.valid;
+    }
+
+    /**
+     * The browser found the control not valid. If it did so for a submit, the field shows its error
+     * message, as it does once the user has left it: the form was refused, and the user has to see
+     * why, on every field and in the words of the page.
+     *
+     * `checkValidity()` and `reportValidity()` fire the same event without a submit. A page that asks
+     * on every keystroke whether its form is valid must not turn every field red. The browser tells
+     * the two apart itself: before it validates for a submit it marks all controls of the form as
+     * touched by the user, which is the state behind `:user-invalid`.
+     *
+     * The event is not cancelled, so the browser still focuses the first control and shows its
+     * bubble there.
+     * @private
+     * @param {HTMLElement} control
+     */
+    _onInvalid(control) {
+        if (!control.matches(':user-invalid')) return;
+        this.touched = true;
+        this.valid = false;
     }
 
     /**

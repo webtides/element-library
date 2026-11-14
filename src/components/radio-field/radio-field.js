@@ -13,8 +13,8 @@ import style from './radio-field.style.js';
  * @fires {CustomEvent<string>} input-change - Fired when the selected value changes. `detail` is
  *   the newly selected value. Bubbles.
  *
- * @cssstate touched - Set once the user has focused and blurred the group. Inherits `valid` and
- *   `invalid` from `FormField`.
+ * @cssstate touched - Set once the user has focused and blurred the group, or the browser has
+ *   refused a submit because of it. Inherits `valid` and `invalid` from `FormField`.
  *
  * @property {string} value - The selected option's value.
  * @property {Array<string | { value: string, label?: string, disabled?: boolean }>} options -
@@ -52,6 +52,7 @@ export default class RadioField extends FormField {
                 },
                 focus: () => this.onFocus(),
                 blur: () => this.onBlur(),
+                invalid: (event) => this._onInvalid(event.target),
             },
         };
     }
