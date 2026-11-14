@@ -92,6 +92,7 @@ export default class TextareaField extends FormField {
                 ?disabled="${this.disabled}"
                 ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this._describedBy()}"
+                aria-invalid="${this.valid ? 'false' : 'true'}"
             >${this.value ?? ''}</textarea>
             ${
                 this.touched

@@ -89,7 +89,7 @@ _None_ - The component generates its own textarea element internally
 
 ## Accessibility
 
-- Includes proper ARIA attributes (`aria-describedby`)
+- Includes proper ARIA attributes (`aria-describedby`, `aria-invalid`)
 - Links labels to textareas via `for` attribute
 - Supports screen reader only labels
 - Visual validity indicators (✓ for valid, × for invalid) appear after field is touched

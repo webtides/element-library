@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty textarea. Before, only the textarea was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 - The error message has the danger colour of the theme (`--el-color-danger`). It had the colour of the text and read like a help message, while the messages of an `el-input-field` on the same form were red. Without a theme it keeps the colour of the text, which is what every field does now. ([#128](https://github.com/webtides/element-library/issues/128))
 - The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
+- The textarea says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 
 ## [0.1.0] - 2026-06-03
 

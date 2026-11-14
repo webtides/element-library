@@ -94,6 +94,17 @@ describe('Feature | AmountField', () => {
             expect(describedBy(el)).toEqual([partOf(el, 'help-message').id]);
         });
 
+        it('says on the input whether it is valid', async () => {
+            const el = await fixture(withTexts('says'));
+            await frames();
+            expect(partOf(el, 'input').getAttribute('aria-invalid')).toBe('false');
+
+            el.valid = false;
+            await frames();
+
+            expect(partOf(el, 'input').getAttribute('aria-invalid')).toBe('true');
+        });
+
         it('shows the error message of a field that is rendered as not valid', async () => {
             const el = await fixture(withTexts('rendered', 'error-message="At least one" valid="false"'));
             await frames();

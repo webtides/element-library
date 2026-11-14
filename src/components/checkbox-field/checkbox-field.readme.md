@@ -74,4 +74,5 @@ _None_
 - The native control is an `<input type="checkbox">`, named by its label and keyboard-operable (Space toggles).
 - The native input stays in the accessibility tree and focusable; it is only hidden visually, with keyboard focus reflected onto the custom box via `:focus-visible`.
 - The checkbox names its help message in `aria-describedby`, and its error message while that is shown: a screen reader reads both when the checkbox gets focus.
+- The checkbox says whether the field is valid (`aria-invalid`).
 - The error message is an alert (`role="alert"`): a screen reader announces it when it appears.

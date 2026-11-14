@@ -423,6 +423,31 @@ describe('Feature | FormField', () => {
         });
     });
 
+    describe('for assistive technology', () => {
+        // Where a field says whether it is valid: on its control, and a radio group on the group.
+        const marked = (field) =>
+            field.querySelector(field.localName === 'el-radio-field' ? 'fieldset' : 'input, textarea, select');
+        // The radio group works out itself whether it is valid: here it has a value.
+        const validMarkup = (tag) =>
+            tag === 'el-radio-field' ? `options='["free", "pro"]' required="true" value="free"` : FIELDS[tag];
+
+        for (const tag of Object.keys(FIELDS)) {
+            it(`says whether it is valid, in ${tag}`, async () => {
+                const wrapper = await fixture(`
+                    <div>
+                        <${tag} name="says-invalid-${tag}" label="Field" error-message="Not like this" valid="false" touched="true" ${FIELDS[tag]}></${tag}>
+                        <${tag} name="says-valid-${tag}" label="Field" error-message="Not like this" ${validMarkup(tag)}></${tag}>
+                    </div>
+                `);
+                await frames();
+                const [invalid, valid] = wrapper.querySelectorAll(tag);
+
+                expect(marked(invalid).getAttribute('aria-invalid')).toBe('true');
+                expect(marked(valid).getAttribute('aria-invalid')).toBe('false');
+            });
+        }
+    });
+
     describe('with an error message', () => {
         // Every field that shows one, touched and not valid.
         const withMessage = (tag, name) =>

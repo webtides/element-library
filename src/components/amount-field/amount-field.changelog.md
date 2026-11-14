@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - The `helpMessage` and the `errorMessage` are rendered. The field took both and showed neither, and the `aria-describedby` of its input named an element that did not exist. The help message stands between the label and the stepper. The error message is shown below the stepper while the field is touched and not valid, as an alert (`role="alert"`). The input names the help message in `aria-describedby`, and the error message while it is shown. Both have the look of the messages of every field: `--el-font-size-sm`, the muted and the danger colour of the theme, the colour of the text without one. Style them with `::part(help-message)` and `::part(error-message)`. ([#131](https://github.com/webtides/element-library/issues/131))
+- The input says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 
 ## [0.1.0] - 2026-06-03
 

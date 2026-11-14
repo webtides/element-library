@@ -77,4 +77,5 @@ The buttons are at least `--el-touch-target` high on every pointer. On a touch s
 
 - The input is named by the label.
 - The input names the help message in `aria-describedby`, and the error message while that is shown: a screen reader reads both when the input gets focus.
+- The input says whether the field is valid (`aria-invalid`).
 - The error message is an alert (`role="alert"`): a screen reader announces it when it appears.

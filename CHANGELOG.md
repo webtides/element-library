@@ -47,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: the `label` is rendered: a `<label>` above the stepper, inside the shadow root, that names the number input. Style it with `::part(label)`. Before, the field took the attribute and showed nothing, and the input had no accessible name (axe `label`). ([#94](https://github.com/webtides/element-library/issues/94))
 - Changed: the label, the help message, the stepper and the error message stack in a column with a gap of `--el-space-1`, as in every field. The field is a flex container for that (`display: flex`; it was `inline`), and the `hidden` attribute hides it as before. With a theme, a field without messages measures what it did. Without a theme the label is 4 px above the stepper; it had no gap there. ([#131](https://github.com/webtides/element-library/issues/131))
 - Fixed: the `helpMessage` and the `errorMessage` are rendered. The field took both and showed neither, and the `aria-describedby` of its input named an element that did not exist. The help message stands between the label and the stepper. The error message is shown below the stepper while the field is touched and not valid, as an alert (`role="alert"`). The input names the help message in `aria-describedby`, and the error message while it is shown. Both have the look of the messages of every field: `--el-font-size-sm`, the muted and the danger colour of the theme, the colour of the text without one. Style them with `::part(help-message)` and `::part(error-message)`. ([#131](https://github.com/webtides/element-library/issues/131))
+- Fixed: the input says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 
 ### avatar
 
@@ -106,6 +107,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the checkbox names its help message and its error message. Its `aria-describedby` pointed at the checkbox itself, so a screen reader read neither message when the checkbox got focus; the error message was only announced the moment it appeared. It now names the help message, and the error message while that is shown, as the other fields do. ([#129](https://github.com/webtides/element-library/issues/129))
 - Fixed: the error message has the danger colour of the theme (`--el-color-danger`). It had the colour of the text and read like a help message, while the messages of an `el-input-field` on the same form were red. Without a theme it keeps the colour of the text, which is what every field does now. ([#128](https://github.com/webtides/element-library/issues/128))
 - Fixed: the `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
+- Fixed: the checkbox says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 
 ### copy-button
 
@@ -236,6 +238,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: the help message stands below the switch and its label, and the error message below the help message. It was the first thing of the field, above the label it explains. What a screen reader reads is unchanged: the switch names both messages in `aria-describedby`. ([#132](https://github.com/webtides/element-library/issues/132))
 - Fixed: the error message is announced by screen readers: it is an alert (`role="alert"`), and the switch names it in `aria-describedby` while it is shown. Before, nothing connected the message with the switch. ([#94](https://github.com/webtides/element-library/issues/94))
 - Fixed: the `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
+- Fixed: the switch says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 
 ### tab-group
 
@@ -278,6 +281,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: the cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty textarea. Before, only the textarea was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 - Fixed: the error message has the danger colour of the theme (`--el-color-danger`). It had the colour of the text and read like a help message, while the messages of an `el-input-field` on the same form were red. Without a theme it keeps the colour of the text, which is what every field does now. ([#128](https://github.com/webtides/element-library/issues/128))
 - Fixed: the `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
+- Fixed: the textarea says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 
 ### toast
 

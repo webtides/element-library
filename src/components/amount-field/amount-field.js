@@ -125,6 +125,7 @@ export default class AmountField extends FormField {
                     max="${this.max}"
                     min="${this.min}"
                     aria-describedby="${this._describedBy()}"
+                    aria-invalid="${this.valid ? 'false' : 'true'}"
                 />
                 <button ref="minus" part="button minus" ?disabled="${this.min !== false && this.value <= this.min}">
                     <slot name="minus">-</slot>

@@ -88,6 +88,7 @@ export default class SwitchField extends FormField {
                     role="switch"
                     id="switch-${this.uuid}"
                     aria-describedby="${this._describedBy()}"
+                    aria-invalid="${this.valid ? 'false' : 'true'}"
                     value="${this.value}"
                     name="${this.name}"
                     ?disabled="${this.disabled}"
