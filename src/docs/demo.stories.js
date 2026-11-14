@@ -769,10 +769,7 @@ export const Page = {
                             options="${JSON.stringify(['Just me', '2–10', '11–50', '50+'])}"
                         ></el-select-field>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Seats</label>
-                            <el-amount-field name="seats" value="3" min="1" max="100"></el-amount-field>
-                        </div>
+                        <el-amount-field name="seats" label="Seats" value="3" min="1" max="100"></el-amount-field>
 
                         <div class="sm:col-span-2">
                             <el-radio-field
