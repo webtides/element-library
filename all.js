@@ -8,6 +8,7 @@ import './src/components/card/card.define.js';
 import './src/components/carousel/carousel.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
 import './src/components/dialog/dialog.define.js';
+import './src/components/divider/divider.define.js';
 import './src/components/drawer/drawer.define.js';
 import './src/components/dropdown/dropdown.define.js';
 import './src/components/empty-state/empty-state.define.js';

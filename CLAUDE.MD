@@ -66,6 +66,7 @@ element-library/
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
 - **dialog**: Modal dialog built on the native `<dialog>` element
+- **divider**: Line between two groups of content, horizontal or vertical
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
 - **dropdown**: Dropdown component
 - **empty-state**: Message in the place of a list that is empty, with an optional action
