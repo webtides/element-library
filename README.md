@@ -69,6 +69,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | card               | A surface that groups content, with media, header, body and footer regions    | `0.1.0` |
 | carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field     |                                                                               | `0.1.1` |
+| copy-button        | A button that copies a text to the clipboard and shows the outcome            | `0.1.0` |
 | dialog             | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
 | divider            | A line between two groups of content, horizontal or vertical                  | `0.1.0` |
 | drawer             | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |

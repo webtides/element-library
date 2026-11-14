@@ -99,6 +99,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
 - Fixed: the error message is an alert (`role="alert"`), so a screen reader announces it the moment it appears. ([#94](https://github.com/webtides/element-library/issues/94))
 
+### copy-button
+
+- Added: `el-copy-button`, a new component: a button that copies a text to the clipboard and says whether that worked. A native `<button>` that shows an icon and is named by `label`, "Copy" by default. The text is `value`, or with `from` the content of the element with that id: its `value` if it has one, its text otherwise, read at the moment of the press. After a press the icon shows the outcome for `feedback-duration` milliseconds (`1500` by default), a check mark in the success colour or a cross in the danger colour, and a live region tells a screen reader (`success-label`, `error-label`); `status` is `success`, `error` or `idle`, reflected. `copy-button-copy` is fired with the text when it was copied, `copy-button-error` with the reason when it could not be: there was nothing to copy, the page has no clipboard, or the browser refused. `copy()` does the same from a script. `size` is `small`, `medium` or `large`, reflected: a square of the control height of the size, and at least `--el-touch-target` on a touch screen. The slots `copy-icon`, `success-icon` and `error-icon` take other icons. ([#125](https://github.com/webtides/element-library/issues/125))
+
 ### dialog
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (20 × 20 px before). Its icon keeps its size, and the header grows with the button. Unchanged on a fine pointer and without the token.

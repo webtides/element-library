@@ -10,6 +10,7 @@ import './src/components/button-group/button-group.define.js';
 import './src/components/card/card.define.js';
 import './src/components/carousel/carousel.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
+import './src/components/copy-button/copy-button.define.js';
 import './src/components/dialog/dialog.define.js';
 import './src/components/divider/divider.define.js';
 import './src/components/drawer/drawer.define.js';
