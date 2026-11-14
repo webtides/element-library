@@ -63,7 +63,9 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 #### CSS Custom Properties
 
-Headless by default; reads the library's `--el-*` design tokens (`--el-color-accent`, `--el-color-border`, `--el-color-bg`, `--el-space-*`, `--el-border-width`, `--el-focus-ring-width`, `--el-duration-md`, `--el-ease`, `--el-color-fg-muted`, `--el-color-danger`). Skin it via a theme — see the Storybook _Docs / Theming_ page.
+Headless by default; reads the library's `--el-*` design tokens (`--el-color-accent`, `--el-color-border`, `--el-color-bg`, `--el-space-*`, `--el-border-width`, `--el-focus-ring-width`, `--el-duration-md`, `--el-ease`, `--el-color-fg`, `--el-color-fg-muted`, `--el-color-danger`, `--el-font-size-sm`). Skin it via a theme — see the Storybook _Docs / Theming_ page.
+
+The label, the help message, the control and the error message stack in a column, and the texts have one look in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`.
 
 On a touch screen (`@media (any-pointer: coarse)`) the label of every option, which is its hit area, is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
 

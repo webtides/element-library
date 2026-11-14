@@ -32,6 +32,43 @@ const settled = async () => {
     await frames();
 };
 
+// Every field that renders into the page, with the attributes it needs to have something to choose.
+// The radio group works out itself whether it is valid: it is required here, and nothing is selected.
+const FIELDS = {
+    'el-input-field': '',
+    'el-password-field': '',
+    'el-textarea-field': '',
+    'el-select-field': `options='["S", "M"]'`,
+    'el-checkbox-field': '',
+    'el-switch-field': '',
+    'el-radio-field': `options='["free", "pro"]' required="true"`,
+};
+
+const THEMES = [
+    ['default', defaultTheme],
+    ['high-contrast', highContrastTheme],
+    ['sketchy', sketchyTheme],
+];
+// Runs the tests once for every theme and scheme, with the stylesheet of the theme on the page.
+const describeInEveryTheme = (tests) => {
+    for (const [name, theme] of THEMES) {
+        describe(`in the ${name} theme`, () => {
+            let style;
+            beforeAll(() => {
+                style = document.createElement('style');
+                style.textContent = theme;
+                document.head.append(style);
+            });
+            afterAll(() => style.remove());
+
+            for (const scheme of ['light', 'dark']) tests(name, scheme);
+        });
+    }
+};
+// A page of the theme in one scheme: its background and the colour of its text.
+const themedPage = (scheme, markup) =>
+    `<div style="color-scheme: ${scheme}; background: var(--el-color-bg); color: var(--el-color-fg); padding: 8px">${markup}</div>`;
+
 describe('Feature | FormField', () => {
     it('can connect without errors', async () => {
         const el = await fixture(`<el-form-field></el-form-field>`);
@@ -210,18 +247,163 @@ describe('Feature | FormField', () => {
         });
     });
 
-    describe('with an error message', () => {
-        // Every field that shows one, touched and not valid. The radio group works out itself whether
-        // it is valid: it is required here, and nothing is selected.
-        const FIELDS = {
-            'el-input-field': '',
-            'el-password-field': '',
-            'el-textarea-field': '',
-            'el-select-field': `options='["S", "M"]'`,
-            'el-checkbox-field': '',
-            'el-switch-field': '',
-            'el-radio-field': `options='["free", "pro"]' required="true"`,
+    describe('with the texts around its control', () => {
+        // el-form-field itself has the layout of the fields that extend it.
+        const TAGS = ['el-form-field', ...Object.keys(FIELDS)];
+        // A checkbox and a switch have their label in the row of the control.
+        const rowsWithHelp = (tag) => (['el-checkbox-field', 'el-switch-field'].includes(tag) ? 3 : 4);
+        const withTexts = (tag, name, help = 'help-message="Choose well"') =>
+            `<${tag} name="${name}" label="Field" ${help} error-message="Not like this" valid="false" touched="true" ${FIELDS[tag] ?? ''}></${tag}>`;
+
+        // The rows of the column that are rendered, from top to bottom. The column of a radio group
+        // is its fieldset, and the row of its controls is the list of the options.
+        const rowsOf = (field) =>
+            [
+                field.querySelector(':scope > label, legend'),
+                field.querySelector('.help-message'),
+                field.querySelector(field.localName === 'el-radio-field' ? '.options' : '.field'),
+                field.querySelector('.error-message'),
+            ].filter((row) => row?.getClientRects().length);
+        const tenths = (value) => Math.round(value * 10) / 10;
+        // The room above the first row and below the last one, and the gaps between the rows.
+        const columnOf = (field) => {
+            const host = field.getBoundingClientRect();
+            const rows = rowsOf(field).map((row) => row.getBoundingClientRect());
+            return {
+                rows: rows.length,
+                above: tenths(rows[0].top - host.top),
+                gaps: rows.slice(1).map((row, index) => tenths(row.top - rows[index].bottom)),
+                below: tenths(host.bottom - rows.at(-1).bottom),
+            };
         };
+        const column = (rows, gap) => ({ rows, above: 0, gaps: Array(rows - 1).fill(gap), below: 0 });
+
+        const lookOf = (field) => {
+            const help = getComputedStyle(field.querySelector('.help-message'));
+            return {
+                // The label of the field, the label of a checkbox, the legend and the options of a group.
+                labels: [
+                    ...new Set(
+                        [...field.querySelectorAll('label, legend')].map((label) => getComputedStyle(label).color),
+                    ),
+                ],
+                help: `${help.color} ${help.fontSize}`,
+                error: getComputedStyle(field.querySelector('.error-message')).fontSize,
+            };
+        };
+        const TOKENS = '--el-color-fg: rgb(1, 2, 3); --el-color-fg-muted: rgb(90, 90, 90); --el-font-size-sm: 13px';
+        const themedLook = { labels: ['rgb(1, 2, 3)'], help: 'rgb(90, 90, 90) 13px', error: '13px' };
+
+        // element-js puts the stylesheet of an element into the page when the first one is connected,
+        // in a <style> that has the tag and a number as its id, and leaves it there.
+        const sheetOfFormField = () => document.querySelector('style[id^="EL-FORM-FIELD"]');
+
+        for (const tag of TAGS) {
+            it(`stacks them in a column with one gap, in ${tag}`, async () => {
+                const wrapper = await fixture(`
+                    <div>
+                        <div style="--el-space-1: 6px">${withTexts(tag, `column-${tag}-themed`)}</div>
+                        <div>${withTexts(tag, `column-${tag}-plain`)}</div>
+                    </div>
+                `);
+                await frames();
+                const [themed, plain] = wrapper.querySelectorAll(tag);
+
+                expect(columnOf(themed)).toEqual(column(rowsWithHelp(tag), 6));
+                expect(columnOf(plain)).toEqual(column(rowsWithHelp(tag), 4));
+            });
+
+            it(`leaves no gap for a help message without a text, in ${tag}`, async () => {
+                const el = await fixture(withTexts(tag, `no-help-${tag}`, ''));
+                await frames();
+
+                // The element is still there, for the aria-describedby of the control.
+                expect(el.querySelector('.help-message').textContent).toBe('');
+                expect(columnOf(el)).toEqual(column(rowsWithHelp(tag) - 1, 4));
+            });
+
+            it(`gives them the look of the theme, and the colour of the text without one, in ${tag}`, async () => {
+                const wrapper = await fixture(`
+                    <div style="color: rgb(10, 20, 30)">
+                        <div style="${TOKENS}">${withTexts(tag, `look-${tag}-themed`)}</div>
+                        <div>${withTexts(tag, `look-${tag}-plain`)}</div>
+                    </div>
+                `);
+                await frames();
+                const [themed, plain] = wrapper.querySelectorAll(tag);
+
+                expect(lookOf(themed)).toEqual(themedLook);
+                expect(lookOf(plain)).toEqual({
+                    labels: ['rgb(10, 20, 30)'],
+                    help: 'rgb(10, 20, 30) 14px',
+                    error: '14px',
+                });
+            });
+
+            // The field is a flex container, which the hidden attribute alone would not hide.
+            it(`is hidden by the hidden attribute, in ${tag}`, async () => {
+                const el = await fixture(withTexts(tag, `hidden-${tag}`));
+                await frames();
+                expect(getComputedStyle(el).display).toBe('flex');
+
+                el.hidden = true;
+
+                expect(getComputedStyle(el).display).toBe('none');
+            });
+        }
+
+        // The stylesheet of el-form-field used to have rules for the tags of all the fields. A field
+        // does not bring that stylesheet, so the rules were on a page only together with an
+        // el-form-field, and changed the fields there.
+        for (const tag of Object.keys(FIELDS)) {
+            it(`looks the same on a page without an el-form-field and on one with it, in ${tag}`, async () => {
+                sheetOfFormField()?.remove();
+                const wrapper = await fixture(
+                    `<div style="${TOKENS}; --el-space-1: 6px">${withTexts(tag, `alone-${tag}`)}</div>`,
+                );
+                await frames();
+                const field = wrapper.querySelector(tag);
+                const stateOf = () => ({
+                    display: getComputedStyle(field).display,
+                    column: columnOf(field),
+                    look: lookOf(field),
+                });
+                expect(sheetOfFormField()).toBeNull();
+                const alone = stateOf();
+
+                // Its stylesheet comes after the one of the field, and would win with the same weight.
+                await fixture(`<el-form-field name="beside-${tag}" label="Base"></el-form-field>`);
+                await frames();
+
+                expect(sheetOfFormField()).not.toBeNull();
+                expect(alone).toEqual({ display: 'flex', column: column(rowsWithHelp(tag), 6), look: themedLook });
+                expect(stateOf()).toEqual(alone);
+            });
+        }
+
+        // The help message is small text: 4.5 : 1 against the background of the theme.
+        describeInEveryTheme((name, scheme) => {
+            it(`has a help message that can be read in every field, in a ${scheme} scheme`, async () => {
+                const wrapper = await fixture(
+                    themedPage(scheme, TAGS.map((tag) => withTexts(tag, `help-${name}-${scheme}-${tag}`)).join('')),
+                );
+                await frames();
+                const messages = [...wrapper.querySelectorAll('.help-message')];
+                expect(messages).toHaveLength(TAGS.length);
+                // All of them have the muted colour of the theme, which is not the colour of the text.
+                expect(new Set(messages.map((message) => getComputedStyle(message).color)).size).toBe(1);
+                expect(getComputedStyle(messages[0]).color).not.toBe(getComputedStyle(wrapper).color);
+
+                const results = await axe.run({ include: messages }, { runOnly: ['color-contrast'] });
+
+                expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual([]);
+                expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(TAGS.length);
+            });
+        });
+    });
+
+    describe('with an error message', () => {
+        // Every field that shows one, touched and not valid.
         const withMessage = (tag, name) =>
             `<${tag} name="${name}" label="Field" error-message="Not like this" valid="false" touched="true" ${FIELDS[tag]}></${tag}>`;
         const colorOf = (field) => getComputedStyle(field.querySelector('.error-message')).color;
@@ -244,46 +426,29 @@ describe('Feature | FormField', () => {
         }
 
         // The message is small text: 4.5 : 1 against the background of the theme.
-        for (const [name, theme] of [
-            ['default', defaultTheme],
-            ['high-contrast', highContrastTheme],
-            ['sketchy', sketchyTheme],
-        ]) {
-            describe(`in the ${name} theme`, () => {
-                let style;
-                beforeAll(() => {
-                    style = document.createElement('style');
-                    style.textContent = theme;
-                    document.head.append(style);
-                });
-                afterAll(() => style.remove());
+        describeInEveryTheme((name, scheme) => {
+            it(`can be read in every field, in a ${scheme} scheme`, async () => {
+                const wrapper = await fixture(
+                    themedPage(
+                        scheme,
+                        Object.keys(FIELDS)
+                            .map((tag) => withMessage(tag, `contrast-${name}-${scheme}-${tag}`))
+                            .join(''),
+                    ),
+                );
+                await frames();
+                const messages = [...wrapper.querySelectorAll('.error-message')];
+                expect(messages).toHaveLength(7);
+                // All seven have the colour of the theme, which is not the colour of the text.
+                expect(new Set(messages.map((message) => getComputedStyle(message).color)).size).toBe(1);
+                expect(getComputedStyle(messages[0]).color).not.toBe(getComputedStyle(wrapper).color);
 
-                for (const scheme of ['light', 'dark']) {
-                    it(`can be read in every field, in a ${scheme} scheme`, async () => {
-                        const wrapper = await fixture(`
-                            <div style="color-scheme: ${scheme}; background: var(--el-color-bg); color: var(--el-color-fg); padding: 8px">
-                                ${Object.keys(FIELDS)
-                                    .map((tag) => withMessage(tag, `contrast-${name}-${scheme}-${tag}`))
-                                    .join('')}
-                            </div>
-                        `);
-                        await frames();
-                        const messages = [...wrapper.querySelectorAll('.error-message')];
-                        expect(messages).toHaveLength(7);
-                        // All seven have the colour of the theme, which is not the colour of the text.
-                        expect(new Set(messages.map((message) => getComputedStyle(message).color)).size).toBe(1);
-                        expect(getComputedStyle(messages[0]).color).not.toBe(getComputedStyle(wrapper).color);
+                const results = await axe.run({ include: messages }, { runOnly: ['color-contrast'] });
 
-                        const results = await axe.run({ include: messages }, { runOnly: ['color-contrast'] });
-
-                        expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual(
-                            [],
-                        );
-                        expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(7);
-                    });
-                }
+                expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual([]);
+                expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(7);
             });
-        }
+        });
     });
 
     describe('with a value attribute that reads as a number or as JSON', () => {

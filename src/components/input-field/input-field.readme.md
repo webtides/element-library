@@ -72,7 +72,9 @@ import '@webtides/element-library/input-field/define';
 
 #### CSS Custom Properties
 
-This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`, `--el-space-2`), on top of the styling it inherits from `FormField`. Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
+This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-success`, `--el-color-danger`, `--el-font-size-sm`, `--el-space-2`), on top of the layout it shares with every field. Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
+
+The label, the help message, the control and the error message stack in a column, and the texts have one look in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`.
 
 The control itself (border, radius, padding, focus ring) is decorated by `styles/native.css`, which you import beside the theme; without it the control keeps the look of the browser. The `size` changes that decorated control: a small one is 0.8 times `--el-control-height` high, a large one 1.25 times.
 

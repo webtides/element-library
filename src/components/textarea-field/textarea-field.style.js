@@ -1,16 +1,14 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     el-textarea-field {
-        display: block;
-
-        /* The mark of a touched field stands beside the textarea, at its first line, as it stands
-           beside an input. Below the textarea it was a line of its own: the field grew when it was
-           left, and what comes after it moved. */
+        /* The mark of a touched field stands beside the first line of the textarea. The shared
+           layout would centre it, at a height that changes with the rows of the textarea. */
         .field {
-            display: flex;
             align-items: flex-start;
-            gap: var(--el-space-2, 8px);
 
             .validity {
                 .valid {
@@ -21,12 +19,6 @@ export default css`
                     color: var(--el-color-danger, red);
                 }
             }
-        }
-
-        /* The error message has the danger colour of the theme, as in every field. Without a theme
-           it has the colour of the text, which can be read on any background. */
-        .error-message {
-            color: var(--el-color-danger, inherit);
         }
 
         /* Touch screens: the control and the clear cross are at least --el-touch-target. The mark
@@ -50,3 +42,5 @@ export default css`
         }
     }
 `;
+
+export default [hostStyle('el-textarea-field'), formControlStyle('el-textarea-field'), style].join('\n');

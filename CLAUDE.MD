@@ -178,7 +178,7 @@ export default [hostStyle(), sizeStyle(), variantsStyle(), appearanceStyle('.but
 - **`size`**: resolves the `size` attribute (`small` / `medium` / `large`) to internal properties.
 - **`variants`**: resolves the `variant` attribute (`neutral` / `brand` / `success` / `warning` / `danger`) to the colours of five roles.
 - **`appearance`**: paints those colours on a surface as `filled`, `outlined` or `plain`.
-- **`form-control`**: the layout of a field around its control (label, help, `.field`, error).
+- **`form-control`**: the layout of a field around its control (label, help, `.field`, error) and the look of those texts. Every field that renders into the page composes it for its own tag, together with `host`; `form-field.style.js` is the stylesheet of `el-form-field` alone. A subclass does not get the stylesheet of its parent class (its `styles` replace it), and a rule for the tag of another field reaches that field only on a page that has both.
 - **`arrow`**: the arrow of a floating surface (popover, tooltip), on the edge that faces the anchor. Its argument is the surface, not the host; `placeAtAnchor()` in `src/utils/floating.js` sets the `data-placement` it selects by.
 - **`modal`**: a native `<dialog>` as a modal surface with a header, a body and a footer (dialog, drawer): the paint of the surface, the backdrop, the way from closed to shown (the class `showing`) and the parts. It takes no host, a dialog with slots needs a shadow root. The component adds the place, the size, the border and the look before it is shown, on the selector `dialog` and in properties the module does not set.
 

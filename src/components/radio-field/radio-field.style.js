@@ -1,20 +1,27 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     el-radio-field {
-        display: block;
-
+        /* The group is a fieldset, and the fieldset is the column of this field: the legend, the
+           help message, the options and the error message are inside it, for a screen reader. */
         fieldset.field {
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--el-space-1, 4px);
             margin: 0;
             padding: 0;
             border: 0;
             min-width: 0;
         }
 
+        /* The browser sets a legend on the border of its fieldset. It is no row of the column, so
+           the gap of the column is its margin. */
         legend {
             padding: 0;
-            margin-bottom: var(--el-space-1, 0);
-            color: var(--el-color-fg, inherit);
+            margin-bottom: var(--el-space-1, 4px);
         }
 
         .options {
@@ -93,18 +100,6 @@ export default css`
             opacity: 0.5;
         }
 
-        .message {
-            display: block;
-        }
-
-        .help-message {
-            color: var(--el-color-fg-muted, inherit);
-        }
-
-        .error-message {
-            color: var(--el-color-danger, inherit);
-        }
-
         /* Touch screens: the label of an option is its hit area and at least --el-touch-target
            in both directions. Without the token the sizes stay as they are. */
         @media (any-pointer: coarse) {
@@ -115,3 +110,5 @@ export default css`
         }
     }
 `;
+
+export default [hostStyle('el-radio-field'), formControlStyle('el-radio-field'), style].join('\n');

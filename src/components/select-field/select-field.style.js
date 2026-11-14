@@ -1,9 +1,10 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     el-select-field {
-        display: block;
-
         /*
          * The field renders a chevron of its own, hidden by default: the native <select> of the
          * browser already paints one, and showing both would duplicate. styles/native.css takes
@@ -21,12 +22,6 @@ export default css`
             height: 1em;
         }
 
-        /* The error message has the danger colour of the theme, as in every field. Without a theme
-           it has the colour of the text, which can be read on any background. */
-        .error-message {
-            color: var(--el-color-danger, inherit);
-        }
-
         /* Touch screens: the control is at least --el-touch-target high. Without the token the sizes stay as they are. */
         @media (any-pointer: coarse) {
             select {
@@ -35,3 +30,5 @@ export default css`
         }
     }
 `;
+
+export default [hostStyle('el-select-field'), formControlStyle('el-select-field'), style].join('\n');

@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the textarea is at least `--el-touch-target` high, which matters for `rows="1"`, and the clear cross of an invalid field at least that wide and high (9 × 18 px before). Unchanged on a fine pointer and without the token.
+- The label, the help message, the textarea and the error message stack in a column with a gap of `--el-space-1` (4 px without a theme), as in `el-input-field`. Before, the label and the help message shared a line. The messages are set in `--el-font-size-sm` (14 px without a theme; they had the size of the text), the help message has the muted colour of the theme (`--el-color-fg-muted`) and the label its text colour (`--el-color-fg`); without a theme they keep the colour of the text. A help message without a text takes no room. ([#130](https://github.com/webtides/element-library/issues/130))
 
 <!-- ### Removed -->
 
@@ -32,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The error message is announced by screen readers: it is an alert (`role="alert"`), and the textarea names it in `aria-describedby` while it is shown. Before, nothing connected the message with the textarea. ([#94](https://github.com/webtides/element-library/issues/94))
 - The cross of a field that is not valid empties `value` as well, reports it with `input-change`, and `valid` follows the empty textarea. Before, only the textarea was emptied. See `form-field`. ([#115](https://github.com/webtides/element-library/issues/115))
 - The error message has the danger colour of the theme (`--el-color-danger`). It had the colour of the text and read like a help message, while the messages of an `el-input-field` on the same form were red. Without a theme it keeps the colour of the text, which is what every field does now. ([#128](https://github.com/webtides/element-library/issues/128))
+- The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
 
 ## [0.1.0] - 2026-06-03
 

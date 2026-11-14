@@ -1,25 +1,7 @@
-const css = String.raw;
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
 
-export default css`
-    el-form-field,
-    el-input-field,
-    el-password-field,
-    el-textarea-field,
-    el-select-field,
-    el-amount-field,
-    el-checkbox-field,
-    el-radio-field,
-    el-switch-field {
-        display: block;
-
-        > label {
-            display: block;
-            margin-bottom: var(--el-space-1, 0);
-            color: var(--el-color-fg, inherit);
-        }
-
-        > .help-message {
-            color: var(--el-color-fg-muted, inherit);
-        }
-    }
-`;
+// The stylesheet of el-form-field alone. A field that extends FormField brings a stylesheet of its
+// own, with the same layout module for its own tag. A rule here for the tag of another field would
+// reach that field only on a page that has an el-form-field as well, and would change it there.
+export default [hostStyle('el-form-field'), formControlStyle('el-form-field')].join('\n');

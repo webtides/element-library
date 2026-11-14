@@ -1,9 +1,10 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     el-switch-field {
-        display: block;
-
         .field > label {
             display: inline-flex;
             align-items: center;
@@ -83,18 +84,6 @@ export default css`
             opacity: 0.5;
         }
 
-        .message {
-            display: block;
-        }
-
-        .help-message {
-            color: var(--el-color-fg-muted, inherit);
-        }
-
-        .error-message {
-            color: var(--el-color-danger, inherit);
-        }
-
         /* Touch screens: the label is the hit area and at least --el-touch-target in both
            directions. Without the token the sizes stay as they are. */
         @media (any-pointer: coarse) {
@@ -105,3 +94,5 @@ export default css`
         }
     }
 `;
+
+export default [hostStyle('el-switch-field'), formControlStyle('el-switch-field'), style].join('\n');

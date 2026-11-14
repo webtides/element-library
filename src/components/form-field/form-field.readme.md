@@ -77,6 +77,21 @@ This component is headless by default and reads the library's `--el-*` design to
 
 The error message of every field has the danger colour of the theme (`--el-color-danger`). Without a theme it has the colour of the text, which can be read on any background: a red that the library picked could not be, on every page.
 
+#### Layout
+
+Every field that renders into the page has the same layout around its control, `el-form-field` itself included. It comes from one shared style module (`src/styles/form-control.style.js`), which each field composes for its own tag.
+
+- The label, the help message, the control and the error message stack in a column, with a gap of `--el-space-1` (4 px without a theme).
+- A help message without a text takes no room.
+- A label, and the legend of a radio group, has the text colour of the theme (`--el-color-fg`).
+- The messages are set in `--el-font-size-sm` (14 px without a theme). The help message has the muted colour of the theme (`--el-color-fg-muted`), the error message its danger colour.
+- Without a theme each of these texts has the colour of the text of the page.
+- The `hidden` attribute hides a field.
+
+A checkbox and a switch have their label beside the control, in its row, and the help message above that row. The column of a radio group is its `<fieldset>`.
+
+`el-amount-field` renders into a shadow root and has no messages. Its label is a part (`::part(label)`).
+
 #### Slots
 
 _None_ (Component uses template methods instead of slots)

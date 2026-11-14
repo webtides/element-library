@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high (42 px with the default theme before). Unchanged on a fine pointer and without the token.
+- The label, the help message, the select and the error message stack in a column with a gap of `--el-space-1` (4 px without a theme), as in `el-input-field`. Before, the label and the help message shared a line. The messages are set in `--el-font-size-sm` (14 px without a theme; they had the size of the text), the help message has the muted colour of the theme (`--el-color-fg-muted`) and the label its text colour (`--el-color-fg`); without a theme they keep the colour of the text. A help message without a text takes no room. ([#130](https://github.com/webtides/element-library/issues/130))
 
 ### Fixed
 
@@ -23,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The error message is announced by screen readers: it is an alert (`role="alert"`), and the select names it in `aria-describedby` while it is shown. Before, the select pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 - A decorated select shows its chevron wherever the theme is loaded. The theme showed the field's own chevron with a rule of the same weight as the rule of the field that hides it, so the later one won: with the theme in the stylesheet of the page and the styles of the field after it, the select had no chevron at all, the native one taken away and its own hidden. The field now follows a property that `styles/native.css` sets. ([#69](https://github.com/webtides/element-library/issues/69))
 - The error message has the danger colour of the theme (`--el-color-danger`). It had the colour of the text and read like a help message, while the messages of an `el-input-field` on the same form were red. Without a theme it keeps the colour of the text, which is what every field does now. ([#128](https://github.com/webtides/element-library/issues/128))
+- The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
 
 ## [0.1.0] - 2026-06-03
 
