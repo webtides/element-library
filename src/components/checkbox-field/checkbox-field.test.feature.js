@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { accessibleDescription, aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import {
+    accessibleDescription,
+    accessibleName,
+    aTimeout,
+    fixture,
+    nextFrame,
+    sizeOf,
+    useTouchScreen,
+} from '../../test-helpers.js';
 import { define } from './checkbox-field.js';
 define();
 
@@ -12,6 +20,32 @@ describe('Feature | CheckboxField', () => {
 
     describe('for a screen reader', () => {
         const describedBy = (el) => el.querySelector('input').getAttribute('aria-describedby').split(' ');
+
+        // The box with its check mark is inside the label. The mark is hidden from the eye while
+        // the checkbox is not checked, which does not take it out of the name.
+        it('is named by its label alone, checked and not checked', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <el-checkbox-field name="named-off" label="I agree to the terms"></el-checkbox-field>
+                    <el-checkbox-field name="named-on" label="Send me updates" checked="true"></el-checkbox-field>
+                </div>
+            `);
+            const [off, on] = wrapper.querySelectorAll('input');
+
+            expect(await accessibleName(off)).toBe('I agree to the terms');
+            expect(await accessibleName(on)).toBe('Send me updates');
+
+            off.click();
+            await nextFrame();
+            await nextFrame();
+            expect(off.checked).toBe(true);
+            expect(await accessibleName(off)).toBe('I agree to the terms');
+
+            // The mark is still what the eye sees in the box.
+            const mark = off.closest('el-checkbox-field').querySelector('.checked-indicator');
+            expect(mark.textContent.trim()).toBe('✓');
+            expect(getComputedStyle(mark.querySelector('.checked')).opacity).toBe('1');
+        });
 
         it('names its help message, and not itself', async () => {
             const el = await fixture(`

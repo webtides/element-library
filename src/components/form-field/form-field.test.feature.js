@@ -446,8 +446,7 @@ describe('Feature | FormField', () => {
                 const said = [];
                 for (const field of wrapper.querySelectorAll(tag)) {
                     said.push({
-                        // A checkbox has its check mark in front of its label, in its name as well.
-                        name: (await accessibleName(marked(field))).replace(/^✓ /, ''),
+                        name: await accessibleName(marked(field)),
                         description: await accessibleDescription(marked(field)),
                     });
                 }

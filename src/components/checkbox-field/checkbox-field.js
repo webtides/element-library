@@ -74,6 +74,11 @@ export default class CheckboxField extends FormField {
         `;
     }
 
+    /**
+     * The box with its check mark is inside the label, in front of the text. It is hidden from
+     * assistive technology: the checkbox itself says whether it is checked, and the mark would be
+     * part of its name, checked or not.
+     */
     fieldTemplate() {
         const classes = { 'is-checked': !!this.checked };
         return html`
@@ -90,7 +95,9 @@ export default class CheckboxField extends FormField {
                     ?checked="${this.checked}"
                     ?required="${this.required}"
                 />
-                <div class="checked-indicator ${classMap(classes)}">${this.selectedIndicatorTemplate()}</div>
+                <div class="checked-indicator ${classMap(classes)}" aria-hidden="true">
+                    ${this.selectedIndicatorTemplate()}
+                </div>
                 <div class="label">${this.label ? unsafeHTML(this.label) : ''}</div>
             </label>
         `;

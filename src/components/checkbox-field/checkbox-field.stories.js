@@ -26,7 +26,7 @@ export const CheckboxField = {
         },
     },
     decorators: [],
-    render: ({}) => html` <el-checkbox-field></el-checkbox-field> `,
+    render: ({}) => html` <el-checkbox-field name="terms" label="I agree to the terms"></el-checkbox-field> `,
 };
 
 export const WithHelpMessage = {

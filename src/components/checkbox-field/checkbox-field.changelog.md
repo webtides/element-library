@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
 - The checkbox says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 - A second field with the same `name` on the page is described by its own messages. Their ids are made per field, not from the name (BREAKING for a page that names `<name>-help-message` itself). See `form-field`. ([#133](https://github.com/webtides/element-library/issues/133))
+- The accessible name of the checkbox is its label alone. It started with the check mark of the box ("✓ I agree to the terms"), checked or not: the box is inside the label, and while the checkbox is not checked its mark is hidden from the eye only. The box is now hidden from assistive technology (`aria-hidden`); the checkbox itself says whether it is checked. ([#135](https://github.com/webtides/element-library/issues/135))
 
 ## [0.1.0] - 2026-06-03
 
