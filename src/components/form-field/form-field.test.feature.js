@@ -250,25 +250,34 @@ describe('Feature | FormField', () => {
     describe('with the texts around its control', () => {
         // el-form-field itself has the layout of the fields that extend it.
         const TAGS = ['el-form-field', ...Object.keys(FIELDS)];
-        // A checkbox and a switch have their label in the row of the control.
-        const rowsWithHelp = (tag) => (['el-checkbox-field', 'el-switch-field'].includes(tag) ? 3 : 4);
+        // The rows of a field with all its texts, in the order of reading. A checkbox and a switch
+        // have their label in the row of the control, so their help message follows that row: in
+        // front of it, it would explain a label that the reader has not seen yet.
+        const orderOf = (tag) =>
+            ['el-checkbox-field', 'el-switch-field'].includes(tag)
+                ? ['control', 'help', 'error']
+                : ['label', 'help', 'control', 'error'];
+        const rowsWithHelp = (tag) => orderOf(tag).length;
         const withTexts = (tag, name, help = 'help-message="Choose well"') =>
             `<${tag} name="${name}" label="Field" ${help} error-message="Not like this" valid="false" touched="true" ${FIELDS[tag] ?? ''}></${tag}>`;
 
         // The rows of the column that are rendered, from top to bottom. The column of a radio group
         // is its fieldset, and the row of its controls is the list of the options.
         const rowsOf = (field) =>
-            [
-                field.querySelector(':scope > label, legend'),
-                field.querySelector('.help-message'),
-                field.querySelector(field.localName === 'el-radio-field' ? '.options' : '.field'),
-                field.querySelector('.error-message'),
-            ].filter((row) => row?.getClientRects().length);
+            Object.entries({
+                label: field.querySelector(':scope > label, legend'),
+                help: field.querySelector('.help-message'),
+                control: field.querySelector(field.localName === 'el-radio-field' ? '.options' : '.field'),
+                error: field.querySelector('.error-message'),
+            })
+                .filter(([, element]) => element?.getClientRects().length)
+                .map(([name, element]) => ({ name, element, rect: element.getBoundingClientRect() }))
+                .sort((one, other) => one.rect.top - other.rect.top);
         const tenths = (value) => Math.round(value * 10) / 10;
         // The room above the first row and below the last one, and the gaps between the rows.
         const columnOf = (field) => {
             const host = field.getBoundingClientRect();
-            const rows = rowsOf(field).map((row) => row.getBoundingClientRect());
+            const rows = rowsOf(field).map((row) => row.rect);
             return {
                 rows: rows.length,
                 above: tenths(rows[0].top - host.top),
@@ -311,6 +320,18 @@ describe('Feature | FormField', () => {
 
                 expect(columnOf(themed)).toEqual(column(rowsWithHelp(tag), 6));
                 expect(columnOf(plain)).toEqual(column(rowsWithHelp(tag), 4));
+            });
+
+            it(`has them in the order of reading, on the screen and in the document, in ${tag}`, async () => {
+                const el = await fixture(withTexts(tag, `order-${tag}`));
+                await frames();
+                const rows = rowsOf(el);
+                const inDocument = [...rows].sort((one, other) =>
+                    one.element.compareDocumentPosition(other.element) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+                );
+
+                expect(rows.map((row) => row.name)).toEqual(orderOf(tag));
+                expect(inDocument.map((row) => row.name)).toEqual(orderOf(tag));
             });
 
             it(`leaves no gap for a help message without a text, in ${tag}`, async () => {

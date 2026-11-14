@@ -28,7 +28,8 @@ import style from './form-field.style.js';
  *   still announced to screen readers (via an `sr-only` class).
  * @property {string} errorMessage - Error message displayed when the field is invalid and has
  *   been touched.
- * @property {string} helpMessage - Helper text displayed below the field.
+ * @property {string} helpMessage - Helper text. Displayed between the label and the control; a
+ *   checkbox and a switch display it below the control and its label.
  * @property {boolean} valid - Whether the field currently passes validation.
  * @property {boolean} touched - Whether the user has interacted with the field (focused and
  *   blurred), or the browser has refused a submit because of it. Validation messages only surface

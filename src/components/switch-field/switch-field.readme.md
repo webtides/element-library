@@ -52,7 +52,7 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 Headless by default; reads the library's `--el-*` design tokens (`--el-color-accent`, `--el-color-border`, `--el-color-bg`, `--el-space-2`, `--el-border-width`, `--el-focus-ring-width`, `--el-duration-md`, `--el-ease`, `--el-color-fg`, `--el-color-fg-muted`, `--el-color-danger`, `--el-font-size-sm`). Skin it via a theme — see the Storybook _Docs / Theming_ page.
 
-The label, the help message, the control and the error message stack in a column, and the texts have one look in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`.
+The switch with its label, the help message and the error message stack in a column, in that order, and the texts have the look they have in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`.
 
 On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the switch, is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
 
@@ -60,4 +60,5 @@ On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit a
 
 - The native control is a `<input type="checkbox" role="switch">`, so it is announced as a switch with an on/off state and is keyboard-operable (Space toggles).
 - The native input stays in the accessibility tree and focusable; it is only hidden visually, with keyboard focus reflected onto the custom track via `:focus-visible`.
+- The switch names its help message in `aria-describedby`: a screen reader reads it when the switch gets focus.
 - The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the switch while it is shown: a screen reader announces it when it appears and reads it again when the switch gets focus.

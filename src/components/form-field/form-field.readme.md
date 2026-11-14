@@ -42,7 +42,7 @@ This component is typically used as a base class for other form field components
 | `label` | `string` | `''` | The label text displayed for the field. |
 | `labelScreenReaderOnly` | `boolean` | `false` | Whether to hide the label visually (but keep it accessible to screen readers). |
 | `errorMessage` | `string` | `''` | Error message to display when validation fails and field is touched. Rendered as an alert (`role="alert"`), so screen readers announce it. |
-| `helpMessage` | `string` | `''` | Helper text to display below the field. |
+| `helpMessage` | `string` | `''` | Helper text. Displayed between the label and the control; a checkbox and a switch display it below the control and its label. |
 | `valid` | `boolean` | `true` | Whether the field passes validation. |
 | `touched` | `boolean` | `false` | Whether the field has been interacted with (focused and blurred), or the browser has refused a submit because of it. |
 
@@ -88,7 +88,7 @@ Every field that renders into the page has the same layout around its control, `
 - Without a theme each of these texts has the colour of the text of the page.
 - The `hidden` attribute hides a field.
 
-A checkbox and a switch have their label beside the control, in its row, and the help message above that row. The column of a radio group is its `<fieldset>`.
+A checkbox and a switch have their label beside the control, in its row, and none above it. Their help message explains that label, so it follows the row, and the error message follows the help message. The column of a radio group is its `<fieldset>`.
 
 `el-amount-field` renders into a shadow root and has no messages. Its label is a part (`::part(label)`).
 

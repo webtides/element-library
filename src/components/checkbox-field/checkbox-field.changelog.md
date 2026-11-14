@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Before, it was as high as its line of text. Unchanged on a fine pointer and without the token.
 - The help message, the checkbox with its label and the error message stack in a column with a gap of `--el-space-1` (4 px without a theme; they had no gap). The messages are set in `--el-font-size-sm` (14 px without a theme; they had the size of the text), and the help message has the muted colour of the theme (`--el-color-fg-muted`), as in every field now; without a theme it keeps the colour of the text. A help message without a text takes no room. ([#130](https://github.com/webtides/element-library/issues/130))
+- The help message stands below the checkbox and its label, and the error message below the help message. It was the first thing of the field, above the label it explains. What a screen reader reads is unchanged: the checkbox names both messages in `aria-describedby`. ([#132](https://github.com/webtides/element-library/issues/132))
 
 ### Fixed
 

@@ -28,3 +28,21 @@ export const CheckboxField = {
     decorators: [],
     render: ({}) => html` <el-checkbox-field></el-checkbox-field> `,
 };
+
+export const WithHelpMessage = {
+    name: 'With a help message',
+    parameters: {
+        docs: {
+            description: {
+                story: 'The label is next to the box, so the help message stands below the two, and the error message below that.',
+            },
+        },
+    },
+    render: () => html`
+        <el-checkbox-field
+            name="updates"
+            label="Send me product updates"
+            help-message="About once a month."
+        ></el-checkbox-field>
+    `,
+};

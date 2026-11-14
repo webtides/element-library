@@ -67,12 +67,14 @@ export default class CheckboxField extends FormField {
     }
 
     /**
-     * The checkbox renders its label inline next to the box (see `fieldTemplate`), so the base
-     * FormField label is suppressed.
-     * @returns {null}
+     * The checkbox has its label next to the box, in the row of the control (see `fieldTemplate`),
+     * and none in front of it. The help message explains that label, so it comes after the row.
      */
-    labelTemplate() {
-        return null;
+    template() {
+        return html`
+            <div class="field ${this.classes().field}">${this.fieldTemplate()}</div>
+            ${this.helpTemplate()} ${this.errorTemplate()}
+        `;
     }
 
     fieldTemplate() {

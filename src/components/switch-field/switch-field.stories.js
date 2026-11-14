@@ -90,3 +90,21 @@ export const On = {
         ></el-switch-field>
     `,
 };
+
+export const WithHelpMessage = {
+    name: 'With a help message',
+    parameters: {
+        docs: {
+            description: {
+                story: 'The label is next to the switch, so the help message stands below the two, and the error message below that.',
+            },
+        },
+    },
+    render: () => html`
+        <el-switch-field
+            name="updates"
+            label="Email me product updates"
+            help-message="About once a month."
+        ></el-switch-field>
+    `,
+};

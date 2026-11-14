@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { aTimeout, fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import {
+    accessibleDescription,
+    aTimeout,
+    fixture,
+    nextFrame,
+    oneEvent,
+    sizeOf,
+    useTouchScreen,
+} from '../../test-helpers.js';
 import { define } from './switch-field.js';
 define();
 
@@ -47,6 +55,17 @@ describe('Feature | SwitchField', () => {
     it('reflects the disabled state onto the native input', async () => {
         const el = await switchFixture('disabled="true"');
         expect(el.querySelector('input').disabled).toBe(true);
+    });
+
+    it('names its help message, which a screen reader reads with the switch', async () => {
+        // A name of its own: the id of the message is made from the name of the field.
+        const el = await fixture(`
+            <el-switch-field name="described-help" label="Updates" help-message="About once a month"></el-switch-field>
+        `);
+        const input = el.querySelector('input');
+
+        expect(input.getAttribute('aria-describedby')).toBe(el.querySelector('.help-message').id);
+        expect(await accessibleDescription(input)).toBe('About once a month');
     });
 
     it('has no detectable a11y violations', async () => {

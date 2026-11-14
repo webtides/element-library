@@ -36,7 +36,7 @@ import '@webtides/element-library/checkbox-field/define';
 | `valid` | `boolean` | `true` | Whether the checkbox passes validation. |
 | `touched` | `boolean` | `false` | Whether the checkbox has been interacted with. |
 | `errorMessage` | `string` | `''` | Error message to display when validation fails. |
-| `helpMessage` | `string` | `''` | Helper text to display below the checkbox. |
+| `helpMessage` | `string` | `''` | Helper text, displayed below the checkbox and its label. |
 | `labelScreenReaderOnly` | `boolean` | `false` | Whether to hide the label visually (but keep it accessible to screen readers). |
 
 #### Methods
@@ -61,7 +61,7 @@ Also inherits the `valid` / `invalid` / `touched` states from [`form-field`](../
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-border`, `--el-radius-sm`, `--el-focus-ring-width`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
-The label, the help message, the control and the error message stack in a column, and the texts have one look in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`. The error message has the danger colour of the theme (`--el-color-danger`); without a theme it has the colour of the text.
+The checkbox with its label, the help message and the error message stack in a column, in that order, and the texts have the look they have in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`. The error message has the danger colour of the theme (`--el-color-danger`); without a theme it has the colour of the text.
 
 On a touch screen (`@media (any-pointer: coarse)`) the label, which is the hit area of the checkbox, is at least `--el-touch-target` wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
 

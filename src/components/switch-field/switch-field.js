@@ -68,12 +68,14 @@ export default class SwitchField extends FormField {
     }
 
     /**
-     * The switch renders its label inline next to the track (see `fieldTemplate`), so the base
-     * FormField label is suppressed.
-     * @returns {null}
+     * The switch has its label next to the track, in the row of the control (see `fieldTemplate`),
+     * and none in front of it. The help message explains that label, so it comes after the row.
      */
-    labelTemplate() {
-        return null;
+    template() {
+        return html`
+            <div class="field ${this.classes().field}">${this.fieldTemplate()}</div>
+            ${this.helpTemplate()} ${this.errorTemplate()}
+        `;
     }
 
     fieldTemplate() {

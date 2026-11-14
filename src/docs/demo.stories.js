@@ -799,6 +799,7 @@ export const Page = {
                                 name="updates"
                                 checked="true"
                                 label="Email me occasional product updates"
+                                help-message="About once a month."
                             ></el-switch-field>
                         </div>
 
