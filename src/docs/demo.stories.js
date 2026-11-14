@@ -139,6 +139,14 @@ const kit = [
     { tag: 'el-input-field', category: 'Forms', blurb: 'A text input with a label, a help text and an error.' },
     { tag: 'el-select-field', category: 'Forms', blurb: 'A native select with the look of the theme.' },
     { tag: 'el-switch-field', category: 'Forms', blurb: 'A checkbox that reads as on or off.' },
+    { tag: 'el-range-field', category: 'Forms', blurb: 'A number from a span, picked with a thumb.', fresh: true },
+    {
+        tag: 'el-checkbox-group-field',
+        category: 'Forms',
+        blurb: 'Any number of options from a short list.',
+        fresh: true,
+    },
+    { tag: 'el-rating-field', category: 'Forms', blurb: 'A rating from one to five stars.', fresh: true },
     { tag: 'el-dialog', category: 'Overlays', blurb: 'A modal on the native dialog: focus, backdrop and Escape.' },
     { tag: 'el-drawer', category: 'Overlays', blurb: 'A panel that slides in from an edge of the viewport.' },
     { tag: 'el-popover', category: 'Overlays', blurb: 'A panel that floats next to its anchor.' },
@@ -793,6 +801,19 @@ export const Page = {
                         </div>
 
                         <div class="sm:col-span-2">
+                            <el-range-field
+                                name="coverage"
+                                label="How much of your product should the kit cover?"
+                                min="0"
+                                max="100"
+                                step="10"
+                                value="50"
+                                show-value="true"
+                                help-message="In percent of its screens."
+                            ></el-range-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <el-textarea-field
                                 name="context"
                                 label="What are you building?"
@@ -808,6 +829,30 @@ export const Page = {
                                 label="Email me occasional product updates"
                                 help-message="About once a month."
                             ></el-switch-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <el-checkbox-group-field
+                                name="topics"
+                                label="What should we write to you about?"
+                                required="true"
+                                help-message="Pick as many as you like."
+                                error-message="Please pick at least one topic."
+                                .value="${['releases']}"
+                                .options="${[
+                                    { value: 'releases', label: 'Releases' },
+                                    { value: 'tokens', label: 'New tokens and themes' },
+                                    { value: 'events', label: 'Workshops and events' },
+                                ]}"
+                            ></el-checkbox-group-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <el-rating-field
+                                name="docs"
+                                label="How do you like the documentation so far?"
+                                help-message="One star is poor, five are great. You can leave it out."
+                            ></el-rating-field>
                         </div>
 
                         <div class="sm:col-span-2">
