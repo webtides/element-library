@@ -78,6 +78,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | pagination         | The way through a list that is split into pages, with a button per page       | `0.1.0` |
 | password-field     | A masked password input with an optional show/hide reveal toggle              | `0.1.0` |
 | popover            | A panel that floats next to an anchor, built on the native popover            | `0.1.0` |
+| progress-bar       | A track that fills with the progress of a task, with or without a value       | `0.1.0` |
 | radio-field        | A single-choice radio group built on a native fieldset                        | `0.1.0` |
 | scroll-to          |                                                                               | `0.1.0` |
 | scroll-to-top      |                                                                               | `0.1.0` |
@@ -104,7 +105,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | horizontal-scroll    |                                                 | TBD  |
 | load-more            | show/load more                                  | TBD  |
 | show-hide            |                                                 | TBD  |
-| progress-bar         |                                                 | TBD  |
 | star-rating          |                                                 | TBD  |
 | hover-indicator      |                                                 | TBD  |
 | pinch-zoom           |                                                 | TBD  |
