@@ -12,6 +12,7 @@ import { define as defineSwitchField } from '../switch-field/switch-field.js';
 import { define as defineRadioField } from '../radio-field/radio-field.js';
 import { define as defineRangeField } from '../range-field/range-field.js';
 import { define as defineCheckboxGroupField } from '../checkbox-group-field/checkbox-group-field.js';
+import { define as defineRatingField } from '../rating-field/rating-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -25,6 +26,7 @@ defineSwitchField();
 defineRadioField();
 defineRangeField();
 defineCheckboxGroupField();
+defineRatingField();
 
 const frames = async () => {
     await nextFrame();
@@ -48,13 +50,15 @@ const FIELDS = {
     'el-radio-field': `options='["free", "pro"]' required="true"`,
     'el-range-field': '',
     'el-checkbox-group-field': `options='["news", "offers"]' required="true"`,
+    'el-rating-field': `required="true"`,
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
-const GROUPS = ['el-radio-field', 'el-checkbox-group-field'];
+const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
 // The same groups with a choice, which makes them valid.
 const CHOSEN = {
     'el-radio-field': `options='["free", "pro"]' required="true" value="free"`,
     'el-checkbox-group-field': `options='["news", "offers"]' required="true" value='["news"]'`,
+    'el-rating-field': `required="true" value="3"`,
 };
 
 const THEMES = [
@@ -115,6 +119,7 @@ describe('Feature | FormField', () => {
             switch: 'Give your consent',
             radio: 'Choose a plan',
             checkboxes: 'Pick a topic',
+            rating: 'Rate it',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -127,6 +132,7 @@ describe('Feature | FormField', () => {
                     <el-switch-field name="${prefix}-switch" label="Consent" required="true" error-message="${MESSAGES.switch}"></el-switch-field>
                     <el-radio-field name="${prefix}-radio" label="Plan" required="true" options='["free", "pro"]' error-message="${MESSAGES.radio}"></el-radio-field>
                     <el-checkbox-group-field name="${prefix}-checkboxes" label="Topics" required="true" options='["news", "offers"]' error-message="${MESSAGES.checkboxes}"></el-checkbox-group-field>
+                    <el-rating-field name="${prefix}-rating" label="Rating" required="true" error-message="${MESSAGES.rating}"></el-rating-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -199,6 +205,7 @@ describe('Feature | FormField', () => {
                 switch: 'input',
                 radio: 'fieldset',
                 checkboxes: 'fieldset',
+                rating: 'fieldset',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');

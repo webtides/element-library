@@ -1,5 +1,6 @@
 import { html, defineElement } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
+import { focusLeft } from '../../utils/focus.js';
 import style from './checkbox-group-field.style.js';
 
 /**
@@ -78,7 +79,9 @@ export default class CheckboxGroupField extends FormField {
                     this.valid = this._computeValid();
                 },
                 focus: () => this.onFocus(),
-                blur: (event) => this._onBoxBlur(event),
+                // The group is touched once the user has left it, not while the focus moves from
+                // one of its checkboxes to the next.
+                blur: (event) => focusLeft(this, event) && this.onBlur(),
                 invalid: (event) => this._onInvalid(event.target),
             },
         };
@@ -145,19 +148,6 @@ export default class CheckboxGroupField extends FormField {
     onBlur() {
         this.touched = true;
         this.valid = this._computeValid();
-    }
-
-    /**
-     * A checkbox of the group lost the focus. The group is touched once the user has left it, not
-     * while the focus moves from one of its checkboxes to the next: the message "pick at least one"
-     * would show before the user had the chance to. While a pointer is pressed inside the group the
-     * focus is on its way to another option, where a click on the label puts it.
-     * @private
-     * @param {FocusEvent} event
-     */
-    _onBoxBlur(event) {
-        if (this.contains(event.relatedTarget) || this.matches(':active')) return;
-        this.onBlur();
     }
 
     /**

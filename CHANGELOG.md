@@ -223,6 +223,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: `el-range-field`, a new component: a number from a span, picked with a thumb on a track. A native `<input type="range">` with the label, the help message, the error message and the layout of every field; it is submitted with its form by the control. `min`, `max` and `step` are the span. A field without a `value` takes over the value of the control, the middle of the span, so `value` says what the form submits; `value` follows the thumb while it moves, and `input-change` reports every value once. `show-value` shows the value beside the control. The control keeps the look of the browser; with `styles/native.css` it is as wide as the field and has the accent colour of the theme. ([#136](https://github.com/webtides/element-library/issues/136))
 
+### rating-field
+
+- Added: `el-rating-field`, a new component: a rating as a number from 1 to `max`, drawn as a row of stars. A native `<fieldset>`/`<legend>` wrapping one `<input type="radio">` per step, with the label, the help message, the error message and the layout of every field; grouping, arrow keys and form submission are native. The stars up to the chosen one are filled, the others are an outline, and with a mouse the stars up to the one under the pointer are shown as on before the click. `--el-rating-color` and `--el-rating-size` set the colour of a filled star and the size of a star. Every radio is named by its number, which needs no translation. ([#138](https://github.com/webtides/element-library/issues/138))
+
 ### select-field
 
 - Changed: on a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high (42 px with the default theme before). Unchanged on a fine pointer and without the token.

@@ -84,6 +84,7 @@ element-library/
 - **progress-bar**: Track that fills with the progress of a task, or moves while the progress is not known
 - **progress-ring**: Ring that closes with the progress of a task, with room for a short text in its middle
 - **range-field**: Number from a span, picked with the thumb of a native `<input type="range">`
+- **rating-field**: Rating from 1 to `max` as a row of stars: a native radio group in a `<fieldset>`
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
 - **skeleton**: Shape in the place of content that is still loading

@@ -28,6 +28,7 @@ import './src/components/progress-bar/progress-bar.define.js';
 import './src/components/progress-ring/progress-ring.define.js';
 import './src/components/radio-field/radio-field.define.js';
 import './src/components/range-field/range-field.define.js';
+import './src/components/rating-field/rating-field.define.js';
 import './src/components/scroll-to/scroll-to.define.js';
 import './src/components/scroll-to-top/scroll-to-top.define.js';
 import './src/components/select-field/select-field.define.js';
