@@ -4,8 +4,8 @@
  * Opt-in stylesheet that gives the native control of a field the look of the
  * design tokens: border, radius, padding, colours, focus ring. It reaches the
  * input of el-input-field and el-password-field, the textarea of
- * el-textarea-field and the select of el-select-field. Import it together
- * with a theme, which sets the tokens:
+ * el-textarea-field, the select of el-select-field and the range of
+ * el-range-field. Import it together with a theme, which sets the tokens:
  *
  *     import '@webtides/element-library/themes/default.css';
  *     import '@webtides/element-library/styles/native.css';
@@ -80,6 +80,24 @@ el-password-field:state(invalid) input,
 el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {
   border-color: var(--el-color-danger);
+}
+
+/*
+ * A range has no border and no padding to decorate. It is as wide as its
+ * field and has the accent colour of the theme, on the track and the thumb the
+ * browser draws.
+ */
+el-range-field input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--el-color-accent);
+}
+
+el-range-field input:focus-visible {
+  outline: var(--el-focus-ring-width) solid var(--el-color-focus-ring);
+  outline-offset: var(--el-focus-ring-offset);
 }
 
 /*

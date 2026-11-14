@@ -82,6 +82,7 @@ element-library/
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **progress-bar**: Track that fills with the progress of a task, or moves while the progress is not known
 - **progress-ring**: Ring that closes with the progress of a task, with room for a short text in its middle
+- **range-field**: Number from a span, picked with the thumb of a native `<input type="range">`
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
 - **skeleton**: Shape in the place of content that is still loading
@@ -193,7 +194,7 @@ Rules:
 
 Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
 
-- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field.
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
 - **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
 - **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
 

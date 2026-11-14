@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vite-plus/test';
-import { fixture, nextFrame, sizeOf, useTouchScreen } from '../test-helpers.js';
+import { fixture, forcePseudoClasses, nextFrame, sizeOf, useTouchScreen } from '../test-helpers.js';
 import theme from '../themes/default.css?raw';
 import native from './native.css?raw';
 import { define as defineInputField } from '../components/input-field/input-field.js';
@@ -7,11 +7,13 @@ import { define as definePasswordField } from '../components/password-field/pass
 import { define as defineTextareaField } from '../components/textarea-field/textarea-field.js';
 import { define as defineSelectField } from '../components/select-field/select-field.js';
 import { define as defineAmountField } from '../components/amount-field/amount-field.js';
+import { define as defineRangeField } from '../components/range-field/range-field.js';
 defineInputField();
 definePasswordField();
 defineTextareaField();
 defineSelectField();
 defineAmountField();
+defineRangeField();
 
 /** Loads stylesheets into the page for the tests of the surrounding `describe`. */
 function useStyles(...sheets) {
@@ -197,6 +199,128 @@ describe('Feature | Styles | native.css', () => {
                 own.remove();
                 themeStyle.remove();
             }
+        });
+    });
+
+    // A range has no border and no padding to decorate: the file makes it as wide as its field and
+    // gives it the accent colour of the theme.
+    describe('the range of el-range-field', () => {
+        const RANGES = `
+            <input type="range" />
+            <el-range-field name="native-range" label="Volume"></el-range-field>
+            <el-range-field name="native-range-shown" label="Width" show-value="true"></el-range-field>
+        `;
+        const inPage = (markup) => fixture(`<div style="color-scheme: light; width: 320px">${markup}</div>`);
+        const lookOfRange = (control) => {
+            const { accentColor, marginLeft, marginTop } = getComputedStyle(control);
+            return { accentColor, marginLeft, marginTop, width: sizeOf(control).width };
+        };
+
+        describe('with a theme alone', () => {
+            useStyles(theme);
+
+            it('keeps the look and the size of the browser', async () => {
+                const wrapper = await inPage(RANGES);
+                const [plain, ...inFields] = wrapper.querySelectorAll('input');
+
+                expect(lookOfRange(plain).accentColor).toBe('auto');
+                for (const control of inFields) expect(lookOfRange(control)).toEqual(lookOfRange(plain));
+            });
+        });
+
+        describe('with a theme and native.css', () => {
+            useStyles(theme, native);
+
+            it('is as wide as its field and has the accent colour of the theme', async () => {
+                const wrapper = await inPage(RANGES);
+                await nextFrame();
+                const [plain, alone, withValue] = wrapper.querySelectorAll('input');
+                const value = wrapper.querySelector('.value');
+
+                expect(lookOfRange(alone)).toEqual({
+                    accentColor: 'rgb(37, 99, 235)',
+                    marginLeft: '0px',
+                    marginTop: '0px',
+                    width: 320,
+                });
+                // Beside the shown value: the two and the gap of the row fill the field.
+                expect(lookOfRange(withValue).accentColor).toBe('rgb(37, 99, 235)');
+                expect(sizeOf(withValue).width + 8 + sizeOf(value).width).toBeCloseTo(320, 0);
+                expect(sizeOf(value).width).toBeGreaterThan(0);
+                // A range of the page that is in no field is left alone.
+                expect(lookOfRange(plain).accentColor).toBe('auto');
+                expect(lookOfRange(plain).width).toBeLessThan(320);
+            });
+
+            it('shows keyboard focus with the ring of the theme', async () => {
+                const wrapper = await inPage(RANGES);
+                const control = wrapper.querySelector('el-range-field input');
+
+                await forcePseudoClasses(control, ['focus-visible']);
+
+                const { outlineStyle, outlineWidth, outlineColor, outlineOffset } = getComputedStyle(control);
+                expect({ outlineStyle, outlineWidth, outlineColor, outlineOffset }).toEqual({
+                    outlineStyle: 'solid',
+                    outlineWidth: '2px',
+                    outlineColor: 'rgb(37, 99, 235)',
+                    outlineOffset: '2px',
+                });
+            });
+
+            it('keeps the look when the page has a reset', async () => {
+                const reset = document.createElement('style');
+                reset.textContent = `
+                    *, ::before, ::after { border-width: 0; border-style: solid; border-color: rgb(229, 231, 235); }
+                    button, input, optgroup, select, textarea { padding: 0; margin: 0; font-size: 100%; color: inherit; }
+                `;
+                document.head.append(reset);
+                try {
+                    const wrapper = await inPage(RANGES);
+                    const control = wrapper.querySelector('el-range-field input');
+                    expect(lookOfRange(control).accentColor).toBe('rgb(37, 99, 235)');
+                    expect(lookOfRange(control).width).toBe(320);
+                } finally {
+                    reset.remove();
+                }
+            });
+        });
+
+        describe('on a touch screen', () => {
+            useTouchScreen();
+
+            // Both orders: the stylesheets in front of the styles of the field, and after them.
+            it('is at least --el-touch-target high, whichever stylesheet comes later', async () => {
+                const heights = [];
+                const styles = [theme, native].map((text) => {
+                    const style = document.createElement('style');
+                    style.textContent = text;
+                    return style;
+                });
+                document.head.prepend(...styles);
+                try {
+                    const wrapper = await inPage(RANGES);
+                    heights.push(sizeOf(wrapper.querySelector('el-range-field input')).height);
+                } finally {
+                    for (const style of styles) style.remove();
+                }
+
+                const sheets = [theme, native].map((text) => {
+                    const sheet = new CSSStyleSheet();
+                    sheet.replaceSync(text);
+                    return sheet;
+                });
+                const before = document.adoptedStyleSheets;
+                document.adoptedStyleSheets = [...before, ...sheets];
+                try {
+                    const wrapper = await inPage(RANGES);
+                    heights.push(sizeOf(wrapper.querySelector('el-range-field input')).height);
+                } finally {
+                    document.adoptedStyleSheets = before;
+                }
+
+                // --el-touch-target of the default theme is 2.75rem
+                expect(heights).toEqual([44, 44]);
+            });
         });
     });
 

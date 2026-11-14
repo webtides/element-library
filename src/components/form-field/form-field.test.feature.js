@@ -10,6 +10,7 @@ import { define as defineSelectField } from '../select-field/select-field.js';
 import { define as defineCheckboxField } from '../checkbox-field/checkbox-field.js';
 import { define as defineSwitchField } from '../switch-field/switch-field.js';
 import { define as defineRadioField } from '../radio-field/radio-field.js';
+import { define as defineRangeField } from '../range-field/range-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -21,6 +22,7 @@ defineSelectField();
 defineCheckboxField();
 defineSwitchField();
 defineRadioField();
+defineRangeField();
 
 const frames = async () => {
     await nextFrame();
@@ -42,6 +44,7 @@ const FIELDS = {
     'el-checkbox-field': '',
     'el-switch-field': '',
     'el-radio-field': `options='["free", "pro"]' required="true"`,
+    'el-range-field': '',
 };
 
 const THEMES = [
@@ -515,15 +518,15 @@ describe('Feature | FormField', () => {
                 );
                 await frames();
                 const messages = [...wrapper.querySelectorAll('.error-message')];
-                expect(messages).toHaveLength(7);
-                // All seven have the colour of the theme, which is not the colour of the text.
+                expect(messages).toHaveLength(Object.keys(FIELDS).length);
+                // All of them have the colour of the theme, which is not the colour of the text.
                 expect(new Set(messages.map((message) => getComputedStyle(message).color)).size).toBe(1);
                 expect(getComputedStyle(messages[0]).color).not.toBe(getComputedStyle(wrapper).color);
 
                 const results = await axe.run({ include: messages }, { runOnly: ['color-contrast'] });
 
                 expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual([]);
-                expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(7);
+                expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(Object.keys(FIELDS).length);
             });
         });
     });
