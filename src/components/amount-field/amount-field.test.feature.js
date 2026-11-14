@@ -29,6 +29,27 @@ describe('Feature | AmountField', () => {
         expect(el.shadowRoot.querySelector('label')).toBeNull();
     });
 
+    // The form field takes its value as text. This one counts.
+    it('takes its value as a number, from the attribute as well, and counts on from it', async () => {
+        const el = await fixture(`<el-amount-field name="quantity" label="Quantity" value="3"></el-amount-field>`);
+        const input = el.shadowRoot.querySelector('[part="input"]');
+        expect(el.value).toBe(3);
+
+        el.shadowRoot.querySelector('[part~="plus"]').click();
+        await nextFrame();
+        await nextFrame();
+        expect(el.value).toBe(4);
+        expect(input.value).toBe('4');
+
+        el.setAttribute('value', '1.50');
+        await nextFrame();
+        await nextFrame();
+        el.shadowRoot.querySelector('[part~="minus"]').click();
+        await nextFrame();
+        await nextFrame();
+        expect(el.value).toBe(0.5);
+    });
+
     it('keeps the width of its buttons on a fine pointer', async () => {
         const wrapper = await fixture(`
             <div style="--el-touch-target: 44px"><el-amount-field name="quantity"></el-amount-field></div>

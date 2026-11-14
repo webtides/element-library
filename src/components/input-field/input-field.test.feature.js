@@ -189,6 +189,25 @@ describe('Feature | InputField', () => {
         expect(textEntryOn(serverInput)).toEqual({ ...TEXT_ENTRY, enterkeyhint: 'go' });
     });
 
+    // The SSR renderer parses the attributes itself (0.4.0) and renders "1.50" as the number 1.5.
+    // The element takes the attribute as text and corrects the input when it starts.
+    it('puts the text of its value attribute into server-rendered markup that has the parsed number', async () => {
+        const wrapper = document.createElement('div');
+        document.body.append(wrapper);
+        wrapper.setHTMLUnsafe(
+            `<el-input-field name="ssr-price" value="1.50">${serverMarkup({ name: 'ssr-price', value: 1.5 })}</el-input-field>`,
+        );
+        const el = wrapper.querySelector('el-input-field');
+        const serverInput = el.querySelector('input');
+        expect(serverInput.value).toBe('1.5');
+        await nextFrame();
+        await nextFrame();
+
+        expect(el.querySelector('input')).toBe(serverInput);
+        expect(serverInput.value).toBe('1.50');
+        expect(el.value).toBe('1.50');
+    });
+
     describe('with the cross of a field that is not valid', () => {
         // Text that is no address, typed with real keys. Once the field was left it is touched and
         // not valid, and renders the cross.

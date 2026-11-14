@@ -36,7 +36,7 @@ This component is typically used as a base class for other form field components
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `name` | `string` | `''` | The name attribute for the form field. |
-| `value` | `string` | `null` | The current value of the form field. |
+| `value` | `string` | `null` | The current value of the form field. It is text: the attribute is taken as it is written, `value="1.50"` stays `1.50`. `el-amount-field` takes a number. |
 | `required` | `boolean` | `false` | Whether the field is required for form submission. |
 | `disabled` | `boolean` | `false` | Whether the field is disabled. |
 | `label` | `string` | `''` | The label text displayed for the field. |
@@ -119,4 +119,5 @@ That state is not an empty one: `<el-input-field value="Ada">` shows "Ada" again
 What does not work yet:
 
 - `el-amount-field` renders its input in a shadow root. It is not submitted, and `required` has no effect on the form.
+- Server-rendered markup: `@webtides/element-js-ssr-renderer` (0.4.0) parses the `value` attribute itself. A value that reads as a number is rendered as that number, `1.50` as `1.5`, and a select does not find its option, until the element starts in the browser and puts the text back.
 - `el-button type="submit"`: its `name` and `value` are not submitted, and Enter in a field does not submit the form.

@@ -207,6 +207,74 @@ describe('Feature | FormField', () => {
         });
     });
 
+    describe('with a value attribute that reads as a number or as JSON', () => {
+        // element-js parses an attribute before it becomes a property: these would arrive as 1.5,
+        // as a number without its last digits, as 1000, as an array, an object, and so on.
+        const VALUES = ['1.50', '12345678901234567890', '1e3', '[1]', '{"a":1}', '007', 'true', 'null'];
+        const data = (form) => Object.fromEntries(new FormData(form));
+
+        for (const tag of ['el-input-field', 'el-password-field', 'el-textarea-field']) {
+            it(`shows and submits the text as it is, in ${tag}`, async () => {
+                const form = await fixture(
+                    `<form>${VALUES.map((value, index) => `<${tag} name="text-${tag}-${index}" value='${value}'></${tag}>`).join('')}</form>`,
+                );
+                const fields = [...form.children];
+
+                expect(fields.map((field) => field.querySelector('input, textarea').value)).toEqual(VALUES);
+                expect(fields.map((field) => field.value)).toEqual(VALUES);
+                expect(Object.values(data(form))).toEqual(VALUES);
+            });
+        }
+
+        it('takes a value attribute that is set later as text as well', async () => {
+            const el = await fixture(`<el-input-field name="text-later" value="first"></el-input-field>`);
+
+            el.setAttribute('value', '2.50');
+            await frames();
+
+            expect(el.value).toBe('2.50');
+            expect(el.querySelector('input').value).toBe('2.50');
+        });
+
+        it('selects the option whose value is that text, in el-select-field and el-radio-field', async () => {
+            const price = `value="1.50" options='["0.50", "1.50", "2.50"]'`;
+            const id = `value="12345678901234567890" options='["1", "12345678901234567890"]'`;
+            const form = await fixture(`
+                <form>
+                    <el-select-field name="text-select-price" label="Price" ${price}></el-select-field>
+                    <el-select-field name="text-select-id" label="Id" ${id}></el-select-field>
+                    <el-radio-field name="text-radio-price" label="Price" ${price}></el-radio-field>
+                    <el-radio-field name="text-radio-id" label="Id" ${id}></el-radio-field>
+                </form>
+            `);
+            await frames();
+
+            expect(data(form)).toEqual({
+                'text-select-price': '1.50',
+                'text-select-id': '12345678901234567890',
+                'text-radio-price': '1.50',
+                'text-radio-id': '12345678901234567890',
+            });
+            expect([...form.children].map((field) => field.value)).toEqual([
+                '1.50',
+                '12345678901234567890',
+                '1.50',
+                '12345678901234567890',
+            ]);
+        });
+
+        it('submits that text while it is checked, in el-checkbox-field and el-switch-field', async () => {
+            const form = await fixture(`
+                <form>
+                    <el-checkbox-field name="text-checkbox" label="Price" value="1.50" checked="true"></el-checkbox-field>
+                    <el-switch-field name="text-switch" label="Price" value="1.50" checked="true"></el-switch-field>
+                </form>
+            `);
+
+            expect(data(form)).toEqual({ 'text-checkbox': '1.50', 'text-switch': '1.50' });
+        });
+    });
+
     // Every field has a test of its own for what it goes back to. Here: what they share.
     describe('when the form is reset', () => {
         const filledForm = async (prefix) => {

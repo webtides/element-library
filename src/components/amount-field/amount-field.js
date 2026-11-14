@@ -28,7 +28,13 @@ import style from './amount-field.style.js';
  */
 export default class AmountField extends FormField {
     constructor() {
-        super({ styles: [style], shadowRender: true });
+        super({
+            styles: [style],
+            shadowRender: true,
+            // The value of this field is a number, so the attribute is parsed, as element-js does
+            // for any other. The form field takes its value as text.
+            propertyOptions: { value: {} },
+        });
     }
 
     properties() {

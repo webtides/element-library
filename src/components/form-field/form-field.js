@@ -54,7 +54,15 @@ export default class FormField extends TemplateElement {
     _controlValue = undefined;
 
     constructor(options) {
-        super({ shadowRender: false, styles: [style], ...options });
+        super({
+            shadowRender: false,
+            styles: [style],
+            ...options,
+            // The value of a field is text. element-js parses every attribute, so that text which
+            // reads as a number or as JSON arrives as something else: "1.50" as 1.5, a long number
+            // without its last digits. A subclass that takes another type says so (`AmountField`).
+            propertyOptions: { value: { parse: false }, ...options?.propertyOptions },
+        });
 
         // element-js keeps the stylesheets of an element on its class, and looks them up there
         // without asking whose they are. A field whose parent class was connected first found the
