@@ -79,10 +79,13 @@ element-library/
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
 - **scroll-to**: Scroll to target element
+- **notification**: Alert with variants, auto-dismiss and a live region, inline or as a toast
 - **pagination**: Way through a list that is split into pages: a `nav` with a button per page
+- **password-field**: Masked password input with an optional show/hide toggle
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **progress-bar**: Track that fills with the progress of a task, or moves while the progress is not known
 - **progress-ring**: Ring that closes with the progress of a task, with room for a short text in its middle
+- **radio-field**: Single-choice radio group: a native `<fieldset>` with a radio per entry of `options`
 - **range-field**: Number from a span, picked with the thumb of a native `<input type="range">`
 - **rating-field**: Rating from 1 to `max` as a row of stars: a native radio group in a `<fieldset>`
 - **scroll-to-top**: Scroll to top button
@@ -92,6 +95,7 @@ element-library/
 - **spinner**: Spinner for a wait of unknown length
 - **sticky**: Sticky positioning element
 - **svg-use**: SVG icon element
+- **switch-field**: On/off toggle backed by a native checkbox with `role="switch"`
 - **tab-group**: Tab container
 - **tab-link**: Individual tab link
 - **tab-panel**: Tab content panel
