@@ -142,7 +142,7 @@ export default class RatingField extends FormField {
                 aria-invalid="${this.valid ? 'false' : 'true'}"
             >
                 ${this.legendTemplate()} ${this.helpTemplate()}
-                <div class="options">${this.fieldTemplate()}</div>
+                <div class="options ${this.disabled ? 'is-disabled' : ''}">${this.fieldTemplate()}</div>
                 ${this.errorTemplate()}
             </fieldset>
         `;

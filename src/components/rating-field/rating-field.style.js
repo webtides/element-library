@@ -11,8 +11,11 @@ const css = String.raw;
  */
 const style = css`
     el-rating-field {
+        /* The row is as wide as its stars and no wider: the pointer is over the row only while it
+           is over a star. */
         .options {
             display: flex;
+            align-self: flex-start;
         }
 
         /* The room between two stars belongs to the star in front of it: the row is one hit area
@@ -51,20 +54,18 @@ const style = css`
         /* With a mouse: the stars up to the one under the pointer are shown as on before the
            click, whatever is chosen. Not while the field is disabled.
 
-           The first rule takes every star off, the second one puts the ones up to the pointer on.
-           The conditions on the row are in :where(), which gives them no weight: the first rule
-           then weighs as much as the rule for a chosen star above and wins as the later one, and
-           the second rule weighs more than the first. */
+           While the pointer is over the row every star is on, and the ones after the star under
+           the pointer are off again. Both rules weigh more than the rule for a chosen star above,
+           and the second more than the first. */
         @media (hover: hover) {
-            .options:where(:not(:has(input:disabled)):has(.option:hover)) .option .star {
-                color: var(--el-color-fg-muted, currentColor);
-                fill: none;
-            }
-
-            .options:where(:not(:has(input:disabled))) .option:hover .star,
-            .options:where(:not(:has(input:disabled))) .option:has(~ .option:hover) .star {
+            .options:not(.is-disabled):hover .option .star {
                 color: var(--el-rating-color, var(--el-color-accent, currentColor));
                 fill: currentColor;
+            }
+
+            .options:not(.is-disabled):hover .option:hover ~ .option .star {
+                color: var(--el-color-fg-muted, currentColor);
+                fill: none;
             }
         }
     }
