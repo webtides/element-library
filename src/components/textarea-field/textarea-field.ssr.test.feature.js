@@ -11,11 +11,14 @@ const VALUE = 'a <b> & "c"\nline two';
 
 const escapeAttribute = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('\n', '&#10;');
 
+// The attribute of a property: `helpMessage` is `help-message`.
+const dashed = (name) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
 function serverRender(properties) {
     const source = document.createElement('el-textarea-field-ssr-source');
     Object.assign(source, source.properties(), properties);
     const attributes = Object.entries(properties)
-        .map(([name, value]) => `${name}="${escapeAttribute(String(value))}"`)
+        .map(([name, value]) => `${dashed(name)}="${escapeAttribute(String(value))}"`)
         .join(' ');
     return `<form><el-textarea-field ${attributes}>${source.template().toString()}</el-textarea-field></form>`;
 }
@@ -49,8 +52,34 @@ describe('Feature | TextareaField | server-rendered', () => {
 
         expect(customElements.get('el-textarea-field')).toBeUndefined();
         const describedBy = control(el).getAttribute('aria-describedby');
-        expect(describedBy).toBe('notes-help-message');
         expect(el.querySelector(`#${describedBy}`)).toBe(el.querySelector('.help-message'));
+    });
+
+    // The label and the help message of each field, as the browser connects them by id.
+    const connections = (wrapper) =>
+        [...wrapper.querySelectorAll('el-textarea-field')].map((el) => ({
+            label: el.querySelector('label').control === control(el),
+            help:
+                document.getElementById(control(el).getAttribute('aria-describedby')) ===
+                el.querySelector('.help-message'),
+        }));
+    const idsOf = (wrapper) => [...wrapper.querySelectorAll('[id]')].map((node) => node.id);
+    const own = [
+        { label: true, help: true },
+        { label: true, help: true },
+    ];
+    const twoWithOneName = () =>
+        mount(
+            serverRender({ name: 'comment', label: 'First', helpMessage: 'First help' }) +
+                serverRender({ name: 'comment', label: 'Second', helpMessage: 'Second help' }),
+        ).closest('div');
+
+    it('gives two fields with the same name ids of their own, before the element is defined', () => {
+        const wrapper = twoWithOneName();
+
+        expect(customElements.get('el-textarea-field')).toBeUndefined();
+        expect(new Set(idsOf(wrapper)).size).toBe(idsOf(wrapper).length);
+        expect(connections(wrapper)).toEqual(own);
     });
 
     it('keeps the server-rendered value and control while the element starts', async () => {
@@ -63,6 +92,19 @@ describe('Feature | TextareaField | server-rendered', () => {
         expect(control(el)).toBe(serverControl);
         expect(el.value).toBe(VALUE);
         expect(control(el).value).toBe(VALUE);
+    });
+
+    it('keeps the label and the help message of each field its own while the elements start', async () => {
+        const wrapper = twoWithOneName();
+        const serverControls = [...wrapper.querySelectorAll('textarea')];
+        const serverIds = idsOf(wrapper);
+        await frames();
+
+        // The elements write their own ids to the markup of the server, and replace nothing.
+        expect([...wrapper.querySelectorAll('textarea')]).toEqual(serverControls);
+        expect(idsOf(wrapper).filter((id) => serverIds.includes(id))).toEqual([]);
+        expect(new Set(idsOf(wrapper)).size).toBe(idsOf(wrapper).length);
+        expect(connections(wrapper)).toEqual(own);
     });
 
     it('shows a value that is set after the element has started', async () => {

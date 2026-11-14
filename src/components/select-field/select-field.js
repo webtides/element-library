@@ -130,13 +130,13 @@ export default class SelectField extends FormField {
         return html`
             <select
                 ref="input"
-                id="input-${this.name}"
+                id="${this._idOf('input')}"
                 name="${this.name}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
                 aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
-                aria-errormessage="${this.name}-error-message"
+                aria-errormessage="${this._idOf('error-message')}"
             >
                 ${when(this.placeholder, html` <option value="" selected disabled>${this.placeholder}</option> `)}
                 ${this.options.map((option) => {

@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - The error message is announced by screen readers: it is an alert (`role="alert"`), and the group, like each of its radios, names it in `aria-describedby` while it is shown. Before, the group pointed at it with `aria-errormessage` only. ([#94](https://github.com/webtides/element-library/issues/94))
 - The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
+- A second field with the same `name` on the page is described by its own messages. Their ids are made per field, not from the name (BREAKING for a page that names `<name>-help-message` itself). See `form-field`. ([#133](https://github.com/webtides/element-library/issues/133))
 
 ## [0.1.0] - 2026-06-03
 

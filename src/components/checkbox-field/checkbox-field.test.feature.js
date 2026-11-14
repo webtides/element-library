@@ -35,7 +35,8 @@ describe('Feature | CheckboxField', () => {
                 ></el-checkbox-field>
             `);
             const input = el.querySelector('input');
-            expect(describedBy(el)).toEqual(['described-error-help-message']);
+            const help = el.querySelector('.help-message');
+            expect(describedBy(el)).toEqual([help.id]);
 
             input.focus();
             input.blur();
@@ -44,7 +45,7 @@ describe('Feature | CheckboxField', () => {
             const message = el.querySelector('.error-message');
 
             expect(message.getAttribute('role')).toBe('alert');
-            expect(describedBy(el)).toEqual(['described-error-help-message', message.id]);
+            expect(describedBy(el)).toEqual([help.id, message.id]);
             expect(await accessibleDescription(input)).toBe('You can read them first Accept the terms');
             const results = await axe.run(el);
             expect(results.violations.map((violation) => violation.id)).toEqual([]);
@@ -54,7 +55,7 @@ describe('Feature | CheckboxField', () => {
             await nextFrame();
             await nextFrame();
             expect(el.querySelector('.error-message')).toBeNull();
-            expect(describedBy(el)).toEqual(['described-error-help-message']);
+            expect(describedBy(el)).toEqual([help.id]);
         });
     });
 

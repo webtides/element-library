@@ -92,6 +92,14 @@ A checkbox and a switch have their label beside the control, in its row, and non
 
 `el-amount-field` renders into a shadow root and has the same layout there. Its texts are parts: `::part(label)`, `::part(help-message)` and `::part(error-message)`.
 
+#### Ids
+
+A field gives its control, its help message and its error message an id: `input-…`, `help-message-…` and `error-message-…`, with a part that is random for every field. The label names the control by it (`for`), and the control its messages (`aria-describedby`).
+
+- Two fields with the same `name` on a page, in two forms for example, each keep their own label and their own messages.
+- The ids are other ones on every page load. Server-rendered markup has the ids of the server, and the element writes its own to the same elements when it starts.
+- Do not write one of them into a selector, a link or a `for` of the page. Reach the control through the field: `field.querySelector('input')`.
+
 #### Slots
 
 _None_ (Component uses template methods instead of slots)

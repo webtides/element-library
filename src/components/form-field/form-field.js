@@ -54,6 +54,12 @@ export default class FormField extends TemplateElement {
      */
     _controlValue = undefined;
 
+    /**
+     * What tells the ids of this field from the ids of every other field, see `_idOf()`.
+     * @private
+     */
+    uuid = Math.random().toString(36).substr(2, 5);
+
     constructor(options) {
         super({
             shadowRender: false,
@@ -295,6 +301,24 @@ export default class FormField extends TemplateElement {
         this.touched = false;
     }
 
+    /**
+     * The id of an element of this field that another one refers to: the control, which the label
+     * names, and the two messages, which describe the control.
+     *
+     * It is made from a random part of the field and not from its name. A name is unique in a form
+     * at most, an id has to be unique in the document: two forms that each had an `email` shared
+     * their ids, and the second input lost its label and its messages to the first.
+     *
+     * The id is another one on every page load. Server-rendered markup has the ids of the server
+     * until the element starts, which writes its own to the same elements.
+     * @private
+     * @param {'input' | 'help-message' | 'error-message'} part
+     * @returns {string}
+     */
+    _idOf(part) {
+        return `${part}-${this.uuid}`;
+    }
+
     /** @private */
     classes() {
         return {
@@ -315,7 +339,7 @@ export default class FormField extends TemplateElement {
     labelTemplate() {
         if (!this.label) return null;
         return html`
-            <label ref="label" for="input-${this.name}" class="${this.classes().label}"> ${this.label} </label>
+            <label ref="label" for="${this._idOf('input')}" class="${this.classes().label}"> ${this.label} </label>
         `;
     }
 
@@ -329,7 +353,7 @@ export default class FormField extends TemplateElement {
 
     /** @private */
     helpTemplate() {
-        return html` <span id="${this.name}-help-message" class="message help-message">${this.helpMessage}</span> `;
+        return html` <span id="${this._idOf('help-message')}" class="message help-message">${this.helpMessage}</span> `;
     }
 
     /**
@@ -348,8 +372,8 @@ export default class FormField extends TemplateElement {
      * @returns {string}
      */
     _describedBy() {
-        const ids = [`${this.name}-help-message`];
-        if (this._showsError()) ids.push(`${this.name}-error-message`);
+        const ids = [this._idOf('help-message')];
+        if (this._showsError()) ids.push(this._idOf('error-message'));
         return ids.join(' ');
     }
 
@@ -361,7 +385,9 @@ export default class FormField extends TemplateElement {
         if (!this._showsError()) return null;
 
         return html`
-            <span id="${this.name}-error-message" class="message error-message" role="alert">${this.errorMessage}</span>
+            <span id="${this._idOf('error-message')}" class="message error-message" role="alert"
+                >${this.errorMessage}</span
+            >
         `;
     }
 }

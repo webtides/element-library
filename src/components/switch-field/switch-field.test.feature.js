@@ -58,10 +58,8 @@ describe('Feature | SwitchField', () => {
     });
 
     it('names its help message, which a screen reader reads with the switch', async () => {
-        // A name of its own: the id of the message is made from the name of the field.
-        const el = await fixture(`
-            <el-switch-field name="described-help" label="Updates" help-message="About once a month"></el-switch-field>
-        `);
+        // The fixtures of this file all have one name, and stay on the page.
+        const el = await switchFixture('help-message="About once a month"');
         const input = el.querySelector('input');
 
         expect(input.getAttribute('aria-describedby')).toBe(el.querySelector('.help-message').id);

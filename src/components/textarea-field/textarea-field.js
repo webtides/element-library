@@ -84,7 +84,7 @@ export default class TextareaField extends FormField {
         return html`
             <textarea
                 ref="input"
-                id="input-${this.name}"
+                id="${this._idOf('input')}"
                 name="${this.name}"
                 rows="${this.rows}"
                 placeholder="${this.placeholder}"

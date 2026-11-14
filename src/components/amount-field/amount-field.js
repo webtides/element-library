@@ -78,7 +78,7 @@ export default class AmountField extends FormField {
     labelTemplate() {
         if (!this.label) return null;
         return html`
-            <label part="label" for="input-${this.name}" class="${this.classes().label}">${this.label}</label>
+            <label part="label" for="${this._idOf('input')}" class="${this.classes().label}">${this.label}</label>
         `;
     }
 
@@ -89,7 +89,7 @@ export default class AmountField extends FormField {
      */
     helpTemplate() {
         return html`
-            <span part="help-message" id="${this.name}-help-message" class="message help-message"
+            <span part="help-message" id="${this._idOf('help-message')}" class="message help-message"
                 >${this.helpMessage}</span
             >
         `;
@@ -99,7 +99,7 @@ export default class AmountField extends FormField {
     errorTemplate() {
         if (!this._showsError()) return null;
         return html`
-            <span part="error-message" id="${this.name}-error-message" class="message error-message" role="alert"
+            <span part="error-message" id="${this._idOf('error-message')}" class="message error-message" role="alert"
                 >${this.errorMessage}</span
             >
         `;
@@ -117,7 +117,7 @@ export default class AmountField extends FormField {
                     part="input"
                     type="number"
                     readonly="true"
-                    id="input-${this.name}"
+                    id="${this._idOf('input')}"
                     name="${this.name}"
                     ?required="${this.required}"
                     ?disabled="${this.disabled}"

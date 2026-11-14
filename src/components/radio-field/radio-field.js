@@ -22,9 +22,6 @@ import style from './radio-field.style.js';
  *   (`[{ value, label, disabled? }]`). Strings are used as both value and label.
  */
 export default class RadioField extends FormField {
-    /** @private */
-    uuid = Math.random().toString(36).substr(2, 5);
-
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
     }
@@ -91,7 +88,7 @@ export default class RadioField extends FormField {
             <fieldset
                 class="field ${this.classes().field}"
                 aria-describedby="${this._describedBy()}"
-                aria-errormessage="${this.name}-error-message"
+                aria-errormessage="${this._idOf('error-message')}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
             >
                 ${this.legendTemplate()} ${this.helpTemplate()}

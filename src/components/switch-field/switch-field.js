@@ -19,9 +19,6 @@ import style from './switch-field.style.js';
  * @property {boolean} checked - Whether the switch is on. Reflected to the `checked` attribute.
  */
 export default class SwitchField extends FormField {
-    /** @private */
-    uuid = Math.random().toString(36).substr(2, 5);
-
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
     }

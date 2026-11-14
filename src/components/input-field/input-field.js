@@ -80,7 +80,7 @@ export default class InputField extends FormField {
         return html`
             <input
                 ref="input"
-                id="input-${this.name}"
+                id="${this._idOf('input')}"
                 name="${this.name}"
                 type="${this.type}"
                 value="${this.value}"
@@ -91,7 +91,7 @@ export default class InputField extends FormField {
                 ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
-                aria-errormessage="${this.name}-error-message"
+                aria-errormessage="${this._idOf('error-message')}"
             />
             ${when(
                 this.touched,

@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - A decorated select shows its chevron wherever the theme is loaded. The theme showed the field's own chevron with a rule of the same weight as the rule of the field that hides it, so the later one won: with the theme in the stylesheet of the page and the styles of the field after it, the select had no chevron at all, the native one taken away and its own hidden. The field now follows a property that `styles/native.css` sets. ([#69](https://github.com/webtides/element-library/issues/69))
 - The error message has the danger colour of the theme (`--el-color-danger`). It had the colour of the text and read like a help message, while the messages of an `el-input-field` on the same form were red. Without a theme it keeps the colour of the text, which is what every field does now. ([#128](https://github.com/webtides/element-library/issues/128))
 - The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
+- A second field with the same `name` on the page keeps its own label and its own messages. The ids of the select and of the messages are made per field, not from the name (BREAKING for a page that names `input-<name>` or `<name>-help-message` itself). See `form-field`. ([#133](https://github.com/webtides/element-library/issues/133))
 
 ## [0.1.0] - 2026-06-03
 

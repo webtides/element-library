@@ -100,7 +100,7 @@ describe('Feature | InputField', () => {
         await nextFrame();
 
         expect(el.querySelector('.error-message')).toBeNull();
-        expect(el.querySelector('input').getAttribute('aria-describedby')).toBe('email-help-message');
+        expect(el.querySelector('input').getAttribute('aria-describedby')).toBe(el.querySelector('.help-message').id);
     });
 
     it('passes the text entry attributes on to the input', async () => {

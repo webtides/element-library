@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { aTimeout, fixture, nextFrame } from '../../test-helpers.js';
+import { accessibleDescription, accessibleName, aTimeout, fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './form-field.js';
 import { define as defineInputField } from '../input-field/input-field.js';
 import { define as definePasswordField } from '../password-field/password-field.js';
@@ -427,6 +427,38 @@ describe('Feature | FormField', () => {
         // Where a field says whether it is valid: on its control, and a radio group on the group.
         const marked = (field) =>
             field.querySelector(field.localName === 'el-radio-field' ? 'fieldset' : 'input, textarea, select');
+
+        // A page with a sign-in form and a newsletter form has two fields with the name "email". A
+        // name is unique in a form at most, an id in the whole page.
+        const twoForms = (tag) =>
+            ['First', 'Second']
+                .map(
+                    (word) =>
+                        `<form><${tag} name="same" label="${word} label" help-message="${word} help" error-message="${word} error" valid="false" touched="true" ${FIELDS[tag]}></${tag}></form>`,
+                )
+                .join('');
+
+        for (const tag of Object.keys(FIELDS)) {
+            it(`keeps its own label and its own messages beside a field of the same name, in ${tag}`, async () => {
+                const wrapper = await fixture(`<div>${twoForms(tag)}</div>`);
+                await frames();
+                const ids = [...wrapper.querySelectorAll('[id]')].map((element) => element.id);
+                const said = [];
+                for (const field of wrapper.querySelectorAll(tag)) {
+                    said.push({
+                        // A checkbox has its check mark in front of its label, in its name as well.
+                        name: (await accessibleName(marked(field))).replace(/^✓ /, ''),
+                        description: await accessibleDescription(marked(field)),
+                    });
+                }
+
+                expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
+                expect(said).toEqual([
+                    { name: 'First label', description: 'First help First error' },
+                    { name: 'Second label', description: 'Second help Second error' },
+                ]);
+            });
+        }
         // The radio group works out itself whether it is valid: here it has a value.
         const validMarkup = (tag) =>
             tag === 'el-radio-field' ? `options='["free", "pro"]' required="true" value="free"` : FIELDS[tag];
