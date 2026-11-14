@@ -77,6 +77,7 @@ element-library/
 - **pagination**: Way through a list that is split into pages: a `nav` with a button per page
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **progress-bar**: Track that fills with the progress of a task, or moves while the progress is not known
+- **progress-ring**: Ring that closes with the progress of a task, with room for a short text in its middle
 - **scroll-to-top**: Scroll to top button
 - **select-field**: Select dropdown
 - **skeleton**: Shape in the place of content that is still loading

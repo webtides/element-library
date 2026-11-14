@@ -20,6 +20,7 @@ import './src/components/pagination/pagination.define.js';
 import './src/components/password-field/password-field.define.js';
 import './src/components/popover/popover.define.js';
 import './src/components/progress-bar/progress-bar.define.js';
+import './src/components/progress-ring/progress-ring.define.js';
 import './src/components/radio-field/radio-field.define.js';
 import './src/components/scroll-to/scroll-to.define.js';
 import './src/components/scroll-to-top/scroll-to-top.define.js';

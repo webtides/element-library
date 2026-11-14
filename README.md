@@ -79,6 +79,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | password-field     | A masked password input with an optional show/hide reveal toggle              | `0.1.0` |
 | popover            | A panel that floats next to an anchor, built on the native popover            | `0.1.0` |
 | progress-bar       | A track that fills with the progress of a task, with or without a value       | `0.1.0` |
+| progress-ring      | A ring that closes with the progress of a task, with room for a short text    | `0.1.0` |
 | radio-field        | A single-choice radio group built on a native fieldset                        | `0.1.0` |
 | scroll-to          |                                                                               | `0.1.0` |
 | scroll-to-top      |                                                                               | `0.1.0` |
