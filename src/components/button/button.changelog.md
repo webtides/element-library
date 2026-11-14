@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `appearance` (`filled` by default, `outlined` or `plain`): how the colours of the variant are painted. It works with every variant, so a `plain` button, text only, exists in every colour; before, only the `text` variant in the brand colour did. ([#69](https://github.com/webtides/element-library/issues/69))
 - `variant`, `appearance` and `size` are reflected to attributes of the same name, the defaults included, so a stylesheet can select them (`el-button[variant='brand']`). ([#69](https://github.com/webtides/element-library/issues/69))
 - A pressed style: a button that is pressed (`:active`) is darker than a hovered one; an `outlined` or `plain` button gets a tint of its text color instead. Before, pressing a button on a touch screen showed nothing.
+- In an `el-button-group` a button is joined with its neighbours: the corners that face a neighbour are square, and a filled button with a neighbour in front of it draws the line between the two as its border at the start. Outside of a group the button looks as before. ([#124](https://github.com/webtides/element-library/issues/124))
 
 ### Changed
 

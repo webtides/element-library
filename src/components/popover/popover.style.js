@@ -29,6 +29,12 @@ const style = css`
         border: var(--el-border-width, 1px) solid var(--el-color-border, currentColor);
         border-radius: var(--el-radius-lg, 0);
         box-shadow: var(--el-shadow-lg, none);
+        /* A popover can stand in a row of joined buttons (el-button-group), which joins its
+           anchor with properties that inherit. What is in the panel is not part of that row:
+           they stop here. */
+        --_el-group-radius-start: initial;
+        --_el-group-radius-end: initial;
+        --_el-group-divider: initial;
     }
 `;
 

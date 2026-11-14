@@ -26,7 +26,14 @@ const style = css`
         min-height: var(--_el-size-height);
         padding: var(--_el-size-padding-block) var(--_el-size-padding-inline);
         border: var(--el-border-width, 1px) solid transparent;
-        border-radius: var(--el-radius-md, 4px);
+        /* The radius of the shape on all four corners. A row of joined buttons (el-button-group)
+           takes it away from the corners that face a neighbour, with --_el-group-radius-start
+           and --_el-group-radius-end on what is slotted into it. */
+        --_el-button-radius: var(--el-radius-md, 4px);
+        border-start-start-radius: var(--_el-group-radius-start, var(--_el-button-radius));
+        border-end-start-radius: var(--_el-group-radius-start, var(--_el-button-radius));
+        border-start-end-radius: var(--_el-group-radius-end, var(--_el-button-radius));
+        border-end-end-radius: var(--_el-group-radius-end, var(--_el-button-radius));
         font-family: var(--el-font-family, inherit);
         font-size: var(--_el-size-font-size);
         font-weight: 600;
@@ -99,16 +106,28 @@ const style = css`
     /* ── Shapes ───────────────────────────────────────────────────────────── */
 
     .button--pill {
-        border-radius: 999px;
+        --_el-button-radius: 999px;
     }
 
     .button--circle {
+        --_el-button-radius: 50%;
         width: var(--_el-size-height);
         height: var(--_el-size-height);
         min-height: 0;
         padding: 0;
-        border-radius: 50%;
         aspect-ratio: 1;
+    }
+
+    /* ── In a group ───────────────────────────────────────────────────────── */
+
+    /* A filled button with a neighbour in front of it draws the line between the two: its border
+       at the start has the colour the group gives it (--_el-group-divider), which shows between
+       two fills of one colour. Outside of a group it is the border colour of the fill, as on
+       the other three sides. The rule weighs as much as the one of the appearance module for a
+       filled surface and comes after it; the ones for outlined and plain weigh more, so those
+       keep their border. */
+    :host .button {
+        border-inline-start-color: var(--_el-group-divider, var(--_el-variant-fill-border));
     }
 
     /* ── Touch screens ────────────────────────────────────────────────────── */

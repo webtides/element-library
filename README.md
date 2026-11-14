@@ -65,6 +65,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | breadcrumb         | The trail from the start page to the current page: a landmark with a list     | `0.1.0` |
 | breadcrumb-item    | One entry of a breadcrumb: a link with href, text without, with a separator   | `0.1.0` |
 | button             | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
+| button-group       | A row of buttons that reads as one control, a group with a name               | `0.1.0` |
 | card               | A surface that groups content, with media, header, body and footer regions    | `0.1.0` |
 | carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field     |                                                                               | `0.1.1` |

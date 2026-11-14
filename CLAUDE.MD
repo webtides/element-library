@@ -64,6 +64,7 @@ element-library/
 - **breadcrumb**: Trail from the start page to the current page: a `nav` landmark with a list of `el-breadcrumb-item`
 - **breadcrumb-item**: One entry of a breadcrumb: a link with `href`, text without, with the separator in front of it
 - **button**: Themeable button
+- **button-group**: Row of `el-button` that reads as one control: joined corners, a line between neighbours, a group with a name
 - **card**: Surface that groups content, with media, header, body and footer regions
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input

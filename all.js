@@ -6,6 +6,7 @@ import './src/components/badge/badge.define.js';
 import './src/components/breadcrumb/breadcrumb.define.js';
 import './src/components/breadcrumb-item/breadcrumb-item.define.js';
 import './src/components/button/button.define.js';
+import './src/components/button-group/button-group.define.js';
 import './src/components/card/card.define.js';
 import './src/components/carousel/carousel.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
