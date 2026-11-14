@@ -5,7 +5,9 @@ import style from './amount-field.style.js';
 /**
  * Numeric amount stepper input. Renders a readonly `<input type="number">` flanked by
  * increment (`+`) and decrement (`-`) buttons, with optional `min` and `max` bounds.
- * Extends `FormField`: the `label` is rendered above the stepper and names the input.
+ * Extends `FormField`: the `label` is rendered above the stepper and names the input, the help
+ * message between the two, and the error message below the stepper while the field is touched and
+ * not valid. The input names both messages in `aria-describedby`.
  *
  * @element el-amount-field
  *
@@ -13,6 +15,9 @@ import style from './amount-field.style.js';
  * @slot minus - Replaces the default `-` glyph in the decrement button.
  *
  * @csspart label - The label above the stepper. Only rendered when `label` is set.
+ * @csspart help-message - The help message, between the label and the stepper.
+ * @csspart error-message - The error message below the stepper. Only rendered while the field is
+ *   touched and not valid.
  * @csspart wrapper - The outer container around the input and stepper buttons.
  * @csspart button - Applied to both stepper buttons.
  * @csspart plus - Applied to the increment button (in addition to `button`).
@@ -77,9 +82,32 @@ export default class AmountField extends FormField {
         `;
     }
 
+    /**
+     * The messages are rendered inside the shadow root as well: the `aria-describedby` of the input
+     * only reaches an element in the same root.
+     * @private
+     */
+    helpTemplate() {
+        return html`
+            <span part="help-message" id="${this.name}-help-message" class="message help-message"
+                >${this.helpMessage}</span
+            >
+        `;
+    }
+
+    /** @private */
+    errorTemplate() {
+        if (!this._showsError()) return null;
+        return html`
+            <span part="error-message" id="${this.name}-error-message" class="message error-message" role="alert"
+                >${this.errorMessage}</span
+            >
+        `;
+    }
+
     template() {
         return html`
-            ${this.labelTemplate()}
+            ${this.labelTemplate()} ${this.helpTemplate()}
             <div part="wrapper">
                 <button ref="plus" part="button plus" ?disabled="${this.max !== false && this.value >= this.max}">
                     <slot name="plus">+</slot>
@@ -96,12 +124,13 @@ export default class AmountField extends FormField {
                     value="${this.value}"
                     max="${this.max}"
                     min="${this.min}"
-                    aria-describedby="${this.name}-help"
+                    aria-describedby="${this._describedBy()}"
                 />
                 <button ref="minus" part="button minus" ?disabled="${this.min !== false && this.value <= this.min}">
                     <slot name="minus">-</slot>
                 </button>
             </div>
+            ${this.errorTemplate()}
         `;
     }
 }

@@ -35,3 +35,25 @@ export const AmountField = {
     render: ({ label, value, min, max }) =>
         html`<el-amount-field label="${label}" value="${value}" min="${min}" max="${max}"></el-amount-field>`,
 };
+
+export const WithMessages = {
+    name: 'With a help and an error message',
+    parameters: {
+        docs: {
+            description: {
+                story: 'The help message stands between the label and the stepper. The error message is shown below the stepper while the field is not valid. The stepper keeps the amount between `min` and `max`; what else is wrong with it, the page says with `valid="false"`.',
+            },
+        },
+    },
+    render: () => html`
+        <el-amount-field
+            name="seats"
+            label="Seats"
+            value="0"
+            min="0"
+            help-message="One for every person on the team."
+            error-message="Book at least one seat."
+            valid="false"
+        ></el-amount-field>
+    `,
+};

@@ -1,12 +1,9 @@
+import hostStyle from '../../styles/host.style.js';
+import formControlStyle from '../../styles/form-control.style.js';
+
 const css = String.raw;
 
-export default css`
-    [part='label'] {
-        display: block;
-        margin-bottom: var(--el-space-1, 0);
-        color: var(--el-color-fg, inherit);
-    }
-
+const style = css`
     [part='wrapper'] {
         display: flex;
         flex-direction: row;
@@ -74,3 +71,5 @@ export default css`
         }
     }
 `;
+
+export default [hostStyle(), formControlStyle(), style].join('\n');

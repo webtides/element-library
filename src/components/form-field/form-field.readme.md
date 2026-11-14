@@ -90,7 +90,7 @@ Every field that renders into the page has the same layout around its control, `
 
 A checkbox and a switch have their label beside the control, in its row, and none above it. Their help message explains that label, so it follows the row, and the error message follows the help message. The column of a radio group is its `<fieldset>`.
 
-`el-amount-field` renders into a shadow root and has no messages. Its label is a part (`::part(label)`).
+`el-amount-field` renders into a shadow root and has the same layout there. Its texts are parts: `::part(label)`, `::part(help-message)` and `::part(error-message)`.
 
 #### Slots
 

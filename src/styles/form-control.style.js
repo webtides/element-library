@@ -17,45 +17,51 @@ const css = String.raw;
  *
  * The control itself is not touched. Without a theme a native control keeps the look of the
  * browser.
+ *
+ * Every rule names the host itself, and none is nested in the rule of the host. A rule nested in
+ * `:host` does not reach the content of a shadow root in every browser that knows nesting (Safari
+ * before 18.1), and `el-amount-field` composes this module for its shadow root.
  * @param {string} [host] - `':host'` (the default), or the tag of a field without a shadow root.
  * @returns {string}
  */
 export default function formControlStyle(host = ':host') {
+    const field = hostSelector(host);
+
     return css`
-        ${hostSelector(host)} {
+        ${field} {
             display: flex;
             flex-direction: column;
             gap: var(--el-space-1, 4px);
+        }
 
-            label,
-            legend {
-                color: var(--el-color-fg, inherit);
-            }
+        ${field} label,
+        ${field} legend {
+            color: var(--el-color-fg, inherit);
+        }
 
-            .field {
-                display: flex;
-                align-items: center;
-                gap: var(--el-space-2, 8px);
-            }
+        ${field} .field {
+            display: flex;
+            align-items: center;
+            gap: var(--el-space-2, 8px);
+        }
 
-            .message {
-                font-size: var(--el-font-size-sm, 14px);
-            }
+        ${field} .message {
+            font-size: var(--el-font-size-sm, 14px);
+        }
 
-            .help-message {
-                color: var(--el-color-fg-muted, inherit);
-            }
+        ${field} .help-message {
+            color: var(--el-color-fg-muted, inherit);
+        }
 
-            /* A field renders the element of the help message with or without a text. Without one
-               it would still be a row of the column, and the gap after it would show. */
-            .help-message:empty {
-                display: none;
-            }
+        /* A field renders the element of the help message with or without a text. Without one it
+           would still be a row of the column, and the gap after it would show. */
+        ${field} .help-message:empty {
+            display: none;
+        }
 
-            /* The keyword red on white is 4 : 1, so there is no red for a page without a theme. */
-            .error-message {
-                color: var(--el-color-danger, inherit);
-            }
+        /* The keyword red on white is 4 : 1, so there is no red for a page without a theme. */
+        ${field} .error-message {
+            color: var(--el-color-danger, inherit);
         }
     `;
 }

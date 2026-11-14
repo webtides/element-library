@@ -1,6 +1,6 @@
 # AmountField
 
-`amount-field` is a numeric amount stepper input. It renders a readonly `<input type="number">` flanked by increment (`+`) and decrement (`-`) buttons, with optional `min` and `max` bounds. It extends the base `FormField` component: the `label` is rendered above the stepper and names the input. Help and error messages are not rendered.
+`amount-field` is a numeric amount stepper input. It renders a readonly `<input type="number">` flanked by increment (`+`) and decrement (`-`) buttons, with optional `min` and `max` bounds. It extends the base `FormField` component: the `label` is rendered above the stepper and names the input, the `helpMessage` between the two, and the `errorMessage` below the stepper while the field is not valid.
 
 ## How to use
 
@@ -33,6 +33,8 @@ import '@webtides/element-library/amount-field/define';
 
 Inherits the remaining form properties (`required`, `disabled`, `label`, `helpMessage`, `errorMessage`, `valid`, `touched`, …) from [`FormField`](../form-field/form-field.readme.md).
 
+The stepper keeps the value between `min` and `max`, and the field checks nothing else. A page that finds the amount wrong sets `valid="false"`, and the field shows its `errorMessage`. The field has a value from the start and is `touched` with it, so that is all it takes.
+
 #### Methods
 
 _Inherits methods from the `FormField` component._
@@ -52,17 +54,27 @@ _Inherits methods from the `FormField` component._
 
 #### CSS Parts
 
-| Name      | Description                                                     |
-| --------- | --------------------------------------------------------------- |
-| `label`   | The label above the stepper. Only rendered when `label` is set. |
-| `wrapper` | The outer container around the input and stepper buttons.       |
-| `button`  | Applied to both stepper buttons.                                |
-| `plus`    | Applied to the increment button (in addition to `button`).      |
-| `minus`   | Applied to the decrement button (in addition to `button`).      |
-| `input`   | The numeric input element.                                      |
+| Name            | Description                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| `label`         | The label above the stepper. Only rendered when `label` is set.                              |
+| `help-message`  | The help message, between the label and the stepper.                                         |
+| `error-message` | The error message below the stepper. Only rendered while the field is touched and not valid. |
+| `wrapper`       | The outer container around the input and stepper buttons.                                    |
+| `button`        | Applied to both stepper buttons.                                                             |
+| `plus`          | Applied to the increment button (in addition to `button`).                                   |
+| `minus`         | Applied to the decrement button (in addition to `button`).                                   |
+| `input`         | The numeric input element.                                                                   |
 
 #### CSS Custom Properties
 
 This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-bg`, `--el-color-border`, `--el-radius-md`, `--el-touch-target`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
 
+The label, the help message, the stepper and the error message stack in a column, and the texts have the look they have in every field: see [Layout](../form-field/form-field.readme.md#layout) in the readme of `form-field`. The field renders into a shadow root, so a page reaches these texts as parts.
+
 The buttons are at least `--el-touch-target` high on every pointer. On a touch screen (`@media (any-pointer: coarse)`) they are at least that wide as well, and the input is as high as the buttons.
+
+## Accessibility
+
+- The input is named by the label.
+- The input names the help message in `aria-describedby`, and the error message while that is shown: a screen reader reads both when the input gets focus.
+- The error message is an alert (`role="alert"`): a screen reader announces it when it appears.
