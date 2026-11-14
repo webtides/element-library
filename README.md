@@ -62,6 +62,8 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | amount-field       | A simple element to create amount stepping input fields                       | `0.1.1` |
 | avatar             | The picture of a person or a thing: an image, initials or an icon             | `0.1.0` |
 | badge              | A short label for a status or a count, with variants and appearances          | `0.1.0` |
+| breadcrumb         | The trail from the start page to the current page: a landmark with a list     | `0.1.0` |
+| breadcrumb-item    | One entry of a breadcrumb: a link with href, text without, with a separator   | `0.1.0` |
 | button             | A themeable button with variants, sizes, icon slots, caret and loading        | `0.1.0` |
 | card               | A surface that groups content, with media, header, body and footer regions    | `0.1.0` |
 | carousel           | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
@@ -102,7 +104,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |
 | bottom-sheet         |                                                 | TBD  |
-| breadcrumb-element   |                                                 | TBD  |
 | horizontal-scroll    |                                                 | TBD  |
 | load-more            | show/load more                                  | TBD  |
 | show-hide            |                                                 | TBD  |

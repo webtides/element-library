@@ -53,6 +53,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: `el-badge`, a new component: a short label that marks something with a status or a count ("New", "3"). Pure presentation, without a role and without behaviour. It has the `variant` and the `appearance` of the shared vocabulary, both reflected, `pill` for fully rounded ends and `pulse` for a ring that spreads from the badge to catch the eye; the pulse stands still for a user who prefers reduced motion. A badge is three quarters of the font size of the text it stands in, so it has no `size`. With a single character it is as wide as it is high: a square, and a circle as a pill. ([#74](https://github.com/webtides/element-library/issues/74))
 
+### breadcrumb
+
+- Added: `el-breadcrumb`, a new component: the trail from the start page to the current page. A `nav` landmark, named by `label` ("Breadcrumb" by default), that holds a list; every `el-breadcrumb-item` slotted into it is an entry of that list. The entries stand in a row that breaks into a second line where it does not fit, and a line after the first starts with a separator. `--el-breadcrumb-separator`, a CSS string (`'/'` by default), is what stands between two entries: set on the breadcrumb or for the whole page, it is the separator of every entry. The breadcrumb does nothing with its entries from a script, so a server-rendered trail is complete without JavaScript. ([#123](https://github.com/webtides/element-library/issues/123))
+
+### breadcrumb-item
+
+- Added: `el-breadcrumb-item`, a new component: one entry of an `el-breadcrumb`, an item of its list (`role="listitem"`). With `href` it is a native link (`target` is passed on, `rel` is written with it), without it is text. `current` marks the entry of the page the user is on: `aria-current="page"`, the text colour of the theme and a heavier weight, as text or as a link. Every entry but the first shows the separator in front of itself, in the muted text colour of the theme and hidden from assistive technology. A link has the accent colour of the theme, the text colour without a theme, is underlined under the pointer and shows the focus ring of the theme; on a touch screen it is at least `--el-touch-target` wide and high. ([#123](https://github.com/webtides/element-library/issues/123))
+
 ### button
 
 - Added: `appearance` (`filled` by default, `outlined` or `plain`): how the colours of the variant are painted. It works with every variant, so a `plain` button, text only, exists in every colour; before, only the `text` variant in the brand colour did. ([#69](https://github.com/webtides/element-library/issues/69))

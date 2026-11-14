@@ -61,6 +61,8 @@ element-library/
 - **amount-field**: Amount stepping input field
 - **avatar**: Picture of a person or a thing: an image, initials or an icon
 - **badge**: Label for a status or a count
+- **breadcrumb**: Trail from the start page to the current page: a `nav` landmark with a list of `el-breadcrumb-item`
+- **breadcrumb-item**: One entry of a breadcrumb: a link with `href`, text without, with the separator in front of it
 - **button**: Themeable button
 - **card**: Surface that groups content, with media, header, body and footer regions
 - **carousel**: Carousel wrapper for glide.js

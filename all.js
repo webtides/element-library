@@ -3,6 +3,8 @@ import './src/components/accordion-group/accordion-group.define.js';
 import './src/components/amount-field/amount-field.define.js';
 import './src/components/avatar/avatar.define.js';
 import './src/components/badge/badge.define.js';
+import './src/components/breadcrumb/breadcrumb.define.js';
+import './src/components/breadcrumb-item/breadcrumb-item.define.js';
 import './src/components/button/button.define.js';
 import './src/components/card/card.define.js';
 import './src/components/carousel/carousel.define.js';
