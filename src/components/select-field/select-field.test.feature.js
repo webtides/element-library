@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './select-field.js';
@@ -61,6 +62,206 @@ describe('Feature | SelectField', () => {
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
 
+    describe('with a value', () => {
+        const frames = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+        const field = (name, attributes) =>
+            fixture(`<el-select-field name="${name}" label="Size" ${attributes}></el-select-field>`);
+        const sizes = `options='[{ "value": "s", "label": "Small" }, { "value": "m", "label": "Medium" }, { "value": "l", "label": "Large" }]'`;
+        // The events of a field from before it is connected: they bubble to the document.
+        const changesOf = (name) => {
+            const changes = [];
+            document.addEventListener('input-change', (event) => {
+                if (event.target.name === name) changes.push(event.detail);
+            });
+            return changes;
+        };
+        // The markup the SSR renderer writes: it assigns the parsed attributes as properties and
+        // stringifies the template, without connecting the element.
+        const serverSelect = (properties) => {
+            const source = document.createElement('el-select-field');
+            Object.assign(source, source.properties(), properties);
+            const wrapper = document.createElement('div');
+            wrapper.setHTMLUnsafe(source.template().toString());
+            return wrapper.querySelector('select');
+        };
+
+        it('selects the option of the value it is rendered with', async () => {
+            const el = await field('value-rendered', `value="m" ${sizes}`);
+
+            expect(el.querySelector('select').value).toBe('m');
+            expect(el.value).toBe('m');
+        });
+
+        it('selects the option of a value that is set later', async () => {
+            const el = await field('value-later', `value="m" ${sizes}`);
+
+            el.value = 'l';
+            await frames();
+
+            expect(el.querySelector('select').value).toBe('l');
+        });
+
+        it('selects the option of a value that is set after the user has chosen', async () => {
+            const el = await field('value-after-choice', sizes);
+            const select = el.querySelector('select');
+            await userEvent.selectOptions(select, 'm');
+            await frames();
+            expect(el.value).toBe('m');
+
+            el.value = 'l';
+            await frames();
+
+            expect(select.value).toBe('l');
+        });
+
+        it('matches a value that is a number in the markup', async () => {
+            const el = await field('value-number', `value="2" options='[1, 2, 3]'`);
+
+            expect(el.querySelector('select').value).toBe('2');
+        });
+
+        it('writes selected onto the option of the value in the server-rendered markup', () => {
+            const select = serverSelect({ name: 'value-ssr', value: 'm', options: ['s', 'm', 'l'] });
+
+            expect([...select.options].filter((option) => option.hasAttribute('selected')).map((o) => o.value)).toEqual(
+                ['m'],
+            );
+            expect(select.value).toBe('m');
+            expect(select.hasAttribute('value')).toBe(false);
+        });
+
+        it('lets the value win over an option that is marked as selected', async () => {
+            const marked = `options='[{ "value": "s", "selected": true }, { "value": "m" }, { "value": "l" }]'`;
+            const el = await field('value-wins', `value="l" ${marked}`);
+
+            expect(el.querySelector('select').value).toBe('l');
+            expect(el.value).toBe('l');
+            expect(
+                serverSelect({
+                    name: 'value-wins-ssr',
+                    value: 'l',
+                    options: [{ value: 's', selected: true }, 'm', 'l'],
+                }).value,
+            ).toBe('l');
+        });
+
+        it('takes over the option that is marked as selected while it has no value', async () => {
+            const changes = changesOf('value-marked');
+            const el = await field(
+                'value-marked',
+                `placeholder="Pick a size" options='[{ "value": "s" }, { "value": "m", "selected": true }]'`,
+            );
+            await frames();
+
+            expect(el.querySelector('select').value).toBe('m');
+            expect(el.value).toBe('m');
+            // Nobody chose anything.
+            expect(changes).toEqual([]);
+        });
+
+        it('takes over the first option while it has no value and no option is marked', async () => {
+            const changes = changesOf('value-first');
+            const el = await field('value-first', sizes);
+            await frames();
+
+            expect(el.value).toBe('s');
+            expect(changes).toEqual([]);
+        });
+
+        it('keeps no value while the placeholder is shown', async () => {
+            const el = await field('value-placeholder', `placeholder="Pick a size" ${sizes}`);
+            await frames();
+
+            expect(el.querySelector('select').value).toBe('');
+            expect(el.value).toBe(null);
+        });
+
+        it('reports a value that is set after it took one over', async () => {
+            const changes = changesOf('value-reported');
+            const el = await field('value-reported', sizes);
+            await frames();
+
+            el.value = 'l';
+            await frames();
+            el.value = 's';
+            await frames();
+
+            expect(changes).toEqual(['l', 's']);
+        });
+
+        it('goes back to its default when the value is taken away', async () => {
+            const withPlaceholder = await field('value-null-placeholder', `placeholder="Pick" ${sizes}`);
+            const withMark = await field(
+                'value-null-marked',
+                `options='[{ "value": "s" }, { "value": "m" }, { "value": "l", "selected": true }]'`,
+            );
+            const plain = await field('value-null-plain', sizes);
+            // Chosen by the user: the browser no longer follows the selected attribute then.
+            for (const el of [withPlaceholder, withMark, plain]) {
+                await userEvent.selectOptions(el.querySelector('select'), 'm');
+            }
+            await frames();
+            expect([withPlaceholder, withMark, plain].map((el) => el.value)).toEqual(['m', 'm', 'm']);
+
+            for (const el of [withPlaceholder, withMark, plain]) el.value = null;
+            await frames();
+            await frames();
+
+            expect(withPlaceholder.querySelector('select').value).toBe('');
+            expect(withPlaceholder.value).toBe(null);
+            expect(withMark.querySelector('select').value).toBe('l');
+            expect(withMark.value).toBe('l');
+            expect(plain.querySelector('select').value).toBe('s');
+            expect(plain.value).toBe('s');
+        });
+
+        it('treats an empty value that no option has like no value', async () => {
+            const marked = `options='[{ "value": "s" }, { "value": "m", "selected": true }, { "value": "l" }]'`;
+            const rendered = await field('value-empty-rendered', `value="" ${marked}`);
+            // element-js writes null back as an empty attribute where the value came from one.
+            const emptied = await field('value-empty-later', `value="l" placeholder="Pick" ${sizes}`);
+            await userEvent.selectOptions(emptied.querySelector('select'), 'm');
+            await frames();
+
+            emptied.value = null;
+            await frames();
+            await frames();
+
+            expect(rendered.querySelector('select').value).toBe('m');
+            expect(rendered.value).toBe('m');
+            expect(emptied.querySelector('select').value).toBe('');
+            expect(emptied.value).toBe('');
+        });
+
+        it('selects an option with an empty value for an empty value, not the placeholder', async () => {
+            const el = await field(
+                'value-empty',
+                `value="m" placeholder="Pick" options='[{ "value": "", "label": "Any" }, { "value": "m" }]'`,
+            );
+
+            el.value = '';
+            await frames();
+
+            expect(el.querySelector('select').selectedOptions[0].textContent.trim()).toBe('Any');
+            expect(el.value).toBe('');
+        });
+
+        it('keeps a value that has no option, and selects it once its option arrives', async () => {
+            const el = await field('value-late-option', `value="xl" ${sizes}`);
+            // What the browser selects in a select without a selected option.
+            expect(el.querySelector('select').value).toBe('s');
+            expect(el.value).toBe('xl');
+
+            el.options = ['s', 'm', 'l', 'xl'];
+            await frames();
+
+            expect(el.querySelector('select').value).toBe('xl');
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const inForm = (name, attributes = `options='["S", "M", "L"]'`) =>
@@ -78,6 +279,16 @@ describe('Feature | SelectField', () => {
             await nextFrame();
             expect(data(form)).toEqual({ 'form-value': 'L' });
             expect(el.value).toBe('L');
+        });
+
+        it('submits the option of its value', async () => {
+            const form = await inForm('form-of-value', `value="M" options='["S", "M", "L"]'`);
+            expect(data(form)).toEqual({ 'form-of-value': 'M' });
+
+            form.firstElementChild.value = 'L';
+            await nextFrame();
+            await nextFrame();
+            expect(data(form)).toEqual({ 'form-of-value': 'L' });
         });
 
         it('submits the option that is marked as selected', async () => {

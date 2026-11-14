@@ -73,6 +73,46 @@ export const SelectField = {
     },
 };
 
+export const WithValue = {
+    name: 'With a value',
+    parameters: {
+        docs: {
+            description: {
+                story: '`value` says which option is selected, when the field is rendered and when it is set later. It wins over an option that `options` marks as `selected`, which is the default of a field without a value.',
+            },
+        },
+    },
+    args: {
+        options: ['Small', 'Medium', 'Large'],
+        value: 'Medium',
+        required: false,
+    },
+    render: ({ name, options, value, placeholder, label, helpMessage }) => html`
+        <el-select-field
+            name="${name}"
+            options="${JSON.stringify(options)}"
+            value="${value}"
+            placeholder="${placeholder}"
+            label="${label}"
+            help-message="${helpMessage}"
+        ></el-select-field>
+    `,
+    play: async ({ canvasElement, step }) => {
+        const canvas = within(canvasElement);
+        const select = await canvas.findByLabelText('Label');
+        const field = select.closest('el-select-field');
+
+        await step('selects the option of the value', async () => {
+            await waitFor(() => expect(select).toHaveValue('Medium'));
+        });
+
+        await step('follows a value that is set later', async () => {
+            field.value = 'Large';
+            await waitFor(() => expect(select).toHaveValue('Large'));
+        });
+    },
+};
+
 export const BrowserSelectField = {
     name: 'Vanilla select field',
     parameters: {

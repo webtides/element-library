@@ -28,14 +28,15 @@ import '@webtides/element-library/select-field/define';
     required
 ></el-select-field>
 
-<!-- Object-based options with values and labels -->
+<!-- Object-based options with values and labels, and the value that is selected -->
 <el-select-field
     name="size"
     label="Size"
     placeholder="Select a size"
+    value="md"
     options='[
         {"value": "sm", "label": "Small"},
-        {"value": "md", "label": "Medium", "selected": true},
+        {"value": "md", "label": "Medium"},
         {"value": "lg", "label": "Large"}
     ]'
 ></el-select-field>
@@ -48,7 +49,7 @@ import '@webtides/element-library/select-field/define';
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `name` | `string` | `''` | The name attribute for the select field, used for form submission and identification |
-| `value` | `string` | `null` | The current selected value of the select field |
+| `value` | `string` | `null` | The value of the selected option. Setting it selects the option with that value, see [Value](#value) |
 | `placeholder` | `string` | `''` | Placeholder text displayed as the first disabled option when no selection is made |
 | `options` | `Array<string\|object>` | `[]` | Array of options. Can be simple strings or objects with `value`, `label`, and `selected` properties |
 | `required` | `boolean` | `false` | Whether the field is required for form submission |
@@ -84,7 +85,26 @@ When using objects:
 
 - `value`: The value submitted with the form (defaults to the string if not provided)
 - `label`: The text displayed in the dropdown (defaults to the string if not provided)
-- `selected`: Whether this option should be pre-selected (optional)
+- `selected`: Whether this option is selected in a field without a `value` (optional)
+
+#### Value
+
+`value` says which option is selected, and the select follows it: when the field is rendered, in server-rendered markup (the option carries `selected` there, so the choice is right before the script runs), and when the value is set later.
+
+```html
+<el-select-field name="size" label="Size" value="md" options='["sm", "md", "lg"]'></el-select-field>
+```
+
+```js
+field.value = 'lg'; // selects "lg"
+field.value = null; // back to the default of the select
+```
+
+- **`value` wins over `selected` in `options`.** `selected` is the default of a field that has no value.
+- **Without a value the field takes over what the select shows**, so that `value` always says what the form submits: the option marked as `selected`, or else the first option, as in a native select. That is no change, so no `input-change` is fired for it. While the placeholder is shown, `value` stays `null`.
+- **An empty value** (`''`) selects the option with an empty value if `options` has one, an "Any" entry for example. If it has none, an empty value counts as no value.
+- **A value that no option has** selects nothing: the select shows its default, and `value` stays as it is. Its option is selected as soon as it arrives with `options`.
+- The values are compared as text: `value="2"` selects the option `2`.
 
 #### Methods
 

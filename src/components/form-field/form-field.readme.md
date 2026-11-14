@@ -93,6 +93,5 @@ What does not work yet:
 
 - `form.reset()` leaves a field as it is: its value, and its `touched` and `valid` state.
 - When the browser refuses a submit, a field that was not touched shows no error message of its own, only the bubble of the browser.
-- `el-select-field`: a `value` set on the element does not select the option. Mark the option as `selected` in `options` instead.
 - `el-amount-field` renders its input in a shadow root. It is not submitted, and `required` has no effect on the form.
 - `el-button type="submit"`: its `name` and `value` are not submitted, and Enter in a field does not submit the form.
