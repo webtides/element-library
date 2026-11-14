@@ -86,9 +86,14 @@ The fields that render into the page take part in a native `<form>` through thei
 - The value is submitted under the `name`, whether the user entered it or a script set it on the element. A checkbox or a switch submits its `value` while it is checked (`on` if it has none) and nothing while it is not; a radio group submits the selected option.
 - A `disabled` field is left out.
 - A `required` field that is empty keeps the form from being submitted. That is the validation of the browser.
-- When the browser refuses a submit, every field that is not valid shows its `errorMessage`, as it does once the user has left it: the field is `touched` and not `valid`, and the message is an alert. That holds for a click on a submit button, for Enter in a field and for `form.requestSubmit()`, which is what `el-button type="submit"` calls. A form with `novalidate` is not validated, so nothing changes there.
+- When the browser refuses a submit, every field that is not valid shows its `errorMessage`, as it does once the user has left it. See [A refused submit](#a-refused-submit).
+- `form.reset()`, a reset button and `el-button type="reset"` put a field back to the state it was rendered with. See [Reset](#reset).
 
 The elements themselves are not form-associated custom elements: the control already is part of the form, and a second entry under the same name would be submitted twice.
+
+#### A refused submit
+
+A form whose fields are not all valid is not submitted. Every field that is not valid is then `touched` and not `valid`, and shows its `errorMessage` as an alert, whether the user had been in it or not. That holds for a click on a submit button, for Enter in a field and for `form.requestSubmit()`, which is what `el-button type="submit"` calls. A form with `novalidate` is not validated, so nothing changes there.
 
 The browser still focuses the first control that is not valid and shows its own bubble there. To show the messages of the fields alone, cancel the `invalid` event for the whole form. It does not bubble, so listen while it is captured:
 
@@ -100,8 +105,18 @@ The browser then shows no bubble and moves no focus; the fields show their messa
 
 `form.checkValidity()` and `form.reportValidity()` do not make a field show its message. They are questions of a script, on every keystroke for some pages, and no attempt of the user to submit. Set `touched` on a field yourself where you want its message.
 
+#### Reset
+
+A reset puts a field back to the state it had when it was connected: its value, its `checked` or its selected option, and with it `touched` and `valid`, so no error message of an earlier attempt is left. `input-change` reports the value the field goes back to.
+
+That state is not an empty one: `<el-input-field value="Ada">` shows "Ada" again, a checkbox rendered with `checked="true"` is checked again. A value that a script sets later is no new default.
+
+- A text field or a select that is rendered with a value is `touched` from the start, and so it is after a reset. A field that is rendered with `valid="false"`, for an error the server found, shows that error again.
+- The field follows a moment after the event, and its control with the next render. Read the form in the frame after the reset, not in the same task.
+- A reset that a listener cancels (`event.preventDefault()`) changes nothing.
+- A field that was taken out of the form is left alone.
+
 What does not work yet:
 
-- `form.reset()` leaves a field as it is: its value, and its `touched` and `valid` state.
 - `el-amount-field` renders its input in a shadow root. It is not submitted, and `required` has no effect on the form.
 - `el-button type="submit"`: its `name` and `value` are not submitted, and Enter in a field does not submit the form.

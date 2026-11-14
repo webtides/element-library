@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { aTimeout, fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './radio-field.js';
 define();
 
@@ -102,6 +102,14 @@ describe('Feature | RadioField', () => {
                 `<form><el-radio-field name="${name}" label="Plan" options='["free", "pro", "team"]' ${attributes}></el-radio-field></form>`,
             );
 
+        // The field goes back a task after the event, and its control with the render after that.
+        const reset = async (form) => {
+            form.reset();
+            await aTimeout(0);
+            await nextFrame();
+            await nextFrame();
+        };
+
         it('submits the selected option under its name, and nothing while none is selected', async () => {
             const selected = await inForm('form-value', 'value="pro"');
             expect(data(selected)).toEqual({ 'form-value': 'pro' });
@@ -137,6 +145,59 @@ describe('Feature | RadioField', () => {
             form.querySelector('input[value="pro"]').click();
             await nextFrame();
             expect(form.checkValidity()).toBe(true);
+        });
+
+        it('goes back to the option it was rendered with when the form is reset', async () => {
+            const form = await inForm('form-reset', 'value="pro" required="true" error-message="Choose a plan"');
+            const el = form.firstElementChild;
+            const state = () => ({
+                control: form.querySelector('input:checked')?.value ?? null,
+                value: el.value,
+                submitted: new FormData(form).get('form-reset'),
+                touched: el.touched,
+                valid: el.valid,
+            });
+            const rendered = { control: 'pro', value: 'pro', submitted: 'pro', touched: false, valid: true };
+            expect(state()).toEqual(rendered);
+
+            const team = form.querySelector('input[value="team"]');
+            team.focus();
+            team.click();
+            team.blur();
+            await nextFrame();
+            await nextFrame();
+            expect(state()).toEqual({ control: 'team', value: 'team', submitted: 'team', touched: true, valid: true });
+
+            await reset(form);
+
+            expect(state()).toEqual(rendered);
+        });
+
+        it('has no option selected after a reset when it was rendered so', async () => {
+            const form = await inForm('form-reset-none', 'required="true" error-message="Choose a plan"');
+            const el = form.firstElementChild;
+            const state = () => ({
+                control: form.querySelector('input:checked')?.value ?? null,
+                value: el.value,
+                touched: el.touched,
+                valid: el.valid,
+                message: el.querySelector('.error-message')?.textContent.trim() ?? null,
+            });
+            // A required group without a choice is not valid from the start, and says so once it is touched.
+            const rendered = { control: null, value: null, touched: false, valid: false, message: null };
+            expect(state()).toEqual(rendered);
+
+            const pro = form.querySelector('input[value="pro"]');
+            pro.focus();
+            pro.click();
+            pro.blur();
+            await nextFrame();
+            await nextFrame();
+            expect(state()).toEqual({ control: 'pro', value: 'pro', touched: true, valid: true, message: null });
+
+            await reset(form);
+
+            expect(state()).toEqual(rendered);
         });
     });
 

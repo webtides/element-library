@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './input-field.js';
 define();
 
@@ -256,6 +256,14 @@ describe('Feature | InputField', () => {
         const inForm = (name, attributes = '') =>
             fixture(`<form><el-input-field name="${name}" label="Email" ${attributes}></el-input-field></form>`);
 
+        // The field goes back a task after the event, and its control with the render after that.
+        const reset = async (form) => {
+            form.reset();
+            await aTimeout(0);
+            await nextFrame();
+            await nextFrame();
+        };
+
         it('submits its value under its name', async () => {
             const form = await inForm('form-value', 'value="ada@example.com"');
             expect(data(form)).toEqual({ 'form-value': 'ada@example.com' });
@@ -291,6 +299,78 @@ describe('Feature | InputField', () => {
             await nextFrame();
             await nextFrame();
             expect(form.checkValidity()).toBe(true);
+        });
+
+        it('goes back to the state it was rendered with when the form is reset', async () => {
+            const form = await inForm(
+                'form-reset',
+                'value="ada@example.com" required="true" error-message="Enter an email address"',
+            );
+            const el = form.firstElementChild;
+            const control = el.querySelector('input');
+            const state = () => ({
+                control: control.value,
+                value: el.value,
+                submitted: new FormData(form).get('form-reset'),
+                touched: el.touched,
+                valid: el.valid,
+                message: el.querySelector('.error-message')?.textContent.trim() ?? null,
+            });
+            // A field that is rendered with a value is touched from the start.
+            const rendered = {
+                control: 'ada@example.com',
+                value: 'ada@example.com',
+                submitted: 'ada@example.com',
+                touched: true,
+                valid: true,
+                message: null,
+            };
+            expect(state()).toEqual(rendered);
+
+            await userEvent.click(control);
+            control.select();
+            await userEvent.keyboard('{Backspace}');
+            control.blur();
+            await nextFrame();
+            await nextFrame();
+            expect(state()).toEqual({
+                control: '',
+                value: '',
+                submitted: '',
+                touched: true,
+                valid: false,
+                message: 'Enter an email address',
+            });
+
+            await reset(form);
+
+            expect(state()).toEqual(rendered);
+        });
+
+        it('is empty and not touched after a reset when it was rendered so', async () => {
+            const form = await inForm('form-reset-empty', 'required="true" error-message="Enter an email address"');
+            const el = form.firstElementChild;
+            const control = el.querySelector('input');
+            const state = () => ({
+                control: control.value,
+                value: el.value,
+                touched: el.touched,
+                valid: el.valid,
+                message: el.querySelector('.error-message')?.textContent.trim() ?? null,
+            });
+            const rendered = { control: '', value: null, touched: false, valid: true, message: null };
+            expect(state()).toEqual(rendered);
+
+            await userEvent.click(control);
+            await userEvent.keyboard('grace');
+            control.blur();
+            await nextFrame();
+            await nextFrame();
+            expect(state()).toEqual({ control: 'grace', value: 'grace', touched: true, valid: true, message: null });
+
+            await reset(form);
+
+            expect(state()).toEqual(rendered);
         });
     });
 

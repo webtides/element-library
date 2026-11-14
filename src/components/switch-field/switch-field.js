@@ -39,6 +39,11 @@ export default class SwitchField extends FormField {
         this.syncValidationStates();
     }
 
+    /** @private */
+    _stateForReset() {
+        return { ...super._stateForReset(), checked: this.checked };
+    }
+
     watch() {
         return {
             ...super.watch(),

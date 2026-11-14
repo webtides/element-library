@@ -35,6 +35,18 @@ import style from './form-field.style.js';
  *   when this is `true`.
  */
 export default class FormField extends TemplateElement {
+    /**
+     * The state the field was rendered with, for a reset of its form. See `_stateForReset()`.
+     * @private
+     */
+    _renderedState = undefined;
+
+    /**
+     * Where the field listens for the reset of its form, see `afterUpdate()`.
+     * @private
+     */
+    _resetRoot = undefined;
+
     constructor(options) {
         super({ shadowRender: false, styles: [style], ...options });
 
@@ -54,6 +66,55 @@ export default class FormField extends TemplateElement {
         }
         this.syncValidationStates();
     }
+
+    afterUpdate() {
+        // The first update of a field is the one that connected() comes with: every class has set
+        // its state up by now, the touched mark of a field with a value included.
+        this._renderedState ??= this._stateForReset();
+
+        // `reset` bubbles to the root of its tree, the document or a shadow root, and does not
+        // leave it. The control is not asked for its form yet: a radio group can get its options
+        // later.
+        if (!this._resetRoot) {
+            this._resetRoot = this.getRootNode();
+            this._resetRoot.addEventListener('reset', this._onFormReset);
+        }
+    }
+
+    disconnected() {
+        this._resetRoot?.removeEventListener('reset', this._onFormReset);
+        this._resetRoot = undefined;
+    }
+
+    /**
+     * The properties that a reset of the form puts back, with the values they have now.
+     * @private
+     * @returns {Object<string, unknown>}
+     */
+    _stateForReset() {
+        return { value: this.value, touched: this.touched, valid: this.valid };
+    }
+
+    /**
+     * The form of the field was reset. The browser puts every control back to its default, which
+     * for these fields is the value of now: a field renders its value as an attribute of the
+     * control, and that attribute is the default. So the field puts its own state back, to the one
+     * it was rendered with, and the control follows with the next render.
+     *
+     * The event comes before the browser resets the controls, and a listener after this one can
+     * still cancel it. A task later both are settled.
+     * @private
+     * @param {Event} event
+     */
+    _onFormReset = (event) => {
+        const control = this.$refs.input ?? this.querySelector('input');
+        if (!control || event.target !== control.form) return;
+
+        setTimeout(() => {
+            if (event.defaultPrevented || !this.isConnected) return;
+            Object.assign(this, this._renderedState);
+        });
+    };
 
     properties() {
         return {

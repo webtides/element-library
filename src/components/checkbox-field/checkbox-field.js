@@ -38,6 +38,11 @@ export default class CheckboxField extends FormField {
         this.syncValidationStates();
     }
 
+    /** @private */
+    _stateForReset() {
+        return { ...super._stateForReset(), checked: this.checked };
+    }
+
     watch() {
         return {
             ...super.watch(),

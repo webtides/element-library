@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
-import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './checkbox-field.js';
 define();
 
@@ -22,6 +22,14 @@ describe('Feature | CheckboxField', () => {
             fixture(
                 `<form><el-checkbox-field name="${name}" label="Accept the terms" ${attributes}></el-checkbox-field></form>`,
             );
+
+        // The field goes back a task after the event, and its control with the render after that.
+        const reset = async (form) => {
+            form.reset();
+            await aTimeout(0);
+            await nextFrame();
+            await nextFrame();
+        };
 
         it('submits its value while it is checked, and nothing while it is not', async () => {
             const form = await inForm('form-value', 'value="yes" checked="true"');
@@ -56,6 +64,77 @@ describe('Feature | CheckboxField', () => {
             form.querySelector('input').click();
             await nextFrame();
             expect(form.checkValidity()).toBe(true);
+        });
+
+        it('goes back to the checked state it was rendered with when the form is reset', async () => {
+            const on = await inForm('form-reset-on', 'value="yes" checked="true"');
+            const off = await inForm('form-reset-off', 'value="yes" required="true" error-message="Accept the terms"');
+            const state = (form) => {
+                const el = form.firstElementChild;
+                return {
+                    control: el.querySelector('input').checked,
+                    checked: el.checked,
+                    submitted: new FormData(form).get(el.name),
+                    touched: el.touched,
+                    valid: el.valid,
+                    message: el.querySelector('.error-message')?.textContent.trim() ?? null,
+                };
+            };
+            const renderedOn = {
+                control: true,
+                checked: true,
+                submitted: 'yes',
+                touched: false,
+                valid: true,
+                message: null,
+            };
+            const renderedOff = {
+                control: false,
+                checked: false,
+                submitted: null,
+                touched: false,
+                valid: true,
+                message: null,
+            };
+            expect(state(on)).toEqual(renderedOn);
+            expect(state(off)).toEqual(renderedOff);
+
+            // The one that was on goes off, and the required one is left without a check.
+            on.querySelector('input').focus();
+            on.querySelector('input').click();
+            off.querySelector('input').focus();
+            off.querySelector('input').blur();
+            await nextFrame();
+            await nextFrame();
+            expect(state(on)).toEqual({
+                ...renderedOn,
+                control: false,
+                checked: false,
+                submitted: null,
+                touched: true,
+            });
+            expect(state(off)).toEqual({ ...renderedOff, touched: true, valid: false, message: 'Accept the terms' });
+
+            await reset(on);
+            await reset(off);
+
+            expect(state(on)).toEqual(renderedOn);
+            expect(state(off)).toEqual(renderedOff);
+        });
+
+        it('goes off again after a reset when the user had turned it on', async () => {
+            const form = await inForm('form-reset-turned-on', 'value="yes"');
+            const el = form.firstElementChild;
+
+            el.querySelector('input').click();
+            await nextFrame();
+            await nextFrame();
+            expect([el.querySelector('input').checked, el.checked]).toEqual([true, true]);
+
+            await reset(form);
+
+            expect([el.querySelector('input').checked, el.checked]).toEqual([false, false]);
+            expect(new FormData(form).get('form-reset-turned-on')).toBe(null);
         });
     });
 

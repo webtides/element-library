@@ -21,7 +21,8 @@ export default {
                     'list, a pagination, skeletons and a spinner while it loads, an empty state, and a drawer ' +
                     'with the details: a breadcrumb, a divider and a copy button for the import path), a ' +
                     'lazy-loaded pattern gallery, a request-access form built from ' +
-                    'the field components (submitting it floats a success toast), an FAQ accordion, and the ' +
+                    'the field components (a submit with a field missing shows the messages of the fields, a ' +
+                    'complete one floats a success toast, and "Start over" resets the form), an FAQ accordion, and the ' +
                     'transition + scroll helpers. The design-system framing leans into the ' +
                     'theming story — flip the **Theme** and **Color scheme** toolbar switches to see the whole page ' +
                     're-skin through the design tokens.',
@@ -738,6 +739,7 @@ export const Page = {
                             placeholder="Charles Eames"
                             required="true"
                             help-message="So we know who to greet."
+                            error-message="Please enter your name."
                         ></el-input-field>
 
                         <el-input-field
@@ -755,6 +757,7 @@ export const Page = {
                             placeholder="••••••••"
                             required="true"
                             help-message="At least 8 characters."
+                            error-message="Please choose a password."
                         ></el-password-field>
 
                         <el-select-field
@@ -762,6 +765,7 @@ export const Page = {
                             label="Team size"
                             placeholder="Choose a range"
                             required="true"
+                            error-message="Please choose a range."
                             options="${JSON.stringify(['Just me', '2–10', '11–50', '50+'])}"
                         ></el-select-field>
 
@@ -805,12 +809,14 @@ export const Page = {
                             <el-checkbox-field
                                 name="terms"
                                 required="true"
+                                error-message="Please agree to the terms."
                                 label="I agree to the design system license terms."
                             ></el-checkbox-field>
                         </div>
 
-                        <div class="sm:col-span-2">
+                        <div class="sm:col-span-2 flex flex-wrap gap-3">
                             <el-button type="submit" variant="brand" size="large"> Request access </el-button>
+                            <el-button type="reset" appearance="plain" size="large"> Start over </el-button>
                         </div>
                     </form>
 

@@ -59,7 +59,10 @@ export default class SelectField extends FormField {
     }
 
     afterUpdate() {
+        // Before the form field keeps the state for a reset: what the field takes over from the
+        // select is part of it.
         this._syncSelection();
+        super.afterUpdate();
     }
 
     /**

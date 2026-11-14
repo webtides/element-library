@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
-import { fixture, nextFrame } from '../../test-helpers.js';
+import { aTimeout, fixture, nextFrame } from '../../test-helpers.js';
 import { define } from './form-field.js';
 import { define as defineInputField } from '../input-field/input-field.js';
 import { define as definePasswordField } from '../password-field/password-field.js';
@@ -21,6 +21,11 @@ defineRadioField();
 const frames = async () => {
     await nextFrame();
     await nextFrame();
+};
+// After a reset: the field goes back a task after the event, and its control with the render after that.
+const settled = async () => {
+    await aTimeout(0);
+    await frames();
 };
 
 describe('Feature | FormField', () => {
@@ -184,6 +189,169 @@ describe('Feature | FormField', () => {
             for (const kind of Object.keys(MESSAGES)) {
                 expect([kind, unchecked.fieldOf(kind).touched]).toEqual([kind, false]);
             }
+        });
+
+        it('takes the messages away again when the form is reset', async () => {
+            const refused = await emptyForm('refused-reset');
+            refused.form.requestSubmit();
+            await frames();
+            expect(shown(refused)).toEqual(MESSAGES);
+
+            refused.form.reset();
+            await settled();
+
+            expect(shown(refused)).toEqual(nothingShown);
+            for (const kind of Object.keys(MESSAGES)) {
+                expect([kind, refused.fieldOf(kind).touched]).toEqual([kind, false]);
+            }
+        });
+    });
+
+    // Every field has a test of its own for what it goes back to. Here: what they share.
+    describe('when the form is reset', () => {
+        const filledForm = async (prefix) => {
+            const form = await fixture(`
+                <form>
+                    <el-input-field name="${prefix}-name" label="Name" value="Ada"></el-input-field>
+                    <el-checkbox-field name="${prefix}-terms" label="Terms" value="yes"></el-checkbox-field>
+                    <button type="reset">Start over</button>
+                </form>
+            `);
+            const name = form.querySelector('el-input-field');
+            const terms = form.querySelector('el-checkbox-field');
+            const state = () => ({
+                name: [name.querySelector('input').value, name.value],
+                terms: [terms.querySelector('input').checked, terms.checked],
+            });
+            // What a user does: another name, and a check.
+            const change = async () => {
+                const input = name.querySelector('input');
+                await userEvent.click(input);
+                input.select();
+                await userEvent.keyboard('Grace');
+                // The label is the hit area of the checkbox: its indicator lies over the input.
+                await userEvent.click(terms.querySelector('label'));
+                await frames();
+            };
+            return { form, name, terms, state, change };
+        };
+        const RENDERED = { name: ['Ada', 'Ada'], terms: [false, false] };
+        const CHANGED = { name: ['Grace', 'Grace'], terms: [true, true] };
+
+        it('puts the fields back for a click on a reset button', async () => {
+            const { form, state, change } = await filledForm('reset-click');
+            await change();
+            expect(state()).toEqual(CHANGED);
+
+            await userEvent.click(form.querySelector('button[type="reset"]'));
+            await settled();
+
+            expect(state()).toEqual(RENDERED);
+            expect(Object.fromEntries(new FormData(form))).toEqual({ 'reset-click-name': 'Ada' });
+        });
+
+        it('reports the value a field goes back to', async () => {
+            const { form, change } = await filledForm('reset-reported');
+            await change();
+            const changes = [];
+            form.addEventListener('input-change', (event) => changes.push([event.target.localName, event.detail]));
+
+            form.reset();
+            await settled();
+
+            expect(changes).toEqual([
+                ['el-input-field', 'Ada'],
+                ['el-checkbox-field', 'yes'],
+            ]);
+        });
+
+        it('changes nothing when the reset is cancelled, by a listener that comes after the fields', async () => {
+            const { form, state, change } = await filledForm('reset-cancelled');
+            await change();
+            // The fields listen at the root of their tree. This listener was added there after them.
+            const cancel = (event) => event.target === form && event.preventDefault();
+            document.addEventListener('reset', cancel);
+
+            form.reset();
+            await settled();
+            document.removeEventListener('reset', cancel);
+
+            expect(state()).toEqual(CHANGED);
+        });
+
+        it('leaves the fields of another form alone', async () => {
+            const { state, change } = await filledForm('reset-other');
+            const other = await fixture(`<form><el-input-field name="reset-other-form"></el-input-field></form>`);
+            await change();
+
+            other.reset();
+            await settled();
+
+            expect(state()).toEqual(CHANGED);
+        });
+
+        it('leaves a field alone that was taken out of the form', async () => {
+            const { form, name, state, change } = await filledForm('reset-removed');
+            await change();
+            const changed = state();
+            name.remove();
+
+            form.reset();
+            await settled();
+
+            expect(state().name).toEqual(changed.name);
+        });
+
+        it('shows the error again that a field was rendered with', async () => {
+            const form = await fixture(`
+                <form>
+                    <el-input-field
+                        name="reset-server-error"
+                        label="Email"
+                        value="ada@example.com"
+                        valid="false"
+                        error-message="This address is taken"
+                    ></el-input-field>
+                </form>
+            `);
+            const field = form.firstElementChild;
+            const input = field.querySelector('input');
+            const message = () => field.querySelector('.error-message')?.textContent.trim() ?? null;
+            expect(message()).toBe('This address is taken');
+
+            // The field asks its control once the user types: the new address is fine.
+            await userEvent.click(input);
+            input.select();
+            await userEvent.keyboard('grace@example.com');
+            await frames();
+            expect(message()).toBe(null);
+
+            form.reset();
+            await settled();
+
+            expect(input.value).toBe('ada@example.com');
+            expect(message()).toBe('This address is taken');
+        });
+
+        it('follows the reset of a form in a shadow root', async () => {
+            const host = await fixture(`<div></div>`);
+            const root = host.attachShadow({ mode: 'open' });
+            root.setHTMLUnsafe(
+                `<form><el-input-field name="reset-shadow" label="Name" value="Ada"></el-input-field></form>`,
+            );
+            await frames();
+            const field = root.querySelector('el-input-field');
+            const input = field.querySelector('input');
+            await userEvent.click(input);
+            input.select();
+            await userEvent.keyboard('Grace');
+            await frames();
+            expect([input.value, field.value]).toEqual(['Grace', 'Grace']);
+
+            root.querySelector('form').reset();
+            await settled();
+
+            expect([input.value, field.value]).toEqual(['Ada', 'Ada']);
         });
     });
 });

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './select-field.js';
 define();
 
@@ -267,6 +267,14 @@ describe('Feature | SelectField', () => {
         const inForm = (name, attributes = `options='["S", "M", "L"]'`) =>
             fixture(`<form><el-select-field name="${name}" label="Size" ${attributes}></el-select-field></form>`);
 
+        // The field goes back a task after the event, and its control with the render after that.
+        const reset = async (form) => {
+            form.reset();
+            await aTimeout(0);
+            await nextFrame();
+            await nextFrame();
+        };
+
         it('submits the option the user picks under its name', async () => {
             const form = await inForm('form-value');
             const el = form.firstElementChild;
@@ -316,6 +324,81 @@ describe('Feature | SelectField', () => {
             select.dispatchEvent(new Event('change', { bubbles: true }));
             await nextFrame();
             expect(form.checkValidity()).toBe(true);
+        });
+
+        it('goes back to the option it was rendered with when the form is reset', async () => {
+            const withValue = await inForm('form-reset-value', `value="M" options='["S", "M", "L"]'`);
+            const withMark = await inForm(
+                'form-reset-mark',
+                `options='[{ "value": "S" }, { "value": "M" }, { "value": "L", "selected": true }]'`,
+            );
+            const plain = await inForm('form-reset-plain');
+            const withPlaceholder = await inForm(
+                'form-reset-placeholder',
+                `options='["S", "M", "L"]' placeholder="Pick a size" required="true" error-message="Pick a size"`,
+            );
+            const forms = [withValue, withMark, plain, withPlaceholder];
+            const state = (form) => {
+                const el = form.firstElementChild;
+                return {
+                    control: el.querySelector('select').value,
+                    value: el.value,
+                    submitted: new FormData(form).get(el.name),
+                    touched: el.touched,
+                    valid: el.valid,
+                    message: el.querySelector('.error-message')?.textContent.trim() ?? null,
+                };
+            };
+            const rendered = forms.map(state);
+            expect(rendered.map(({ control, value }) => [control, value])).toEqual([
+                ['M', 'M'],
+                ['L', 'L'],
+                ['S', 'S'],
+                ['', null],
+            ]);
+            expect(rendered[3]).toEqual({
+                control: '',
+                value: null,
+                submitted: null,
+                touched: false,
+                valid: true,
+                message: null,
+            });
+
+            // The first three get another option. The required one is left with its placeholder.
+            await userEvent.selectOptions(withValue.querySelector('select'), 'L');
+            await userEvent.selectOptions(withMark.querySelector('select'), 'S');
+            await userEvent.selectOptions(plain.querySelector('select'), 'M');
+            withPlaceholder.querySelector('select').focus();
+            withPlaceholder.querySelector('select').blur();
+            await nextFrame();
+            await nextFrame();
+            expect(forms.map(state).map(({ control, value }) => [control, value])).toEqual([
+                ['L', 'L'],
+                ['S', 'S'],
+                ['M', 'M'],
+                ['', null],
+            ]);
+            expect(state(withPlaceholder)).toMatchObject({ touched: true, valid: false, message: 'Pick a size' });
+
+            for (const form of forms) await reset(form);
+
+            expect(forms.map(state)).toEqual(rendered);
+        });
+
+        it('shows the placeholder again after a reset when the user had chosen', async () => {
+            const form = await inForm('form-reset-chosen', `options='["S", "M", "L"]' placeholder="Pick a size"`);
+            const el = form.firstElementChild;
+
+            await userEvent.selectOptions(el.querySelector('select'), 'M');
+            await nextFrame();
+            await nextFrame();
+            expect([el.querySelector('select').value, el.value]).toEqual(['M', 'M']);
+
+            await reset(form);
+
+            expect([el.querySelector('select').value, el.value]).toEqual(['', null]);
+            expect(el.querySelector('select').selectedOptions[0].textContent.trim()).toBe('Pick a size');
         });
     });
 
