@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vite-plus/test';
+import { describe, it, expect, beforeAll, afterAll } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import {
@@ -15,6 +15,7 @@ import {
     useTouchScreen,
 } from '../../test-helpers.js';
 import { define } from './rating-field.js';
+import style from './rating-field.style.js';
 define();
 
 const frames = async () => {
@@ -210,31 +211,9 @@ describe('Feature | RatingField', () => {
             expect(rects.map((rect) => Math.round(rect.width))).toEqual([36, 36, 36, 36, 30]);
         });
 
-        it('show the stars up to the one under the pointer as on, whatever is chosen', async () => {
-            // The fourth star is chosen; the pointer is over the second, the fifth and the fourth.
-            const shown = [];
-            for (const hovered of [2, 5, 4]) {
-                const el = await fixture(
-                    `<el-rating-field name="hover-${hovered}" label="Rating" value="4"></el-rating-field>`,
-                );
-                await frames();
-                expect(starsOf(el)).toBe('★★★★☆');
-
-                await forcePseudoClasses(el.querySelectorAll('.option')[hovered - 1], ['hover']);
-
-                shown.push(starsOf(el));
-                // Nothing was chosen by that.
-                expect(el.value).toBe('4');
-            }
-
-            expect(shown).toEqual(['★★☆☆☆', '★★★★★', '★★★★☆']);
-        });
-
-        it('show no stars under the pointer while the field is disabled', async () => {
+        it('fade and say not-allowed while the field is disabled', async () => {
             const el = await ratingFixture('value="4" disabled="true"');
             await frames();
-
-            await forcePseudoClasses(el.querySelectorAll('.option')[1], ['hover']);
 
             expect(starsOf(el)).toBe('★★★★☆');
             expect(getComputedStyle(el.querySelector('.option')).cursor).toBe('not-allowed');
@@ -271,6 +250,65 @@ describe('Feature | RatingField', () => {
                 expect(getComputedStyle(on).fill).not.toBe('none');
                 expect(getComputedStyle(on).fill).toBe(getComputedStyle(on).stroke);
             });
+        });
+    });
+
+    // The rules for a pointer that can hover are in `@media (hover: hover)`. A page of the tests has
+    // no such pointer that a test may rely on: once a test has emulated a touch screen, headless
+    // Chromium on Linux has none any more (see `useTouchScreen()`), and the test files share a page.
+    // So these tests put the same rules on the page without their condition.
+    describe('under a pointer that can hover', () => {
+        let rules;
+        beforeAll(() => {
+            rules = document.createElement('style');
+            rules.textContent = style.replaceAll('@media (hover: hover)', '@media all');
+            document.head.append(rules);
+        });
+        afterAll(() => rules.remove());
+
+        it('has rules that only apply where the pointer can hover', () => {
+            expect(style).toContain('@media (hover: hover)');
+            expect(rules.textContent).not.toContain('(hover: hover)');
+        });
+
+        it('shows the stars up to the one under the pointer as on, whatever is chosen', async () => {
+            // The fourth star is chosen; the pointer is over the second, the fifth and the fourth.
+            const shown = [];
+            for (const hovered of [2, 5, 4]) {
+                const el = await fixture(
+                    `<el-rating-field name="hover-${hovered}" label="Rating" value="4"></el-rating-field>`,
+                );
+                await frames();
+                expect(starsOf(el)).toBe('★★★★☆');
+
+                await forcePseudoClasses(el.querySelectorAll('.option')[hovered - 1], ['hover']);
+
+                shown.push(starsOf(el));
+                // Nothing was chosen by that.
+                expect(el.value).toBe('4');
+            }
+
+            expect(shown).toEqual(['★★☆☆☆', '★★★★★', '★★★★☆']);
+        });
+
+        it('shows them from nothing chosen as well', async () => {
+            const el = await fixture(`<el-rating-field name="hover-none" label="Rating"></el-rating-field>`);
+            await frames();
+
+            await forcePseudoClasses(el.querySelectorAll('.option')[2], ['hover']);
+
+            expect(starsOf(el)).toBe('★★★☆☆');
+        });
+
+        it('shows no stars under the pointer while the field is disabled', async () => {
+            const el = await fixture(
+                `<el-rating-field name="hover-disabled" label="Rating" value="4" disabled="true"></el-rating-field>`,
+            );
+            await frames();
+
+            await forcePseudoClasses(el.querySelectorAll('.option')[1], ['hover']);
+
+            expect(starsOf(el)).toBe('★★★★☆');
         });
     });
 
@@ -499,6 +537,18 @@ describe('Feature | RatingField', () => {
 
     describe('on a touch screen', () => {
         useTouchScreen();
+
+        // A touch screen keeps :hover on the element that was tapped last.
+        it('shows the chosen stars, and none for the :hover that a tap leaves behind', async () => {
+            const el = await fixture(`<el-rating-field name="touch-hover" label="Rating" value="4"></el-rating-field>`);
+            await frames();
+            const second = el.querySelectorAll('.option')[1];
+
+            await forcePseudoClasses(second, ['hover']);
+
+            expect(second.matches(':hover')).toBe(true);
+            expect(starsOf(el)).toBe('★★★★☆');
+        });
 
         it('makes every star at least --el-touch-target in both directions', async () => {
             const wrapper = await fixture(
