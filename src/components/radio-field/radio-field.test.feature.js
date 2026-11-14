@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import { aTimeout, fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './radio-field.js';
@@ -95,6 +96,102 @@ describe('Feature | RadioField', () => {
         expect(sizeOf(wrapper.querySelector('.option')).height).toBeLessThan(44);
     });
 
+    describe('an error of the page', () => {
+        const messageOf = (el) => el.querySelector('.error-message')?.textContent.trim() ?? null;
+
+        // The group works out its validity from `required` and its value. What the page says after a
+        // check of its own, such as "that plan is sold out", is no part of that.
+        it('keeps the error it was rendered with, with and without a value and required', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <el-radio-field name="rendered-value" label="Plan" options='["free", "pro"]' value="pro" valid="false" error-message="Pro is sold out"></el-radio-field>
+                    <el-radio-field name="rendered-required" label="Plan" options='["free", "pro"]' value="pro" required="true" valid="false" error-message="Pro is sold out"></el-radio-field>
+                    <el-radio-field name="rendered-none" label="Plan" options='["free", "pro"]' valid="false" error-message="Choose a plan"></el-radio-field>
+                </div>
+            `);
+            await nextFrame();
+            await nextFrame();
+
+            for (const el of wrapper.children) {
+                expect([el.getAttribute('name'), el.valid, el.touched]).toEqual([el.getAttribute('name'), false, true]);
+                expect(el.querySelector('fieldset').getAttribute('aria-invalid')).toBe('true');
+            }
+            expect([...wrapper.children].map(messageOf)).toEqual([
+                'Pro is sold out',
+                'Pro is sold out',
+                'Choose a plan',
+            ]);
+        });
+
+        it('takes it away once the user chooses again', async () => {
+            const el = await radioFixture('value="Pro" valid="false" error-message="Pro is sold out"');
+            await nextFrame();
+            expect(messageOf(el)).toBe('Pro is sold out');
+
+            el.querySelector('input[value="Starter"]').click();
+            await nextFrame();
+            await nextFrame();
+
+            expect([el.valid, messageOf(el)]).toEqual([true, null]);
+        });
+    });
+
+    describe('when the user moves in the group and leaves it', () => {
+        const groupWithButton = async (name, attributes = '') => {
+            const wrapper = await fixture(`
+                <div>
+                    <el-radio-field name="${name}" label="Plan" options='["free", "pro", "team"]' required="true" error-message="Choose a plan" ${attributes}></el-radio-field>
+                    <button>After</button>
+                </div>
+            `);
+            await nextFrame();
+            return wrapper;
+        };
+        const messageOf = (el) => el.querySelector('.error-message')?.textContent.trim() ?? null;
+
+        it('is not touched while the focus moves from radio to radio with the arrow keys', async () => {
+            const wrapper = await groupWithButton('moves-keys');
+            const el = wrapper.firstElementChild;
+            const radios = el.querySelectorAll('input');
+            radios[0].focus();
+
+            await userEvent.keyboard('{ArrowDown}');
+            await nextFrame();
+            await nextFrame();
+
+            expect(document.activeElement).toBe(radios[1]);
+            expect([el.value, el.touched]).toEqual(['pro', false]);
+        });
+
+        it('is not touched by a click on another option', async () => {
+            const wrapper = await groupWithButton('moves-click');
+            const el = wrapper.firstElementChild;
+            el.querySelector('input').focus();
+
+            // The label is the hit area: the pointer goes down on it while the focus is still on
+            // the first radio, which loses it.
+            await userEvent.click(el.querySelectorAll('.option')[2]);
+            await nextFrame();
+            await nextFrame();
+
+            expect([el.value, el.touched, messageOf(el)]).toEqual(['team', false, null]);
+        });
+
+        it('is touched once the focus has left the group, and shows its error message without a choice', async () => {
+            const wrapper = await groupWithButton('moves-leaves');
+            const el = wrapper.firstElementChild;
+            el.querySelector('input').focus();
+            expect([el.touched, messageOf(el)]).toEqual([false, null]);
+
+            await userEvent.keyboard('{Tab}');
+            await nextFrame();
+            await nextFrame();
+
+            expect(document.activeElement).toBe(wrapper.querySelector('button'));
+            expect([el.touched, messageOf(el)]).toEqual([true, 'Choose a plan']);
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const inForm = (name, attributes = '') =>
@@ -131,6 +228,35 @@ describe('Feature | RadioField', () => {
             await nextFrame();
             expect(data(form)).toEqual({ 'form-change': 'team' });
             expect(el.value).toBe('team');
+        });
+
+        // The checked attribute of a radio is only its default: once the user has chosen it, the
+        // browser no longer follows the attribute.
+        it('selects the option of a value that a script sets, also after the user has chosen every option', async () => {
+            const form = await inForm('form-script', 'value="free"');
+            const el = form.firstElementChild;
+            const state = () => ({
+                control: form.querySelector('input:checked')?.value ?? null,
+                value: el.value,
+                submitted: new FormData(form).get('form-script'),
+            });
+
+            for (const radio of form.querySelectorAll('input')) radio.click();
+            await nextFrame();
+            await nextFrame();
+            expect(state()).toEqual({ control: 'team', value: 'team', submitted: 'team' });
+
+            el.value = 'free';
+            await nextFrame();
+            await nextFrame();
+            expect(state()).toEqual({ control: 'free', value: 'free', submitted: 'free' });
+
+            // No value: nothing is selected, and nothing is submitted. element-js writes the value
+            // back as an empty attribute, so the field reads '' afterwards.
+            el.value = null;
+            await nextFrame();
+            await nextFrame();
+            expect([state().control, state().submitted]).toEqual([null, null]);
         });
 
         it('is left out while it is disabled', async () => {

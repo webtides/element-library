@@ -1,5 +1,6 @@
 import { html, defineElement } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
+import { focusLeft } from '../../utils/focus.js';
 import style from './radio-field.style.js';
 
 /**
@@ -13,8 +14,8 @@ import style from './radio-field.style.js';
  * @fires {CustomEvent<string>} input-change - Fired when the selected value changes. `detail` is
  *   the newly selected value. Bubbles.
  *
- * @cssstate touched - Set once the user has focused and blurred the group, or the browser has
- *   refused a submit because of it. Inherits `valid` and `invalid` from `FormField`.
+ * @cssstate touched - Set once the user has left the group, or the browser has refused a submit
+ *   because of it. Inherits `valid` and `invalid` from `FormField`.
  *
  * @property {string} value - The selected option's value.
  * @property {Array<string | { value: string, label?: string, disabled?: boolean }>} options -
@@ -34,10 +35,18 @@ export default class RadioField extends FormField {
     }
 
     connected() {
+        // The page can render the group as not valid, after a check of its own.
+        const renderedInvalid = this.valid === false;
         super.connected();
         // Reflect validity (required-but-empty) so :state(invalid) is correct from the start; the
         // message stays hidden until the group is touched.
-        this.valid = this._computeValid();
+        if (!renderedInvalid) this.valid = this._computeValid();
+    }
+
+    afterUpdate() {
+        // Before the form field keeps the state for a reset.
+        this._syncControls();
+        super.afterUpdate();
     }
 
     events() {
@@ -48,7 +57,9 @@ export default class RadioField extends FormField {
                     this.valid = this._computeValid();
                 },
                 focus: () => this.onFocus(),
-                blur: () => this.onBlur(),
+                // The group is touched once the user has left it, not while the focus moves from
+                // one of its radios to the next.
+                blur: (event) => focusLeft(this, event) && this.onBlur(),
                 invalid: (event) => this._onInvalid(event.target),
             },
         };
@@ -63,6 +74,20 @@ export default class RadioField extends FormField {
     _computeValid() {
         if (this.required) return this.value != null && this.value !== '';
         return true;
+    }
+
+    /**
+     * Makes the radios say what the field says, after every render. The `checked` attribute the
+     * template writes is only the default of a radio: once the user has chosen, the browser no
+     * longer follows the attribute, so a value from outside is written to the radios as well.
+     * @private
+     */
+    _syncControls() {
+        const value = this.value == null ? null : String(this.value);
+        for (const radio of this.querySelectorAll('input[type="radio"]')) {
+            const checked = radio.value === value;
+            if (radio.checked !== checked) radio.checked = checked;
+        }
     }
 
     onFocus() {

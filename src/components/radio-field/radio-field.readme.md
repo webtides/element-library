@@ -55,11 +55,11 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 #### CSS States
 
-| Name      | Description                                                               |
-| --------- | ------------------------------------------------------------------------- |
-| `touched` | Set once the group has been focused and blurred.                          |
-| `valid`   | Set while the group passes validation.                                    |
-| `invalid` | Set while the group fails validation (e.g. `required` with no selection). |
+| Name      | Description                                                                              |
+| --------- | ---------------------------------------------------------------------------------------- |
+| `touched` | Set once the user has left the group. Moving from one radio to the next does not set it. |
+| `valid`   | Set while the group passes validation.                                                   |
+| `invalid` | Set while the group fails validation (e.g. `required` with no selection).                |
 
 #### CSS Custom Properties
 
@@ -73,5 +73,5 @@ On a touch screen (`@media (any-pointer: coarse)`) the label of every option, wh
 
 - Uses a native `<fieldset>` + `<legend>`, so the group is announced with its label and radios are mutually exclusive with native arrow-key navigation.
 - The native radio stays in the accessibility tree and focusable; it is only hidden visually, with keyboard focus reflected onto the custom indicator via `:focus-visible`.
-- Validation messages surface only once the group is `touched`.
+- Validation messages surface only once the group is `touched`: once the user has left it, or the page has rendered it as not valid.
 - The error message is an alert (`role="alert"`) and part of the `aria-describedby` of the group while it is shown: a screen reader announces it when it appears and reads it again when the group gets focus.
