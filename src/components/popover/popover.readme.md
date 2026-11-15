@@ -86,7 +86,7 @@ Both bubble and cross shadow boundaries. They fire for every way of opening and 
 
 #### CSS Custom Properties
 
-The panel reads `--el-color-bg` and `--el-color-fg` (the system colours `Canvas` and `CanvasText` without a theme), `--el-color-border`, `--el-border-width`, `--el-radius-lg`, `--el-space-3` for its padding and `--el-shadow-lg`. The arrow has the surface and the border of the panel.
+The panel reads `--el-color-bg` and `--el-color-fg` (the system colours `Canvas` and `CanvasText` without a theme), `--el-color-border`, `--el-border-width`, `--el-radius-lg`, `--el-space-3` for its padding and `--el-shadow-lg`. The arrow has the surface of the panel, and its border on the two sides that stick out.
 
 The panel is as wide as its content, up to `20rem`, and never wider than the viewport. Change that on the part:
 

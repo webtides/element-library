@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { fixture, nextFrame, oneEvent } from '../../test-helpers.js';
+import { fixture, nextFrame, oneEvent, useForcedColors } from '../../test-helpers.js';
 import { define } from './popover.js';
 import { define as defineButton } from '../button/button.js';
 define();
@@ -471,17 +471,50 @@ describe('Feature | Popover', () => {
             expect(rect(panel).top - rect(anchor).bottom).toBe(8);
         });
 
-        it('has the surface and the border of the panel, on its two outer sides only', async () => {
+        // The sides of the square that stick out of the panel, by the side of the anchor the panel is at.
+        const OUTER = {
+            top: ['Right', 'Bottom'],
+            bottom: ['Top', 'Left'],
+            left: ['Top', 'Right'],
+            right: ['Bottom', 'Left'],
+        };
+        /** The sides of the arrow that paint a line: a border with a width, in a colour that shows. */
+        const linesOf = (arrow) => {
+            const style = getComputedStyle(arrow);
+            return ['Top', 'Right', 'Bottom', 'Left'].filter(
+                (side) => style[`border${side}Width`] !== '0px' && style[`border${side}Color`] !== 'rgba(0, 0, 0, 0)',
+            );
+        };
+        const arrowAt = async (side) => {
+            const { el } = await popoverFixture({ attrs: `arrow="true" placement="${side}" open="true"` });
+            await settled();
+            return arrowOf(el);
+        };
+
+        it('has the surface and the border of the panel', async () => {
             const { el, panel } = await popoverFixture({ attrs: 'arrow="true" open="true"' });
             panel.style.setProperty('--el-color-bg', 'rgb(250, 250, 250)');
             panel.style.setProperty('--el-color-border', 'rgb(100, 100, 100)');
             await settled();
-            const { backgroundColor, borderTopColor, borderLeftColor, borderRightColor, borderBottomColor } =
-                getComputedStyle(arrowOf(el));
+            const { backgroundColor, borderTopColor, borderTopWidth } = getComputedStyle(arrowOf(el));
 
             expect(backgroundColor).toBe('rgb(250, 250, 250)');
-            expect([borderTopColor, borderLeftColor]).toEqual(['rgb(100, 100, 100)', 'rgb(100, 100, 100)']);
-            expect([borderRightColor, borderBottomColor]).toEqual(['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)']);
+            expect([borderTopColor, borderTopWidth]).toEqual(['rgb(100, 100, 100)', '1px']);
+        });
+
+        it('has a line on the two sides that stick out of the panel, on every side of the anchor', async () => {
+            for (const side of Object.keys(OUTER)) expect(linesOf(await arrowAt(side)), side).toEqual(OUTER[side]);
+        });
+
+        // A contrast theme of Windows. Every border gets a colour then, a transparent one as well:
+        // a side that is to have no line must have no width.
+        describe('when colours are forced', () => {
+            useForcedColors();
+
+            it('still has a line on its two outer sides only', async () => {
+                expect(matchMedia('(forced-colors: active)').matches).toBe(true);
+                for (const side of Object.keys(OUTER)) expect(linesOf(await arrowAt(side)), side).toEqual(OUTER[side]);
+            });
         });
     });
 

@@ -93,7 +93,7 @@ Both bubble and cross shadow boundaries. They fire for every way of opening and 
 
 The body reads `--el-color-fg` for its background and `--el-color-bg` for its text (the system colours `CanvasText` and `Canvas` without a theme), `--el-space-1` and `--el-space-2` for its padding, `--el-radius-md`, `--el-border-width`, `--el-font-family`, `--el-font-size-sm` and `--el-line-height`. The arrow has the surface of the body.
 
-The border of the body is transparent. It shows when a user forces colours (Windows contrast themes), where a background is not painted.
+The border of the body is transparent. It shows when a user forces colours (Windows contrast themes), where a background is not painted. The arrow has it on the two sides that stick out.
 
 The look is on the part, the width on the element. A tooltip is as wide as its text, up to `20rem`, and never wider than the viewport:
 

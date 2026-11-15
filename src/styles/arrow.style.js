@@ -9,7 +9,8 @@ const offset = `calc(${size} / -2 - var(--el-border-width, 1px))`;
 /**
  * The arrow of a floating surface, which points to its anchor: an element with the class `arrow`
  * inside the surface. It is a square with the background and the border of the surface, turned by
- * 45 degrees, with its middle on the outer edge of the surface.
+ * 45 degrees, with its middle on the outer edge of the surface. Only the two sides of the square
+ * that stick out have a border.
  *
  * The surface carries `data-placement` with the side of the anchor it is at, and the arrow sits on
  * the edge that faces the anchor. `placeAtAnchor()` in `utils/floating.js` sets that attribute and
@@ -33,29 +34,32 @@ export default function arrowStyle(surface = ':host') {
             transform: rotate(45deg);
         }
 
-        /* The two sides of the square that lie inside the surface lose their border. */
+        /* The two sides of the square that lie inside the surface have no border. Their width goes,
+           not their colour: a user who forces colours (a contrast theme of Windows) gets a colour
+           for every border, a transparent one as well, and the two lines would run across the
+           corner of the surface. */
         ${placed('bottom')} {
             top: ${offset};
-            border-right-color: transparent;
-            border-bottom-color: transparent;
+            border-right-width: 0;
+            border-bottom-width: 0;
         }
 
         ${placed('top')} {
             bottom: ${offset};
-            border-top-color: transparent;
-            border-left-color: transparent;
+            border-top-width: 0;
+            border-left-width: 0;
         }
 
         ${placed('right')} {
             left: ${offset};
-            border-top-color: transparent;
-            border-right-color: transparent;
+            border-top-width: 0;
+            border-right-width: 0;
         }
 
         ${placed('left')} {
             right: ${offset};
-            border-bottom-color: transparent;
-            border-left-color: transparent;
+            border-bottom-width: 0;
+            border-left-width: 0;
         }
     `;
 }

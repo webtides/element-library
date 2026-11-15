@@ -1,7 +1,15 @@
 import { describe, it, expect, afterEach } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { fixture, nextFrame, aTimeout, oneEvent, accessibleDescription, accessibleRole } from '../../test-helpers.js';
+import {
+    fixture,
+    nextFrame,
+    aTimeout,
+    oneEvent,
+    accessibleDescription,
+    accessibleRole,
+    useForcedColors,
+} from '../../test-helpers.js';
 import { define } from './tooltip.js';
 import { define as defineButton } from '../button/button.js';
 import { define as definePopover } from '../popover/popover.js';
@@ -758,6 +766,42 @@ describe('Feature | Tooltip', () => {
 
             expect(getComputedStyle(arrowOf(el)).backgroundColor).toBe(getComputedStyle(body).backgroundColor);
             expect(getComputedStyle(arrowOf(el)).backgroundColor).toBe('rgb(0, 0, 0)');
+        });
+
+        // The body has a border that shows only when a user forces colours (a contrast theme of
+        // Windows): the browser does not paint its background then, and the border is the outline
+        // of the tooltip. The arrow is part of that outline.
+        describe('when colours are forced', () => {
+            useForcedColors();
+
+            // The sides of the square that stick out of the body, by the side of the anchor.
+            const OUTER = {
+                top: ['Right', 'Bottom'],
+                bottom: ['Top', 'Left'],
+                left: ['Top', 'Right'],
+                right: ['Bottom', 'Left'],
+            };
+            /** The sides that paint a line: a border with a width, in a colour that shows. */
+            const linesOf = (element) => {
+                const style = getComputedStyle(element);
+                return ['Top', 'Right', 'Bottom', 'Left'].filter(
+                    (side) =>
+                        style[`border${side}Width`] !== '0px' && style[`border${side}Color`] !== 'rgba(0, 0, 0, 0)',
+                );
+            };
+
+            it('has a line on its two outer sides only, on every side of the anchor', async () => {
+                expect(matchMedia('(forced-colors: active)').matches).toBe(true);
+                for (const side of Object.keys(OUTER)) {
+                    const { el, body } = await tooltipFixture({
+                        attrs: `open="true" arrow="true" placement="${side}"`,
+                    });
+                    await untilShown(el);
+
+                    expect(linesOf(body), side).toEqual(['Top', 'Right', 'Bottom', 'Left']);
+                    expect(linesOf(arrowOf(el)), side).toEqual(OUTER[side]);
+                }
+            });
         });
 
         it('leaves a way across the gap that reaches the anchor, past the arrow', async () => {
