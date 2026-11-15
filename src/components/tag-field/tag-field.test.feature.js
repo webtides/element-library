@@ -625,17 +625,23 @@ describe('Feature | TagField', () => {
             expect(new Set(tags.map((tag) => Math.round(tag.top))).size).toBeGreaterThan(1);
         });
 
-        it('cuts an entry off that is longer than the field', async () => {
+        // The field is wider than a text input with the size of the browser is in any of them: what
+        // is measured is the entry.
+        it('cuts an entry off that is longer than the field, and keeps its remove button', async () => {
             const wrapper = await fixture(`
-                <div style="width: 160px">
-                    <el-tag-field name="long" label="Skills" value='["An entry that is far too long for a field of this width"]'></el-tag-field>
+                <div style="width: 240px">
+                    <el-tag-field name="long" label="Skills" value='["An entry that is far too long for a field of this width, by far"]'></el-tag-field>
                 </div>
             `);
             await frames();
             const [tag] = tagsOf(wrapper);
+            const content = tag.shadowRoot.querySelector('[part="content"]');
+            const right = wrapper.getBoundingClientRect().right;
 
-            expect(sizeOf(tag).width).toBeLessThanOrEqual(160);
-            expect(wrapper.scrollWidth).toBeLessThanOrEqual(160);
+            expect(sizeOf(tag).width).toBeLessThanOrEqual(240);
+            expect(content.scrollWidth).toBeGreaterThan(content.clientWidth);
+            expect(removeButtonOf(tag).getBoundingClientRect().right).toBeLessThanOrEqual(right);
+            expect(wrapper.scrollWidth).toBeLessThanOrEqual(240);
         });
 
         it('gives its size to the tags', async () => {
