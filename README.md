@@ -115,7 +115,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | horizontal-scroll    |                                                 | TBD  |
 | load-more            | show/load more                                  | TBD  |
 | show-hide            |                                                 | TBD  |
-| star-rating          |                                                 | TBD  |
 | hover-indicator      |                                                 | TBD  |
 | pinch-zoom           |                                                 | TBD  |
 | cookie-consent       |                                                 | TBD  |
@@ -130,9 +129,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | compare-images     |               | TBD |
 | text-highlight     |               | TBD |
 | dropdown-field     |             | TBD  |
-| range-field        |             | TBD  |
 | input-group        |             | TBD  |
-| tag-field          | multiple    | TBD  |
 | autocomplete-field |             | TBD  |
 | date-picker        |             | TBD  |
 | multi-range-field  |             | TBD  |
