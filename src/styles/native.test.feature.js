@@ -409,6 +409,19 @@ describe('Feature | Styles | native.css', () => {
                 expect(lookOfButton(plain).backgroundColor).not.toBe(BUTTON.backgroundColor);
             });
 
+            it('has the pointer of a button on its button, unless it is disabled', async () => {
+                const wrapper = await inPage(`
+                    <el-file-field name="native-file-on" label="CV"></el-file-field>
+                    <el-file-field name="native-file-off" label="CV" disabled="true"></el-file-field>
+                `);
+                const [enabled, disabled] = wrapper.querySelectorAll('input');
+                const cursorOf = (control) => getComputedStyle(control, '::file-selector-button').cursor;
+
+                expect(disabled.disabled).toBe(true);
+                expect(cursorOf(enabled)).toBe('pointer');
+                expect(cursorOf(disabled)).not.toBe('pointer');
+            });
+
             it('is as high as an el-input-field beside it, in the three sizes', async () => {
                 const wrapper = await inPage(
                     ['small', 'medium', 'large']

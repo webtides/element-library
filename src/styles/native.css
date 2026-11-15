@@ -111,6 +111,9 @@ el-file-field input::file-selector-button {
   background: var(--el-color-bg-muted);
   color: var(--el-color-fg);
   font: inherit;
+}
+
+el-file-field input:enabled::file-selector-button {
   cursor: pointer;
 }
 
