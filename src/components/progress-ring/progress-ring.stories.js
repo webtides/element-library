@@ -113,7 +113,7 @@ export const Colours = {
             <el-progress-ring
                 value="100"
                 label="Done"
-                style="--el-progress-ring-indicator-color:var(--el-color-success, #16a34a)"
+                style="--el-progress-ring-indicator-color:var(--el-color-success, #15803d)"
             ></el-progress-ring>
             <el-progress-ring
                 value="92"

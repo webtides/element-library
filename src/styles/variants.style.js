@@ -47,8 +47,8 @@ export default function variantsStyle(host = ':host') {
         }
 
         ${hostSelector(host, "[variant='success']")} {
-            --_el-variant-fill: var(--el-color-success, #16a34a);
-            --_el-variant-fill-border: var(--el-color-success, #16a34a);
+            --_el-variant-fill: var(--el-color-success, #15803d);
+            --_el-variant-fill-border: var(--el-color-success, #15803d);
             --_el-variant-on-fill: var(--el-color-bg, #fff);
             --_el-variant-border: var(--el-color-success, currentColor);
             --_el-variant-text: var(--el-color-success, currentColor);

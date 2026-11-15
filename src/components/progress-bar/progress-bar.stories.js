@@ -108,7 +108,7 @@ export const Look = {
             <el-progress-bar
                 value="100"
                 label="Done"
-                style="--el-progress-bar-indicator-color:var(--el-color-success, #16a34a)"
+                style="--el-progress-bar-indicator-color:var(--el-color-success, #15803d)"
             ></el-progress-bar>
             <el-progress-bar
                 value="80"

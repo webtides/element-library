@@ -1,7 +1,10 @@
-import { describe, it, expect } from 'vite-plus/test';
+import { describe, it, expect, beforeAll, afterAll } from 'vite-plus/test';
 import axe from 'axe-core';
 import { fixture, nextFrame, sizeOf, useReducedMotion } from '../../test-helpers.js';
 import { define } from './badge.js';
+import defaultTheme from '../../themes/default.css?raw';
+import highContrastTheme from '../../themes/high-contrast.css?raw';
+import sketchyTheme from '../../themes/sketchy.css?raw';
 define();
 
 const base = (el) => el.shadowRoot.querySelector('[part="base"]');
@@ -115,6 +118,68 @@ describe('Feature | Badge', () => {
             expect(results.violations).toEqual([]);
             expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(15);
         });
+    });
+
+    // The colour of a variant is read in two directions: it is the text of an outlined or a plain
+    // badge, and it lies under the text of a filled one. The text of a badge is small (12px in a
+    // text of 16px), so it needs 4.5 : 1 in both.
+    describe('in the themes', () => {
+        const badges = (which) =>
+            which
+                .flatMap((variant) =>
+                    appearances.map(
+                        (appearance) => `<el-badge variant="${variant}" appearance="${appearance}">Status</el-badge>`,
+                    ),
+                )
+                .join('');
+        // What axe could not read, as the text of the badge with its contrast.
+        const unread = (results) =>
+            results.violations.flatMap((violation) =>
+                violation.nodes.map((node) => `${node.html}: ${node.any[0]?.data?.contrastRatio}`),
+            );
+
+        for (const [name, theme] of [
+            ['default', defaultTheme],
+            ['high-contrast', highContrastTheme],
+            ['sketchy', sketchyTheme],
+        ]) {
+            describe(`in the ${name} theme`, () => {
+                let style;
+                beforeAll(() => {
+                    style = document.createElement('style');
+                    style.textContent = theme;
+                    document.head.append(style);
+                });
+                afterAll(() => style.remove());
+
+                for (const scheme of ['light', 'dark']) {
+                    it(`can be read in every variant and appearance, in a ${scheme} scheme`, async () => {
+                        const wrapper = await fixture(`
+                            <div style="color-scheme: ${scheme}; background: var(--el-color-bg); color: var(--el-color-fg); padding: 8px">
+                                ${badges(variants)}
+                            </div>
+                        `);
+                        const results = await axe.run(wrapper, { runOnly: ['color-contrast'] });
+
+                        expect(unread(results)).toEqual([]);
+                        expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(15);
+                    });
+
+                    // A filled card, the hover of a row: a badge stands on the muted background too.
+                    it(`can be read as a success on the muted background, in a ${scheme} scheme`, async () => {
+                        const wrapper = await fixture(`
+                            <div style="color-scheme: ${scheme}; background: var(--el-color-bg-muted); color: var(--el-color-fg); padding: 8px">
+                                ${badges(['success'])}
+                            </div>
+                        `);
+                        const results = await axe.run(wrapper, { runOnly: ['color-contrast'] });
+
+                        expect(unread(results)).toEqual([]);
+                        expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(3);
+                    });
+                }
+            });
+        }
     });
 
     describe('size and shape', () => {

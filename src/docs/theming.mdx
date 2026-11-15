@@ -94,12 +94,14 @@ Muted text is small text, and it stands on both surfaces: a help message on the 
 | Token                   | Default value (light / dark) | Used for                                                       |
 | ----------------------- | ---------------------------- | -------------------------------------------------------------- |
 | `--el-color-accent`     | `#2563eb` / `#60a5fa`        | Brand / interactive accent. The colour of the `brand` variant. |
-| `--el-color-success`    | `#16a34a` / `#4ade80`        | Validity OK indicators. The colour of the `success` variant.   |
+| `--el-color-success`    | `#15803d` / `#4ade80`        | Validity OK indicators. The colour of the `success` variant.   |
 | `--el-color-warning`    | `#f59e0b` (both)             | The colour of the `warning` variant.                           |
 | `--el-color-danger`     | `#dc2626` / `#f87171`        | Validity error indicators. The colour of the `danger` variant. |
 | `--el-color-focus-ring` | `var(--el-color-accent)`     | Focus outline color.                                           |
 
 `--el-color-warning` is one value for both colour schemes. A warning fill carries dark text, so the colour has to stay light; where it is the text itself, on the page background, a component mixes it half and half with `--el-color-fg`.
+
+The colour of a variant is read in two directions: it is the text of an outlined or a plain `el-button`, `el-badge` or `el-tag` on the page, and it lies under the text of a filled one. In the three themes and both schemes the text has a contrast of at least 4.5 : 1 in both cases, in every variant: on its fill, and without a fill on `--el-color-bg`. That is what small text needs, the text of a badge for example. A theme of your own should keep that.
 
 ### Variants, appearances and sizes
 
@@ -257,7 +259,7 @@ Themes don't have to live at `:root`. Drop the tokens on any element to scope th
 
     <section
         style="
-        --el-color-accent: #16a34a;
+        --el-color-accent: #15803d;
         --el-radius-md: 0;
     "
     >

@@ -64,7 +64,9 @@
 
     /* Color — interactive & semantic (felt-tip marker palette) */
     --el-color-accent: light-dark(#2f6fed, #8fb0ff);
-    --el-color-success: light-dark(#2f9e44, #69db7c);
+    /* The light one is dark enough to be text on both backgrounds and to carry the text of a fill
+       (4.5 : 1). */
+    --el-color-success: light-dark(#257e36, #69db7c);
     /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
     --el-color-warning: #f59e0b;
     --el-color-danger: light-dark(#e03131, #ff8787);
