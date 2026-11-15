@@ -339,6 +339,56 @@ describe('Feature | InputField', () => {
         });
     });
 
+    // The control for a date or a time drops what the user has entered so far when its value is
+    // written, with the same text as well. A field without a value used to take the empty control as
+    // the value '' after the first key, and the next render wrote that to the control: the key was
+    // gone. Typed in one go there is no render between two keys, and nothing shows.
+    describe('with a control for a date or a time', () => {
+        const changesOf = (el) => {
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+            return changes;
+        };
+        // Key by key, with a render between two keys: the pace of a person. The keys go to the parts
+        // of the control in the order of the language of the browser, month, day and year here.
+        const typeSlowly = async (el, keys) => {
+            el.querySelector('input').focus();
+            for (const key of keys) {
+                await userEvent.keyboard(key);
+                await nextFrame();
+                await nextFrame();
+            }
+        };
+
+        it('keeps every key of a date that is typed key by key', async () => {
+            const el = await fixture(`<el-input-field name="slow-date" label="Birthday" type="date"></el-input-field>`);
+
+            await typeSlowly(el, '11152026');
+
+            expect([el.querySelector('input').value, el.value]).toEqual(['2026-11-15', '2026-11-15']);
+        });
+
+        it('keeps every key of a time that is typed key by key', async () => {
+            const el = await fixture(`<el-input-field name="slow-time" label="Pick-up" type="time"></el-input-field>`);
+
+            // Without its first key the hour would be 1, and the second 1 the start of the minutes.
+            await typeSlowly(el, '1130P');
+
+            expect([el.querySelector('input').value, el.value]).toEqual(['23:30', '23:30']);
+        });
+
+        it('has no value, and reports none, while a date is half entered', async () => {
+            const el = await fixture(`<el-input-field name="half-date" label="Birthday" type="date"></el-input-field>`);
+            const changes = changesOf(el);
+
+            await typeSlowly(el, '1115');
+
+            expect([el.querySelector('input').value, el.value]).toEqual(['', null]);
+            expect(el.querySelector('input').hasAttribute('value')).toBe(false);
+            expect(changes).toEqual([]);
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const inForm = (name, attributes = '') =>

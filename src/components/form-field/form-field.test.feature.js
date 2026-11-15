@@ -583,6 +583,79 @@ describe('Feature | FormField', () => {
         });
     });
 
+    describe('with a control that is empty', () => {
+        // The fields whose value is the text of their control.
+        const TEXT_FIELDS = [
+            'el-input-field',
+            'el-password-field',
+            'el-textarea-field',
+            'el-otp-field',
+            'el-combobox-field',
+            'el-date-field',
+        ];
+        const changesOf = (el) => {
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+            return changes;
+        };
+
+        // Shift, an arrow key, the first key of a date: the field hears a key, and its control is as
+        // empty as before. That is no value: taken as '', it was reported, and written to the control
+        // as its default.
+        for (const tag of TEXT_FIELDS) {
+            it(`keeps a field without a value as it is after a key that enters nothing, in ${tag}`, async () => {
+                const el = await fixture(`<${tag} name="nothing-${tag}" label="Field" ${FIELDS[tag]}></${tag}>`);
+                const control = el.querySelector('input, textarea');
+                const changes = changesOf(el);
+                expect(el.value).toBeNull();
+
+                control.focus();
+                await userEvent.keyboard('{Shift}');
+                await frames();
+                await userEvent.keyboard('{ArrowRight}');
+                await frames();
+
+                expect(el.value).toBeNull();
+                expect(control.value).toBe('');
+                expect(control.getAttribute('value')).toBeNull();
+                expect(changes).toEqual([]);
+            });
+        }
+
+        it('keeps el-select-field without a value while its placeholder is shown', async () => {
+            const el = await fixture(
+                `<el-select-field name="nothing-select" label="Size" placeholder="Pick" options='["S", "M"]'></el-select-field>`,
+            );
+            const changes = changesOf(el);
+            expect(el.value).toBeNull();
+
+            el.querySelector('select').focus();
+            await userEvent.keyboard('{Shift}');
+            await frames();
+
+            expect([el.querySelector('select').value, el.value]).toEqual(['', null]);
+            expect(changes).toEqual([]);
+        });
+
+        // A text that was there and is gone is a change, and the empty text is its value.
+        for (const tag of TEXT_FIELDS.filter((one) => one !== 'el-date-field')) {
+            it(`has the empty text as its value once a text was typed and deleted, in ${tag}`, async () => {
+                const el = await fixture(`<${tag} name="deleted-${tag}" label="Field" ${FIELDS[tag]}></${tag}>`);
+                const control = el.querySelector('input, textarea');
+                const changes = changesOf(el);
+
+                control.focus();
+                await userEvent.keyboard('7');
+                await frames();
+                await userEvent.keyboard('{Backspace}');
+                await frames();
+
+                expect([control.value, el.value]).toEqual(['', '']);
+                expect(changes).toEqual(['7', '']);
+            });
+        }
+    });
+
     describe('with a value attribute that reads as a number or as JSON', () => {
         // element-js parses an attribute before it becomes a property: these would arrive as 1.5,
         // as a number without its last digits, as 1000, as an array, an object, and so on.

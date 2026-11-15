@@ -236,12 +236,19 @@ export default class FormField extends TemplateElement {
 
     /**
      * Called when the input value changes. Updates `value` and refreshes validation.
+     *
+     * A control that is empty is no change for a field without a value: `value` stays `null`. A key
+     * that enters nothing (Shift, an arrow key) and the first key of a date leave the control empty.
+     * Taking that as the value `''` wrote it to the control as its default with the next render,
+     * and a control for a date or a time drops what the user has entered so far when its value is
+     * written: the first key was lost.
      * @returns {void}
      */
     onChange() {
-        this._controlValue = this.$refs.input.value;
-        this.value = this.$refs.input.value;
-        this.valid = this.$refs.input.validity.valid;
+        const control = this.$refs.input;
+        this._controlValue = control.value;
+        if (control.value !== String(this.value ?? '')) this.value = control.value;
+        this.valid = control.validity.valid;
     }
 
     /**

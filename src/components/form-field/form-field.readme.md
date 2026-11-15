@@ -36,7 +36,7 @@ This component is typically used as a base class for other form field components
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `name` | `string` | `''` | The name attribute for the form field. |
-| `value` | `string` | `null` | The current value of the form field. It is text: the attribute is taken as it is written, `value="1.50"` stays `1.50`. `el-amount-field` takes a number. |
+| `value` | `string` | `null` | The current value of the form field. It is text: the attribute is taken as it is written, `value="1.50"` stays `1.50`. `el-amount-field` takes a number. A field without a value keeps `null` while its control is empty; a text that was entered and deleted is the value `''`. |
 | `required` | `boolean` | `false` | Whether the field is required for form submission. |
 | `disabled` | `boolean` | `false` | Whether the field is disabled. |
 | `label` | `string` | `''` | The label text displayed for the field. |

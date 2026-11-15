@@ -35,8 +35,8 @@ import '@webtides/element-library/input-field/define';
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `name` | `string` | `''` | The name attribute for the input field, used for form submission and identification |
-| `value` | `string` | `null` | The current value of the input field |
-| `type` | `string` | `'text'` | The type of input field (e.g., 'text', 'email', 'password', 'tel', 'url', etc.) |
+| `value` | `string` | `null` | The current value of the input field. A field without one keeps `null` while its control is empty |
+| `type` | `string` | `'text'` | The type of input field (e.g., 'text', 'email', 'password', 'tel', 'url', etc.). For a date or a time use `el-date-field`, which has `min`, `max` and `step`. |
 | `size` | `string` | `'medium'` | `small`, `medium` or `large`: the height, the padding and the font size of the control. Reflected. Shows once `styles/native.css` decorates the control. |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the input is empty |
 | `pattern` | `string\|boolean` | `false` | Regular expression pattern for input validation. If false, allows any input |

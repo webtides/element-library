@@ -33,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [0.1.0] - 2026-06-03
 
+- `type="date"` and `type="time"` keep the first key of an empty field. Typed at the pace of a person, `11/15/2026` arrived as `2026-11-05` and `11:30 PM` as `13:00`: after the first key the field took the empty control as the value `''` and wrote it to the control, which dropped the key. Typed in one go the value was right, so no test had seen it. A field without a value now keeps it while its control is empty (see `form-field`). For a date or a time with an earliest and a latest value there is `el-date-field`. ([#147](https://github.com/webtides/element-library/issues/147))
+
 ### Changed
 
 - Hardcoded values in the stylesheet now reference design tokens with the previous values as fallbacks: `--el-space-1` / `--el-space-2` for gaps, `--el-color-success` / `--el-color-danger` for validity icon colors, `--el-font-size-sm` for the help/error message text.

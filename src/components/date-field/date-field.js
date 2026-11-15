@@ -83,19 +83,6 @@ export default class DateField extends InputField {
     }
 
     /**
-     * The control has a value once a date is complete, and none while the user is still entering
-     * it. For a field without a value that is no change. It must not be one: an empty value is
-     * written to the control as its default, and the control would drop what the user has entered
-     * of the date so far, the very first key.
-     */
-    onChange() {
-        const control = this.$refs.input;
-        this._controlValue = control.value;
-        if (control.value !== String(this.value ?? '')) this.value = control.value;
-        this.valid = control.validity.valid;
-    }
-
-    /**
      * Makes the control and `value` say the same, after every render and every change of `value`.
      *
      * The `value` attribute of the control is only its default: once the user has entered a date,

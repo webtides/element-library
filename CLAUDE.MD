@@ -296,7 +296,7 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 ### When a Field Wraps a Native Control
 
 1. **Write an attribute of the control only when it changes.** A plain binding (`min="${value}"`) does that, and leaves the attribute out for `null`, on the server as well. `spreadAttributes()` and `optionalAttribute()` write with every render. For most attributes that makes no difference; a control for a date drops what the user has entered of a date so far when its `value`, `min`, `max` or `step` is written again, with the same text as well.
-2. **Keep "no value" as it is while the control is empty.** A value that goes from `null` to `''` is written to the control as its default (`el-date-field` overrides `onChange()` for that).
+2. **Keep "no value" as it is while the control is empty.** A value that goes from `null` to `''` is written to the control as its default. `FormField.onChange()` keeps the `null`; a field with an `onChange()` of its own has to do the same.
 3. **Test with real keys, and with a render between two of them.** A test that sets `control.value` and fires `input` does not see what the control does with a half-entered value.
 
 ### When Modifying Components
