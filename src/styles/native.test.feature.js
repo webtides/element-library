@@ -10,6 +10,7 @@ import { define as defineAmountField } from '../components/amount-field/amount-f
 import { define as defineRangeField } from '../components/range-field/range-field.js';
 import { define as defineFileField } from '../components/file-field/file-field.js';
 import { define as defineOtpField } from '../components/otp-field/otp-field.js';
+import { define as defineTagField } from '../components/tag-field/tag-field.js';
 defineInputField();
 definePasswordField();
 defineTextareaField();
@@ -18,6 +19,7 @@ defineAmountField();
 defineRangeField();
 defineFileField();
 defineOtpField();
+defineTagField();
 
 /** Loads stylesheets into the page for the tests of the surrounding `describe`. */
 function useStyles(...sheets) {
@@ -55,6 +57,7 @@ const FIELDS = `
     <el-input-field name="native-input" label="Name"></el-input-field>
     <el-password-field name="native-password" label="Password"></el-password-field>
     <el-otp-field name="native-otp" label="Code"></el-otp-field>
+    <el-tag-field name="native-tag" label="Skills"></el-tag-field>
     <el-textarea-field name="native-textarea" label="Message"></el-textarea-field>
     <el-select-field name="native-select" label="Size" options='["S", "M"]'></el-select-field>
 `;
@@ -87,7 +90,7 @@ describe('Feature | Styles | native.css', () => {
             const wrapper = await fixture(`<div style="color-scheme: light">${FIELDS}</div>`);
             const controls = wrapper.querySelectorAll('input, textarea, select');
 
-            expect(controls).toHaveLength(5);
+            expect(controls).toHaveLength(6);
             for (const control of controls) expect(look(control), control.outerHTML).toEqual(DECORATED);
         });
 
@@ -148,7 +151,7 @@ describe('Feature | Styles | native.css', () => {
             expect(getComputedStyle(el.querySelector('select')).appearance).toBe('none');
         });
 
-        it('gives el-input-field, el-password-field and el-otp-field three sizes', async () => {
+        it('gives el-input-field, el-password-field, el-otp-field and el-tag-field three sizes', async () => {
             const wrapper = await fixture(`
                 <div>
                     <el-input-field name="native-small" label="Small" size="small"></el-input-field>
@@ -156,9 +159,10 @@ describe('Feature | Styles | native.css', () => {
                     <el-input-field name="native-large" label="Large" size="large"></el-input-field>
                     <el-password-field name="native-password-small" label="Small" size="small"></el-password-field>
                     <el-otp-field name="native-otp-small" label="Small" size="small"></el-otp-field>
+                    <el-tag-field name="native-tag-small" label="Small" size="small"></el-tag-field>
                 </div>
             `);
-            const [small, medium, large, password, otp] = [...wrapper.children].map((field) =>
+            const [small, medium, large, password, otp, tag] = [...wrapper.children].map((field) =>
                 field.querySelector('input'),
             );
 
@@ -178,6 +182,8 @@ describe('Feature | Styles | native.css', () => {
             expect(getComputedStyle(password).minHeight).toBe('32px');
             expect(getComputedStyle(otp).minHeight).toBe('32px');
             expect(sizeOf(otp).height).toBe(sizeOf(small).height);
+            expect(getComputedStyle(tag).minHeight).toBe('32px');
+            expect(sizeOf(tag).height).toBe(sizeOf(small).height);
 
             wrapper.children[1].size = 'large';
             await nextFrame();

@@ -103,6 +103,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | tab-link             | A link that serves as a label for one of the tab panels to display that panel | `0.1.0` |
 | tab-panel            | The element that contains the content associated with a tab                   | `0.1.0` |
 | tag                  | A label for a keyword or a filter, with variants, sizes and a remove button   | `0.1.0` |
+| tag-field            | A list of entries the user writes, as tags under one name                     | `0.1.0` |
 | textarea-field       |                                                                               | `0.1.0` |
 | toast                | The region where toasts appear: a stack of notifications at an edge           | `0.1.0` |
 | tooltip              | A short text that explains its anchor, for the pointer and the keyboard       | `0.1.0` |

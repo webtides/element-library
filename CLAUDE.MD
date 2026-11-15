@@ -102,6 +102,7 @@ element-library/
 - **tab-link**: Individual tab link
 - **tab-panel**: Tab content panel
 - **tag**: Label for a keyword or a filter, removable
+- **tag-field**: List of short texts the user writes: a text input that turns what is entered into `el-tag` entries under one name
 - **textarea-field**: Textarea input
 - **toast**: Region where toasts appear: a stack of notifications at an edge of the viewport (a native popover while it has toasts), with `toast()` to show one
 - **tooltip**: Text that explains its anchor, on hover and keyboard focus (the element is a native popover, placed with Floating UI)
@@ -203,7 +204,7 @@ Rules:
 
 Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
 
-- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-tag-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
 - **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
 - **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
 

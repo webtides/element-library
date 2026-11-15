@@ -15,6 +15,7 @@ import { define as defineCheckboxGroupField } from '../checkbox-group-field/chec
 import { define as defineRatingField } from '../rating-field/rating-field.js';
 import { define as defineFileField } from '../file-field/file-field.js';
 import { define as defineOtpField } from '../otp-field/otp-field.js';
+import { define as defineTagField } from '../tag-field/tag-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -31,6 +32,7 @@ defineCheckboxGroupField();
 defineRatingField();
 defineFileField();
 defineOtpField();
+defineTagField();
 
 const frames = async () => {
     await nextFrame();
@@ -57,6 +59,7 @@ const FIELDS = {
     'el-rating-field': `required="true"`,
     'el-file-field': '',
     'el-otp-field': '',
+    'el-tag-field': '',
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
 const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
@@ -128,6 +131,7 @@ describe('Feature | FormField', () => {
             rating: 'Rate it',
             file: 'Add a file',
             otp: 'Enter the code',
+            tags: 'Add a skill',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -143,6 +147,7 @@ describe('Feature | FormField', () => {
                     <el-rating-field name="${prefix}-rating" label="Rating" required="true" error-message="${MESSAGES.rating}"></el-rating-field>
                     <el-file-field name="${prefix}-file" label="CV" required="true" error-message="${MESSAGES.file}"></el-file-field>
                     <el-otp-field name="${prefix}-otp" label="Code" required="true" error-message="${MESSAGES.otp}"></el-otp-field>
+                    <el-tag-field name="${prefix}-tags" label="Skills" required="true" error-message="${MESSAGES.tags}"></el-tag-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -218,6 +223,7 @@ describe('Feature | FormField', () => {
                 rating: 'fieldset',
                 file: 'input',
                 otp: 'input',
+                tags: 'input',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');
