@@ -70,6 +70,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | carousel             | A carousel element that wraps the glide.js library for sliding elements       | `0.1.1` |
 | checkbox-field       |                                                                               | `0.1.1` |
 | checkbox-group-field | A choice of any number of options: checkboxes in a native fieldset            | `0.1.0` |
+| color-field          | A colour for a form, picked in the picker of a native colour input            | `0.1.0` |
 | copy-button          | A button that copies a text to the clipboard and shows the outcome            | `0.1.0` |
 | dialog               | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
 | divider              | A line between two groups of content, horizontal or vertical                  | `0.1.0` |

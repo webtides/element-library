@@ -11,6 +11,7 @@ import './src/components/card/card.define.js';
 import './src/components/carousel/carousel.define.js';
 import './src/components/checkbox-field/checkbox-field.define.js';
 import './src/components/checkbox-group-field/checkbox-group-field.define.js';
+import './src/components/color-field/color-field.define.js';
 import './src/components/copy-button/copy-button.define.js';
 import './src/components/dialog/dialog.define.js';
 import './src/components/divider/divider.define.js';

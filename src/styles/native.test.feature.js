@@ -11,6 +11,7 @@ import { define as defineRangeField } from '../components/range-field/range-fiel
 import { define as defineFileField } from '../components/file-field/file-field.js';
 import { define as defineOtpField } from '../components/otp-field/otp-field.js';
 import { define as defineTagField } from '../components/tag-field/tag-field.js';
+import { define as defineColorField } from '../components/color-field/color-field.js';
 defineInputField();
 definePasswordField();
 defineTextareaField();
@@ -20,6 +21,7 @@ defineRangeField();
 defineFileField();
 defineOtpField();
 defineTagField();
+defineColorField();
 
 /** Loads stylesheets into the page for the tests of the surrounding `describe`. */
 function useStyles(...sheets) {
@@ -516,6 +518,193 @@ describe('Feature | Styles | native.css', () => {
                 try {
                     const wrapper = await inPage(FILES);
                     heights.push(sizeOf(wrapper.querySelector('el-file-field input')).height);
+                } finally {
+                    document.adoptedStyleSheets = before;
+                }
+
+                // --el-touch-target of the default theme is 2.75rem
+                expect(heights).toEqual([44, 44]);
+            });
+        });
+    });
+
+    // A colour input is a well that shows its colour, with no text that gives it a height. The file
+    // gives it the border of the other fields and the height of an input of its size.
+    describe('the colour input of el-color-field', () => {
+        const COLORS = `
+            <input type="color" />
+            <el-color-field name="native-color" label="Accent" value="#2563eb"></el-color-field>
+        `;
+        const inPage = (markup) => fixture(`<div style="color-scheme: light; width: 320px">${markup}</div>`);
+        const lookOfWell = (control) => {
+            const {
+                borderTopWidth,
+                borderTopStyle,
+                borderTopColor,
+                borderTopLeftRadius,
+                paddingLeft,
+                paddingTop,
+                backgroundColor,
+            } = getComputedStyle(control);
+            return {
+                borderTopWidth,
+                borderTopStyle,
+                borderTopColor,
+                borderTopLeftRadius,
+                paddingLeft,
+                paddingTop,
+                backgroundColor,
+            };
+        };
+        // The values of the default theme in a light scheme. The colour inside the well is drawn by
+        // parts of the control a script cannot ask for their style (`::-webkit-color-swatch`).
+        const WELL = {
+            borderTopWidth: '1px',
+            borderTopStyle: 'solid',
+            borderTopColor: 'rgb(209, 213, 219)',
+            borderTopLeftRadius: '6px',
+            paddingLeft: '4px',
+            paddingTop: '4px',
+            backgroundColor: 'rgb(255, 255, 255)',
+        };
+
+        describe('with a theme alone', () => {
+            useStyles(theme);
+
+            it('keeps the look and the size of the browser', async () => {
+                const wrapper = await inPage(COLORS);
+                const [plain, inField] = wrapper.querySelectorAll('input');
+
+                expect(lookOfWell(plain).borderTopColor).not.toBe(WELL.borderTopColor);
+                expect(lookOfWell(inField)).toEqual(lookOfWell(plain));
+                expect(sizeOf(inField)).toEqual(sizeOf(plain));
+            });
+        });
+
+        describe('with a theme and native.css', () => {
+            useStyles(theme, native);
+
+            it('is a well with the border of the other fields', async () => {
+                const wrapper = await inPage(COLORS);
+                const [plain, inField] = wrapper.querySelectorAll('input');
+
+                expect(lookOfWell(inField)).toEqual(WELL);
+                // A colour input of the page that is in no field is left alone.
+                expect(lookOfWell(plain).borderTopColor).not.toBe(WELL.borderTopColor);
+                expect(sizeOf(plain)).not.toEqual(sizeOf(inField));
+            });
+
+            it('is as high as an el-input-field beside it, in the three sizes, and half again as wide', async () => {
+                const wrapper = await inPage(
+                    ['small', 'medium', 'large']
+                        .map(
+                            (size) => `
+                                <el-input-field name="native-color-input-${size}" label="Name" size="${size}"></el-input-field>
+                                <el-color-field name="native-color-${size}" label="Accent" size="${size}"></el-color-field>
+                            `,
+                        )
+                        .join(''),
+                );
+                await nextFrame();
+                const sizes = (tag) => [...wrapper.querySelectorAll(`${tag} input`)].map((control) => sizeOf(control));
+                const heights = (tag) => sizes(tag).map((size) => size.height);
+
+                expect(heights('el-color-field')).toEqual(heights('el-input-field'));
+                expect(heights('el-color-field')).toEqual([32, 42, 53]);
+                expect(sizes('el-color-field').map((size) => size.width)).toEqual([48, 63, 79.5]);
+            });
+
+            it('has the pointer of a button, unless it is disabled', async () => {
+                const wrapper = await inPage(`
+                    <el-color-field name="native-color-on" label="Accent"></el-color-field>
+                    <el-color-field name="native-color-off" label="Accent" disabled="true"></el-color-field>
+                `);
+                const [enabled, disabled] = wrapper.querySelectorAll('input');
+
+                expect(disabled.disabled).toBe(true);
+                expect(getComputedStyle(enabled).cursor).toBe('pointer');
+                expect(getComputedStyle(disabled).cursor).not.toBe('pointer');
+            });
+
+            it('shows keyboard focus and a failed validation as the other fields do', async () => {
+                const wrapper = await inPage(`
+                    <el-input-field name="native-color-focus-input" label="Name"></el-input-field>
+                    <el-color-field name="native-color-focus" label="Accent"></el-color-field>
+                    <el-color-field name="native-color-invalid" label="Accent" valid="false" touched="true"></el-color-field>
+                `);
+                const [input, focused, invalid] = wrapper.querySelectorAll('input');
+                // The ring comes with a transition: without it the end is there at once.
+                for (const control of [input, focused]) control.style.transition = 'none';
+                const ring = (control) => {
+                    const { borderTopColor, boxShadow, outlineStyle } = getComputedStyle(control);
+                    return { borderTopColor, boxShadow, outlineStyle };
+                };
+                const atRest = ring(focused);
+
+                // A second forced state takes the first one away, so each is read in its turn.
+                await forcePseudoClasses(input, ['focus']);
+                const ringOfInput = ring(input);
+                // A click focuses the control and opens the picker: no ring for that.
+                await forcePseudoClasses(focused, ['focus']);
+                expect(ring(focused).borderTopColor).toBe(atRest.borderTopColor);
+                expect(ring(focused).boxShadow).toBe('none');
+                await forcePseudoClasses(focused, ['focus', 'focus-visible']);
+
+                expect(ring(focused)).toEqual(ringOfInput);
+                expect(ring(focused).borderTopColor).toBe('rgb(37, 99, 235)');
+                expect(ring(focused).boxShadow).not.toBe('none');
+                // --el-color-danger of the default theme
+                expect(getComputedStyle(invalid).borderTopColor).toBe('rgb(220, 38, 38)');
+            });
+
+            it('keeps the look when the page has a reset', async () => {
+                const reset = document.createElement('style');
+                reset.textContent = `
+                    *, ::before, ::after { margin: 0; padding: 0; border: 0 solid rgb(229, 231, 235); }
+                    button, input, optgroup, select, textarea { font-size: 100%; color: inherit; background: transparent; }
+                `;
+                document.head.append(reset);
+                try {
+                    const wrapper = await inPage(COLORS);
+                    const control = wrapper.querySelector('el-color-field input');
+                    expect(lookOfWell(control)).toEqual(WELL);
+                    expect(sizeOf(control)).toEqual({ width: 63, height: 42 });
+                } finally {
+                    reset.remove();
+                }
+            });
+        });
+
+        describe('on a touch screen', () => {
+            useTouchScreen();
+
+            // Both orders: the stylesheets in front of the styles of the field, and after them.
+            it('is at least --el-touch-target high, whichever stylesheet comes later', async () => {
+                const heights = [];
+                const styles = [theme, native].map((text) => {
+                    const style = document.createElement('style');
+                    style.textContent = text;
+                    return style;
+                });
+                document.head.prepend(...styles);
+                try {
+                    const wrapper = await inPage(COLORS);
+                    heights.push(sizeOf(wrapper.querySelector('el-color-field input')).height);
+                } finally {
+                    for (const style of styles) style.remove();
+                }
+
+                const sheets = [theme, native].map((text) => {
+                    const sheet = new CSSStyleSheet();
+                    sheet.replaceSync(text);
+                    return sheet;
+                });
+                // A copy: the list of the document is a live one, and would be the new list after the next line.
+                const before = [...document.adoptedStyleSheets];
+                document.adoptedStyleSheets = [...before, ...sheets];
+                try {
+                    const wrapper = await inPage(COLORS);
+                    heights.push(sizeOf(wrapper.querySelector('el-color-field input')).height);
                 } finally {
                     document.adoptedStyleSheets = before;
                 }

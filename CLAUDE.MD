@@ -69,6 +69,7 @@ element-library/
 - **carousel**: Carousel wrapper for glide.js
 - **checkbox-field**: Checkbox input
 - **checkbox-group-field**: Choice of any number of options: a native `<fieldset>` with a checkbox per entry of `options`, under one name
+- **color-field**: Colour for a form: a native `<input type="color">` with the label and the messages of a field, the value as text beside it and colours for its picker to offer
 - **copy-button**: Button that copies a text to the clipboard and says whether that worked
 - **dialog**: Modal dialog built on the native `<dialog>` element
 - **divider**: Line between two groups of content, horizontal or vertical
@@ -204,7 +205,7 @@ Rules:
 
 Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
 
-- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-tag-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-tag-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The colour input of `el-color-field` and the range of `el-range-field` have rules of their own there: a colour input is a well with the border and the height of an input, a range has no border to decorate and gets the width of the field and the accent colour.
 - **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
 - **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
 

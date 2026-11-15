@@ -5,8 +5,8 @@
  * design tokens: border, radius, padding, colours, focus ring. It reaches the
  * input of el-input-field, el-password-field, el-otp-field and el-tag-field,
  * the textarea of el-textarea-field, the select of el-select-field, the file
- * input of el-file-field and the range of el-range-field. Import it together
- * with a theme, which sets the tokens:
+ * input of el-file-field, the colour input of el-color-field and the range of
+ * el-range-field. Import it together with a theme, which sets the tokens:
  *
  *     import '@webtides/element-library/themes/default.css';
  *     import '@webtides/element-library/styles/native.css';
@@ -79,6 +79,7 @@ el-password-field input:focus,
 el-otp-field input:focus,
 el-tag-field input:focus,
 el-file-field input:focus,
+el-color-field input:focus-visible,
 el-textarea-field textarea:focus,
 el-select-field select:focus {
   outline: none;
@@ -93,6 +94,7 @@ el-password-field:state(invalid) input,
 el-otp-field:state(invalid) input,
 el-tag-field:state(invalid) input,
 el-file-field:state(invalid) input,
+el-color-field:state(invalid) input,
 el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {
   border-color: var(--el-color-danger);
@@ -115,6 +117,57 @@ el-file-field input::file-selector-button {
 
 el-file-field input:enabled::file-selector-button {
   cursor: pointer;
+}
+
+/*
+ * A colour input is a well that shows its colour. It has the border and the
+ * radius of the other controls, and the colour fills it up to a narrow rim.
+ *
+ * It has no text that gives it a height. So it is told the height an input of
+ * its size has: a line of text with the padding and the border of an input,
+ * and the height of a control at least. It is half again as wide.
+ *
+ * It shows the focus ring for the keyboard only: a click opens the picker, as
+ * a click on a button does.
+ */
+el-color-field input {
+  --_el-color-height: max(
+    calc(var(--el-control-height) * var(--_el-size-scale, 1)),
+    calc(1lh + 2 * var(--_el-size-padding-block, var(--el-space-2)) + 2 * var(--el-border-width))
+  );
+
+  box-sizing: border-box;
+  flex: none;
+  width: calc(var(--_el-color-height) * 1.5);
+  height: var(--_el-color-height);
+  border: var(--el-border-width) solid var(--el-color-border);
+  border-radius: var(--el-radius-md);
+  padding: var(--el-space-1);
+  background: var(--el-color-bg);
+  font-size: var(--_el-size-font-size, var(--el-font-size-md));
+  line-height: var(--el-line-height);
+  transition:
+    border-color var(--el-duration-md) var(--el-ease),
+    box-shadow var(--el-duration-md) var(--el-ease);
+}
+
+el-color-field input:enabled {
+  cursor: pointer;
+}
+
+/* One rule for each engine: a selector a browser does not know takes the whole rule with it. */
+el-color-field input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+el-color-field input::-webkit-color-swatch {
+  border: 0;
+  border-radius: var(--el-radius-sm);
+}
+
+el-color-field input::-moz-color-swatch {
+  border: 0;
+  border-radius: var(--el-radius-sm);
 }
 
 /*

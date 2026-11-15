@@ -303,7 +303,7 @@ export default class FormField extends TemplateElement {
 
     /**
      * The id of an element of this field that another one refers to: the control, which the label
-     * names, and the two messages, which describe the control.
+     * names, the two messages, which describe the control, and the list of a control that has one.
      *
      * It is made from a random part of the field and not from its name. A name is unique in a form
      * at most, an id has to be unique in the document: two forms that each had an `email` shared
@@ -312,7 +312,7 @@ export default class FormField extends TemplateElement {
      * The id is another one on every page load. Server-rendered markup has the ids of the server
      * until the element starts, which writes its own to the same elements.
      * @private
-     * @param {'input' | 'help-message' | 'error-message'} part
+     * @param {'input' | 'help-message' | 'error-message' | 'list'} part
      * @returns {string}
      */
     _idOf(part) {

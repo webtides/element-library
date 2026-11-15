@@ -16,6 +16,7 @@ import { define as defineRatingField } from '../rating-field/rating-field.js';
 import { define as defineFileField } from '../file-field/file-field.js';
 import { define as defineOtpField } from '../otp-field/otp-field.js';
 import { define as defineTagField } from '../tag-field/tag-field.js';
+import { define as defineColorField } from '../color-field/color-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -33,6 +34,7 @@ defineRatingField();
 defineFileField();
 defineOtpField();
 defineTagField();
+defineColorField();
 
 const frames = async () => {
     await nextFrame();
@@ -60,6 +62,7 @@ const FIELDS = {
     'el-file-field': '',
     'el-otp-field': '',
     'el-tag-field': '',
+    'el-color-field': '',
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
 const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
