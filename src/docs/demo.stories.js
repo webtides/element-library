@@ -22,7 +22,9 @@ export default {
                     'with the details: a breadcrumb, a divider and a copy button for the import path), a ' +
                     'lazy-loaded pattern gallery, a request-access form built from ' +
                     'the field components (a submit with a field missing shows the messages of the fields, a ' +
-                    'complete one floats a success toast, and "Start over" resets the form), an FAQ accordion, and the ' +
+                    'complete one floats a success toast, and "Start over" resets the form; the role has ' +
+                    'suggestions, the start is a date from today on, the brand colour comes from the picker of ' +
+                    'the browser), an FAQ accordion, and the ' +
                     'transition + scroll helpers. The design-system framing leans into the ' +
                     'theming story — flip the **Theme** and **Color scheme** toolbar switches to see the whole page ' +
                     're-skin through the design tokens.',
@@ -34,6 +36,13 @@ export default {
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared bits
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Today in the format of a date control, in the time of the visitor: the earliest start in the form.
+const today = () => {
+    const now = new Date();
+    const two = (number) => String(number).padStart(2, '0');
+    return `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())}`;
+};
 
 // An inline SVG sprite so <el-svg-use> has symbols to reference (spritePath="" → embedded symbols).
 const sprite = html`
@@ -155,6 +164,9 @@ const kit = [
         fresh: true,
     },
     { tag: 'el-tag-field', category: 'Forms', blurb: 'A list of entries the user writes, as tags.', fresh: true },
+    { tag: 'el-combobox-field', category: 'Forms', blurb: 'A text input with suggestions to pick from.', fresh: true },
+    { tag: 'el-date-field', category: 'Forms', blurb: 'A date or a time, with an earliest and a latest.', fresh: true },
+    { tag: 'el-color-field', category: 'Forms', blurb: 'A colour, picked in the picker of the browser.', fresh: true },
     { tag: 'el-dialog', category: 'Overlays', blurb: 'A modal on the native dialog: focus, backdrop and Escape.' },
     { tag: 'el-drawer', category: 'Overlays', blurb: 'A panel that slides in from an edge of the viewport.' },
     { tag: 'el-popover', category: 'Overlays', blurb: 'A panel that floats next to its anchor.' },
@@ -793,6 +805,30 @@ export const Page = {
                             max="100"
                             help-message="One for every person on the team."
                         ></el-amount-field>
+
+                        <el-combobox-field
+                            name="role"
+                            label="Your role"
+                            help-message="Pick one, or write your own."
+                            .options="${['Designer', 'Design engineer', 'Developer', 'Product manager', 'Researcher']}"
+                        ></el-combobox-field>
+
+                        <el-date-field
+                            name="start"
+                            label="When would you like to start?"
+                            min="${today()}"
+                            help-message="Optional. Today at the earliest."
+                            error-message="Please pick today or a later day."
+                        ></el-date-field>
+
+                        <el-color-field
+                            name="brand"
+                            label="Your brand colour"
+                            value="#2563eb"
+                            show-value="true"
+                            help-message="We set up a theme with it."
+                            .options="${['#2563eb', '#7c3aed', '#db2777', '#dc2626', '#f59e0b', '#16a34a']}"
+                        ></el-color-field>
 
                         <div class="sm:col-span-2">
                             <el-radio-field
