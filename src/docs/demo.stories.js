@@ -147,6 +147,14 @@ const kit = [
         fresh: true,
     },
     { tag: 'el-rating-field', category: 'Forms', blurb: 'A rating from one to five stars.', fresh: true },
+    { tag: 'el-file-field', category: 'Forms', blurb: 'One or several files, in a native file input.', fresh: true },
+    {
+        tag: 'el-otp-field',
+        category: 'Forms',
+        blurb: 'A one-time code in one input, cleaned as it is pasted.',
+        fresh: true,
+    },
+    { tag: 'el-tag-field', category: 'Forms', blurb: 'A list of entries the user writes, as tags.', fresh: true },
     { tag: 'el-dialog', category: 'Overlays', blurb: 'A modal on the native dialog: focus, backdrop and Escape.' },
     { tag: 'el-drawer', category: 'Overlays', blurb: 'A panel that slides in from an edge of the viewport.' },
     { tag: 'el-popover', category: 'Overlays', blurb: 'A panel that floats next to its anchor.' },
@@ -814,12 +822,31 @@ export const Page = {
                         </div>
 
                         <div class="sm:col-span-2">
+                            <el-tag-field
+                                name="stack"
+                                label="What is in your stack?"
+                                placeholder="A framework, a tool"
+                                help-message="Press Enter after each one, or separate them with a comma."
+                                .value="${['Svelte']}"
+                            ></el-tag-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <el-textarea-field
                                 name="context"
                                 label="What are you building?"
                                 placeholder="A product UI, a marketing site, an internal toolkit…"
                                 help-message="Optional — helps us tailor the onboarding."
                             ></el-textarea-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <el-file-field
+                                name="brief"
+                                label="Attach a brief"
+                                accept=".pdf,image/*"
+                                help-message="Optional: a PDF or a picture of what you have in mind."
+                            ></el-file-field>
                         </div>
 
                         <div class="sm:col-span-2">
@@ -867,6 +894,26 @@ export const Page = {
                         <div class="sm:col-span-2 flex flex-wrap gap-3">
                             <el-button type="submit" variant="brand" size="large"> Request access </el-button>
                             <el-button type="reset" appearance="plain" size="large"> Start over </el-button>
+                        </div>
+                    </form>
+
+                    <!-- A second, small form: it is sent the moment the code is complete. -->
+                    <form
+                        class="grid gap-4 rounded-xl border p-6 mt-6 sm:max-w-sm"
+                        style="border-color:var(--el-color-border,#e5e7eb)"
+                        onsubmit="event.preventDefault(); this.parentElement.querySelector('el-toast').toast('The code is fine. Welcome aboard!', { variant: 'success' });"
+                        @input-complete="${(event) => event.currentTarget.requestSubmit()}"
+                    >
+                        <h3 class="font-semibold">Already invited?</h3>
+                        <el-otp-field
+                            name="code"
+                            label="Code from your invitation"
+                            required="true"
+                            help-message="Six digits. We check the code once it is complete."
+                            error-message="Please enter the six digits of the code."
+                        ></el-otp-field>
+                        <div>
+                            <el-button type="submit" appearance="outlined">Confirm the code</el-button>
                         </div>
                     </form>
 
