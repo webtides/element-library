@@ -601,6 +601,87 @@ describe('Feature | FormField', () => {
         });
     });
 
+    // A field that was left renders a mark beside its control: a check mark, or a cross. The mark is
+    // text of the page, and a line of that text can be higher than a control with the look of the
+    // browser, which keeps the font of the browser: 24px to 21px for text of 16px at a line height
+    // of 1.5.
+    describe('with the mark of a touched field', () => {
+        // The fields that render the mark, each with a control that is one line high.
+        const MARKED = {
+            'el-input-field': '',
+            'el-password-field': '',
+            'el-otp-field': '',
+            'el-combobox-field': FIELDS['el-combobox-field'],
+            'el-date-field': '',
+            'el-textarea-field': 'rows="1"',
+        };
+        // The text of the page: with the lines of the browser, and with lines that are higher than
+        // a control.
+        const PAGES = ['16px/normal', '16px/1.5', '16px/2', '24px/2'];
+        let marked = 0;
+        // The wrapper is positioned: the place of the button counts from it, not from a page that
+        // still has the fixtures of the tests before.
+        const fieldAboveButton = async (tag, font, attributes = '') => {
+            const wrapper = await fixture(`
+                <div style="position: relative; font: ${font} sans-serif; width: 400px">
+                    <${tag} name="marked-${++marked}" label="Field" ${MARKED[tag]} ${attributes}></${tag}>
+                    <button>Send</button>
+                </div>
+            `);
+            const el = wrapper.querySelector(tag);
+            return {
+                wrapper,
+                el,
+                control: el.querySelector('input, textarea'),
+                button: wrapper.querySelector('button'),
+            };
+        };
+        const leave = async (control) => {
+            control.focus();
+            control.blur();
+            await frames();
+        };
+
+        for (const tag of Object.keys(MARKED)) {
+            for (const [state, mark, attributes] of [
+                ['valid', '.valid', ''],
+                ['not valid', '.invalid', 'required="true"'],
+            ]) {
+                it(`${tag} is as high after it was left as before, ${state}`, async () => {
+                    for (const font of PAGES) {
+                        const { wrapper, el, control, button } = await fieldAboveButton(tag, font, attributes);
+                        // `offsetTop`, not the place in the viewport: the focus can scroll the page.
+                        expect(button.offsetParent, font).toBe(wrapper);
+                        const before = { field: el.getBoundingClientRect().height, button: button.offsetTop };
+
+                        await leave(control);
+
+                        expect(el.querySelector(`.validity ${mark}`), font).not.toBeNull();
+                        expect({ field: el.getBoundingClientRect().height, button: button.offsetTop }, font).toEqual(
+                            before,
+                        );
+                        wrapper.remove();
+                    }
+                });
+            }
+        }
+
+        it('has the mark beside the control and in its middle, in a page with high lines', async () => {
+            for (const tag of Object.keys(MARKED).filter((tag) => tag !== 'el-textarea-field')) {
+                const { el, control } = await fieldAboveButton(tag, '16px/2');
+                await leave(control);
+                const mark = el.querySelector('.validity').getBoundingClientRect();
+                const box = control.getBoundingClientRect();
+
+                // The line of the mark is still a line of the page, higher than the control.
+                expect(mark.height, tag).toBe(32);
+                expect(mark.height, tag).toBeGreaterThan(box.height);
+                expect(mark.top + mark.height / 2, tag).toBeCloseTo(box.top + box.height / 2, 0);
+                expect(mark.left, tag).toBeGreaterThan(box.right);
+            }
+        });
+    });
+
     // A field reports a change through the watcher of its value, or of `checked`. The handler for
     // the `change` of its control used to fire an event as well: a text was reported once more when
     // its control was left, a pick in a select twice, a click on a checkbox three times.

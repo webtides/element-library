@@ -15,6 +15,9 @@ const css = String.raw;
  *
  * Without a theme each of them has the colour of the text, which can be read on any background.
  *
+ * The row is as high as its control. The mark of a touched field (\`.validity\`, a check mark or a
+ * cross beside the control) does not add to that height.
+ *
  * The control itself is not touched. Without a theme a native control keeps the look of the
  * browser.
  *
@@ -43,6 +46,15 @@ export default function formControlStyle(host = ':host') {
             display: flex;
             align-items: center;
             gap: var(--el-space-2, 8px);
+        }
+
+        /* The mark of a touched field is a line of the text of the page, and that line can be
+           higher than a native control: 24px to 21px for text of 16px at a line height of 1.5. The
+           row would grow by the difference when the mark comes, and what follows the field would
+           move. Half a line of margin less above and below takes the line out of the height of
+           the row; the mark stays in its middle. */
+        ${field} .validity {
+            margin-block: -0.5lh;
         }
 
         ${field} .message {

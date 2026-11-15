@@ -251,6 +251,22 @@ describe('Feature | TextareaField', () => {
             expect(mark.top).toBeCloseTo(control.top, 1);
         });
 
+        it('has the mark at the top of a textarea of one row as well, in a page with high lines', async () => {
+            const wrapper = await fixture(`
+                <div style="font: 16px/2 sans-serif">
+                    <el-textarea-field name="mark-one-row" label="Message" rows="1"></el-textarea-field>
+                </div>
+            `);
+            const textarea = wrapper.querySelector('textarea');
+            await leave(textarea);
+            const mark = wrapper.querySelector('.validity').getBoundingClientRect();
+            const control = textarea.getBoundingClientRect();
+
+            // The line of the mark is higher than the textarea: it starts with it and ends below it.
+            expect(mark.height).toBeGreaterThan(control.height);
+            expect(mark.top).toBeCloseTo(control.top, 1);
+        });
+
         it('has the mark inside the field when the textarea is as wide as the field', async () => {
             const { el, textarea } = await fieldAboveButton('mark-width');
             // As a theme does: the textarea takes the room that the mark beside it leaves.

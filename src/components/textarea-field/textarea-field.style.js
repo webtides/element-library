@@ -11,6 +11,10 @@ const style = css`
             align-items: flex-start;
 
             .validity {
+                /* At the top the whole line goes below the mark: it starts where the textarea
+                   starts, and does not add to the height of the row. */
+                margin-block: 0 -1lh;
+
                 .valid {
                     color: var(--el-color-success, green);
                 }

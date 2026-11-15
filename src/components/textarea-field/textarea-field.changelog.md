@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The `hidden` attribute hides the field. The field sets a `display` of its own, which won over the attribute. ([#130](https://github.com/webtides/element-library/issues/130))
 - The textarea says whether the field is valid (`aria-invalid`). Before, the error message reached a screen reader and the state of the control did not, while the control of `el-input-field` and of `el-select-field` has said it all along. ([#134](https://github.com/webtides/element-library/issues/134))
 - A second field with the same `name` on the page keeps its own label and its own messages. The ids of the textarea and of the messages are made per field, not from the name (BREAKING for a page that names `input-<name>` or `<name>-help-message` itself). See `form-field`. ([#133](https://github.com/webtides/element-library/issues/133))
+- A textarea of one row with the look of the browser is as high after it was left as before in a page with high lines. The mark beside it (✓ or ✗) made the field grow by 3 px at a line height of 1.5. See `form-field`. ([#116](https://github.com/webtides/element-library/issues/116))
 
 ## [0.1.0] - 2026-06-03
 
