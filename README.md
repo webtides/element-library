@@ -73,6 +73,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | color-field          | A colour for a form, picked in the picker of a native colour input            | `0.1.0` |
 | combobox-field       | A text input with suggestions the browser offers, in a native datalist        | `0.1.0` |
 | copy-button          | A button that copies a text to the clipboard and shows the outcome            | `0.1.0` |
+| date-field           | A date, a time or both in the control of the browser, with min, max and step  | `0.1.0` |
 | dialog               | A modal dialog built on the native `<dialog>` element                         | `0.1.0` |
 | divider              | A line between two groups of content, horizontal or vertical                  | `0.1.0` |
 | drawer               | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |
@@ -132,7 +133,6 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | text-highlight     |               | TBD |
 | dropdown-field     |             | TBD  |
 | input-group        |             | TBD  |
-| date-picker        |             | TBD  |
 | multi-range-field  |             | TBD  |
 -->
 

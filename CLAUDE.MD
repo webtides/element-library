@@ -72,6 +72,7 @@ element-library/
 - **color-field**: Colour for a form: a native `<input type="color">` with the label and the messages of a field, the value as text beside it and colours for its picker to offer
 - **combobox-field**: Text with suggestions the browser offers while the user types: an input field with a native `<datalist>` from `options` (free text, not a choice)
 - **copy-button**: Button that copies a text to the clipboard and says whether that worked
+- **date-field**: Date, time or both in the control of the browser (extends the input field): `type` `date`, `time`, `datetime-local`, `month` or `week`, with `min`, `max` and `step`
 - **dialog**: Modal dialog built on the native `<dialog>` element
 - **divider**: Line between two groups of content, horizontal or vertical
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
@@ -206,7 +207,7 @@ Rules:
 
 Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
 
-- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-combobox-field input`, `el-tag-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The colour input of `el-color-field` and the range of `el-range-field` have rules of their own there: a colour input is a well with the border and the height of an input, a range has no border to decorate and gets the width of the field and the accent colour.
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-combobox-field input`, `el-date-field input`, `el-tag-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`), and the control of `el-date-field` one that takes the padding off the parts of a date, so it is as high as an input for text. The colour input of `el-color-field` and the range of `el-range-field` have rules of their own there: a colour input is a well with the border and the height of an input, a range has no border to decorate and gets the width of the field and the accent colour.
 - **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
 - **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
 
@@ -291,6 +292,12 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 3. **Accessibility**: Consider ARIA attributes and keyboard navigation
 4. **Documentation**: Add or update Storybook stories
 5. **Styling**: Keep styles scoped to components using the `.style.js` pattern
+
+### When a Field Wraps a Native Control
+
+1. **Write an attribute of the control only when it changes.** A plain binding (`min="${value}"`) does that, and leaves the attribute out for `null`, on the server as well. `spreadAttributes()` and `optionalAttribute()` write with every render. For most attributes that makes no difference; a control for a date drops what the user has entered of a date so far when its `value`, `min`, `max` or `step` is written again, with the same text as well.
+2. **Keep "no value" as it is while the control is empty.** A value that goes from `null` to `''` is written to the control as its default (`el-date-field` overrides `onChange()` for that).
+3. **Test with real keys, and with a render between two of them.** A test that sets `control.value` and fires `input` does not see what the control does with a half-entered value.
 
 ### When Modifying Components
 

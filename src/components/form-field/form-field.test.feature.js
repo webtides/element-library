@@ -18,6 +18,7 @@ import { define as defineOtpField } from '../otp-field/otp-field.js';
 import { define as defineTagField } from '../tag-field/tag-field.js';
 import { define as defineColorField } from '../color-field/color-field.js';
 import { define as defineComboboxField } from '../combobox-field/combobox-field.js';
+import { define as defineDateField } from '../date-field/date-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -37,6 +38,7 @@ defineOtpField();
 defineTagField();
 defineColorField();
 defineComboboxField();
+defineDateField();
 
 const frames = async () => {
     await nextFrame();
@@ -66,6 +68,7 @@ const FIELDS = {
     'el-tag-field': '',
     'el-color-field': '',
     'el-combobox-field': `options='["Berlin", "Bern"]'`,
+    'el-date-field': '',
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
 const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
@@ -139,6 +142,7 @@ describe('Feature | FormField', () => {
             otp: 'Enter the code',
             tags: 'Add a skill',
             combobox: 'Enter a city',
+            date: 'Pick a day',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -156,6 +160,7 @@ describe('Feature | FormField', () => {
                     <el-otp-field name="${prefix}-otp" label="Code" required="true" error-message="${MESSAGES.otp}"></el-otp-field>
                     <el-tag-field name="${prefix}-tags" label="Skills" required="true" error-message="${MESSAGES.tags}"></el-tag-field>
                     <el-combobox-field name="${prefix}-combobox" label="City" required="true" options='["Berlin", "Bern"]' error-message="${MESSAGES.combobox}"></el-combobox-field>
+                    <el-date-field name="${prefix}-date" label="Delivery" required="true" error-message="${MESSAGES.date}"></el-date-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -233,6 +238,7 @@ describe('Feature | FormField', () => {
                 otp: 'input',
                 tags: 'input',
                 combobox: 'input',
+                date: 'input',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');

@@ -3,10 +3,10 @@
  *
  * Opt-in stylesheet that gives the native control of a field the look of the
  * design tokens: border, radius, padding, colours, focus ring. It reaches the
- * input of el-input-field, el-password-field, el-otp-field, el-combobox-field
- * and el-tag-field, the textarea of el-textarea-field, the select of
- * el-select-field, the file input of el-file-field, the colour input of
- * el-color-field and the range of el-range-field. Import it together with a
+ * input of el-input-field, el-password-field, el-otp-field, el-combobox-field,
+ * el-date-field and el-tag-field, the textarea of el-textarea-field, the
+ * select of el-select-field, the file input of el-file-field, the colour input
+ * of el-color-field and the range of el-range-field. Import it together with a
  * theme, which sets the tokens:
  *
  *     import '@webtides/element-library/themes/default.css';
@@ -31,6 +31,7 @@ el-input-field input,
 el-password-field input,
 el-otp-field input,
 el-combobox-field input,
+el-date-field input,
 el-tag-field input,
 el-file-field input,
 el-textarea-field textarea,
@@ -54,6 +55,7 @@ el-input-field input,
 el-password-field input,
 el-otp-field input,
 el-combobox-field input,
+el-date-field input,
 el-tag-field input,
 el-file-field input,
 el-select-field select {
@@ -71,6 +73,7 @@ el-select-field select {
   el-password-field input,
   el-otp-field input,
   el-combobox-field input,
+  el-date-field input,
   el-tag-field input,
   el-file-field input,
   el-select-field select {
@@ -82,6 +85,7 @@ el-input-field input:focus,
 el-password-field input:focus,
 el-otp-field input:focus,
 el-combobox-field input:focus,
+el-date-field input:focus,
 el-tag-field input:focus,
 el-file-field input:focus,
 el-color-field input:focus-visible,
@@ -98,12 +102,22 @@ el-input-field:state(invalid) input,
 el-password-field:state(invalid) input,
 el-otp-field:state(invalid) input,
 el-combobox-field:state(invalid) input,
+el-date-field:state(invalid) input,
 el-tag-field:state(invalid) input,
 el-file-field:state(invalid) input,
 el-color-field:state(invalid) input,
 el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {
   border-color: var(--el-color-danger);
+}
+
+/*
+ * The parts of a date (day, month, year) stand in a wrapper that has a padding
+ * of its own above and below. Without it the control is as high as an input
+ * for text beside it.
+ */
+el-date-field input::-webkit-datetime-edit-fields-wrapper {
+  padding-block: 0;
 }
 
 /*

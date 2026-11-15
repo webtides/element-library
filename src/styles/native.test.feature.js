@@ -13,6 +13,7 @@ import { define as defineOtpField } from '../components/otp-field/otp-field.js';
 import { define as defineTagField } from '../components/tag-field/tag-field.js';
 import { define as defineColorField } from '../components/color-field/color-field.js';
 import { define as defineComboboxField } from '../components/combobox-field/combobox-field.js';
+import { define as defineDateField } from '../components/date-field/date-field.js';
 defineInputField();
 definePasswordField();
 defineTextareaField();
@@ -24,6 +25,7 @@ defineOtpField();
 defineTagField();
 defineColorField();
 defineComboboxField();
+defineDateField();
 
 /** Loads stylesheets into the page for the tests of the surrounding `describe`. */
 function useStyles(...sheets) {
@@ -63,6 +65,7 @@ const FIELDS = `
     <el-otp-field name="native-otp" label="Code"></el-otp-field>
     <el-tag-field name="native-tag" label="Skills"></el-tag-field>
     <el-combobox-field name="native-combobox" label="City" options='["Berlin", "Bern"]'></el-combobox-field>
+    <el-date-field name="native-date" label="Delivery"></el-date-field>
     <el-textarea-field name="native-textarea" label="Message"></el-textarea-field>
     <el-select-field name="native-select" label="Size" options='["S", "M"]'></el-select-field>
 `;
@@ -72,11 +75,18 @@ describe('Feature | Styles | native.css', () => {
         useStyles(theme);
 
         it('leaves the control of a field with the look of the browser', async () => {
-            const wrapper = await fixture(`<div style="color-scheme: light"><input type="text" />${FIELDS}</div>`);
+            const wrapper = await fixture(
+                `<div style="color-scheme: light"><input type="text" /><input type="date" />${FIELDS}</div>`,
+            );
             const [plain, ...inFields] = wrapper.querySelectorAll('input[type="text"], input[type="password"]');
+            // The browser has a look of its own for the control of a date.
+            const [plainDate, date] = wrapper.querySelectorAll('input[type="date"]');
+            expect(inFields).toHaveLength(5);
 
             expect(look(plain).borderTopStyle).not.toBe('solid');
             for (const control of inFields) expect(look(control), control.outerHTML).toEqual(look(plain));
+            expect(look(date)).toEqual(look(plainDate));
+            expect(sizeOf(date)).toEqual(sizeOf(plainDate));
         });
 
         it('hides the chevron of el-select-field, the select has its own', async () => {
@@ -95,7 +105,7 @@ describe('Feature | Styles | native.css', () => {
             const wrapper = await fixture(`<div style="color-scheme: light">${FIELDS}</div>`);
             const controls = wrapper.querySelectorAll('input, textarea, select');
 
-            expect(controls).toHaveLength(7);
+            expect(controls).toHaveLength(8);
             for (const control of controls) expect(look(control), control.outerHTML).toEqual(DECORATED);
         });
 
@@ -166,11 +176,16 @@ describe('Feature | Styles | native.css', () => {
                     <el-otp-field name="native-otp-small" label="Small" size="small"></el-otp-field>
                     <el-tag-field name="native-tag-small" label="Small" size="small"></el-tag-field>
                     <el-combobox-field name="native-combobox-small" label="Small" size="small" options='["Berlin"]'></el-combobox-field>
+                    <el-date-field name="native-date-small" label="Small" size="small"></el-date-field>
+                    <el-date-field name="native-date-medium" label="Medium"></el-date-field>
+                    <el-date-field name="native-date-large" label="Large" size="large"></el-date-field>
+                    <el-date-field name="native-time-medium" label="Medium" type="time"></el-date-field>
+                    <el-date-field name="native-both-medium" label="Medium" type="datetime-local"></el-date-field>
                 </div>
             `);
-            const [small, medium, large, password, otp, tag, combobox] = [...wrapper.children].map((field) =>
-                field.querySelector('input'),
-            );
+            const [small, medium, large, password, otp, tag, combobox, date, dateMedium, dateLarge, time, both] = [
+                ...wrapper.children,
+            ].map((field) => field.querySelector('input'));
 
             expect([small, medium, large].map((input) => getComputedStyle(input).fontSize)).toEqual([
                 '14px',
@@ -192,6 +207,13 @@ describe('Feature | Styles | native.css', () => {
             expect(sizeOf(tag).height).toBe(sizeOf(small).height);
             expect(getComputedStyle(combobox).minHeight).toBe('32px');
             expect(sizeOf(combobox).height).toBe(sizeOf(small).height);
+            // The control for a date is as high as an input for text, with its parts and its icon.
+            expect([date, dateMedium, dateLarge].map((input) => sizeOf(input).height)).toEqual(
+                [small, medium, large].map((input) => sizeOf(input).height),
+            );
+            expect([time, both].map((input) => sizeOf(input).height)).toEqual(
+                [medium, medium].map((input) => sizeOf(input).height),
+            );
 
             wrapper.children[1].size = 'large';
             await nextFrame();
