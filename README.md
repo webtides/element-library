@@ -76,6 +76,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | drawer               | A panel that slides in from an edge of the viewport, built on the dialog      | `0.1.0` |
 | dropdown             | A dropdown element                                                            | `0.1.0` |
 | empty-state          | A message in the place of a list that is empty, with an optional action       | `0.1.0` |
+| file-field           | One or several files for a form, built on a native file input                 | `0.1.0` |
 | form-field           |                                                                               | `0.1.0` |
 | input-field          |                                                                               | `0.1.0` |
 | lazy-src             |                                                                               | `0.2.0` |

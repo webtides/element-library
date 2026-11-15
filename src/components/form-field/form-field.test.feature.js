@@ -13,6 +13,7 @@ import { define as defineRadioField } from '../radio-field/radio-field.js';
 import { define as defineRangeField } from '../range-field/range-field.js';
 import { define as defineCheckboxGroupField } from '../checkbox-group-field/checkbox-group-field.js';
 import { define as defineRatingField } from '../rating-field/rating-field.js';
+import { define as defineFileField } from '../file-field/file-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -27,6 +28,7 @@ defineRadioField();
 defineRangeField();
 defineCheckboxGroupField();
 defineRatingField();
+defineFileField();
 
 const frames = async () => {
     await nextFrame();
@@ -51,6 +53,7 @@ const FIELDS = {
     'el-range-field': '',
     'el-checkbox-group-field': `options='["news", "offers"]' required="true"`,
     'el-rating-field': `required="true"`,
+    'el-file-field': '',
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
 const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
@@ -120,6 +123,7 @@ describe('Feature | FormField', () => {
             radio: 'Choose a plan',
             checkboxes: 'Pick a topic',
             rating: 'Rate it',
+            file: 'Add a file',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -133,6 +137,7 @@ describe('Feature | FormField', () => {
                     <el-radio-field name="${prefix}-radio" label="Plan" required="true" options='["free", "pro"]' error-message="${MESSAGES.radio}"></el-radio-field>
                     <el-checkbox-group-field name="${prefix}-checkboxes" label="Topics" required="true" options='["news", "offers"]' error-message="${MESSAGES.checkboxes}"></el-checkbox-group-field>
                     <el-rating-field name="${prefix}-rating" label="Rating" required="true" error-message="${MESSAGES.rating}"></el-rating-field>
+                    <el-file-field name="${prefix}-file" label="CV" required="true" error-message="${MESSAGES.file}"></el-file-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -206,6 +211,7 @@ describe('Feature | FormField', () => {
                 radio: 'fieldset',
                 checkboxes: 'fieldset',
                 rating: 'fieldset',
+                file: 'input',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');

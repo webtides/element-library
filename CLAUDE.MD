@@ -75,6 +75,7 @@ element-library/
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
 - **dropdown**: Dropdown component
 - **empty-state**: Message in the place of a list that is empty, with an optional action
+- **file-field**: One or several files for a form: a native `<input type="file">` with the label and the messages of a field
 - **form-field**: Base form field
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
@@ -201,7 +202,7 @@ Rules:
 
 Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
 
-- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
 - **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
 - **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
 
