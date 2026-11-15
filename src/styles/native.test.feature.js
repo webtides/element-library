@@ -12,6 +12,7 @@ import { define as defineFileField } from '../components/file-field/file-field.j
 import { define as defineOtpField } from '../components/otp-field/otp-field.js';
 import { define as defineTagField } from '../components/tag-field/tag-field.js';
 import { define as defineColorField } from '../components/color-field/color-field.js';
+import { define as defineComboboxField } from '../components/combobox-field/combobox-field.js';
 defineInputField();
 definePasswordField();
 defineTextareaField();
@@ -22,6 +23,7 @@ defineFileField();
 defineOtpField();
 defineTagField();
 defineColorField();
+defineComboboxField();
 
 /** Loads stylesheets into the page for the tests of the surrounding `describe`. */
 function useStyles(...sheets) {
@@ -60,6 +62,7 @@ const FIELDS = `
     <el-password-field name="native-password" label="Password"></el-password-field>
     <el-otp-field name="native-otp" label="Code"></el-otp-field>
     <el-tag-field name="native-tag" label="Skills"></el-tag-field>
+    <el-combobox-field name="native-combobox" label="City" options='["Berlin", "Bern"]'></el-combobox-field>
     <el-textarea-field name="native-textarea" label="Message"></el-textarea-field>
     <el-select-field name="native-select" label="Size" options='["S", "M"]'></el-select-field>
 `;
@@ -92,7 +95,7 @@ describe('Feature | Styles | native.css', () => {
             const wrapper = await fixture(`<div style="color-scheme: light">${FIELDS}</div>`);
             const controls = wrapper.querySelectorAll('input, textarea, select');
 
-            expect(controls).toHaveLength(6);
+            expect(controls).toHaveLength(7);
             for (const control of controls) expect(look(control), control.outerHTML).toEqual(DECORATED);
         });
 
@@ -153,7 +156,7 @@ describe('Feature | Styles | native.css', () => {
             expect(getComputedStyle(el.querySelector('select')).appearance).toBe('none');
         });
 
-        it('gives el-input-field, el-password-field, el-otp-field and el-tag-field three sizes', async () => {
+        it('gives the input of every field that has one three sizes', async () => {
             const wrapper = await fixture(`
                 <div>
                     <el-input-field name="native-small" label="Small" size="small"></el-input-field>
@@ -162,9 +165,10 @@ describe('Feature | Styles | native.css', () => {
                     <el-password-field name="native-password-small" label="Small" size="small"></el-password-field>
                     <el-otp-field name="native-otp-small" label="Small" size="small"></el-otp-field>
                     <el-tag-field name="native-tag-small" label="Small" size="small"></el-tag-field>
+                    <el-combobox-field name="native-combobox-small" label="Small" size="small" options='["Berlin"]'></el-combobox-field>
                 </div>
             `);
-            const [small, medium, large, password, otp, tag] = [...wrapper.children].map((field) =>
+            const [small, medium, large, password, otp, tag, combobox] = [...wrapper.children].map((field) =>
                 field.querySelector('input'),
             );
 
@@ -186,6 +190,8 @@ describe('Feature | Styles | native.css', () => {
             expect(sizeOf(otp).height).toBe(sizeOf(small).height);
             expect(getComputedStyle(tag).minHeight).toBe('32px');
             expect(sizeOf(tag).height).toBe(sizeOf(small).height);
+            expect(getComputedStyle(combobox).minHeight).toBe('32px');
+            expect(sizeOf(combobox).height).toBe(sizeOf(small).height);
 
             wrapper.children[1].size = 'large';
             await nextFrame();

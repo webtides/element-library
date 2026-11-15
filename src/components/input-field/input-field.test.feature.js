@@ -167,6 +167,18 @@ describe('Feature | InputField', () => {
         expect(textEntryOn(serverControl({ name: 'code' }))).toEqual({});
     });
 
+    // The template has a place for the list of a combobox field and for the limits of a date field.
+    it('has no attribute for a list, a limit or a step, in the page and in server-rendered markup', async () => {
+        const el = await fixture(`<el-input-field name="plain-control" label="Name" type="number"></el-input-field>`);
+        await nextFrame();
+
+        for (const control of [el.querySelector('input'), serverControl({ name: 'plain-control' })]) {
+            for (const name of ['list', 'min', 'max', 'step']) {
+                expect([name, control.hasAttribute(name)]).toEqual([name, false]);
+            }
+        }
+    });
+
     it('keeps the server-rendered input and its text entry attributes when the element starts', async () => {
         const wrapper = document.createElement('div');
         document.body.append(wrapper);

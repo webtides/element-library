@@ -3,10 +3,11 @@
  *
  * Opt-in stylesheet that gives the native control of a field the look of the
  * design tokens: border, radius, padding, colours, focus ring. It reaches the
- * input of el-input-field, el-password-field, el-otp-field and el-tag-field,
- * the textarea of el-textarea-field, the select of el-select-field, the file
- * input of el-file-field, the colour input of el-color-field and the range of
- * el-range-field. Import it together with a theme, which sets the tokens:
+ * input of el-input-field, el-password-field, el-otp-field, el-combobox-field
+ * and el-tag-field, the textarea of el-textarea-field, the select of
+ * el-select-field, the file input of el-file-field, the colour input of
+ * el-color-field and the range of el-range-field. Import it together with a
+ * theme, which sets the tokens:
  *
  *     import '@webtides/element-library/themes/default.css';
  *     import '@webtides/element-library/styles/native.css';
@@ -29,6 +30,7 @@
 el-input-field input,
 el-password-field input,
 el-otp-field input,
+el-combobox-field input,
 el-tag-field input,
 el-file-field input,
 el-textarea-field textarea,
@@ -51,6 +53,7 @@ el-select-field select {
 el-input-field input,
 el-password-field input,
 el-otp-field input,
+el-combobox-field input,
 el-tag-field input,
 el-file-field input,
 el-select-field select {
@@ -67,6 +70,7 @@ el-select-field select {
   el-input-field input,
   el-password-field input,
   el-otp-field input,
+  el-combobox-field input,
   el-tag-field input,
   el-file-field input,
   el-select-field select {
@@ -77,6 +81,7 @@ el-select-field select {
 el-input-field input:focus,
 el-password-field input:focus,
 el-otp-field input:focus,
+el-combobox-field input:focus,
 el-tag-field input:focus,
 el-file-field input:focus,
 el-color-field input:focus-visible,
@@ -92,6 +97,7 @@ el-select-field select:focus {
 el-input-field:state(invalid) input,
 el-password-field:state(invalid) input,
 el-otp-field:state(invalid) input,
+el-combobox-field:state(invalid) input,
 el-tag-field:state(invalid) input,
 el-file-field:state(invalid) input,
 el-color-field:state(invalid) input,

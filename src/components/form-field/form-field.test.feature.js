@@ -17,6 +17,7 @@ import { define as defineFileField } from '../file-field/file-field.js';
 import { define as defineOtpField } from '../otp-field/otp-field.js';
 import { define as defineTagField } from '../tag-field/tag-field.js';
 import { define as defineColorField } from '../color-field/color-field.js';
+import { define as defineComboboxField } from '../combobox-field/combobox-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -35,6 +36,7 @@ defineFileField();
 defineOtpField();
 defineTagField();
 defineColorField();
+defineComboboxField();
 
 const frames = async () => {
     await nextFrame();
@@ -63,6 +65,7 @@ const FIELDS = {
     'el-otp-field': '',
     'el-tag-field': '',
     'el-color-field': '',
+    'el-combobox-field': `options='["Berlin", "Bern"]'`,
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
 const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
@@ -135,6 +138,7 @@ describe('Feature | FormField', () => {
             file: 'Add a file',
             otp: 'Enter the code',
             tags: 'Add a skill',
+            combobox: 'Enter a city',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -151,6 +155,7 @@ describe('Feature | FormField', () => {
                     <el-file-field name="${prefix}-file" label="CV" required="true" error-message="${MESSAGES.file}"></el-file-field>
                     <el-otp-field name="${prefix}-otp" label="Code" required="true" error-message="${MESSAGES.otp}"></el-otp-field>
                     <el-tag-field name="${prefix}-tags" label="Skills" required="true" error-message="${MESSAGES.tags}"></el-tag-field>
+                    <el-combobox-field name="${prefix}-combobox" label="City" required="true" options='["Berlin", "Bern"]' error-message="${MESSAGES.combobox}"></el-combobox-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -227,6 +232,7 @@ describe('Feature | FormField', () => {
                 file: 'input',
                 otp: 'input',
                 tags: 'input',
+                combobox: 'input',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');
@@ -577,7 +583,13 @@ describe('Feature | FormField', () => {
         const VALUES = ['1.50', '12345678901234567890', '1e3', '[1]', '{"a":1}', '007', 'true', 'null'];
         const data = (form) => Object.fromEntries(new FormData(form));
 
-        for (const tag of ['el-input-field', 'el-password-field', 'el-textarea-field', 'el-otp-field']) {
+        for (const tag of [
+            'el-input-field',
+            'el-password-field',
+            'el-textarea-field',
+            'el-otp-field',
+            'el-combobox-field',
+        ]) {
             it(`shows and submits the text as it is, in ${tag}`, async () => {
                 const form = await fixture(
                     `<form>${VALUES.map((value, index) => `<${tag} name="text-${tag}-${index}" value='${value}'></${tag}>`).join('')}</form>`,

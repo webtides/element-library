@@ -85,9 +85,26 @@ export default class InputField extends FormField {
         return this.pattern;
     }
 
+    /**
+     * Attributes of the control that this field has no property for. A field that extends this one
+     * has: the list of its suggestions (`ComboboxField`), the limits and the step of a date
+     * (`DateField`). One that is `null` or missing is left out.
+     *
+     * Each of them is a binding of its own in the template, which writes an attribute when its
+     * value has changed. `spreadAttributes()` writes its attributes with every render, and that is
+     * not the same for these: a control for a date drops what the user has entered of a date so
+     * far when its limits are written again.
+     * @private
+     * @returns {{ list?: string | null, min?: string | null, max?: string | null, step?: number | string | null }}
+     */
+    _controlAttributes() {
+        return {};
+    }
+
     /** @private */
     fieldTemplate() {
         const pattern = this._pattern();
+        const { list = null, min = null, max = null, step = null } = this._controlAttributes();
 
         return html`
             <input
@@ -100,6 +117,10 @@ export default class InputField extends FormField {
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
                 ${optionalAttribute(pattern, 'pattern', pattern)}
+                list="${list}"
+                min="${min}"
+                max="${max}"
+                step="${step}"
                 ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
