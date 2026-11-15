@@ -82,10 +82,12 @@ All tokens use the `--el-` prefix. Component CSS reads them with null-ish fallba
 | Token                 | Default value (light / dark) | Used for                             |
 | --------------------- | ---------------------------- | ------------------------------------ |
 | `--el-color-fg`       | `#111827` / `#f3f4f6`        | Primary text & icons.                |
-| `--el-color-fg-muted` | `#6b7280` / `#9ca3af`        | Help text, inactive labels.          |
+| `--el-color-fg-muted` | `#676d7b` / `#9ca3af`        | Help text, inactive labels.          |
 | `--el-color-bg`       | `#ffffff` / `#0f1115`        | Default surface background.          |
 | `--el-color-bg-muted` | `#f3f4f6` / `#1c1f24`        | Subdued surfaces, hover backgrounds. |
 | `--el-color-border`   | `#d1d5db` / `#2d3138`        | Default border / divider color.      |
+
+Muted text is small text, and it stands on both surfaces: a help message on the page, the message of an `el-empty-state` in a filled `el-card`. In the three themes and both schemes `--el-color-fg-muted` has a contrast of at least 4.5 : 1 against `--el-color-bg` and against `--el-color-bg-muted`. A theme of your own should keep that.
 
 ### Color — interactive & semantic
 

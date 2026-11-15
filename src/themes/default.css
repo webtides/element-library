@@ -32,7 +32,8 @@
 
     /* Color — surfaces & text */
     --el-color-fg: light-dark(#111827, #f3f4f6);
-    --el-color-fg-muted: light-dark(#6b7280, #9ca3af);
+    /* The light one is dark enough for small text on the muted background as well (4.5 : 1). */
+    --el-color-fg-muted: light-dark(#676d7b, #9ca3af);
     --el-color-bg: light-dark(#ffffff, #0f1115);
     --el-color-bg-muted: light-dark(#f3f4f6, #1c1f24);
     --el-color-border: light-dark(#d1d5db, #2d3138);

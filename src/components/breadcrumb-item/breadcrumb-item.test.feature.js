@@ -273,7 +273,7 @@ describe('Feature | BreadcrumbItem', () => {
                 <el-breadcrumb-item href="/shoes">Shoes</el-breadcrumb-item>
                 <el-breadcrumb-item current="true">Trail runner 4</el-breadcrumb-item>
             `,
-            '--el-color-accent: #2563eb; --el-color-fg: #111827; --el-color-fg-muted: #6b7280;',
+            '--el-color-accent: #2563eb; --el-color-fg: #111827; --el-color-fg-muted: #676d7b;',
         );
         const results = await axe.run(item.closest('div'));
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
