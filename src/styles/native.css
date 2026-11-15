@@ -112,6 +112,28 @@ el-select-field:state(invalid) select {
 }
 
 /*
+ * A control that is disabled fades, as a button of the library does that is
+ * disabled, and has the cursor of one. The colours above take away what the
+ * browser does for the state (a grey surface, a lighter text), and an opacity
+ * shows it in every theme and in both schemes, without a token of its own. The
+ * chevron of a select is beside the select and fades with it.
+ */
+el-input-field input:disabled,
+el-password-field input:disabled,
+el-otp-field input:disabled,
+el-combobox-field input:disabled,
+el-date-field input:disabled,
+el-tag-field input:disabled,
+el-file-field input:disabled,
+el-color-field input:disabled,
+el-textarea-field textarea:disabled,
+el-select-field select:disabled,
+el-select-field select:disabled ~ .dropdown-indicator {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/*
  * The parts of a date (day, month, year) stand in a wrapper that has a padding
  * of its own above and below. Without it the control is as high as an input
  * for text beside it.
@@ -137,6 +159,11 @@ el-file-field input::file-selector-button {
 
 el-file-field input:enabled::file-selector-button {
   cursor: pointer;
+}
+
+/* The button has a cursor of its own from the browser, so it is told the one of its input. */
+el-file-field input:disabled::file-selector-button {
+  cursor: not-allowed;
 }
 
 /*
@@ -206,6 +233,11 @@ el-range-field input {
 el-range-field input:focus-visible {
   outline: var(--el-focus-ring-width) solid var(--el-color-focus-ring);
   outline-offset: var(--el-focus-ring-offset);
+}
+
+/* The browser draws a range that is disabled in grey. It gets the cursor of the other controls. */
+el-range-field input:disabled {
+  cursor: not-allowed;
 }
 
 /*

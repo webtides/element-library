@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vite-plus/test';
 import { fixture, forcePseudoClasses, nextFrame, sizeOf, useTouchScreen } from '../test-helpers.js';
 import theme from '../themes/default.css?raw';
+import highContrastTheme from '../themes/high-contrast.css?raw';
+import sketchyTheme from '../themes/sketchy.css?raw';
 import native from './native.css?raw';
 import { define as defineInputField } from '../components/input-field/input-field.js';
 import { define as definePasswordField } from '../components/password-field/password-field.js';
@@ -313,6 +315,20 @@ describe('Feature | Styles | native.css', () => {
                 });
             });
 
+            // The browser draws a range that is disabled in grey: there is nothing to fade.
+            it('has the cursor of the other controls when it is disabled, and the look of the browser', async () => {
+                const wrapper = await inPage(`
+                    <el-range-field name="native-range-on" label="Volume"></el-range-field>
+                    <el-range-field name="native-range-off" label="Volume" disabled="true"></el-range-field>
+                `);
+                const [enabled, disabled] = wrapper.querySelectorAll('input');
+
+                expect(disabled.disabled).toBe(true);
+                expect(getComputedStyle(disabled).cursor).toBe('not-allowed');
+                expect(getComputedStyle(disabled).opacity).toBe('1');
+                expect(getComputedStyle(enabled).cursor).not.toBe('not-allowed');
+            });
+
             it('keeps the look when the page has a reset', async () => {
                 const reset = document.createElement('style');
                 reset.textContent = `
@@ -449,7 +465,7 @@ describe('Feature | Styles | native.css', () => {
 
                 expect(disabled.disabled).toBe(true);
                 expect(cursorOf(enabled)).toBe('pointer');
-                expect(cursorOf(disabled)).not.toBe('pointer');
+                expect(cursorOf(disabled)).toBe('not-allowed');
             });
 
             it('is as high as an el-input-field beside it, in the three sizes', async () => {
@@ -651,7 +667,7 @@ describe('Feature | Styles | native.css', () => {
 
                 expect(disabled.disabled).toBe(true);
                 expect(getComputedStyle(enabled).cursor).toBe('pointer');
-                expect(getComputedStyle(disabled).cursor).not.toBe('pointer');
+                expect(getComputedStyle(disabled).cursor).toBe('not-allowed');
             });
 
             it('shows keyboard focus and a failed validation as the other fields do', async () => {
@@ -740,6 +756,195 @@ describe('Feature | Styles | native.css', () => {
                 // --el-touch-target of the default theme is 2.75rem
                 expect(heights).toEqual([44, 44]);
             });
+        });
+    });
+
+    // The colours of native.css take away what the browser does for a control that is disabled: a
+    // grey surface, a lighter text. The file fades such a control, as the library does a button.
+    describe('a control that is disabled', () => {
+        const fields = (prefix, state) => `
+            <el-input-field name="${prefix}-input" label="Name" value="Ada" ${state}></el-input-field>
+            <el-password-field name="${prefix}-password" label="Password" ${state}></el-password-field>
+            <el-otp-field name="${prefix}-otp" label="Code" ${state}></el-otp-field>
+            <el-tag-field name="${prefix}-tag" label="Skills" ${state}></el-tag-field>
+            <el-combobox-field name="${prefix}-combobox" label="City" options='["Berlin", "Bern"]' ${state}></el-combobox-field>
+            <el-date-field name="${prefix}-date" label="Delivery" ${state}></el-date-field>
+            <el-file-field name="${prefix}-file" label="CV" ${state}></el-file-field>
+            <el-color-field name="${prefix}-color" label="Accent" ${state}></el-color-field>
+            <el-textarea-field name="${prefix}-textarea" label="Message" ${state}></el-textarea-field>
+            <el-select-field name="${prefix}-select" label="Size" options='["S", "M"]' ${state}></el-select-field>
+        `;
+        const inPage = (prefix, scheme = 'light') =>
+            fixture(`
+                <div style="color-scheme: ${scheme}; background: var(--el-color-bg)">
+                    <div class="enabled">${fields(`${prefix}-on`, '')}</div>
+                    <div class="disabled">${fields(`${prefix}-off`, 'disabled="true"')}</div>
+                </div>
+            `);
+        const controlsOf = (wrapper, state) => [...wrapper.querySelectorAll(`.${state} :is(input, textarea, select)`)];
+        const stateOf = (control) => {
+            const { opacity, cursor } = getComputedStyle(control);
+            return { opacity, cursor };
+        };
+        const FADED = { opacity: '0.55', cursor: 'not-allowed' };
+
+        describe('with a theme alone', () => {
+            useStyles(theme);
+
+            it('keeps the look of the browser', async () => {
+                const wrapper = await fixture(`
+                    <div style="color-scheme: light">
+                        <input type="text" value="Ada" disabled />
+                        <textarea disabled></textarea>
+                        <select disabled><option>S</option></select>
+                        <div class="disabled">${fields('native-plain-off', 'disabled="true"')}</div>
+                    </div>
+                `);
+                const lookOf = (control) => {
+                    const { opacity, cursor, color, backgroundColor } = getComputedStyle(control);
+                    return { opacity, cursor, color, backgroundColor };
+                };
+                const [input, textarea, select] = wrapper.children;
+
+                expect(controlsOf(wrapper, 'disabled')).toHaveLength(10);
+                for (const control of controlsOf(wrapper, 'disabled')) {
+                    expect(control.disabled, control.outerHTML).toBe(true);
+                    expect(stateOf(control).cursor, control.outerHTML).not.toBe('not-allowed');
+                }
+                expect(lookOf(wrapper.querySelector('el-input-field input'))).toEqual(lookOf(input));
+                expect(lookOf(wrapper.querySelector('el-textarea-field textarea'))).toEqual(lookOf(textarea));
+                expect(lookOf(wrapper.querySelector('el-select-field select'))).toEqual(lookOf(select));
+            });
+        });
+
+        describe('with a theme and native.css', () => {
+            useStyles(theme, native);
+
+            it('fades, the same in every field, and has the cursor of a button that is disabled', async () => {
+                const wrapper = await inPage('native-faded');
+                const disabled = controlsOf(wrapper, 'disabled');
+
+                expect(disabled).toHaveLength(10);
+                for (const control of disabled) {
+                    expect(control.disabled, control.outerHTML).toBe(true);
+                    expect(stateOf(control), control.outerHTML).toEqual(FADED);
+                }
+                for (const control of controlsOf(wrapper, 'enabled')) {
+                    expect(stateOf(control).opacity, control.outerHTML).toBe('1');
+                    expect(stateOf(control).cursor, control.outerHTML).not.toBe('not-allowed');
+                }
+            });
+
+            it('keeps the border and the colours of the theme', async () => {
+                const wrapper = await inPage('native-colours');
+                const enabled = controlsOf(wrapper, 'enabled');
+
+                controlsOf(wrapper, 'disabled').forEach((control, index) => {
+                    expect(look(control), control.outerHTML).toEqual(look(enabled[index]));
+                    expect(getComputedStyle(control).backgroundColor, control.outerHTML).toBe('rgb(255, 255, 255)');
+                    // A colour input has no text.
+                    if (control.type === 'color') return;
+                    expect(getComputedStyle(control).color, control.outerHTML).toBe('rgb(17, 24, 39)');
+                });
+            });
+
+            it('fades the chevron of a select with the select', async () => {
+                const wrapper = await inPage('native-chevron');
+
+                expect(getComputedStyle(wrapper.querySelector('.disabled .dropdown-indicator')).opacity).toBe('0.55');
+                expect(getComputedStyle(wrapper.querySelector('.enabled .dropdown-indicator')).opacity).toBe('1');
+            });
+
+            it('follows a fieldset that is disabled', async () => {
+                const wrapper = await fixture(`
+                    <fieldset disabled>
+                        <el-input-field name="native-fieldset-input" label="Name"></el-input-field>
+                        <el-select-field name="native-fieldset-select" label="Size" options='["S", "M"]'></el-select-field>
+                    </fieldset>
+                `);
+                for (const control of wrapper.querySelectorAll('input, select')) {
+                    expect(stateOf(control), control.outerHTML).toEqual(FADED);
+                }
+            });
+
+            // The reset of Tailwind has a cursor for every control that is disabled.
+            it('keeps the look when the page has a reset, also one that is loaded later', async () => {
+                const reset = document.createElement('style');
+                reset.textContent = `
+                    :disabled { cursor: default; }
+                    button, input, optgroup, select, textarea { opacity: 1; }
+                `;
+                document.head.append(reset);
+                try {
+                    const wrapper = await inPage('native-reset');
+                    for (const control of controlsOf(wrapper, 'disabled')) {
+                        expect(stateOf(control), control.outerHTML).toEqual(FADED);
+                    }
+                    const file = wrapper.querySelector('.disabled input[type="file"]');
+                    expect(getComputedStyle(file, '::file-selector-button').cursor).toBe('not-allowed');
+                } finally {
+                    reset.remove();
+                }
+            });
+        });
+
+        // The text of a control stands on the surface of the control, and both fade into the page
+        // behind them. On a page with the background of the theme the surface stays what it is, and
+        // the text is that much nearer to it.
+        describe('in every theme and both schemes', () => {
+            const channels = (colour) =>
+                colour
+                    .match(/[\d.]+/g)
+                    .slice(0, 3)
+                    .map(Number);
+            const luminance = (colour) => {
+                const [red, green, blue] = channels(colour).map((channel) => {
+                    const part = channel / 255;
+                    return part <= 0.03928 ? part / 12.92 : ((part + 0.055) / 1.055) ** 2.4;
+                });
+                return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+            };
+            const contrast = (one, other) => {
+                const [lighter, darker] = [luminance(one), luminance(other)].sort((a, b) => b - a);
+                return (lighter + 0.05) / (darker + 0.05);
+            };
+            const faded = (colour, surface, opacity) => {
+                const behind = channels(surface);
+                const mixed = channels(colour).map(
+                    (channel, index) => channel * opacity + behind[index] * (1 - opacity),
+                );
+                return `rgb(${mixed.join(', ')})`;
+            };
+
+            for (const [name, sheet] of [
+                ['default', theme],
+                ['high-contrast', highContrastTheme],
+                ['sketchy', sketchyTheme],
+            ]) {
+                describe(`the ${name} theme`, () => {
+                    useStyles(sheet, native);
+
+                    for (const scheme of ['light', 'dark']) {
+                        it(`can be told from one that is enabled, and its text can be read (${scheme})`, async () => {
+                            const wrapper = await inPage(`native-${name}-${scheme}`, scheme);
+                            const enabled = wrapper.querySelector('.enabled el-input-field input');
+                            const disabled = wrapper.querySelector('.disabled el-input-field input');
+                            const { color, backgroundColor, opacity } = getComputedStyle(disabled);
+                            const text = faded(color, backgroundColor, Number(opacity));
+
+                            for (const control of controlsOf(wrapper, 'disabled')) {
+                                expect(stateOf(control), control.outerHTML).toEqual(FADED);
+                            }
+                            // Told apart: against the text of the enabled control. Measured: 2.6 to 1
+                            // (sketchy, dark) up to 4.5 to 1 (default, light).
+                            expect(contrast(text, getComputedStyle(enabled).color)).toBeGreaterThan(2);
+                            // Read: the contrast that is asked of large text. Measured: 3.4 to 1
+                            // (sketchy, light) at least.
+                            expect(contrast(text, backgroundColor)).toBeGreaterThan(3);
+                        });
+                    }
+                });
+            }
         });
     });
 
