@@ -75,9 +75,6 @@ export default class DateField extends InputField {
                 ...events['[ref=input]'],
                 // A pick in the picker presses no key that the field would hear.
                 input: () => this.onChange(),
-                // The control fires `change` with every value, not only when it is left. The
-                // watcher of `value` reports each of them, so there is nothing to report here.
-                change: () => this.onChange(),
             },
         };
     }

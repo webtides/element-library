@@ -35,9 +35,9 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 #### Events
 
-| Name           | Detail               | Description                          |
-| -------------- | -------------------- | ------------------------------------ |
-| `input-change` | `string` (the value) | Fired when the on/off state changes. |
+| Name           | Detail               | Description                                                 |
+| -------------- | -------------------- | ----------------------------------------------------------- |
+| `input-change` | `string` (the value) | Fired when the on/off state changes, once for every change. |
 
 #### CSS States
 

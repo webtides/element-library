@@ -192,9 +192,10 @@ export default class FormField extends TemplateElement {
                         this.onChange();
                     }
                 },
+                // The watcher of `value` reports the change, as it does for every other way the
+                // value changes. An event from here as well was a second one for the same value.
                 change: () => {
                     this.onChange();
-                    this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value);
                 },
                 invalid: (event) => {
                     this._onInvalid(event.target);

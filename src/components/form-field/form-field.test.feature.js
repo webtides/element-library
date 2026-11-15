@@ -583,6 +583,150 @@ describe('Feature | FormField', () => {
         });
     });
 
+    // A field reports a change through the watcher of its value, or of `checked`. The handler for
+    // the `change` of its control used to fire an event as well: a text was reported once more when
+    // its control was left, a pick in a select twice, a click on a checkbox three times.
+    describe('when its control changes', () => {
+        const changesOf = (el) => {
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+            return changes;
+        };
+        const within = async (tag, attributes = '') => {
+            const wrapper = await fixture(
+                `<div><${tag} name="once-${tag}" label="Field" ${attributes}></${tag}><button>Next</button></div>`,
+            );
+            await frames();
+            const el = wrapper.firstElementChild;
+            return { el, changes: changesOf(el), leave: () => wrapper.querySelector('button').focus() };
+        };
+        const settle = async () => {
+            await frames();
+            await frames();
+        };
+
+        for (const tag of [
+            'el-input-field',
+            'el-password-field',
+            'el-textarea-field',
+            'el-otp-field',
+            'el-combobox-field',
+        ]) {
+            it(`reports a text with every key, and not again when the control is left, in ${tag}`, async () => {
+                const { el, changes, leave } = await within(tag, FIELDS[tag]);
+
+                el.querySelector('input, textarea').focus();
+                await userEvent.keyboard('12');
+                await settle();
+                leave();
+                await settle();
+
+                expect(el.value).toBe('12');
+                expect(changes).toEqual(['1', '12']);
+            });
+
+            it(`reports a value that a script sets once, in ${tag}`, async () => {
+                const { el, changes } = await within(tag, FIELDS[tag]);
+
+                el.value = '34';
+                await settle();
+
+                expect(el.querySelector('input, textarea').value).toBe('34');
+                expect(changes).toEqual(['34']);
+            });
+        }
+
+        it('reports an option that is picked once, in el-select-field', async () => {
+            const { el, changes, leave } = await within('el-select-field', `placeholder="Pick" options='["S", "M"]'`);
+
+            await userEvent.selectOptions(el.querySelector('select'), 'M');
+            await settle();
+            leave();
+            await settle();
+            el.value = 'S';
+            await settle();
+
+            expect(changes).toEqual(['M', 'S']);
+        });
+
+        for (const tag of ['el-checkbox-field', 'el-switch-field']) {
+            it(`reports every click once, with the value of the control, in ${tag}`, async () => {
+                const plain = await within(tag);
+                const named = await within(tag, 'value="yes"');
+
+                for (const { el, leave } of [plain, named]) {
+                    el.querySelector('input').click();
+                    await settle();
+                    el.querySelector('input').click();
+                    await settle();
+                    leave();
+                    await settle();
+                    expect(el.checked).toBe(false);
+                }
+
+                expect(plain.changes).toEqual(['on', 'on']);
+                expect(named.changes).toEqual(['yes', 'yes']);
+            });
+
+            it(`reports a state that a script sets once, and no value that it sets, in ${tag}`, async () => {
+                const { el, changes } = await within(tag);
+
+                el.checked = true;
+                await settle();
+                expect(el.querySelector('input').checked).toBe(true);
+                expect(changes).toEqual(['on']);
+
+                // The value is what the form submits while the control is checked: no change of the state.
+                el.value = 'yes';
+                await settle();
+                expect(changes).toEqual(['on']);
+                expect(el.querySelector('input').value).toBe('yes');
+            });
+        }
+
+        // The fields with a handler of their own, for the same promise.
+        it('reports a choice once in the groups, a step in el-range-field and a pick in el-color-field and el-date-field', async () => {
+            const reported = {};
+            const click = async (tag, attributes) => {
+                const { el, changes, leave } = await within(tag, attributes);
+                el.querySelector('input').click();
+                await settle();
+                leave();
+                await settle();
+                reported[tag] = changes;
+            };
+            // What the browser does for a pick in its picker: the control has the value, then the events.
+            const pick = async (tag, value, attributes = '') => {
+                const { el, changes, leave } = await within(tag, attributes);
+                const control = el.querySelector('input');
+                control.focus();
+                control.value = value;
+                control.dispatchEvent(new Event('input', { bubbles: true }));
+                control.dispatchEvent(new Event('change', { bubbles: true }));
+                await settle();
+                leave();
+                await settle();
+                reported[tag] = changes;
+            };
+
+            await click('el-radio-field', `options='["free", "pro"]'`);
+            await click('el-checkbox-group-field', `options='["news", "offers"]'`);
+            await click('el-rating-field');
+            await pick('el-range-field', '21', 'value="20"');
+            await pick('el-color-field', '#16a34a', 'value="#2563eb"');
+            await pick('el-date-field', '2026-11-15');
+
+            expect(reported).toEqual({
+                'el-radio-field': ['free'],
+                'el-checkbox-group-field': [['news']],
+                'el-rating-field': ['1'],
+                'el-range-field': ['21'],
+                'el-color-field': ['#16a34a'],
+                'el-date-field': ['2026-11-15'],
+            });
+        });
+    });
+
     describe('with a control that is empty', () => {
         // The fields whose value is the text of their control.
         const TEXT_FIELDS = [

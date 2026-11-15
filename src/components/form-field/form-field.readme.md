@@ -57,9 +57,9 @@ This component is typically used as a base class for other form field components
 
 #### Events
 
-| Name           | Detail  | Description                                                     |
-| -------------- | ------- | --------------------------------------------------------------- |
-| `input-change` | `value` | Fired when the field value changes. Bubbles up through the DOM. |
+| Name | Detail | Description |
+| --- | --- | --- |
+| `input-change` | `value` | Fired when the field value changes, once for every change and with the render after it. Bubbles up through the DOM. |
 
 #### CSS States
 

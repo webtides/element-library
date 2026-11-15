@@ -43,6 +43,9 @@ export default class CheckboxField extends FormField {
     watch() {
         return {
             ...super.watch(),
+            // The value of a checkbox is what the form submits while it is checked. What the user
+            // changes is `checked`, and its watcher reports that: once for every change.
+            value: () => {},
             checked: (checked) => {
                 this.setAttribute('checked', checked ? 'true' : 'false');
                 if (checked) this._internals.states.add('checked');

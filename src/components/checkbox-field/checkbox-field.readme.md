@@ -45,9 +45,9 @@ _Inherits methods from FormField component_
 
 #### Events
 
-| Name           | Detail  | Description                                                                  |
-| -------------- | ------- | ---------------------------------------------------------------------------- |
-| `input-change` | `value` | Fired when the checkbox state changes. The event bubbles up through the DOM. |
+| Name | Detail | Description |
+| --- | --- | --- |
+| `input-change` | `value` | Fired when the checkbox state changes, once for every change. The detail is the value of the control. The event bubbles up through the DOM. |
 
 #### CSS States
 
