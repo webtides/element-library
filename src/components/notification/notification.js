@@ -8,6 +8,9 @@ import { afterTransition, nextFrame } from '../../utils/transitions.js';
  * variants, an optional close button, and optional auto-dismiss. It is shown where it stands;
  * `el-toast` shows it as a toast, at an edge of the viewport.
  *
+ * The `variant` speaks the library's shared vocabulary for colours, as `el-button` does: the
+ * stripe at the start of the panel has the border colour of the variant, the icon its text colour.
+ *
  * The host is exposed as an ARIA live region — `role="alert"` (assertive) for `danger` / `warning`
  * variants, `role="status"` (polite) otherwise — so it is announced when it appears.
  *
@@ -30,8 +33,8 @@ import { afterTransition, nextFrame } from '../../utils/transitions.js';
  * @cssstate open - Set while the notification is shown.
  *
  * @property {boolean} open - Whether the notification is shown. Reflected to the `open` attribute.
- * @property {'default'|'primary'|'success'|'neutral'|'warning'|'danger'} variant - Visual + semantic
- *   variant. Default `'default'`.
+ * @property {'neutral'|'brand'|'success'|'warning'|'danger'} variant - Semantic variant, which
+ *   picks the colours and the icon. Default `'neutral'`. Reflected to the `variant` attribute.
  * @property {boolean} closable - Whether to render a close button. Default `false`.
  * @property {string} closeLabel - Accessible label for the close button. Default `'Close'`.
  * @property {number} duration - Auto-dismiss delay in milliseconds; `Infinity` (default) never
@@ -39,13 +42,18 @@ import { afterTransition, nextFrame } from '../../utils/transitions.js';
  */
 export default class Notification extends TemplateElement {
     constructor() {
-        super({ shadowRender: true, styles: [style], propertyOptions: { open: { reflect: true } } });
+        super({
+            shadowRender: true,
+            styles: [style],
+            // The shared variants module selects the host by the `variant` attribute.
+            propertyOptions: { open: { reflect: true }, variant: { reflect: true } },
+        });
     }
 
     properties() {
         return {
             open: false,
-            variant: 'default',
+            variant: 'neutral',
             closable: false,
             closeLabel: 'Close',
             duration: Infinity,
@@ -187,7 +195,7 @@ export default class Notification extends TemplateElement {
     template() {
         return html`
             <div part="base" ref="base">
-                <div part="panel" class="panel notification--${this.variant}">
+                <div part="panel" class="panel">
                     <span part="icon" class="icon"><slot name="icon">${this.variantIconTemplate()}</slot></span>
                     <div part="message" class="message"><slot></slot></div>
                     ${this.closable ? this.closeButtonTemplate() : ''}

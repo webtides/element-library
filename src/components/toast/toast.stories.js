@@ -9,7 +9,7 @@ defineButton();
 defineDialog();
 
 const placements = ['top-start', 'top', 'top-end', 'bottom-start', 'bottom', 'bottom-end'];
-const variants = ['default', 'primary', 'success', 'neutral', 'warning', 'danger'];
+const variants = ['neutral', 'brand', 'success', 'warning', 'danger'];
 const region = (canvasElement) => canvasElement.querySelector('el-toast');
 const texts = (el) => [...el.children].map((entry) => entry.textContent.trim());
 // A story leaves no toast behind for the next one: the ones that are shown, then the ones that
@@ -209,7 +209,7 @@ export const WithMarkup = {
             <el-button
                 @click="${(event) => {
                     const note = document.createElement('el-notification');
-                    note.variant = 'primary';
+                    note.variant = 'brand';
                     note.duration = 3000;
                     note.innerHTML = '<span slot="icon" aria-hidden="true">✉</span>You have a new message.';
                     event.currentTarget.closest('div').previousElementSibling.toast(note);

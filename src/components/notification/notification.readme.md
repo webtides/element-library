@@ -39,6 +39,26 @@ note.innerHTML = '<svg slot="icon" …></svg>Saved to your library.';
 toast(note);
 ```
 
+#### Variants
+
+The `variant` is the one of the library's shared vocabulary, as on `el-button`, `el-tag` and `el-badge`: `neutral` (the default), `brand`, `success`, `warning` and `danger`. So the word that paints a button also paints the toast that reports what the button did.
+
+```html
+<el-notification variant="brand" open="true">A new version is available.</el-notification>
+```
+
+The stripe at the start of the panel has the border colour of the variant, the icon its text colour:
+
+| Variant   | Stripe               | Icon                                      |
+| --------- | -------------------- | ----------------------------------------- |
+| `neutral` | `--el-color-border`  | `--el-color-fg`                           |
+| `brand`   | `--el-color-accent`  | `--el-color-accent`                       |
+| `success` | `--el-color-success` | `--el-color-success`                      |
+| `warning` | `--el-color-warning` | `--el-color-warning`, mixed with the text |
+| `danger`  | `--el-color-danger`  | `--el-color-danger`                       |
+
+`success`, `warning` and `danger` have an icon of their own, the others the same one. `warning` and `danger` are announced at once (`role="alert"`), the others when the screen reader is idle (`role="status"`).
+
 #### Server-rendered
 
 An open notification rendered on the server (Declarative Shadow DOM) is visible before its JavaScript loads, and without JavaScript. Until the element is connected, its visibility follows the `open` attribute; from then on `show()` / `hide()` animate as usual. A notification that is open from its first render appears without the enter transition.
@@ -50,7 +70,7 @@ An open notification rendered on the server (Declarative Shadow DOM) is visible 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `open` | `boolean` | `false` | Whether the notification is shown. Reflected to the `open` attribute. |
-| `variant` | `'default' \| 'primary' \| 'success' \| 'neutral' \| 'warning' \| 'danger'` | `'default'` | Visual + semantic variant. |
+| `variant` | `'neutral' \| 'brand' \| 'success' \| 'warning' \| 'danger'` | `'neutral'` | Semantic variant: the colour of the stripe and of the icon, and the icon. Reflected to the `variant` attribute. |
 | `closable` | `boolean` | `false` | Whether to render a close button. |
 | `close-label` | `string` | `'Close'` | Accessible label for the close button. |
 | `duration` | `number` | `Infinity` | Auto-dismiss delay in ms. Pauses while pointer/focus is inside. |
@@ -96,7 +116,7 @@ An open notification rendered on the server (Declarative Shadow DOM) is visible 
 
 #### CSS Custom Properties
 
-Reads `--el-color-bg` / `--el-color-fg`, `--el-color-border`, the variant colors (`--el-color-accent` / `--el-color-success` / `--el-color-danger` / `--el-color-warning` / `--el-color-fg-muted`), `--el-radius-md`, `--el-shadow-lg`, `--el-space-*`, `--el-duration-md` and `--el-ease`. See the Storybook _Docs / Theming_ page.
+Reads `--el-color-bg` / `--el-color-fg`, `--el-color-border`, the variant colors (`--el-color-accent` / `--el-color-success` / `--el-color-warning` / `--el-color-danger`), `--el-radius-md`, `--el-shadow-lg`, `--el-space-*`, `--el-duration-md` and `--el-ease`. See the Storybook _Docs / Theming_ page.
 
 On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high. Its icon keeps its size. Without that token, and on a fine pointer, the sizes stay as they are.
 
@@ -106,3 +126,14 @@ On a touch screen (`@media (any-pointer: coarse)`) the close button is at least 
 - The auto-dismiss countdown pauses while the pointer or keyboard focus is inside the notification, so it can't disappear out from under someone reading or interacting with it.
 - The close button is a real `<button>` with an accessible name, "Close" by default. Set `close-label` to translate it.
 - The transition collapses under `prefers-reduced-motion: reduce`.
+
+## Migrating from the six variants
+
+Before, the notification had six variants of its own. The old values are not mapped; a notification that still uses one of them is painted neutral.
+
+| Before                                         | Now                                                             |
+| ---------------------------------------------- | --------------------------------------------------------------- |
+| `variant="default"` (or none)                  | `variant="neutral"` (or none)                                   |
+| `variant="primary"`                            | `variant="brand"`                                               |
+| `variant="success"`, `"warning"`, `"danger"`   | unchanged                                                       |
+| `variant="neutral"` (stripe in the muted text) | no successor: `neutral` has the stripe in the border colour now |

@@ -57,7 +57,7 @@ The module exports a function of the same name and with the same arguments: `imp
 | Argument | Type | Description |
 | --- | --- | --- |
 | `message` | `string \| Node` | A text, a node for a message with markup, or an `el-notification` that is shown as it is. |
-| `options.variant` | `string` | The variant of the notification: `default`, `primary`, `success`, `neutral`, `warning` or `danger`. |
+| `options.variant` | `string` | The variant of the notification: `neutral`, `brand`, `success`, `warning` or `danger`, as on `el-button`. |
 | `options.duration` | `number` | How long the toast stays, in milliseconds. `Infinity` keeps it until it is closed. Default `5000` for a text or a node. |
 | `options.closable` | `boolean` | Whether the toast has a close button. Default `true` for a text or a node. |
 | `options.closeLabel` | `string` | The accessible label of the close button. |
@@ -106,7 +106,7 @@ An `el-notification` is shown as it is, with its own variant, icon and duration;
 
 ```js
 const note = document.createElement('el-notification');
-note.variant = 'primary';
+note.variant = 'brand';
 note.innerHTML = '<svg slot="icon" …></svg>You have a new message.';
 toast(note, { duration: 8000 });
 ```

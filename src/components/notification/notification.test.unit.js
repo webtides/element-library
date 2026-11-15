@@ -9,6 +9,10 @@ describe('Unit | Notification', () => {
         expect(el).toBeInstanceOf(Notification);
     });
 
+    it('is neutral by default', async () => {
+        expect(new Notification().properties().variant).toBe('neutral');
+    });
+
     it('exposes the event-name constants', async () => {
         expect(Events.SHOW).toBe('notification-show');
         expect(Events.AFTER_HIDE).toBe('notification-after-hide');

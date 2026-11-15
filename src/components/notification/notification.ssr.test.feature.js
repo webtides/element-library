@@ -25,7 +25,7 @@ function mount(html, duration = '0s') {
 
 const base = (el) => el.shadowRoot.querySelector('[part~="base"]');
 
-// Order matters: the first two tests run while `el-notification` is still undefined.
+// Order matters: the first three tests run while `el-notification` is still undefined.
 describe('Feature | Notification | server-rendered', () => {
     it('shows an open notification before the element is defined', () => {
         const el = mount(serverRender('open="true"', { open: true }));
@@ -43,6 +43,18 @@ describe('Feature | Notification | server-rendered', () => {
             expect(getComputedStyle(base(el)).display, attributes).toBe('none');
             expect(el.getBoundingClientRect().height, attributes).toBe(0);
         }
+    });
+
+    // The colours of a variant are selected by the attribute of the host, which is in the markup.
+    it('has the colours of its variant before the element is defined', () => {
+        const stripe = (el) => getComputedStyle(el.shadowRoot.querySelector('[part~="panel"]')).borderInlineStartColor;
+        const tokens = 'style="--el-color-danger: rgb(200, 0, 0); --el-color-border: rgb(200, 200, 200)"';
+        const danger = mount(serverRender(`open="true" variant="danger" ${tokens}`, { open: true, variant: 'danger' }));
+        const neutral = mount(serverRender(`open="true" ${tokens}`, { open: true }));
+
+        expect(customElements.get('el-notification')).toBeUndefined();
+        expect(stripe(danger)).toBe('rgb(200, 0, 0)');
+        expect(stripe(neutral)).toBe('rgb(200, 200, 200)');
     });
 
     it('stays visible while it upgrades, without replaying the enter transition', async () => {

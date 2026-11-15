@@ -4,6 +4,26 @@ import { fixture, nextFrame, oneEvent, sizeOf, useTouchScreen } from '../../test
 import { define } from './notification.js';
 define();
 
+const variants = ['neutral', 'brand', 'success', 'warning', 'danger'];
+// What carries the variant: the stripe at the start of the panel, and the icon.
+const paint = (el) => ({
+    stripe: getComputedStyle(el.shadowRoot.querySelector('[part="panel"]')).borderInlineStartColor,
+    icon: getComputedStyle(el.shadowRoot.querySelector('[part="icon"]')).color,
+});
+// Colours that are far enough from the background to be seen, as a theme has to provide them.
+const tokens = `
+    --el-color-bg: rgb(255, 255, 255);
+    --el-color-bg-muted: rgb(240, 240, 240);
+    --el-color-fg: rgb(10, 10, 10);
+    --el-color-fg-muted: rgb(100, 100, 100);
+    --el-color-border: rgb(200, 200, 200);
+    --el-color-accent: rgb(0, 0, 255);
+    --el-color-success: rgb(0, 128, 0);
+    --el-color-warning: rgb(255, 165, 0);
+    --el-color-danger: rgb(200, 0, 0);
+`;
+const NEUTRAL = { stripe: 'rgb(200, 200, 200)', icon: 'rgb(10, 10, 10)' };
+
 describe('Feature | Notification', () => {
     it('can connect without errors', async () => {
         const el = await fixture(`<el-notification></el-notification>`);
@@ -64,7 +84,7 @@ describe('Feature | Notification', () => {
     });
 
     it('draws the variant icon when the element is rendered in the browser', async () => {
-        for (const variant of ['default', 'success', 'warning', 'danger']) {
+        for (const variant of variants) {
             const el = await fixture(`<el-notification open="true" variant="${variant}">Message</el-notification>`);
             const shapes = [...el.shadowRoot.querySelectorAll('[part="icon"] svg *')];
 
@@ -78,6 +98,113 @@ describe('Feature | Notification', () => {
 
             el.remove();
         }
+    });
+
+    // The vocabulary of el-button, el-tag and el-badge: the word that paints a button also paints
+    // the notification that reports what the button did.
+    describe('variant', () => {
+        it('is neutral by default, and says so on the host', async () => {
+            const el = await fixture(`<el-notification open="true">Message</el-notification>`);
+
+            expect(el.variant).toBe('neutral');
+            expect(el.getAttribute('variant')).toBe('neutral');
+        });
+
+        it('reads one colour token per variant, for the stripe and for the icon', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    ${variants.map((variant) => `<el-notification open="true" variant="${variant}">a</el-notification>`).join('')}
+                </div>
+            `);
+            const [neutral, brand, success, warning, danger] = [...wrapper.children].map(paint);
+
+            // The border of the theme, and the colour of the text for the icon.
+            expect(neutral).toEqual(NEUTRAL);
+            expect(brand).toEqual({ stripe: 'rgb(0, 0, 255)', icon: 'rgb(0, 0, 255)' });
+            expect(success).toEqual({ stripe: 'rgb(0, 128, 0)', icon: 'rgb(0, 128, 0)' });
+            // A warning colour is a light one: where it is drawn on the panel, it is mixed half and
+            // half with the colour of the text.
+            expect(warning).toEqual({ stripe: 'rgb(255, 165, 0)', icon: 'color(srgb 0.519608 0.343137 0.0196078)' });
+            expect(danger).toEqual({ stripe: 'rgb(200, 0, 0)', icon: 'rgb(200, 0, 0)' });
+        });
+
+        it('takes a variant set from a script, before and after it is in the page', async () => {
+            const wrapper = await fixture(`<div style="${tokens}"></div>`);
+            const el = Object.assign(document.createElement('el-notification'), { variant: 'brand', open: true });
+            wrapper.append(el);
+            await nextFrame();
+            await nextFrame();
+
+            expect(el.getAttribute('variant')).toBe('brand');
+            expect(paint(el).stripe).toBe('rgb(0, 0, 255)');
+
+            el.variant = 'danger';
+            await nextFrame();
+
+            expect(el.getAttribute('variant')).toBe('danger');
+            expect(paint(el)).toEqual({ stripe: 'rgb(200, 0, 0)', icon: 'rgb(200, 0, 0)' });
+        });
+
+        // The six variants the notification had of its own. The old values are not mapped.
+        it('paints a variant it does not know as neutral: default and primary are gone', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    <el-notification open="true" variant="default">a</el-notification>
+                    <el-notification open="true" variant="primary">a</el-notification>
+                    <el-notification open="true" variant="nonsense">a</el-notification>
+                </div>
+            `);
+            for (const el of wrapper.children) expect(paint(el), el.getAttribute('variant')).toEqual(NEUTRAL);
+        });
+
+        it('has the colours of its text and of its border without a theme', async () => {
+            const wrapper = await fixture(`
+                <div style="color: rgb(1, 2, 3)">
+                    ${variants.map((variant) => `<el-notification open="true" variant="${variant}">a</el-notification>`).join('')}
+                </div>
+            `);
+            const [neutral, brand, success, warning, danger] = [...wrapper.children].map(paint);
+            // The panel is painted in the colours of the system, so its text is not the one of the page.
+            const text = getComputedStyle(wrapper.firstElementChild.shadowRoot.querySelector('[part="panel"]')).color;
+
+            for (const colours of [neutral, brand, success, danger])
+                expect(colours).toEqual({ stripe: text, icon: text });
+            expect(warning.stripe).toBe('rgb(245, 158, 11)');
+            expect(warning.icon).not.toBe(warning.stripe);
+        });
+
+        it('shows an icon that can be seen on the panel in every variant, given colours that can', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    ${variants.map((variant) => `<el-notification open="true" variant="${variant}">a</el-notification>`).join('')}
+                </div>
+            `);
+            const channels = (colour) => {
+                const numbers = colour
+                    .match(/[\d.]+/g)
+                    .slice(0, 3)
+                    .map(Number);
+                // color(srgb …) has its channels from 0 to 1.
+                return colour.startsWith('color(') ? numbers.map((channel) => channel * 255) : numbers;
+            };
+            const luminance = (colour) => {
+                const [red, green, blue] = channels(colour).map((channel) => {
+                    const part = channel / 255;
+                    return part <= 0.03928 ? part / 12.92 : ((part + 0.055) / 1.055) ** 2.4;
+                });
+                return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+            };
+            const contrast = (one, other) => {
+                const [lighter, darker] = [luminance(one), luminance(other)].sort((a, b) => b - a);
+                return (lighter + 0.05) / (darker + 0.05);
+            };
+
+            for (const el of wrapper.children) {
+                const panel = getComputedStyle(el.shadowRoot.querySelector('[part="panel"]')).backgroundColor;
+                // What is asked of a graphic that says something: 3 to 1.
+                expect(contrast(paint(el).icon, panel), el.variant).toBeGreaterThan(3);
+            }
+        });
     });
 
     it('has no detectable a11y violations', async () => {

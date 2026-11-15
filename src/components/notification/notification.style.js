@@ -1,6 +1,8 @@
+import variantsStyle from '../../styles/variants.style.js';
+
 const css = String.raw;
 
-export default css`
+const style = css`
     :host {
         display: block;
         pointer-events: auto;
@@ -55,36 +57,21 @@ export default css`
         background: var(--el-color-bg, Canvas);
         color: var(--el-color-fg, CanvasText);
         border: var(--el-border-width, 1px) solid var(--el-color-border, currentColor);
-        border-inline-start: 4px solid var(--variant-color, var(--el-color-border, currentColor));
+        /* The stripe that carries the variant: its border colour, from the variants module. For
+           neutral that is the border of the theme. */
+        border-inline-start: 4px solid var(--_el-variant-border);
         border-radius: var(--el-radius-md, 0);
         box-shadow: var(--el-shadow-lg, none);
         min-width: 18rem;
         max-width: 28rem;
     }
 
-    .notification--default {
-        --variant-color: var(--el-color-border, currentColor);
-    }
-    .notification--primary {
-        --variant-color: var(--el-color-accent, currentColor);
-    }
-    .notification--success {
-        --variant-color: var(--el-color-success, currentColor);
-    }
-    .notification--neutral {
-        --variant-color: var(--el-color-fg-muted, currentColor);
-    }
-    .notification--warning {
-        --variant-color: var(--el-color-warning, #f59e0b);
-    }
-    .notification--danger {
-        --variant-color: var(--el-color-danger, currentColor);
-    }
-
+    /* The icon stands on the background of the panel and has the text colour of the variant: the
+       colour of the text for neutral, and a warning colour that is mixed with it to be seen. */
     [part~='icon'] {
         display: inline-flex;
         flex: none;
-        color: var(--variant-color, currentColor);
+        color: var(--_el-variant-text);
     }
 
     [part~='icon'] svg {
@@ -137,3 +124,5 @@ export default css`
         }
     }
 `;
+
+export default [variantsStyle(), style].join('\n');

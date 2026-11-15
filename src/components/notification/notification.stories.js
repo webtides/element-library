@@ -4,7 +4,7 @@ import readme from './notification.readme.md?raw';
 import { define } from './notification.js';
 define();
 
-const variants = ['default', 'primary', 'success', 'neutral', 'warning', 'danger'];
+const variants = ['neutral', 'brand', 'success', 'warning', 'danger'];
 
 export default {
     title: 'Components/Notification',
@@ -18,7 +18,7 @@ export default {
         },
     },
     args: {
-        variant: 'primary',
+        variant: 'brand',
         closable: true,
         message: 'Your changes have been saved.',
     },
@@ -62,7 +62,7 @@ export const Variants = {
     parameters: {
         docs: {
             description: {
-                story: 'Each variant carries its own accent color and default icon. `danger` and `warning` are announced assertively.',
+                story: 'The variants of the shared vocabulary, as on `el-button`. Each paints the stripe and the icon in its colour; `success`, `warning` and `danger` have an icon of their own. `danger` and `warning` are announced assertively.',
             },
         },
     },

@@ -95,8 +95,8 @@ export default class Toast extends TemplateElement {
      * A toast beyond `max` waits and is shown when a place is free.
      * @param {string | Node} message - The text, the content, or an `el-notification`.
      * @param {object} [options]
-     * @param {'default'|'primary'|'success'|'neutral'|'warning'|'danger'} [options.variant] - The
-     *   variant of the notification.
+     * @param {'neutral'|'brand'|'success'|'warning'|'danger'} [options.variant] - The variant of
+     *   the notification.
      * @param {number} [options.duration] - How long the toast stays, in milliseconds. `Infinity`
      *   keeps it until it is closed.
      * @param {boolean} [options.closable] - Whether the toast has a close button.

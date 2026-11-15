@@ -199,9 +199,29 @@ describe('Feature | Toast', () => {
             expect(entry.open).toBe(true);
             expect(entry.closable).toBe(true);
             expect(entry.duration).toBe(5000);
-            expect(entry.variant).toBe('default');
+            expect(entry.variant).toBe('neutral');
             expect(entry.shadowRoot.querySelector('[part~="close-button"]')).not.toBeNull();
             expect(getComputedStyle(entry.shadowRoot.querySelector('[part~="base"]')).opacity).toBe('1');
+        });
+
+        // The word that paints a button: toast('Saved.', { variant: 'brand' }) used to show no accent.
+        it('shows a toast in the variants of a button', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-color-accent: rgb(0, 0, 255); --el-color-border: rgb(200, 200, 200)">
+                    <el-toast></el-toast>
+                </div>
+            `);
+            const el = wrapper.firstElementChild;
+            const stripe = (entry) =>
+                getComputedStyle(entry.shadowRoot.querySelector('[part~="panel"]')).borderInlineStartColor;
+
+            const brand = el.toast('Saved.', { variant: 'brand', duration: Infinity });
+            const plain = el.toast('Saved.', { duration: Infinity });
+            await Promise.all([shown(brand), shown(plain)]);
+
+            expect(brand.getAttribute('variant')).toBe('brand');
+            expect(stripe(brand)).toBe('rgb(0, 0, 255)');
+            expect(stripe(plain)).toBe('rgb(200, 200, 200)');
         });
 
         it('takes the variant, the duration, the close button and its label from the options', async () => {
