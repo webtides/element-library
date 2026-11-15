@@ -14,6 +14,7 @@ import { define as defineRangeField } from '../range-field/range-field.js';
 import { define as defineCheckboxGroupField } from '../checkbox-group-field/checkbox-group-field.js';
 import { define as defineRatingField } from '../rating-field/rating-field.js';
 import { define as defineFileField } from '../file-field/file-field.js';
+import { define as defineOtpField } from '../otp-field/otp-field.js';
 import defaultTheme from '../../themes/default.css?raw';
 import highContrastTheme from '../../themes/high-contrast.css?raw';
 import sketchyTheme from '../../themes/sketchy.css?raw';
@@ -29,6 +30,7 @@ defineRangeField();
 defineCheckboxGroupField();
 defineRatingField();
 defineFileField();
+defineOtpField();
 
 const frames = async () => {
     await nextFrame();
@@ -54,6 +56,7 @@ const FIELDS = {
     'el-checkbox-group-field': `options='["news", "offers"]' required="true"`,
     'el-rating-field': `required="true"`,
     'el-file-field': '',
+    'el-otp-field': '',
 };
 // The fields that are a group of choices: a fieldset with a legend around their options.
 const GROUPS = ['el-radio-field', 'el-checkbox-group-field', 'el-rating-field'];
@@ -124,6 +127,7 @@ describe('Feature | FormField', () => {
             checkboxes: 'Pick a topic',
             rating: 'Rate it',
             file: 'Add a file',
+            otp: 'Enter the code',
         };
         const emptyForm = async (prefix, attributes = '') => {
             const form = await fixture(`
@@ -138,6 +142,7 @@ describe('Feature | FormField', () => {
                     <el-checkbox-group-field name="${prefix}-checkboxes" label="Topics" required="true" options='["news", "offers"]' error-message="${MESSAGES.checkboxes}"></el-checkbox-group-field>
                     <el-rating-field name="${prefix}-rating" label="Rating" required="true" error-message="${MESSAGES.rating}"></el-rating-field>
                     <el-file-field name="${prefix}-file" label="CV" required="true" error-message="${MESSAGES.file}"></el-file-field>
+                    <el-otp-field name="${prefix}-otp" label="Code" required="true" error-message="${MESSAGES.otp}"></el-otp-field>
                     <el-input-field name="${prefix}-valid" label="City" value="Berlin" error-message="Enter a city"></el-input-field>
                     <button type="submit">Send</button>
                 </form>
@@ -212,6 +217,7 @@ describe('Feature | FormField', () => {
                 checkboxes: 'fieldset',
                 rating: 'fieldset',
                 file: 'input',
+                otp: 'input',
             };
             for (const kind of Object.keys(MESSAGES)) {
                 const message = refused.fieldOf(kind).querySelector('.error-message');
@@ -562,7 +568,7 @@ describe('Feature | FormField', () => {
         const VALUES = ['1.50', '12345678901234567890', '1e3', '[1]', '{"a":1}', '007', 'true', 'null'];
         const data = (form) => Object.fromEntries(new FormData(form));
 
-        for (const tag of ['el-input-field', 'el-password-field', 'el-textarea-field']) {
+        for (const tag of ['el-input-field', 'el-password-field', 'el-textarea-field', 'el-otp-field']) {
             it(`shows and submits the text as it is, in ${tag}`, async () => {
                 const form = await fixture(
                     `<form>${VALUES.map((value, index) => `<${tag} name="text-${tag}-${index}" value='${value}'></${tag}>`).join('')}</form>`,

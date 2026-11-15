@@ -3,7 +3,7 @@
  *
  * Opt-in stylesheet that gives the native control of a field the look of the
  * design tokens: border, radius, padding, colours, focus ring. It reaches the
- * input of el-input-field and el-password-field, the textarea of
+ * input of el-input-field, el-password-field and el-otp-field, the textarea of
  * el-textarea-field, the select of el-select-field, the file input of
  * el-file-field and the range of el-range-field. Import it together with a
  * theme, which sets the tokens:
@@ -28,6 +28,7 @@
  */
 el-input-field input,
 el-password-field input,
+el-otp-field input,
 el-file-field input,
 el-textarea-field textarea,
 el-select-field select {
@@ -48,6 +49,7 @@ el-select-field select {
 
 el-input-field input,
 el-password-field input,
+el-otp-field input,
 el-file-field input,
 el-select-field select {
   min-height: calc(var(--el-control-height) * var(--_el-size-scale, 1));
@@ -62,6 +64,7 @@ el-select-field select {
 @media (any-pointer: coarse) {
   el-input-field input,
   el-password-field input,
+  el-otp-field input,
   el-file-field input,
   el-select-field select {
     min-height: max(calc(var(--el-control-height) * var(--_el-size-scale, 1)), var(--el-touch-target, 0px));
@@ -70,6 +73,7 @@ el-select-field select {
 
 el-input-field input:focus,
 el-password-field input:focus,
+el-otp-field input:focus,
 el-file-field input:focus,
 el-textarea-field textarea:focus,
 el-select-field select:focus {
@@ -82,6 +86,7 @@ el-select-field select:focus {
 
 el-input-field:state(invalid) input,
 el-password-field:state(invalid) input,
+el-otp-field:state(invalid) input,
 el-file-field:state(invalid) input,
 el-textarea-field:state(invalid) textarea,
 el-select-field:state(invalid) select {

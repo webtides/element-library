@@ -75,8 +75,20 @@ export default class InputField extends FormField {
         };
     }
 
+    /**
+     * The pattern of the control. A field that extends this one can have a pattern of its own
+     * where the page gives none (`OtpField`).
+     * @private
+     * @returns {string | false}
+     */
+    _pattern() {
+        return this.pattern;
+    }
+
     /** @private */
     fieldTemplate() {
+        const pattern = this._pattern();
+
         return html`
             <input
                 ref="input"
@@ -87,7 +99,7 @@ export default class InputField extends FormField {
                 placeholder="${this.placeholder}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
-                ${optionalAttribute(this.pattern, 'pattern', this.pattern)}
+                ${optionalAttribute(pattern, 'pattern', pattern)}
                 ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"

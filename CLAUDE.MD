@@ -81,6 +81,7 @@ element-library/
 - **lazy-src**: Lazy loading wrapper
 - **scroll-to**: Scroll to target element
 - **notification**: Alert with variants, auto-dismiss and a live region, inline or as a toast
+- **otp-field**: One-time code of a second factor: one native input (extends the input field) that takes spaces and hyphens out and says when the code is complete
 - **pagination**: Way through a list that is split into pages: a `nav` with a button per page
 - **password-field**: Masked password input with an optional show/hide toggle
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
@@ -202,7 +203,7 @@ Rules:
 
 Beside the modules, `src/styles/` has the stylesheets a page imports (`./styles/*.css` in the exports map):
 
-- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
+- **`native.css`**: the look of the native controls of the fields from the tokens (`el-input-field input`, `el-password-field input`, `el-otp-field input`, `el-file-field input`, `el-textarea-field textarea`, `el-select-field select`). In no cascade layer, and only for controls inside a field. The file input of `el-file-field` has one rule more, for its button (`::file-selector-button`). The range of `el-range-field` has rules of its own there: it has no border to decorate, and gets the width of the field and the accent colour.
 - **`utilities.css`** (layer `el-utilities`): utility classes, `el-visually-hidden` so far.
 - **`layers.css`**: `@layer el-tokens, el-utilities;` and nothing else. Every stylesheet that uses a layer starts with the same statement.
 
