@@ -299,6 +299,15 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 2. **Keep "no value" as it is while the control is empty.** A value that goes from `null` to `''` is written to the control as its default. `FormField.onChange()` keeps the `null`; a field with an `onChange()` of its own has to do the same.
 3. **Test with real keys, and with a render between two of them.** A test that sets `control.value` and fires `input` does not see what the control does with a half-entered value.
 
+### When an Element Is Form-Associated
+
+`el-button` is (`static formAssociated = true`): the platform resolves its `form` attribute and tells it when a `<fieldset disabled>` disables it (`formDisabledCallback()`).
+
+1. **Any `disabled` attribute disables the element for the platform**, `disabled="false"` included: `:disabled` matches, and the browser keeps every click from the element. element-js writes `disabled="false"` for a property that came from an attribute. So the element reflects `disabled` itself, as an attribute that is there or gone (`reflectProperty()` in `button.js`), and takes a `disabled="false"` of the page off (`attributeChangedCallback()`).
+2. **The element is no submit button for the platform.** `form.requestSubmit(element)` throws, and Enter in a field does not find it. A form is submitted with a native submit button that belongs to it: `el-button` keeps a hidden one in its content (`_syncSubmitter()`).
+3. **A child of the element is on the event path of the control it is slotted into.** A click on that hidden button passes the `<button>` in the shadow root, and its listener.
+4. **None of this is there before the script has run.** Only a native control in the page belongs to a form then (issue #86).
+
 ### When Modifying Components
 
 1. **Check dependents**: Components may be used by other components

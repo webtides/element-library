@@ -50,14 +50,16 @@ import '@webtides/element-library/button/define';
 | `circle` | `boolean` | `false` | Square, fully-rounded icon button (use with a single icon). |
 | `caret` | `boolean` | `false` | Appends a dropdown caret after the label. |
 | `loading` | `boolean` | `false` | Shows a spinner and blocks interaction. |
-| `disabled` | `boolean` | `false` | Disables the button. |
-| `type` | `string` | `'button'` | `button`, `submit` or `reset`. `submit` / `reset` act on the nearest `<form>`. Button-only. |
-| `name` | `string` | `''` | Name submitted with the owning form. Button-only. |
-| `value` | `string` | `''` | Value submitted with the owning form. Button-only. |
+| `disabled` | `boolean` | `false` | Disables the button. Reflected: the attribute is there while the button is disabled, see [In a form](#in-a-form). |
+| `type` | `string` | `'button'` | `button`, `submit` or `reset`. `submit` / `reset` act on the form of the button, see [In a form](#in-a-form). Button-only. |
+| `name` | `string` | `''` | Name submitted with the form, when the form is submitted with this button. Button-only. |
+| `value` | `string` | `''` | Value submitted under that name. Button-only. |
 | `href` | `string` | `''` | When set, the button renders as a link to this URL. |
 | `target` | `string` | `''` | Where to open the linked URL. Link-only. |
 | `rel` | `string` | `'noreferrer noopener'` | `rel` for the link (only emitted alongside `target`). Link-only. |
 | `download` | `string` | `''` | Tells the browser to download the linked URL. Link-only. |
+
+The attributes `form`, `formaction`, `formenctype`, `formmethod`, `formnovalidate` and `formtarget` do what they do on a native button, see [In a form](#in-a-form). They are attributes only, not properties.
 
 #### Methods
 
@@ -115,6 +117,51 @@ The three properties are independent of each other, and every combination works.
 `variant`, `appearance` and `size` are reflected: the element writes them onto itself as attributes, the defaults included (`<el-button variant="neutral" appearance="filled" size="medium">`), so that they can be selected from a stylesheet (`el-button[variant='brand']`). A value the button does not know is painted like the default.
 
 The `hidden` attribute hides the button.
+
+## In a form
+
+An `el-button` of the type `submit` submits its form as a native submit button does, and one of the type `reset` resets it.
+
+```html
+<form>
+    <el-input-field name="title" label="Title" required="true"></el-input-field>
+    <el-button type="submit" name="action" value="draft" formnovalidate>Save as draft</el-button>
+    <el-button type="submit" name="action" value="publish" variant="brand">Publish</el-button>
+</form>
+
+<!-- From outside of the form -->
+<el-button type="submit" form="settings">Save</el-button>
+```
+
+- **The form of the button** is the nearest `<form>` around it, or the one its `form` attribute names by id.
+- **`name` and `value`** are in the data of the form when it is submitted with this button, and with no other. Both are text, submitted as they are written.
+- **`formaction`, `formenctype`, `formmethod`, `formnovalidate` and `formtarget`** say how the form is submitted with this button. A "Cancel" with `formnovalidate` submits a form that is not valid.
+- **Enter in a field** submits the form with its first submit button, as the platform does. While that button is disabled or loading, Enter does not submit.
+- **A `<fieldset disabled>`** around the button disables it: it fires no click, takes no focus and is painted as disabled. Its `disabled` property keeps saying what the page has set.
+- **`form.elements`** lists the button. The element is form-associated.
+
+#### The native submit button
+
+A form is submitted with a submit button that belongs to it. The control of `el-button` is in a shadow root and has no form, so a button of the type `submit` keeps a hidden native `<button type="submit">` as a child of the element. That button carries the `name`, the `value` and the attributes above.
+
+- It is the `submitter` of the `submit` event: `event.submitter.closest('el-button')` is the `el-button`.
+- Enter in a field clicks it, so a `click` listener on the `el-button` hears that click, with the native button as its target. A native submit button hears the same click.
+- When the page replaces the content of the `el-button`, the element puts it back.
+
+#### The `disabled` attribute
+
+For the platform an attribute that is there disables a form-associated element, whatever its value. So the attribute follows the property: the element has `disabled="true"` while it is disabled, and no `disabled` attribute while it is not. `disabled="false"` and a `disabled` without a value are read as not disabled, as before, and are taken off the element.
+
+#### Before the script has run
+
+In server-rendered markup a click on the button does not submit the form: the control is in the shadow root, and the script is what hands the click on ([#86](https://github.com/webtides/element-library/issues/86)). Enter in a field does, when the page writes the native submit button itself. The element takes that one and adds no second:
+
+```html
+<el-button type="submit" name="action" value="save">
+    Save
+    <button type="submit" hidden name="action" value="save"></button>
+</el-button>
+```
 
 ## ARIA attributes
 

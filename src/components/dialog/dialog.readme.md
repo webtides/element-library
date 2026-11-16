@@ -86,7 +86,7 @@ A form with `method="dialog"` inside the dialog closes it when it is submitted, 
 - Nothing is sent. Read the fields in a listener of `submit`; `event.submitter` is the button that was used. There is no `returnValue`.
 - A form that is not valid is not submitted, so the dialog stays open. A button with `formnovalidate` skips the validation.
 - It closes without `dialog-request-close`. A listener that calls `preventDefault()` on the `submit` keeps the dialog open.
-- An `el-button` of the type `submit` closes the dialog from inside the form. It has no `form` attribute, so a button in the footer for a form in the body has to be a native one.
+- An `el-button` of the type `submit` does the same as a native button: inside the form, or in the footer with the `form` attribute, and with `formnovalidate` and `formmethod="dialog"`.
 - In a dialog inside a dialog, the form closes the one it is in.
 - `form.submit()` from a script fires no `submit`, so the dialog stays open; call `hide()` there. The same goes for a form inside the shadow root of another component, whose `submit` does not leave it.
 

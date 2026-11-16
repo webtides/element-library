@@ -157,3 +157,43 @@ export const AsLink = {
         </el-button>
     `,
 };
+
+/** What the form was submitted with, written below it. */
+const showSubmit = (event) => {
+    event.preventDefault();
+    const data = new URLSearchParams(new FormData(event.currentTarget, event.submitter)).toString();
+    event.currentTarget.querySelector('output').textContent = `Submitted: ${data || 'nothing'}`;
+};
+
+export const InAForm = {
+    name: 'In a form',
+    parameters: { controls: { disable: true } },
+    render: () => html`
+        <div style="display:grid;gap:1.5rem;max-width:28rem">
+            <form id="button-story-form" style="display:grid;gap:0.75rem" @submit="${showSubmit}">
+                <label style="display:grid;gap:0.25rem">
+                    Title
+                    <input name="title" required style="border:1px solid;border-radius:0.25rem;padding:0.5rem" />
+                </label>
+                <label style="display:grid;gap:0.25rem">
+                    Summary
+                    <input name="summary" style="border:1px solid;border-radius:0.25rem;padding:0.5rem" />
+                </label>
+                <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
+                    <el-button type="submit" variant="brand" name="action" value="publish">Publish</el-button>
+                    <el-button type="submit" name="action" value="draft" formnovalidate>Save as draft</el-button>
+                    <el-button type="reset" appearance="plain">Reset</el-button>
+                </div>
+                <output></output>
+            </form>
+            <div>
+                <p>Outside of the form, with the <code>form</code> attribute:</p>
+                <el-button type="submit" form="button-story-form" name="action" value="outside">Submit</el-button>
+            </div>
+            <fieldset disabled style="border:1px solid;border-radius:0.25rem;padding:0.75rem">
+                <legend>A disabled fieldset</legend>
+                <el-button variant="brand">Disabled by the fieldset</el-button>
+            </fieldset>
+        </div>
+    `,
+};

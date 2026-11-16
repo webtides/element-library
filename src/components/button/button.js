@@ -27,6 +27,12 @@ const ARIA_RELATIONS = {
 };
 
 /**
+ * The attributes of the element that a native submit button has as well, and that the submit button
+ * of the element takes over: the form it belongs to, and what it says for the one submit it starts.
+ */
+const SUBMITTER_ATTRIBUTES = ['form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget'];
+
+/**
  * A themeable button that renders a native `<button>` — or an `<a>` when `href` is set — and
  * decorates it with the `--el-*` design tokens. Speaks the library's shared vocabulary: a semantic
  * `variant`, an `appearance` and a `size`. Also supports pill / circle shapes, an optional
@@ -36,6 +42,13 @@ const ARIA_RELATIONS = {
  * a screen reader announces: `aria-label`, `aria-description`, `aria-expanded`, `aria-haspopup`,
  * `aria-pressed` and `aria-current` as they are, `aria-labelledby`, `aria-describedby` and
  * `aria-controls` as references to the elements they name.
+ *
+ * The element is form-associated: a `<fieldset disabled>` around it disables it, and it is listed in
+ * the `elements` of its form. A button of the type `submit` keeps a hidden native
+ * `<button type="submit">` in its content, which is what the form is submitted with: it is the
+ * `submitter` of the `submit` event, its `name` and `value` are in the data of the form, and Enter in
+ * a field of the form finds it. The attributes `form`, `formaction`, `formenctype`, `formmethod`,
+ * `formnovalidate` and `formtarget` of the element do what they do on a native button.
  *
  * @element el-button
  *
@@ -61,30 +74,55 @@ const ARIA_RELATIONS = {
  * @property {boolean} circle - Renders a square, fully-rounded icon button (use with a single icon).
  * @property {boolean} caret - Appends a dropdown caret after the label.
  * @property {boolean} loading - Shows a spinner and blocks interaction.
- * @property {boolean} disabled - Disables the button.
+ * @property {boolean} disabled - Disables the button. Reflected to the `disabled` attribute, which is
+ *   there while the button is disabled and gone while it is not.
  * @property {'button'|'submit'|'reset'} type - Behaviour when activated. `submit` / `reset` act on
- *   the nearest ancestor `<form>`. Ignored when `href` is set. Default `'button'`.
- * @property {string} name - Name submitted with the owning form (button mode only).
- * @property {string} value - Value submitted with the owning form (button mode only).
+ *   the form of the button: the nearest ancestor `<form>`, or the one its `form` attribute names.
+ *   Ignored when `href` is set. Default `'button'`.
+ * @property {string} name - Name submitted with the form, when the form is submitted with this
+ *   button (button mode only).
+ * @property {string} value - Value submitted under that name (button mode only).
  * @property {string} href - When set, the button renders as a link to this URL.
  * @property {string} target - Where to open the linked URL (link mode only).
  * @property {string} rel - `rel` attribute for the link (link mode only). Default `'noreferrer noopener'`.
  * @property {string} download - Tells the browser to download the linked URL (link mode only).
  */
 export default class Button extends TemplateElement {
+    /**
+     * The platform tells a form-associated element when a `<fieldset disabled>` around it disables
+     * it, and resolves its `form` attribute.
+     */
+    static formAssociated = true;
+
     static get observedAttributes() {
-        return [...ARIA_ATTRIBUTES, ...Object.keys(ARIA_RELATIONS)];
+        return [...ARIA_ATTRIBUTES, ...Object.keys(ARIA_RELATIONS), ...SUBMITTER_ATTRIBUTES, 'disabled'];
     }
+
+    /**
+     * The native submit button of a button of the type `submit`, see `_syncSubmitter()`.
+     * @private
+     * @type {HTMLButtonElement | undefined}
+     */
+    _submitter = undefined;
 
     constructor() {
         super({
             styles: [style],
             shadowRender: true,
+            // The native submit button is in the content of the element. When the page replaces
+            // the content, the next render puts it back.
+            mutationObserverOptions: { childList: true },
             // The shared style modules select the host by these attributes.
             propertyOptions: {
                 variant: { reflect: true },
                 appearance: { reflect: true },
                 size: { reflect: true },
+                // For the platform the attribute is what disables the element, see `reflectProperty()`.
+                disabled: { reflect: true },
+                // What a form submits is text. element-js parses every attribute, so that text which
+                // reads as a number arrives as one: "1.50" as 1.5.
+                name: { parse: false },
+                value: { parse: false },
             },
         });
     }
@@ -115,16 +153,51 @@ export default class Button extends TemplateElement {
     }
 
     /**
-     * An ARIA attribute of the element was set, changed or removed. They are no properties of the
-     * component: the template reads them from the element, so a change asks for a new render.
-     * Before the first render there is nothing to do, it reads them anyway.
+     * An ARIA attribute of the element, or one it shares with a native submit button, was set,
+     * changed or removed. They are no properties of the component: the template and the submit
+     * button read them from the element, so a change asks for a new render. Before the first render
+     * there is nothing to do, it reads them anyway.
+     *
+     * `disabled` is a property. For the platform an attribute that is there disables a
+     * form-associated element, whatever it says: the browser then keeps every click from it. The
+     * library reads `disabled="false"` and an attribute without a value as not disabled, so those
+     * are taken off the element.
      */
     attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'disabled') {
+            if (newValue === 'false' || newValue === '') this.removeAttribute('disabled');
+            return;
+        }
         if (oldValue !== newValue && this.$refs?.control) this.requestUpdate();
+    }
+
+    /**
+     * The platform says that the element is disabled, or no longer is: by its own attribute, or by a
+     * `<fieldset disabled>` around it. The template asks the platform, see `_isDisabled()`.
+     */
+    formDisabledCallback() {
+        if (this.$refs?.control) this.requestUpdate();
+    }
+
+    /**
+     * `disabled` is reflected as the platform reads it: the attribute is there while the button is
+     * disabled, and gone while it is not. element-js would write `disabled="false"`.
+     * @param {{ property: string, newValue: unknown }} options
+     */
+    reflectProperty(options) {
+        if (options.property !== 'disabled') {
+            super.reflectProperty(options);
+            return;
+        }
+        if (!options.newValue) this.removeAttribute('disabled');
+        else if (!this.hasAttribute('disabled')) this.setAttribute('disabled', 'true');
+        // element-js reads an attribute that is gone as `null`. The property stays a boolean.
+        if (options.newValue === null) this.disabled = false;
     }
 
     afterUpdate() {
         this._syncAriaRelations();
+        this._syncSubmitter();
     }
 
     /** Focuses the underlying control. */
@@ -146,22 +219,86 @@ export default class Button extends TemplateElement {
         return {
             '.button': {
                 click: (event) => {
-                    if (this.disabled || this.loading) {
+                    // Enter in a field of the form clicks the native submit button, which is in the
+                    // label slot: that click passes the control, and has submitted the form already.
+                    if (event.target === this._submitter) return;
+                    if (this._isDisabled() || this.loading) {
                         event.preventDefault();
                         event.stopImmediatePropagation();
                         return;
                     }
-                    // Shadow DOM swallows the native submit/reset, so drive the nearest form by hand.
-                    if (!this.isLink && (this.type === 'submit' || this.type === 'reset')) {
-                        const form = this.closest('form');
-                        if (form) {
-                            if (this.type === 'submit') form.requestSubmit();
-                            else form.reset();
-                        }
+                    if (this.isLink) return;
+                    // The control is in the shadow root, where it has no form. A submit goes through
+                    // the native submit button of the element, a reset to the form of the element.
+                    if (this.type === 'submit') {
+                        const submitter = this._syncSubmitter();
+                        submitter?.form?.requestSubmit(submitter);
+                    } else if (this.type === 'reset') {
+                        this._internals.form?.reset();
                     }
                 },
             },
         };
+    }
+
+    /**
+     * Whether the button is disabled: by its own `disabled`, or by a `<fieldset disabled>` around
+     * it. The platform knows the second, and counts the attribute of the element as well. On the
+     * server there is no tree to ask.
+     * @private
+     * @returns {boolean}
+     */
+    _isDisabled() {
+        return !!this.disabled || !!this.matches?.(':disabled');
+    }
+
+    /**
+     * Keeps the native submit button of a button of the type `submit`: a hidden
+     * `<button type="submit">` in the content of the element, in the page, where it belongs to the
+     * form. A form is submitted with a submit button that belongs to it, and with nothing else: the
+     * button is the `submitter` of the `submit` event, its `name` and `value` are in the data, it
+     * says how to submit (`formmethod`, `formnovalidate`, …), and Enter in a field looks for it.
+     * The control in the shadow root has no form, and the element itself is no submit button for the
+     * platform.
+     *
+     * The button takes over `name`, `value` and the attributes of the element that a native submit
+     * button has. It is disabled while the element is disabled or loading, which keeps Enter from
+     * submitting as well. One that is in the content already is taken: written by the page, for a
+     * form that is submitted with Enter before the script has run, or copied with the element.
+     * @private
+     * @returns {HTMLButtonElement | null} The submit button, or `null` for a button of another type.
+     */
+    _syncSubmitter() {
+        const ours = this._submitter?.parentNode === this ? this._submitter : null;
+        let submitter = ours ?? this.querySelector(':scope > button[type="submit"][hidden]');
+
+        if (this.isLink || this.type !== 'submit') {
+            ours?.remove();
+            this._submitter = undefined;
+            return null;
+        }
+
+        if (!submitter) {
+            submitter = document.createElement('button');
+            submitter.type = 'submit';
+            submitter.hidden = true;
+            this.append(submitter);
+        }
+        this._submitter = submitter;
+
+        // A rule of the page for buttons does not show it.
+        submitter.style.setProperty('display', 'none', 'important');
+        submitter.disabled = this._isDisabled() || !!this.loading;
+
+        // A script may set a number. An empty text is no attribute, as on the control.
+        const text = (value) => (value === '' || value === null || value === undefined ? null : String(value));
+        const attributes = { name: text(this.name), value: text(this.value) };
+        for (const name of SUBMITTER_ATTRIBUTES) attributes[name] = this.getAttribute(name);
+        for (const [name, value] of Object.entries(attributes)) {
+            if (value === null) submitter.removeAttribute(name);
+            else if (submitter.getAttribute(name) !== value) submitter.setAttribute(name, value);
+        }
+        return submitter;
     }
 
     /**
@@ -214,6 +351,7 @@ export default class Button extends TemplateElement {
             'button--loading': !!this.loading,
             'button--caret': !!this.caret,
         };
+        const disabled = this._isDisabled();
 
         if (this.isLink) {
             return html`
@@ -222,11 +360,11 @@ export default class Button extends TemplateElement {
                     part="base"
                     class="${classMap(classes)}"
                     role="button"
-                    aria-disabled="${this.disabled ? 'true' : 'false'}"
+                    aria-disabled="${disabled ? 'true' : 'false'}"
                     aria-busy="${this.loading ? 'true' : 'false'}"
-                    tabindex="${this.disabled ? '-1' : '0'}"
+                    tabindex="${disabled ? '-1' : '0'}"
                     ${spreadAttributes({
-                        href: this.disabled ? undefined : this.href,
+                        href: disabled ? undefined : this.href,
                         target: this.target || undefined,
                         rel: this.target ? this.rel : undefined,
                         download: this.download || undefined,
@@ -244,7 +382,7 @@ export default class Button extends TemplateElement {
                 part="base"
                 class="${classMap(classes)}"
                 type="${this.type}"
-                ?disabled="${this.disabled}"
+                ?disabled="${disabled}"
                 aria-busy="${this.loading ? 'true' : 'false'}"
                 ${spreadAttributes({
                     name: this.name || undefined,

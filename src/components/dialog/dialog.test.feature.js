@@ -703,6 +703,39 @@ describe('Feature | Dialog', () => {
             expect(el.open).toBe(false);
         });
 
+        it('closes for an el-button in the footer that belongs to a form in the body', async () => {
+            const { el, find } = await opened(`
+                <form id="dialog-test-form-el-button" method="dialog">
+                    <input name="name" aria-label="Name" required />
+                </form>
+                <el-button slot="footer" class="cancel" type="submit" form="dialog-test-form-el-button" formnovalidate
+                    >Cancel</el-button
+                >
+                <el-button slot="footer" class="save" type="submit" form="dialog-test-form-el-button">Save</el-button>
+            `);
+
+            // The form is not valid, so the dialog stays open for the button that validates.
+            await userEvent.click(find('.save'));
+            await aTimeout(50);
+            expect(el.open).toBe(true);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('.cancel'));
+            await closed;
+            expect(el.open).toBe(false);
+        });
+
+        it('closes for an el-button that says so in a form with another method', async () => {
+            const { el, find } = await opened(`
+                <form><el-button type="submit" formmethod="dialog">Cancel</el-button></form>
+            `);
+
+            const closed = oneEvent(el, 'dialog-after-hide');
+            await userEvent.click(find('el-button'));
+            await closed;
+            expect(el.open).toBe(false);
+        });
+
         it('stays open for a submit with another method', async () => {
             // The control: a `submit` fired by a script closes it like one of the platform.
             const { el, find } = await opened(`<form method="dialog"><button>OK</button></form>`);

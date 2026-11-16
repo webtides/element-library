@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import {
     accessibleDescription,
     accessibleName,
+    aTimeout,
     fixture,
     forcePseudoClasses,
     nextFrame,
@@ -63,6 +65,533 @@ describe('Feature | Button', () => {
         button.shadowRoot.querySelector('[part="base"]').click();
         await nextFrame();
         expect(submitted).toBe(true);
+    });
+
+    // For the platform an attribute that is there disables a form-associated element, whatever it
+    // says, and the browser keeps every click from it. So the attribute follows the property.
+    describe('the disabled attribute', () => {
+        const control = (el) => el.shadowRoot.querySelector('[part="base"]');
+        const clicksOn = (el) => {
+            const clicks = [];
+            el.addEventListener('click', (event) => clicks.push(event));
+            return clicks;
+        };
+
+        for (const [how, markup] of [
+            ['disabled="false"', `<el-button disabled="false">Save</el-button>`],
+            ['an attribute without a value', `<el-button disabled>Save</el-button>`],
+        ]) {
+            it(`takes ${how} off the element, which is not disabled`, async () => {
+                const el = await fixture(markup);
+                const clicks = clicksOn(el);
+
+                expect(el.hasAttribute('disabled')).toBe(false);
+                expect(el.disabled).toBe(false);
+                expect(el.matches(':disabled')).toBe(false);
+                expect(control(el).disabled).toBe(false);
+
+                await userEvent.click(el);
+                expect(clicks).toHaveLength(1);
+            });
+        }
+
+        it('takes disabled="false" off when it is written again', async () => {
+            const el = await fixture(`<el-button>Save</el-button>`);
+            const clicks = clicksOn(el);
+
+            el.setAttribute('disabled', 'false');
+            expect(el.hasAttribute('disabled')).toBe(false);
+            await nextFrame();
+
+            await userEvent.click(el);
+            expect(clicks).toHaveLength(1);
+        });
+
+        it('has the attribute while a script has disabled it, and not after', async () => {
+            const el = await fixture(`<el-button>Save</el-button>`);
+
+            el.disabled = true;
+            await nextFrame();
+            expect(el.getAttribute('disabled')).toBe('true');
+            expect(el.matches(':disabled')).toBe(true);
+            expect(control(el).disabled).toBe(true);
+
+            // The attribute goes at once, the render follows the report of that.
+            el.disabled = false;
+            expect(el.hasAttribute('disabled')).toBe(false);
+            expect(el.matches(':disabled')).toBe(false);
+            await nextFrame();
+            await nextFrame();
+            expect(el.disabled).toBe(false);
+            expect(control(el).disabled).toBe(false);
+        });
+
+        it('is enabled by a script after it was rendered with disabled="true"', async () => {
+            const el = await fixture(`<el-button disabled="true">Save</el-button>`);
+            const clicks = clicksOn(el);
+            expect(el.matches(':disabled')).toBe(true);
+
+            el.disabled = false;
+            await nextFrame();
+            await nextFrame();
+            expect(el.hasAttribute('disabled')).toBe(false);
+            expect(el.disabled).toBe(false);
+            expect(control(el).disabled).toBe(false);
+
+            await userEvent.click(el);
+            expect(clicks).toHaveLength(1);
+        });
+
+        it('follows the attribute that a script sets and removes', async () => {
+            const el = await fixture(`<el-button>Save</el-button>`);
+
+            el.setAttribute('disabled', 'true');
+            await nextFrame();
+            await nextFrame();
+            expect(el.disabled).toBe(true);
+            expect(control(el).disabled).toBe(true);
+
+            el.removeAttribute('disabled');
+            await nextFrame();
+            await nextFrame();
+            expect(el.disabled).toBe(false);
+            expect(el.hasAttribute('disabled')).toBe(false);
+            expect(control(el).disabled).toBe(false);
+        });
+    });
+
+    describe('in a disabled fieldset', () => {
+        const control = (el) => el.shadowRoot.querySelector('[part="base"]');
+        const inFieldset = async (buttons, disabled = true) => {
+            const form = await fixture(`
+                <form>
+                    <fieldset ${disabled ? 'disabled' : ''}>
+                        <input name="q" />
+                        ${buttons}
+                    </fieldset>
+                </form>
+            `);
+            const submits = [];
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                submits.push(event);
+            });
+            return { form, fieldset: form.querySelector('fieldset'), submits };
+        };
+
+        it('is disabled as a native button is, and painted so', async () => {
+            const { form } = await inFieldset(`<el-button>Plain</el-button><button type="button">Native</button>`);
+            const el = form.querySelector('el-button');
+
+            expect(el.matches(':disabled')).toBe(true);
+            expect(control(el).disabled).toBe(true);
+            // The look of a disabled button.
+            expect(getComputedStyle(control(el)).cursor).toBe('not-allowed');
+            // Its own property says what the page has set, as the one of a native button does.
+            expect(el.disabled).toBe(false);
+            expect(form.querySelector('button').disabled).toBe(false);
+            expect(el.hasAttribute('disabled')).toBe(false);
+        });
+
+        it('fires no click, does not submit and does not take the focus', async () => {
+            const { form, submits } = await inFieldset(`
+                <el-button>Plain</el-button>
+                <el-button type="submit">Save</el-button>
+            `);
+            const [plain, submit] = form.querySelectorAll('el-button');
+            const clicks = [];
+            form.addEventListener('click', (event) => clicks.push(event.target));
+
+            await userEvent.click(plain, { force: true });
+            await userEvent.click(submit, { force: true });
+            submit.click();
+            await aTimeout(0);
+
+            expect(clicks.filter((target) => target.localName === 'el-button')).toEqual([]);
+            expect(submits).toHaveLength(0);
+
+            plain.focus();
+            expect(plain.shadowRoot.activeElement).toBe(null);
+        });
+
+        it('is enabled again with the fieldset', async () => {
+            const { form, fieldset, submits } = await inFieldset(`<el-button type="submit">Save</el-button>`);
+            const el = form.querySelector('el-button');
+
+            fieldset.disabled = false;
+            await nextFrame();
+            expect(el.matches(':disabled')).toBe(false);
+            expect(control(el).disabled).toBe(false);
+
+            await userEvent.click(el);
+            expect(submits).toHaveLength(1);
+
+            fieldset.disabled = true;
+            await nextFrame();
+            expect(control(el).disabled).toBe(true);
+        });
+
+        it('stays disabled by the fieldset when its own disabled goes', async () => {
+            const { form, fieldset } = await inFieldset(`<el-button disabled="true">Save</el-button>`);
+            const el = form.querySelector('el-button');
+
+            el.disabled = false;
+            await nextFrame();
+            await nextFrame();
+            expect(el.disabled).toBe(false);
+            expect(control(el).disabled).toBe(true);
+
+            fieldset.disabled = false;
+            await nextFrame();
+            expect(control(el).disabled).toBe(false);
+        });
+
+        it('stays disabled by its own disabled when the fieldset is enabled', async () => {
+            const { form, fieldset } = await inFieldset(`<el-button disabled="true">Save</el-button>`);
+            const el = form.querySelector('el-button');
+
+            fieldset.disabled = false;
+            await nextFrame();
+            expect(el.disabled).toBe(true);
+            expect(control(el).disabled).toBe(true);
+        });
+
+        it('disables a link button as its own disabled does', async () => {
+            const { form } = await inFieldset(`<el-button href="https://example.com">Go</el-button>`);
+            const link = control(form.querySelector('el-button'));
+
+            expect(link.hasAttribute('href')).toBe(false);
+            expect(link.getAttribute('aria-disabled')).toBe('true');
+            expect(link.getAttribute('tabindex')).toBe('-1');
+        });
+    });
+
+    // A form is submitted with a submit button that belongs to it. The control of the element is in
+    // the shadow root and has no form, so a button of the type `submit` keeps a hidden native submit
+    // button in its content, in the page.
+    describe('as the submit button of a form', () => {
+        const submitterOf = (el) => el.querySelector(':scope > button[type="submit"]');
+        const listen = (form) => {
+            const submits = [];
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                submits.push({
+                    submitter: event.submitter,
+                    data: Object.fromEntries(new FormData(form, event.submitter)),
+                });
+            });
+            return submits;
+        };
+
+        it('is the submitter, with its name and value in the data of the form', async () => {
+            const form = await fixture(`
+                <form>
+                    <input name="q" value="1" />
+                    <el-button type="submit" name="action" value="save">Save</el-button>
+                    <el-button type="submit" name="action" value="delete">Delete</el-button>
+                </form>
+            `);
+            const submits = listen(form);
+            const [save, remove] = form.querySelectorAll('el-button');
+
+            await userEvent.click(save);
+            await userEvent.click(remove);
+
+            expect(submits.map(({ data }) => data)).toEqual([
+                { q: '1', action: 'save' },
+                { q: '1', action: 'delete' },
+            ]);
+            // The submitter is the native button of the element.
+            expect(submits[0].submitter).toBe(submitterOf(save));
+            expect(submits[0].submitter.closest('el-button')).toBe(save);
+            expect(submits[1].submitter.closest('el-button')).toBe(remove);
+        });
+
+        it('submits a name and a value that a script sets', async () => {
+            const form = await fixture(`<form><el-button type="submit">Save</el-button></form>`);
+            const submits = listen(form);
+            const el = form.querySelector('el-button');
+
+            el.name = 'action';
+            el.value = 'publish';
+            await nextFrame();
+            await userEvent.click(el);
+            expect(submits[0].data).toEqual({ action: 'publish' });
+
+            el.name = '';
+            await nextFrame();
+            await userEvent.click(el);
+            expect(submits[1].data).toEqual({});
+        });
+
+        it('submits its value as it is written, text that reads as a number included', async () => {
+            const form = await fixture(`
+                <form>
+                    <el-button type="submit" name="price" value="1.50">One fifty</el-button>
+                    <el-button type="submit" name="count" value="0">None</el-button>
+                </form>
+            `);
+            const submits = listen(form);
+            const [price, count] = form.querySelectorAll('el-button');
+            expect([price.value, count.value]).toEqual(['1.50', '0']);
+
+            await userEvent.click(price);
+            await userEvent.click(count);
+            // A number that a script sets is submitted as its text.
+            count.value = 0;
+            await nextFrame();
+            await userEvent.click(count);
+
+            expect(submits.map(({ data }) => data)).toEqual([{ price: '1.50' }, { count: '0' }, { count: '0' }]);
+        });
+
+        it('submits the form that its form attribute names, from outside of it', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <form id="button-form-outside"><input name="q" value="1" /></form>
+                    <form id="button-form-around">
+                        <el-button type="submit" form="button-form-outside" name="action" value="outside">Save</el-button>
+                    </form>
+                </div>
+            `);
+            const [named, around] = wrapper.querySelectorAll('form');
+            const submits = listen(named);
+            const others = listen(around);
+
+            await userEvent.click(wrapper.querySelector('el-button'));
+
+            expect(submits.map(({ data }) => data)).toEqual([{ q: '1', action: 'outside' }]);
+            expect(others).toHaveLength(0);
+        });
+
+        it('submits a form that is not valid with formnovalidate, and not without', async () => {
+            const form = await fixture(`
+                <form>
+                    <input name="q" required />
+                    <el-button type="submit" formnovalidate>Cancel</el-button>
+                    <el-button type="submit">Save</el-button>
+                </form>
+            `);
+            const submits = listen(form);
+            const [cancel, save] = form.querySelectorAll('el-button');
+
+            await userEvent.click(save);
+            expect(submits).toHaveLength(0);
+
+            await userEvent.click(cancel);
+            expect(submits).toHaveLength(1);
+
+            // An attribute that comes later counts as well.
+            save.setAttribute('formnovalidate', '');
+            await nextFrame();
+            await userEvent.click(save);
+            expect(submits).toHaveLength(2);
+        });
+
+        it('hands on what the button says for its submit', async () => {
+            const form = await fixture(`
+                <form method="post" action="/default">
+                    <el-button
+                        type="submit"
+                        formaction="/other"
+                        formmethod="get"
+                        formenctype="multipart/form-data"
+                        formtarget="_blank"
+                        >Save</el-button
+                    >
+                </form>
+            `);
+            const submitter = submitterOf(form.querySelector('el-button'));
+
+            expect(submitter.formAction).toBe(new URL('/other', location.href).href);
+            expect(submitter.formMethod).toBe('get');
+            expect(submitter.formEnctype).toBe('multipart/form-data');
+            expect(submitter.formTarget).toBe('_blank');
+        });
+
+        describe('Enter in a field', () => {
+            const twoFields = (button) =>
+                fixture(`
+                    <form>
+                        <input name="first" value="1" />
+                        <input name="second" value="2" />
+                        ${button}
+                    </form>
+                `);
+            const pressEnterIn = async (form) => {
+                form.querySelector('input').focus();
+                await userEvent.keyboard('{Enter}');
+            };
+
+            it('submits a form with several fields, with the button as the submitter', async () => {
+                const form = await twoFields(`<el-button type="submit" name="action" value="save">Save</el-button>`);
+                const submits = listen(form);
+
+                await pressEnterIn(form);
+
+                expect(submits).toHaveLength(1);
+                expect(submits[0].data).toEqual({ first: '1', second: '2', action: 'save' });
+                expect(submits[0].submitter.closest('el-button')).toBe(form.querySelector('el-button'));
+            });
+
+            it('does not submit while the button is disabled or loading, as with a native button', async () => {
+                const form = await twoFields(`<el-button type="submit" disabled="true">Save</el-button>`);
+                const submits = listen(form);
+                const el = form.querySelector('el-button');
+
+                await pressEnterIn(form);
+                expect(submits).toHaveLength(0);
+
+                el.disabled = false;
+                el.loading = true;
+                await nextFrame();
+                await nextFrame();
+                await pressEnterIn(form);
+                expect(submits).toHaveLength(0);
+
+                el.loading = false;
+                await nextFrame();
+                await pressEnterIn(form);
+                expect(submits).toHaveLength(1);
+            });
+
+            it('does not submit for a button of another type', async () => {
+                const form = await twoFields(`<el-button>Save</el-button><el-button type="reset">Reset</el-button>`);
+                const submits = listen(form);
+
+                await pressEnterIn(form);
+                expect(submits).toHaveLength(0);
+            });
+        });
+
+        describe('the native submit button', () => {
+            it('is one, hidden, and no part of what the button shows or says', async () => {
+                const style = document.createElement('style');
+                // A reset or a rule of the page for buttons.
+                style.textContent = `button { display: inline-block; } [hidden] { display: revert; }`;
+                document.head.append(style);
+
+                const form = await fixture(`<form><el-button type="submit">Save</el-button></form>`);
+                const el = form.querySelector('el-button');
+                const submitter = submitterOf(el);
+                await nextFrame();
+
+                expect(el.querySelectorAll('button')).toHaveLength(1);
+                expect(submitter.hidden).toBe(true);
+                expect(getComputedStyle(submitter).display).toBe('none');
+                expect(await accessibleName(el.shadowRoot.querySelector('[part="base"]'))).toBe('Save');
+                expect(el.textContent.trim()).toBe('Save');
+                style.remove();
+
+                const results = await axe.run(form);
+                expect(results.violations.map((violation) => violation.id)).toEqual([]);
+            });
+
+            it('is there for the type submit only', async () => {
+                const wrapper = await fixture(`
+                    <form>
+                        <el-button>Plain</el-button>
+                        <el-button type="reset">Reset</el-button>
+                        <el-button type="submit" href="https://example.com">Link</el-button>
+                        <el-button type="submit">Save</el-button>
+                    </form>
+                `);
+                const [plain, reset, link, submit] = wrapper.querySelectorAll('el-button');
+                expect([plain, reset, link, submit].map((el) => !!submitterOf(el))).toEqual([
+                    false,
+                    false,
+                    false,
+                    true,
+                ]);
+
+                submit.type = 'button';
+                plain.type = 'submit';
+                await nextFrame();
+                await nextFrame();
+                expect([plain, submit].map((el) => !!submitterOf(el))).toEqual([true, false]);
+
+                plain.href = 'https://example.com';
+                await nextFrame();
+                await nextFrame();
+                expect(!!submitterOf(plain)).toBe(false);
+            });
+
+            it('comes back when the page replaces the content of the button', async () => {
+                const form = await fixture(`
+                    <form><input name="a" /><input name="b" /><el-button type="submit">Save</el-button></form>
+                `);
+                const submits = listen(form);
+                const el = form.querySelector('el-button');
+
+                el.textContent = 'Saved';
+                await nextFrame();
+                await nextFrame();
+
+                expect(el.querySelectorAll('button')).toHaveLength(1);
+                form.querySelector('input').focus();
+                await userEvent.keyboard('{Enter}');
+                expect(submits).toHaveLength(1);
+            });
+
+            it('is made for a click that comes before that', async () => {
+                const form = await fixture(
+                    `<form><el-button type="submit" name="action" value="save">Save</el-button></form>`,
+                );
+                const submits = listen(form);
+                const el = form.querySelector('el-button');
+
+                el.textContent = 'Saved';
+                el.click();
+
+                expect(submits.map(({ data }) => data)).toEqual([{ action: 'save' }]);
+            });
+
+            it('takes the one that the page has written, or that was copied with the button', async () => {
+                const form = await fixture(`
+                    <form>
+                        <el-button type="submit" name="action" value="save">Save<button type="submit" hidden></button></el-button>
+                    </form>
+                `);
+                const el = form.querySelector('el-button');
+                const written = el.querySelector('button');
+
+                expect(el.querySelectorAll('button')).toHaveLength(1);
+                expect(submitterOf(el)).toBe(written);
+                expect([written.name, written.value]).toEqual(['action', 'save']);
+
+                const copy = el.cloneNode(true);
+                form.append(copy);
+                await nextFrame();
+                await nextFrame();
+                expect(copy.querySelectorAll('button')).toHaveLength(1);
+            });
+        });
+
+        it('lists the button in the elements of its form', async () => {
+            const form = await fixture(`<form><el-button id="button-listed">Plain</el-button></form>`);
+            expect([...form.elements]).toContain(form.querySelector('el-button'));
+        });
+    });
+
+    describe('as the reset button of a form', () => {
+        it('resets the nearest form, or the one that its form attribute names', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <form id="button-form-reset"><input name="q" value="1" /><el-button type="reset">Reset</el-button></form>
+                    <el-button type="reset" form="button-form-reset">Reset from outside</el-button>
+                </div>
+            `);
+            const input = wrapper.querySelector('input');
+            const [inside, outside] = wrapper.querySelectorAll('el-button');
+
+            input.value = 'changed';
+            await userEvent.click(inside);
+            expect(input.value).toBe('1');
+
+            input.value = 'changed';
+            await userEvent.click(outside);
+            expect(input.value).toBe('1');
+        });
     });
 
     it('leaves unset attributes out of the server-rendered markup', async () => {
