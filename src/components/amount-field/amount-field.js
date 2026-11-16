@@ -1,4 +1,4 @@
-import { TemplateElement, defineElement, html } from '@webtides/element-js';
+import { defineElement, html } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import style from './amount-field.style.js';
 
@@ -9,20 +9,13 @@ import style from './amount-field.style.js';
  * message between the two, and the error message below the stepper while the field is touched and
  * not valid. The input names both messages in `aria-describedby`.
  *
+ * The field renders into the page, as every field does. Its input belongs to the form around it and
+ * is submitted with it, under the `name` of the field.
+ *
  * @element el-amount-field
  *
- * @slot plus - Replaces the default `+` glyph in the increment button.
- * @slot minus - Replaces the default `-` glyph in the decrement button.
- *
- * @csspart label - The label above the stepper. Only rendered when `label` is set.
- * @csspart help-message - The help message, between the label and the stepper.
- * @csspart error-message - The error message below the stepper. Only rendered while the field is
- *   touched and not valid.
- * @csspart wrapper - The outer container around the input and stepper buttons.
- * @csspart button - Applied to both stepper buttons.
- * @csspart plus - Applied to the increment button (in addition to `button`).
- * @csspart minus - Applied to the decrement button (in addition to `button`).
- * @csspart input - The numeric input element.
+ * @cssprop [--el-amount-field-plus='+'] - The sign of the increment button, a CSS string.
+ * @cssprop [--el-amount-field-minus='-'] - The sign of the decrement button, a CSS string.
  *
  * @property {string} name - Form name for the underlying `<input>` element.
  * @property {number} value - Current numeric value of the field.
@@ -30,15 +23,19 @@ import style from './amount-field.style.js';
  *   above.
  * @property {number | false} min - Lower bound. Set to `false` to leave the value unbounded
  *   below.
+ * @property {string} plusLabel - The accessible name of the increment button. Default
+ *   `'Increase'`.
+ * @property {string} minusLabel - The accessible name of the decrement button. Default
+ *   `'Decrease'`.
  */
 export default class AmountField extends FormField {
-    constructor() {
+    constructor(options) {
         super({
             styles: [style],
-            shadowRender: true,
+            ...options,
             // The value of this field is a number, so the attribute is parsed, as element-js does
             // for any other. The form field takes its value as text.
-            propertyOptions: { value: {} },
+            propertyOptions: { value: {}, ...options?.propertyOptions },
         });
     }
 
@@ -49,6 +46,8 @@ export default class AmountField extends FormField {
             value: 1,
             max: false,
             min: 0,
+            plusLabel: 'Increase',
+            minusLabel: 'Decrease',
         };
     }
 
@@ -71,67 +70,44 @@ export default class AmountField extends FormField {
     }
 
     /**
-     * The label is rendered inside the shadow root: a `<label for>` only reaches an input in the
-     * same root.
-     * @private
+     * The stepper: the two buttons around the input. The buttons are of the type `button`, a button
+     * without a type submits the form it is in. Their signs are drawn by the stylesheet, so each
+     * has its name as a label.
+     *
+     * A bound that is not set leaves its attribute out of the input.
      */
-    labelTemplate() {
-        if (!this.label) return null;
+    fieldTemplate() {
         return html`
-            <label part="label" for="${this._idOf('input')}" class="${this.classes().label}">${this.label}</label>
-        `;
-    }
-
-    /**
-     * The messages are rendered inside the shadow root as well: the `aria-describedby` of the input
-     * only reaches an element in the same root.
-     * @private
-     */
-    helpTemplate() {
-        return html`
-            <span part="help-message" id="${this._idOf('help-message')}" class="message help-message"
-                >${this.helpMessage}</span
-            >
-        `;
-    }
-
-    /** @private */
-    errorTemplate() {
-        if (!this._showsError()) return null;
-        return html`
-            <span part="error-message" id="${this._idOf('error-message')}" class="message error-message" role="alert"
-                >${this.errorMessage}</span
-            >
-        `;
-    }
-
-    template() {
-        return html`
-            ${this.labelTemplate()} ${this.helpTemplate()}
-            <div part="wrapper">
-                <button ref="plus" part="button plus" ?disabled="${this.max !== false && this.value >= this.max}">
-                    <slot name="plus">+</slot>
-                </button>
+            <div class="stepper">
+                <button
+                    ref="plus"
+                    type="button"
+                    class="step plus"
+                    aria-label="${this.plusLabel}"
+                    ?disabled="${this.max !== false && this.value >= this.max}"
+                ></button>
                 <input
                     ref="input"
-                    part="input"
                     type="number"
-                    readonly="true"
+                    readonly
                     id="${this._idOf('input')}"
                     name="${this.name}"
                     ?required="${this.required}"
                     ?disabled="${this.disabled}"
                     value="${this.value}"
-                    max="${this.max}"
-                    min="${this.min}"
+                    max="${this.max === false ? null : this.max}"
+                    min="${this.min === false ? null : this.min}"
                     aria-describedby="${this._describedBy()}"
                     aria-invalid="${this.valid ? 'false' : 'true'}"
                 />
-                <button ref="minus" part="button minus" ?disabled="${this.min !== false && this.value <= this.min}">
-                    <slot name="minus">-</slot>
-                </button>
+                <button
+                    ref="minus"
+                    type="button"
+                    class="step minus"
+                    aria-label="${this.minusLabel}"
+                    ?disabled="${this.min !== false && this.value <= this.min}"
+                ></button>
             </div>
-            ${this.errorTemplate()}
         `;
     }
 }

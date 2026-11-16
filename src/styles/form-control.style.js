@@ -23,7 +23,7 @@ const css = String.raw;
  *
  * Every rule names the host itself, and none is nested in the rule of the host. A rule nested in
  * `:host` does not reach the content of a shadow root in every browser that knows nesting (Safari
- * before 18.1), and `el-amount-field` composes this module for its shadow root.
+ * before 18.1), so the module also works for a field that composes it for a shadow root.
  * @param {string} [host] - `':host'` (the default), or the tag of a field without a shadow root.
  * @returns {string}
  */

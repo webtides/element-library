@@ -16,9 +16,9 @@ export default {
     },
     args: {
         label: 'Quantity',
-        value: 0,
-        min: Number.MIN_VALUE,
-        max: Number.MAX_VALUE,
+        value: 1,
+        min: 0,
+        max: 10,
     },
 };
 
@@ -54,6 +54,62 @@ export const WithMessages = {
             help-message="One for every person on the team."
             error-message="Book at least one seat."
             valid="false"
+        ></el-amount-field>
+    `,
+};
+
+/** What the form was submitted with, written below it. */
+const showSubmit = (event) => {
+    event.preventDefault();
+    const data = new URLSearchParams(new FormData(event.currentTarget)).toString();
+    event.currentTarget.querySelector('output').textContent = `Submitted: ${data || 'nothing'}`;
+};
+
+export const InAForm = {
+    name: 'In a form',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'The input of the field belongs to the form around it. Its value is submitted under the `name` of the field, and a reset brings back the value it was rendered with.',
+            },
+        },
+    },
+    render: () => html`
+        <form style="display:grid;gap:0.75rem;justify-items:start" @submit="${showSubmit}">
+            <el-amount-field name="seats" label="Seats" value="3" min="1" max="10"></el-amount-field>
+            <div style="display:flex;gap:0.75rem">
+                <button type="submit" style="border:1px solid;border-radius:0.25rem;padding:0.25rem 0.75rem">
+                    Submit
+                </button>
+                <button type="reset" style="border:1px solid;border-radius:0.25rem;padding:0.25rem 0.75rem">
+                    Reset
+                </button>
+            </div>
+            <output></output>
+        </form>
+    `,
+};
+
+export const OwnSigns = {
+    name: 'With signs of its own',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'The signs of the buttons are CSS strings: `--el-amount-field-plus` and `--el-amount-field-minus`. `plusLabel` and `minusLabel` name the buttons.',
+            },
+        },
+    },
+    render: () => html`
+        <el-amount-field
+            name="guests"
+            label="Guests"
+            value="2"
+            min="0"
+            plus-label="One more"
+            minus-label="One less"
+            style="--el-amount-field-plus: '▲'; --el-amount-field-minus: '▼'"
         ></el-amount-field>
     `,
 };

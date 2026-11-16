@@ -90,8 +90,6 @@ Every field that renders into the page has the same layout around its control, `
 
 A checkbox and a switch have their label beside the control, in its row, and none above it. Their help message explains that label, so it follows the row, and the error message follows the help message. The column of a radio group is its `<fieldset>`.
 
-`el-amount-field` renders into a shadow root and has the same layout there. Its texts are parts: `::part(label)`, `::part(help-message)` and `::part(error-message)`.
-
 #### Ids
 
 A field gives its control, its help message and its error message an id: `input-…`, `help-message-…` and `error-message-…`, with a part that is random for every field. The label names the control by it (`for`), and the control its messages (`aria-describedby`).
@@ -106,7 +104,7 @@ _None_ (Component uses template methods instead of slots)
 
 ## In a form
 
-The fields that render into the page take part in a native `<form>` through their native control: `el-input-field`, `el-password-field`, `el-textarea-field`, `el-select-field`, `el-checkbox-field`, `el-switch-field` and `el-radio-field`. The control carries the `name` and belongs to the form like any other control, so no script has to collect the values.
+The fields that render into the page take part in a native `<form>` through their native control: `el-input-field`, `el-password-field`, `el-textarea-field`, `el-select-field`, `el-checkbox-field`, `el-switch-field`, `el-radio-field` and `el-amount-field`. The control carries the `name` and belongs to the form like any other control, so no script has to collect the values.
 
 - The value is submitted under the `name`, whether the user entered it or a script set it on the element. A checkbox or a switch submits its `value` while it is checked (`on` if it has none) and nothing while it is not; a radio group submits the selected option.
 - A `disabled` field is left out.
@@ -143,5 +141,4 @@ That state is not an empty one: `<el-input-field value="Ada">` shows "Ada" again
 
 What does not work yet:
 
-- `el-amount-field` renders its input in a shadow root. It is not submitted, and `required` has no effect on the form.
 - Server-rendered markup: `@webtides/element-js-ssr-renderer` (0.4.0) parses the `value` attribute itself. A value that reads as a number is rendered as that number, `1.50` as `1.5`, and a select does not find its option, until the element starts in the browser and puts the text back.

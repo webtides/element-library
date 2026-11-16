@@ -127,9 +127,10 @@ describe('Feature | Styles | native.css', () => {
             }
         });
 
-        it('does not reach into a shadow root', async () => {
-            const el = await fixture(`<el-amount-field name="native-shadow" label="Amount"></el-amount-field>`);
-            const input = el.shadowRoot.querySelector('input');
+        // The input of el-amount-field is the middle of a stepper, which has the border.
+        it('leaves the input of a stepper to its field', async () => {
+            const el = await fixture(`<el-amount-field name="native-stepper" label="Amount"></el-amount-field>`);
+            const input = el.querySelector('input');
             // The field styles its input itself, without a border.
             expect(getComputedStyle(input).borderTopWidth).toBe('0px');
             expect(getComputedStyle(input).minHeight).not.toBe('40px');
