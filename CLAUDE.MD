@@ -306,7 +306,8 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 1. **Any `disabled` attribute disables the element for the platform**, `disabled="false"` included: `:disabled` matches, and the browser keeps every click from the element. element-js writes `disabled="false"` for a property that came from an attribute. So the element reflects `disabled` itself, as an attribute that is there or gone (`reflectProperty()` in `button.js`), and takes a `disabled="false"` of the page off (`attributeChangedCallback()`).
 2. **The element is no submit button for the platform.** `form.requestSubmit(element)` throws, and Enter in a field does not find it. A form is submitted with a native submit button that belongs to it: `el-button` keeps a hidden one in its content (`_syncSubmitter()`).
 3. **A child of the element is on the event path of the control it is slotted into.** A click on that hidden button passes the `<button>` in the shadow root, and its listener.
-4. **None of this is there before the script has run.** Only a native control in the page belongs to a form then (issue #86).
+4. **The listener of the control is the first to have a click**, before every listener of the page. A native control acts once all of them have had the event, and not when one has called `preventDefault()`. So what a click does to the form waits for the end of its path (`_afterListeners()` in `button.js`), and for a task when a listener stops the event before it gets there.
+5. **None of this is there before the script has run.** Only a native control in the page belongs to a form then (issue #86).
 
 ### When Modifying Components
 

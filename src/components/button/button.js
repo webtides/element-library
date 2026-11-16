@@ -48,7 +48,8 @@ const SUBMITTER_ATTRIBUTES = ['form', 'formaction', 'formenctype', 'formmethod',
  * `<button type="submit">` in its content, which is what the form is submitted with: it is the
  * `submitter` of the `submit` event, its `name` and `value` are in the data of the form, and Enter in
  * a field of the form finds it. The attributes `form`, `formaction`, `formenctype`, `formmethod`,
- * `formnovalidate` and `formtarget` of the element do what they do on a native button.
+ * `formnovalidate` and `formtarget` of the element do what they do on a native button. A `click`
+ * listener of the page that calls `preventDefault()` keeps the button from submitting or resetting.
  *
  * @element el-button
  *
@@ -230,15 +231,43 @@ export default class Button extends TemplateElement {
                     if (this.isLink) return;
                     // The control is in the shadow root, where it has no form. A submit goes through
                     // the native submit button of the element, a reset to the form of the element.
+                    // Both are taken here, while the button is not disabled, and act once the page
+                    // has had the click.
                     if (this.type === 'submit') {
                         const submitter = this._syncSubmitter();
-                        submitter?.form?.requestSubmit(submitter);
+                        this._afterListeners(event, () => submitter?.form?.requestSubmit(submitter));
                     } else if (this.type === 'reset') {
-                        this._internals.form?.reset();
+                        const form = this._internals.form;
+                        this._afterListeners(event, () => form?.reset());
                     }
                 },
             },
         };
+    }
+
+    /**
+     * Runs `action` once every listener has had `event`, and not when one of them has prevented it:
+     * what the platform does with the activation of a native control. The listener of the control
+     * is the first on the path of a click, before every listener of the page.
+     *
+     * The last target on the path is the window, and a listener that is added there now comes after
+     * the ones it has: `action` runs inside of the click, as a caller of `click()` expects. A
+     * listener on the way that stops the event keeps it from getting there. The platform acts all
+     * the same, so `action` runs a task later then.
+     * @private
+     * @param {Event} event
+     * @param {() => void} action
+     */
+    _afterListeners(event, action) {
+        const end = event.composedPath().at(-1);
+        let timer;
+        const act = () => {
+            clearTimeout(timer);
+            end.removeEventListener(event.type, act);
+            if (!event.defaultPrevented) action();
+        };
+        end.addEventListener(event.type, act);
+        timer = setTimeout(act);
     }
 
     /**

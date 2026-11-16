@@ -137,6 +137,7 @@ An `el-button` of the type `submit` submits its form as a native submit button d
 - **`name` and `value`** are in the data of the form when it is submitted with this button, and with no other. Both are text, submitted as they are written.
 - **`formaction`, `formenctype`, `formmethod`, `formnovalidate` and `formtarget`** say how the form is submitted with this button. A "Cancel" with `formnovalidate` submits a form that is not valid.
 - **Enter in a field** submits the form with its first submit button, as the platform does. While that button is disabled or loading, Enter does not submit.
+- **A `click` listener that calls `preventDefault()`** keeps the button from submitting or resetting, as it does with a native button: on the `el-button`, on an element in it or around it. The button acts once every listener has had the click, inside of that click. After a listener that stops the click on its way (`stopPropagation()`), it acts a task later.
 - **A `<fieldset disabled>`** around the button disables it: it fires no click, takes no focus and is painted as disabled. Its `disabled` property keeps saying what the page has set.
 - **`form.elements`** lists the button. The element is form-associated.
 

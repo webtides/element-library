@@ -594,6 +594,121 @@ describe('Feature | Button', () => {
         });
     });
 
+    // A native button acts once every listener has had the click, and not when one of them has
+    // prevented it. The control of the button is in the shadow root, where its own listener is the
+    // first to have the click: before the listeners of the page.
+    describe('a click that a listener of the page has its say on', () => {
+        const inForm = (type) =>
+            fixture(`
+                <form>
+                    <input name="q" value="1" />
+                    <el-button type="${type}" name="action" value="go"><span>Go</span></el-button>
+                </form>
+            `);
+        // What a click does to the form: the submits and the resets it starts.
+        const watch = (form) => {
+            const seen = { submit: 0, reset: 0, data: [] };
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                seen.submit++;
+                seen.data.push(Object.fromEntries(new FormData(form, event.submitter)));
+            });
+            form.addEventListener('reset', () => seen.reset++);
+            return seen;
+        };
+        const prevent = (event) => event.preventDefault();
+
+        for (const type of ['submit', 'reset']) {
+            for (const [where, targetOf] of [
+                ['on the button', (form) => form.querySelector('el-button')],
+                ['on an element in the button', (form) => form.querySelector('span')],
+                ['on an element around the button', (form) => form],
+                ['on the window', () => window],
+            ]) {
+                it(`does not ${type} after a listener ${where} has prevented it`, async () => {
+                    const form = await inForm(type);
+                    const seen = watch(form);
+                    const target = targetOf(form);
+
+                    target.addEventListener('click', prevent);
+                    try {
+                        await userEvent.click(form.querySelector('el-button'));
+                        await aTimeout(0);
+                        expect(seen[type]).toBe(0);
+                    } finally {
+                        target.removeEventListener('click', prevent);
+                    }
+
+                    // Without the listener the button acts, and once.
+                    await userEvent.click(form.querySelector('el-button'));
+                    await aTimeout(0);
+                    expect(seen[type]).toBe(1);
+                });
+            }
+
+            // A caller of `click()` reads what it has done right after it, as with a native button.
+            it(`does ${type} inside of the click`, async () => {
+                const form = await inForm(type);
+                const seen = watch(form);
+
+                form.querySelector('el-button').click();
+
+                expect(seen[type]).toBe(1);
+                await aTimeout(0);
+                expect(seen[type]).toBe(1);
+            });
+
+            // A listener that stops the click keeps it from the elements further up, not from the
+            // button: a native button acts all the same.
+            it(`does ${type} after a listener has stopped the click, and not after it has prevented it as well`, async () => {
+                const form = await inForm(type);
+                const seen = watch(form);
+                const el = form.querySelector('el-button');
+                const stop = (event) => event.stopPropagation();
+
+                el.addEventListener('click', stop);
+                await userEvent.click(el);
+                await aTimeout(0);
+                expect(seen[type]).toBe(1);
+
+                el.addEventListener('click', prevent);
+                await userEvent.click(el);
+                await aTimeout(0);
+                expect(seen[type]).toBe(1);
+            });
+        }
+
+        // The click was taken while the button was not loading. What a listener sets on its way does
+        // not take the submit back, or the name and the value out of it.
+        it('submits with its name and value when a listener of the click sets loading', async () => {
+            const form = await inForm('submit');
+            const seen = watch(form);
+            const el = form.querySelector('el-button');
+            el.addEventListener('click', () => {
+                el.loading = true;
+            });
+
+            await userEvent.click(el);
+            await aTimeout(0);
+
+            expect(seen.data).toEqual([{ q: '1', action: 'go' }]);
+        });
+
+        it('leaves no listener behind on the window', async () => {
+            const form = await inForm('submit');
+            const seen = watch(form);
+            const el = form.querySelector('el-button');
+
+            await userEvent.click(el);
+            await aTimeout(0);
+            // A click that does not come from the button reaches the window as well.
+            form.querySelector('input').click();
+            window.dispatchEvent(new MouseEvent('click'));
+
+            expect(seen.submit).toBe(1);
+        });
+    });
+
     it('leaves unset attributes out of the server-rendered markup', async () => {
         // `template().toString()` is the markup the SSR renderer puts into the Declarative Shadow DOM.
         const controlTag = (el, tag) =>
