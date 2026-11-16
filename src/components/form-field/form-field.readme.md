@@ -118,7 +118,7 @@ The elements themselves are not form-associated custom elements: the control alr
 
 #### A refused submit
 
-A form whose fields are not all valid is not submitted. Every field that is not valid is then `touched` and not `valid`, and shows its `errorMessage` as an alert, whether the user had been in it or not. That holds for a click on a submit button, for Enter in a field and for `form.requestSubmit()`, which is what `el-button type="submit"` calls. A form with `novalidate` is not validated, so nothing changes there.
+A form whose fields are not all valid is not submitted. Every field that is not valid is then `touched` and not `valid`, and shows its `errorMessage` as an alert, whether the user had been in it or not. That holds for a click on a submit button, an `el-button type="submit"` included, for Enter in a field and for `form.requestSubmit()`. A form with `novalidate` is not validated, so nothing changes there.
 
 The browser still focuses the first control that is not valid and shows its own bubble there. To show the messages of the fields alone, cancel the `invalid` event for the whole form. It does not bubble, so listen while it is captured:
 
@@ -145,4 +145,3 @@ What does not work yet:
 
 - `el-amount-field` renders its input in a shadow root. It is not submitted, and `required` has no effect on the form.
 - Server-rendered markup: `@webtides/element-js-ssr-renderer` (0.4.0) parses the `value` attribute itself. A value that reads as a number is rendered as that number, `1.50` as `1.5`, and a select does not find its option, until the element starts in the browser and puts the text back.
-- `el-button type="submit"`: its `name` and `value` are not submitted, and Enter in a field does not submit the form.
