@@ -107,7 +107,7 @@ The `hidden` attribute hides the empty state.
 - It is not announced when it appears. If a list empties while the user is on the page, after a search or a deletion, say so in a live region of the page.
 - Write into the message what is missing and what to do about it. An icon alone does not say it.
 - An icon that only decorates is hidden from assistive technology: `aria-hidden="true"` on an `svg`, an empty `alt` on an `img`.
-- Whether the message can be read depends on the colours of the theme: `--el-color-fg-muted` needs a contrast of 4.5 : 1 to the background it stands on. With the default theme it has that on `--el-color-bg`; on the muted fill, in a `filled` card for example, it has 4.4 : 1 in a light scheme.
+- Whether the message can be read depends on the colours of the theme: `--el-color-fg-muted` needs a contrast of 4.5 : 1 to the background it stands on. The three shipped themes have that on `--el-color-bg` and on the muted fill, in a `filled` card for example, in both schemes.
 
 ## Server-side rendering
 
