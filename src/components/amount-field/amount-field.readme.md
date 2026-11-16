@@ -94,7 +94,7 @@ The buttons are at least `--el-touch-target` high on every pointer. On a touch s
 The input of the field is a control of the form around it, like the control of every other field.
 
 - The value is submitted under the `name`: the one the field was rendered with, one that plus and minus have changed, and one that a script sets.
-- A `disabled` field is left out. A `<fieldset disabled>` around the field disables the input and both buttons.
+- A `disabled` field is left out, and its buttons are disabled with its input. A `<fieldset disabled>` around the field does the same.
 - `form.reset()` brings back the value the field was rendered with. See [Reset](../form-field/form-field.readme.md#reset).
 - The buttons are of the type `button`: they do not submit the form.
 - In server-rendered markup the input is there with its name and its value, so a form that is submitted before the script has run has the rendered value. The buttons need the script.
@@ -121,3 +121,5 @@ The buttons have a name now (`plusLabel`, `minusLabel`); it was their sign.
 - The input names the help message in `aria-describedby`, and the error message while that is shown: a screen reader reads both when the input gets focus.
 - The input says whether the field is valid (`aria-invalid`).
 - The error message is an alert (`role="alert"`): a screen reader announces it when it appears.
+- The Tab key stops at the plus button, at the input and at the minus button. The part that has the keyboard focus shows it inside of itself, where the stepper does not cut it off: a ring of `--el-focus-ring-width` in `--el-color-focus-ring`, and of 2 px in the colour of the text without a theme.
+- A button at its bound is disabled, and both are while the field is `disabled`: they change nothing then, and the Tab key passes the field.

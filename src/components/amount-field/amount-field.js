@@ -74,7 +74,8 @@ export default class AmountField extends FormField {
      * without a type submits the form it is in. Their signs are drawn by the stylesheet, so each
      * has its name as a label.
      *
-     * A bound that is not set leaves its attribute out of the input.
+     * A bound that is not set leaves its attribute out of the input. A button is disabled at its
+     * bound, and both are with the field.
      */
     fieldTemplate() {
         return html`
@@ -84,7 +85,7 @@ export default class AmountField extends FormField {
                     type="button"
                     class="step plus"
                     aria-label="${this.plusLabel}"
-                    ?disabled="${this.max !== false && this.value >= this.max}"
+                    ?disabled="${this.disabled || (this.max !== false && this.value >= this.max)}"
                 ></button>
                 <input
                     ref="input"
@@ -105,7 +106,7 @@ export default class AmountField extends FormField {
                     type="button"
                     class="step minus"
                     aria-label="${this.minusLabel}"
-                    ?disabled="${this.min !== false && this.value <= this.min}"
+                    ?disabled="${this.disabled || (this.min !== false && this.value <= this.min)}"
                 ></button>
             </div>
         `;

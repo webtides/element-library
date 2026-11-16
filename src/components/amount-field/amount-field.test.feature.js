@@ -339,6 +339,143 @@ describe('Feature | AmountField', () => {
         });
     });
 
+    describe('while it is disabled', () => {
+        const frames = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+        const partsOf = (el) => [el.querySelector('.plus'), el.querySelector('input'), el.querySelector('.minus')];
+
+        it('disables its buttons with its input: they change nothing and take no focus', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <button id="amount-disabled-before">Before</button>
+                    <el-amount-field name="disabled-buttons" label="Seats" value="3" disabled="true"></el-amount-field>
+                    <button id="amount-disabled-after">After</button>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-amount-field');
+            const [plus, input, minus] = partsOf(el);
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+            expect([plus.disabled, input.disabled, minus.disabled]).toEqual([true, true, true]);
+
+            await userEvent.click(plus, { force: true });
+            await userEvent.click(minus, { force: true });
+            await frames();
+            expect(el.value).toBe(3);
+            expect(input.value).toBe('3');
+            expect(changes).toEqual([]);
+
+            // The Tab key passes the field.
+            wrapper.querySelector('#amount-disabled-before').focus();
+            await userEvent.tab();
+            expect(document.activeElement.id).toBe('amount-disabled-after');
+        });
+
+        it('has its buttons back when it is enabled again, except the one at its bound', async () => {
+            const el = await fixture(
+                `<el-amount-field name="enabled-again" label="Seats" value="0" min="0" max="5" disabled="true"></el-amount-field>`,
+            );
+            const [plus, input, minus] = partsOf(el);
+
+            el.disabled = false;
+            await frames();
+            expect([plus.disabled, input.disabled, minus.disabled]).toEqual([false, false, true]);
+
+            await userEvent.click(plus);
+            await frames();
+            expect(el.value).toBe(1);
+            expect([plus.disabled, minus.disabled]).toEqual([false, false]);
+
+            el.disabled = true;
+            await frames();
+            expect([plus.disabled, input.disabled, minus.disabled]).toEqual([true, true, true]);
+        });
+    });
+
+    // The stepper cuts off what is outside of it, a ring around one of its parts as well. So each
+    // part shows the keyboard focus inside of itself.
+    describe('the keyboard focus', () => {
+        const ringOf = (element) => {
+            const { outlineStyle, outlineWidth, outlineColor, outlineOffset } = getComputedStyle(element);
+            return [outlineStyle, outlineWidth, outlineColor, outlineOffset];
+        };
+        // Tabs through the field and reads the ring of what has the focus then.
+        const tabThrough = async (wrapper) => {
+            wrapper.querySelector('button').focus();
+            const seen = {};
+            for (let stop = 0; stop < 3; stop++) {
+                await userEvent.tab();
+                const element = document.activeElement;
+                seen[element.localName === 'input' ? 'input' : element.className] = ringOf(element);
+            }
+            return seen;
+        };
+        const field = (name) => `
+            <button>Before</button>
+            <el-amount-field name="${name}" label="Seats" value="3" min="0" max="5"></el-amount-field>
+        `;
+
+        it('shows on the buttons and on the input, with the ring of the theme', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-color-focus-ring: rgb(0, 0, 255); --el-focus-ring-width: 3px">${field('focus-themed')}</div>
+            `);
+            const ring = ['solid', '3px', 'rgb(0, 0, 255)', '-3px'];
+
+            expect(await tabThrough(wrapper)).toEqual({ 'step plus': ring, input: ring, 'step minus': ring });
+        });
+
+        it('shows without a theme, in the colour of the text', async () => {
+            const wrapper = await fixture(`<div style="color: rgb(10, 20, 30)">${field('focus-plain')}</div>`);
+            const ring = ['solid', '2px', 'rgb(10, 20, 30)', '-2px'];
+
+            expect(await tabThrough(wrapper)).toEqual({ 'step plus': ring, input: ring, 'step minus': ring });
+        });
+
+        it('shows on the part that has the focus only', async () => {
+            const wrapper = await fixture(`<div>${field('focus-one')}</div>`);
+            const el = wrapper.querySelector('el-amount-field');
+
+            wrapper.querySelector('button').focus();
+            await userEvent.tab();
+            await userEvent.tab();
+
+            expect(document.activeElement).toBe(el.querySelector('input'));
+            expect(ringOf(el.querySelector('.plus'))[0]).toBe('none');
+            expect(ringOf(el.querySelector('.minus'))[0]).toBe('none');
+        });
+
+        // The ring has the corners of the stepper, where it would be cut off otherwise. At rest the
+        // stepper cuts the corners of its buttons, which have none of their own.
+        it('follows the corners of the stepper on the two buttons', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-radius-md: 8px; --el-border-width: 2px">${field('focus-corners')}</div>
+            `);
+            const cornersOf = (element) => {
+                const style = getComputedStyle(element);
+                return [
+                    style.borderTopLeftRadius,
+                    style.borderBottomLeftRadius,
+                    style.borderTopRightRadius,
+                    style.borderBottomRightRadius,
+                ].join(' ');
+            };
+            const parts = ['.plus', 'input', '.minus'].map((selector) => wrapper.querySelector(selector));
+            expect(parts.map(cornersOf)).toEqual(['0px 0px 0px 0px', '0px 0px 0px 0px', '0px 0px 0px 0px']);
+
+            wrapper.querySelector('button').focus();
+            const focused = [];
+            for (const part of parts) {
+                await userEvent.tab();
+                expect(document.activeElement).toBe(part);
+                focused.push(cornersOf(part));
+            }
+
+            expect(focused).toEqual(['6px 6px 0px 0px', '0px 0px 0px 0px', '0px 0px 6px 6px']);
+        });
+    });
+
     describe('in a native form', () => {
         const data = (form) => Object.fromEntries(new FormData(form));
         const frames = async () => {

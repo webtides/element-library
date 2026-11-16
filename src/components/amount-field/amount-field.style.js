@@ -27,6 +27,28 @@ const style = css`
             font: inherit;
         }
 
+        /* The stepper cuts off what is outside of it, a ring around one of its parts as well. So the
+           part that has the keyboard focus shows it inside of itself. */
+        .step:focus-visible,
+        input:focus-visible {
+            outline: var(--el-focus-ring-width, 2px) solid var(--el-color-focus-ring, currentColor);
+            outline-offset: calc(-1 * var(--el-focus-ring-width, 2px));
+        }
+
+        /* The ring of a button follows the inner corners of the stepper, on the side where the button
+           meets them. With the ring only: at rest the stepper cuts the corners of its buttons, and
+           they have none of their own. A radius of the theme that is not one length leaves the ring
+           square. */
+        .plus:focus-visible {
+            border-start-start-radius: max(0px, var(--el-radius-md, 0px) - var(--el-border-width, 0px));
+            border-end-start-radius: max(0px, var(--el-radius-md, 0px) - var(--el-border-width, 0px));
+        }
+
+        .minus:focus-visible {
+            border-start-end-radius: max(0px, var(--el-radius-md, 0px) - var(--el-border-width, 0px));
+            border-end-end-radius: max(0px, var(--el-radius-md, 0px) - var(--el-border-width, 0px));
+        }
+
         /* The signs are strings of the stylesheet, so a page can set its own. */
         .plus::before {
             content: var(--el-amount-field-plus, '+');
@@ -56,10 +78,6 @@ const style = css`
             padding: var(--el-space-2, 0) var(--el-space-3, 0);
             min-width: var(--el-touch-target, auto);
             font: inherit;
-        }
-
-        input:focus {
-            outline: none;
         }
 
         input[type='number'] {

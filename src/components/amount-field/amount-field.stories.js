@@ -65,6 +65,20 @@ const showSubmit = (event) => {
     event.currentTarget.querySelector('output').textContent = `Submitted: ${data || 'nothing'}`;
 };
 
+export const Disabled = {
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'A disabled field disables its input and both buttons. The Tab key passes it, and its value is left out of a form.',
+            },
+        },
+    },
+    render: () => html`
+        <el-amount-field name="locked" label="Seats" value="3" min="0" max="10" disabled="true"></el-amount-field>
+    `,
+};
+
 export const InAForm = {
     name: 'In a form',
     parameters: {
