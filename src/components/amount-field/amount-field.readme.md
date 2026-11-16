@@ -89,6 +89,8 @@ The sign of a button is its `::before`. The stepper is styled by the field itsel
 
 The buttons are at least `--el-touch-target` high on every pointer. On a touch screen (`@media (any-pointer: coarse)`) they are at least that wide as well, and the input is as high as the buttons.
 
+The stepper of a disabled field fades as a whole (`opacity: 0.55`, as the control of every other field) and has the cursor `not-allowed`: by the `disabled` of the field, and by a `<fieldset disabled>` around it. In an enabled field a button at its bound fades alone.
+
 ## In a form
 
 The input of the field is a control of the form around it, like the control of every other field.

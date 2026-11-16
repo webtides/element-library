@@ -70,7 +70,7 @@ export const Disabled = {
         controls: { disable: true },
         docs: {
             description: {
-                story: 'A disabled field disables its input and both buttons. The Tab key passes it, and its value is left out of a form.',
+                story: 'A disabled field disables its input and both buttons, and its stepper fades as a whole. The Tab key passes it, and its value is left out of a form.',
             },
         },
     },

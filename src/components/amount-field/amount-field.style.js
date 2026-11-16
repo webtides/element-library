@@ -67,6 +67,22 @@ const style = css`
             cursor: not-allowed;
         }
 
+        /* A disabled field, by its own disabled or by a fieldset around it: the stepper fades as a
+           whole, as the control of every other field does, so the number says it as well. The
+           buttons do not fade a second time. A button at its bound alone is the rule above. */
+        .stepper:has(input:disabled) {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .stepper:has(input:disabled) .step {
+            opacity: 1;
+        }
+
+        input:disabled {
+            cursor: not-allowed;
+        }
+
         input {
             text-align: center;
             appearance: none;

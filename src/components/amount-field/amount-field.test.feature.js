@@ -392,6 +392,43 @@ describe('Feature | AmountField', () => {
             await frames();
             expect([plus.disabled, input.disabled, minus.disabled]).toEqual([true, true, true]);
         });
+
+        // The number is what a user reads. So the stepper of a disabled field fades as a whole, as
+        // the control of every other field does, and a button at its bound stays another thing.
+        for (const [how, tokens] of [
+            ['without a theme', ''],
+            [
+                'with a theme',
+                '--el-color-bg: rgb(255, 255, 255); --el-color-bg-muted: rgb(240, 240, 240); --el-color-fg: rgb(10, 10, 10); --el-color-border: rgb(200, 200, 200); --el-border-width: 1px',
+            ],
+        ]) {
+            it(`fades its stepper as a whole, and not its buttons a second time, ${how}`, async () => {
+                const wrapper = await fixture(`
+                    <div style="${tokens}">
+                        <el-amount-field name="look-disabled" label="Seats" value="3" disabled="true"></el-amount-field>
+                        <fieldset disabled>
+                            <el-amount-field name="look-fieldset" label="Seats" value="3"></el-amount-field>
+                        </fieldset>
+                        <el-amount-field name="look-bound" label="Seats" value="0" min="0"></el-amount-field>
+                    </div>
+                `);
+                const parts = ['.stepper', '.plus', 'input', '.minus'];
+                const styleOf = (el, property) =>
+                    parts.map((part) => getComputedStyle(el.querySelector(part))[property]);
+                const [disabled, inFieldset, atBound] = wrapper.querySelectorAll('el-amount-field');
+
+                for (const el of [disabled, inFieldset]) {
+                    expect([el.name, styleOf(el, 'opacity')]).toEqual([el.name, ['0.55', '1', '1', '1']]);
+                    expect([el.name, styleOf(el, 'cursor')]).toEqual([el.name, Array(4).fill('not-allowed')]);
+                }
+                // An enabled field with a button at its bound: that button alone, as before.
+                expect(styleOf(atBound, 'opacity')).toEqual(['1', '1', '1', '0.5']);
+
+                disabled.disabled = false;
+                await frames();
+                expect(styleOf(disabled, 'opacity')).toEqual(['1', '1', '1', '1']);
+            });
+        }
     });
 
     // The stepper cuts off what is outside of it, a ring around one of its parts as well. So each
