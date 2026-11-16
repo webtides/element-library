@@ -9,6 +9,7 @@ import {
     forcePseudoClasses,
     nextFrame,
     sizeOf,
+    useForcedColors,
     useTouchScreen,
 } from '../../test-helpers.js';
 import { define } from './button.js';
@@ -1081,6 +1082,181 @@ describe('Feature | Button', () => {
         // get one back everywhere after a touch screen test (see useTouchScreen).
         await forcePseudoClasses(control, ['active']);
         expect(getComputedStyle(control).filter).toBe('brightness(0.88)');
+    });
+
+    // The ring of a theme is around the button, in the colour the theme gives it. Without a theme
+    // nothing says which colours the page has: the ring is inside of the button, in the colour of
+    // its label, which can be read on the surface of the button.
+    describe('the keyboard focus', () => {
+        const control = (el) => el.shadowRoot.querySelector('[part="base"]');
+        const TRANSPARENT = 'rgba(0, 0, 0, 0)';
+        // What shows the focus: the outline around the control, and the ring inside of it.
+        const ringOf = (el) => {
+            const { outlineStyle, outlineWidth, outlineColor, outlineOffset } = getComputedStyle(control(el));
+            const inside = getComputedStyle(control(el), '::after');
+            return {
+                around: [outlineStyle, outlineWidth, outlineColor, outlineOffset],
+                inside: inside.content === 'none' ? 'none' : inside.boxShadow,
+            };
+        };
+        // Whether nothing shows inside: no ring there, or one whose colour shows nothing, as Chromium writes it.
+        const nothingInside = (inside) =>
+            inside === 'none' || /^(rgba\(0, 0, 0, 0\)|color\(srgb 0 0 0 \/ 0\)) /.test(inside);
+        const buttons = ['neutral', 'brand', 'success', 'warning', 'danger']
+            .flatMap((variant) =>
+                ['filled', 'outlined', 'plain'].map(
+                    (appearance) => `<el-button variant="${variant}" appearance="${appearance}">Status</el-button>`,
+                ),
+            )
+            .join('');
+        // Tabs from the button in front through the buttons after it, and reads each while it has the focus.
+        const tabThrough = async (wrapper, read) => {
+            wrapper.querySelector('button').focus();
+            const seen = [];
+            for (const el of wrapper.querySelectorAll('el-button')) {
+                await userEvent.tab();
+                expect(document.activeElement).toBe(el);
+                seen.push(read(el));
+            }
+            return seen;
+        };
+
+        for (const [page, colours] of [
+            ['a light page', 'color-scheme: light; background: rgb(255, 255, 255); color: rgb(0, 0, 0)'],
+            ['a page in a dark scheme', 'color-scheme: dark; background: Canvas; color: CanvasText'],
+            [
+                'a page that paints dark colours and names no scheme',
+                'color-scheme: light; background: rgb(18, 18, 18); color: rgb(255, 255, 255)',
+            ],
+        ]) {
+            it(`shows inside of the button, in the colour of its label, without a theme on ${page}`, async () => {
+                const wrapper = await fixture(
+                    `<div style="${colours}; padding: 8px"><button>Before</button>${buttons}</div>`,
+                );
+                const seen = await tabThrough(wrapper, (el) => ({
+                    ...ringOf(el),
+                    label: getComputedStyle(control(el)).color,
+                }));
+
+                expect(seen).toHaveLength(15);
+                for (const { around, inside, label } of seen) {
+                    expect(around).toEqual(['solid', '2px', TRANSPARENT, '2px']);
+                    expect(inside).toBe(`${label} 0px 0px 0px 2px inset`);
+                }
+            });
+        }
+
+        it('is as far inside of the edge as the ring of a theme is outside of it, and follows the shape', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <button>Before</button>
+                    <el-button variant="brand">Save</el-button>
+                    <el-button variant="brand" pill="true">Save</el-button>
+                    <el-button variant="brand" circle="true">S</el-button>
+                </div>
+            `);
+            const seen = await tabThrough(wrapper, (el) => {
+                const outer = control(el).getBoundingClientRect();
+                const inside = getComputedStyle(control(el), '::after');
+                return {
+                    // From the edge of the control to where the ring starts: the border, and as much again.
+                    inset: [inside.top, inside.left, inside.bottom, inside.right],
+                    size: [parseFloat(inside.width), parseFloat(inside.height)],
+                    control: [outer.width - 4, outer.height - 4],
+                    radius: inside.borderTopLeftRadius,
+                    shape: getComputedStyle(control(el)).borderTopLeftRadius,
+                };
+            });
+
+            for (const { inset, size, control: expected, radius, shape } of seen) {
+                expect(inset).toEqual(['1px', '1px', '1px', '1px']);
+                expect(size).toEqual(expected);
+                expect(radius).toBe(shape);
+            }
+            expect(seen.map(({ radius }) => radius)).toEqual(['4px', '999px', '50%']);
+        });
+
+        it('shows around the button, with the ring of a theme, and nothing inside', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-color-focus-ring: rgb(0, 0, 255); --el-focus-ring-width: 3px; --el-focus-ring-offset: 4px">
+                    <button>Before</button>${buttons}
+                </div>
+            `);
+            const seen = await tabThrough(wrapper, ringOf);
+
+            expect(seen).toHaveLength(15);
+            for (const { around, inside } of seen) {
+                expect(around).toEqual(['solid', '3px', 'rgb(0, 0, 255)', '4px']);
+                expect(nothingInside(inside)).toBe(true);
+            }
+        });
+
+        // A page that sets the colour of the ring and nothing else has the ring it had.
+        it('shows around the button for a ring colour that is set alone', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-color-focus-ring: rgb(200, 0, 0)">
+                    <button>Before</button><el-button variant="brand">Save</el-button>
+                </div>
+            `);
+            const [{ around, inside }] = await tabThrough(wrapper, ringOf);
+
+            expect(around).toEqual(['solid', '2px', 'rgb(200, 0, 0)', '2px']);
+            expect(nothingInside(inside)).toBe(true);
+        });
+
+        it('shows on a link as on a button', async () => {
+            const wrapper = await fixture(`
+                <div><button>Before</button><el-button variant="brand" href="#focus-link">Docs</el-button></div>
+            `);
+            const [{ around, inside }] = await tabThrough(wrapper, ringOf);
+
+            expect(control(wrapper.querySelector('el-button')).localName).toBe('a');
+            expect(around).toEqual(['solid', '2px', TRANSPARENT, '2px']);
+            expect(inside).toBe('rgb(255, 255, 255) 0px 0px 0px 2px inset');
+        });
+
+        it('shows on the button that has the focus only, and not for a click', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <button>Before</button>
+                    <el-button variant="brand">Save</el-button>
+                    <el-button variant="brand">Cancel</el-button>
+                </div>
+            `);
+            const [first, second] = wrapper.querySelectorAll('el-button');
+            // Neither the outline nor the ring inside.
+            const shown = (el) => ringOf(el).around[0] !== 'none' || ringOf(el).inside !== 'none';
+
+            wrapper.querySelector('button').focus();
+            await userEvent.tab();
+            expect(document.activeElement).toBe(first);
+            expect([shown(first), shown(second)]).toEqual([true, false]);
+
+            await userEvent.click(second);
+            expect(document.activeElement).toBe(second);
+            expect([shown(first), shown(second)]).toEqual([false, false]);
+        });
+
+        // Forced colours take the shadow away and give the outline a colour: one ring, around the button.
+        describe('where the user forces colours', () => {
+            useForcedColors();
+
+            for (const [name, tokens] of [
+                ['without a theme', ''],
+                ['with the ring of a theme', '--el-color-focus-ring: rgb(0, 0, 255)'],
+            ]) {
+                it(`shows around the button and not inside, ${name}`, async () => {
+                    const wrapper = await fixture(`
+                        <div style="${tokens}"><button>Before</button><el-button variant="brand">Save</el-button></div>
+                    `);
+                    const [{ around, inside }] = await tabThrough(wrapper, ringOf);
+
+                    expect(around.slice(0, 2)).toEqual(['solid', '2px']);
+                    expect(around[2]).not.toBe(TRANSPARENT);
+                    expect(inside).toBe('none');
+                });
+            }
+        });
     });
 
     describe('on a touch screen', () => {

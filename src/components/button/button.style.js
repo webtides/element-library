@@ -47,6 +47,10 @@ const style = css`
             background var(--el-duration-md, 0s) var(--el-ease, linear),
             border-color var(--el-duration-md, 0s) var(--el-ease, linear),
             color var(--el-duration-md, 0s) var(--el-ease, linear);
+        /* Whether a theme gives the focus ring a colour: transparent with --el-color-focus-ring.
+           Without the token the var() has no value and the property is invalid, so what reads it
+           takes its fallback. A stylesheet cannot ask whether a property is set in another way. */
+        --_el-button-ring-themed: color-mix(in srgb, var(--el-color-focus-ring) 0%, transparent);
     }
 
     /* display:contents promotes the slotted content to be the flex items directly, so empty
@@ -73,9 +77,26 @@ const style = css`
         filter: brightness(0.88);
     }
 
+    /* The ring of a theme is around the control, in the colour the theme gives it. Without that
+       colour the outline is there and shows nothing; where the user forces colours, the browser
+       gives it one. */
     .button:focus-visible {
-        outline: var(--el-focus-ring-width, 2px) solid var(--el-color-focus-ring, currentColor);
+        outline: var(--el-focus-ring-width, 2px) solid var(--el-color-focus-ring, transparent);
         outline-offset: var(--el-focus-ring-offset, 2px);
+    }
+
+    /* Without a theme the ring is inside of the control, in the colour of the label. Nothing says
+       which colours the page around the control has, and the label can be read on the surface of
+       the control: on its fill, and on the page where it has none. As far inside of the edge as
+       the ring of a theme is outside of it. A shadow and not a border: forced colours take it
+       away and leave the outline. */
+    .button:focus-visible::after {
+        content: '';
+        position: absolute;
+        inset: var(--el-border-width, 1px);
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 var(--el-focus-ring-width, 2px) var(--_el-button-ring-themed, currentColor);
+        pointer-events: none;
     }
 
     /* Without a fill there is nothing to darken. An outlined button gets a faint tint of its

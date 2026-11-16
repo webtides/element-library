@@ -106,6 +106,8 @@ The label of an `outlined` or `plain` `warning` button is `--el-color-warning` m
 
 Without a theme a fill and the label on it are a pair that does not depend on the page. The neutral pair follows the colour scheme (`light-dark()`): a light grey with a dark label, and a dark grey with a light label in a dark scheme. The other four are one pair for both schemes. A label without a fill has the text colour of the page, and the warning colour is mixed with that one.
 
+The keyboard focus shows as a ring around the button: `--el-focus-ring-width` wide, in `--el-color-focus-ring`, and `--el-focus-ring-offset` away from its edge. Without `--el-color-focus-ring` the ring is inside of the button, in the colour of its label, the width of the border inside of the border. Nothing says which colours the page around the button has then, and the label can be read on the surface of the button: on its fill, and on the page where it has none. The ring inside is the `::after` of the control (`::part(base)::after`). Where the user forces colours, the ring is around the button in both cases, in a colour of the system.
+
 ## Variant, appearance and size
 
 The three properties are independent of each other, and every combination works.
