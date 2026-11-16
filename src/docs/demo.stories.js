@@ -107,7 +107,7 @@ const lazyGallery = (title, caption) => html`
                 (id, i) => html`
                     <el-lazy-src
                         class="block rounded-lg overflow-hidden border"
-                        style="border-color:var(--el-color-border,#e5e7eb)"
+                        style="border-color:var(--el-color-border,light-dark(#e5e7eb,#374151))"
                     >
                         <img
                             data-src="${unsplash(id, 500)}"
@@ -525,8 +525,13 @@ class DemoKitBrowser extends TemplateElement {
 defineElement('demo-kit-browser', DemoKitBrowser);
 
 // The page chrome: sticky header (brand + nav + dropdown), main, footer, scroll-to-top.
+// Without a theme the page paints fallbacks of its own. Each is a pair for the light and the dark
+// scheme: the browser paints the native controls for the scheme, and they take the text colour of
+// the page.
 const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownItems, children }) => html`
-    <div style="min-height:100vh;background:var(--el-color-bg,#fff);color:var(--el-color-fg,#111)">
+    <div
+        style="min-height:100vh;background:var(--el-color-bg,light-dark(#fff,#111));color:var(--el-color-fg,light-dark(#111,#fff))"
+    >
         ${sprite}
 
         <style>
@@ -548,7 +553,7 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
         <el-sticky>
             <header
                 class="w-full border-b"
-                style="border-color:var(--el-color-border,#e5e7eb);background:var(--el-color-bg,#fff)"
+                style="border-color:var(--el-color-border,light-dark(#e5e7eb,#374151));background:var(--el-color-bg,light-dark(#fff,#111))"
             >
                 <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
                     <a class="flex items-center gap-2 font-bold text-lg" href="#top">${icon(brandIcon)} ${brandName}</a>
@@ -560,7 +565,7 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
                             <button
                                 type="button"
                                 class="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium"
-                                style="border-color:var(--el-color-border,#d1d5db)"
+                                style="border-color:var(--el-color-border,light-dark(#d1d5db,#4b5563))"
                             >
                                 ${icon('icon-user')} ${dropdownLabel}
                             </button>
@@ -573,7 +578,7 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
 
         <main id="top" class="max-w-5xl mx-auto px-4">${children}</main>
 
-        <footer class="border-t mt-8" style="border-color:var(--el-color-border,#e5e7eb)">
+        <footer class="border-t mt-8" style="border-color:var(--el-color-border,light-dark(#e5e7eb,#374151))">
             <div class="max-w-5xl mx-auto px-4 py-8 text-sm opacity-70 flex items-center gap-2">
                 ${icon(brandIcon)} ${footerNote}
             </div>
@@ -591,12 +596,17 @@ const swatchSlide = (title, colors) => html`
     <div>
         <div
             class="border"
-            style="border-radius:0.75rem;overflow:hidden;border-color:var(--el-color-border,#e5e7eb);height:18rem;display:flex;flex-direction:column"
+            style="border-radius:0.75rem;overflow:hidden;border-color:var(--el-color-border,light-dark(#e5e7eb,#374151));height:18rem;display:flex;flex-direction:column"
         >
             <div style="display:flex;flex:1">
                 ${colors.map((c) => html`<div style="flex:1;background:${c}"></div>`)}
             </div>
-            <div class="font-semibold" style="padding:0.9rem 1.1rem;background:var(--el-color-bg,#fff)">${title}</div>
+            <div
+                class="font-semibold"
+                style="padding:0.9rem 1.1rem;background:var(--el-color-bg,light-dark(#fff,#111))"
+            >
+                ${title}
+            </div>
         </div>
     </div>
 `;
@@ -757,7 +767,7 @@ export const Page = {
                     </p>
                     <form
                         class="grid sm:grid-cols-2 gap-6 rounded-xl border p-6"
-                        style="border-color:var(--el-color-border,#e5e7eb)"
+                        style="border-color:var(--el-color-border,light-dark(#e5e7eb,#374151))"
                         onsubmit="event.preventDefault(); this.parentElement.querySelector('el-toast').toast(this.parentElement.querySelector('[data-demo-toast]').cloneNode(true));"
                     >
                         <el-input-field
@@ -936,7 +946,7 @@ export const Page = {
                     <!-- A second, small form: it is sent the moment the code is complete. -->
                     <form
                         class="grid gap-4 rounded-xl border p-6 mt-6 sm:max-w-sm"
-                        style="border-color:var(--el-color-border,#e5e7eb)"
+                        style="border-color:var(--el-color-border,light-dark(#e5e7eb,#374151))"
                         onsubmit="event.preventDefault(); this.parentElement.querySelector('el-toast').toast('The code is fine. Welcome aboard!', { variant: 'success' });"
                         @input-complete="${(event) => event.currentTarget.requestSubmit()}"
                     >
@@ -997,7 +1007,10 @@ export const Page = {
                         enter-end="opacity-100 translate-y-0"
                         class="block"
                     >
-                        <div class="rounded-xl p-8 text-center" style="background:var(--el-color-bg-muted,#f3f4f6)">
+                        <div
+                            class="rounded-xl p-8 text-center"
+                            style="background:var(--el-color-bg-muted,light-dark(#f3f4f6,#1f2937))"
+                        >
                             <p class="text-xl font-semibold mb-1">Theming is built in.</p>
                             <p class="opacity-70">
                                 Flip the <strong>Theme</strong> and <strong>Color scheme</strong> switches in the
