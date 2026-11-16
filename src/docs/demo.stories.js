@@ -997,7 +997,7 @@ export const Page = {
                         enter-end="opacity-100 translate-y-0"
                         class="block"
                     >
-                        <div class="rounded-xl p-8 text-center" style="background:var(--el-color-surface,#f3f4f6)">
+                        <div class="rounded-xl p-8 text-center" style="background:var(--el-color-bg-muted,#f3f4f6)">
                             <p class="text-xl font-semibold mb-1">Theming is built in.</p>
                             <p class="opacity-70">
                                 Flip the <strong>Theme</strong> and <strong>Color scheme</strong> switches in the
