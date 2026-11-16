@@ -63,13 +63,13 @@
     --el-color-border: light-dark(#2b2b2b, #ece4d4);
 
     /* Color — interactive & semantic (felt-tip marker palette) */
-    --el-color-accent: light-dark(#2f6fed, #8fb0ff);
-    /* The light one is dark enough to be text on both backgrounds and to carry the text of a fill
-       (4.5 : 1). */
+    /* The light ones of the accent, the success and the danger colour are dark enough to be text
+       on both backgrounds and to carry the text of a fill (4.5 : 1). */
+    --el-color-accent: light-dark(#2065ec, #8fb0ff);
     --el-color-success: light-dark(#257e36, #69db7c);
     /* One value for both schemes: a warning fill carries dark text, so the colour stays light. */
     --el-color-warning: #f59e0b;
-    --el-color-danger: light-dark(#e03131, #ff8787);
+    --el-color-danger: light-dark(#d72020, #ff8787);
     --el-color-focus-ring: var(--el-color-accent);
 
     /* Spacing — same 4px base scale as the other themes */

@@ -63,8 +63,8 @@ export default function variantsStyle(host = ':host') {
         }
 
         ${hostSelector(host, "[variant='danger']")} {
-            --_el-variant-fill: var(--el-color-danger, #dc2626);
-            --_el-variant-fill-border: var(--el-color-danger, #dc2626);
+            --_el-variant-fill: var(--el-color-danger, #d52222);
+            --_el-variant-fill-border: var(--el-color-danger, #d52222);
             --_el-variant-on-fill: var(--el-color-bg, #fff);
             --_el-variant-border: var(--el-color-danger, currentColor);
             --_el-variant-text: var(--el-color-danger, currentColor);

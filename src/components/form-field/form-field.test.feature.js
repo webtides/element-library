@@ -598,6 +598,24 @@ describe('Feature | FormField', () => {
                 expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual([]);
                 expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(Object.keys(FIELDS).length);
             });
+
+            // A field in a card that is filled stands on the muted background of the theme.
+            it(`can be read on the muted background, in a ${scheme} scheme`, async () => {
+                const wrapper = await fixture(`
+                    <div style="color-scheme: ${scheme}; background: var(--el-color-bg-muted); color: var(--el-color-fg); padding: 8px">
+                        ${withMessage('el-input-field', `contrast-muted-${name}-${scheme}`)}
+                    </div>
+                `);
+                await frames();
+                const message = wrapper.querySelector('.error-message');
+                expect(getComputedStyle(message).color).not.toBe(getComputedStyle(wrapper).color);
+                expect(getComputedStyle(wrapper).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+
+                const results = await axe.run({ include: [message] }, { runOnly: ['color-contrast'] });
+
+                expect(results.violations.map((violation) => violation.nodes.map((node) => node.html))).toEqual([]);
+                expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(1);
+            });
         });
     });
 

@@ -94,7 +94,7 @@ export const Colours = {
     render: () => html`
         <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;font-size:1.5rem">
             <el-spinner></el-spinner>
-            <el-spinner style="--el-spinner-indicator-color:var(--el-color-danger, #dc2626)"></el-spinner>
+            <el-spinner style="--el-spinner-indicator-color:var(--el-color-danger, #d52222)"></el-spinner>
             <span
                 style="display:inline-flex;padding:0.75rem;border-radius:0.5rem;background:#1e3a8a;color:#ffffff;--el-spinner-indicator-color:currentColor"
             >

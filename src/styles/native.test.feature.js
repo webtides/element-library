@@ -510,7 +510,7 @@ describe('Feature | Styles | native.css', () => {
                 expect(ring(focused).borderTopColor).toBe('rgb(37, 99, 235)');
                 expect(ring(focused).boxShadow).not.toBe('none');
                 // --el-color-danger of the default theme
-                expect(getComputedStyle(invalid).borderTopColor).toBe('rgb(220, 38, 38)');
+                expect(getComputedStyle(invalid).borderTopColor).toBe('rgb(213, 34, 34)');
             });
 
             // A reset of the page that comes later, the button of a file input included.
@@ -698,7 +698,7 @@ describe('Feature | Styles | native.css', () => {
                 expect(ring(focused).borderTopColor).toBe('rgb(37, 99, 235)');
                 expect(ring(focused).boxShadow).not.toBe('none');
                 // --el-color-danger of the default theme
-                expect(getComputedStyle(invalid).borderTopColor).toBe('rgb(220, 38, 38)');
+                expect(getComputedStyle(invalid).borderTopColor).toBe('rgb(213, 34, 34)');
             });
 
             it('keeps the look when the page has a reset', async () => {

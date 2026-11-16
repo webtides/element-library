@@ -166,16 +166,16 @@ describe('Feature | Badge', () => {
                     });
 
                     // A filled card, the hover of a row: a badge stands on the muted background too.
-                    it(`can be read as a success on the muted background, in a ${scheme} scheme`, async () => {
+                    it(`can be read in every variant and appearance on the muted background, in a ${scheme} scheme`, async () => {
                         const wrapper = await fixture(`
                             <div style="color-scheme: ${scheme}; background: var(--el-color-bg-muted); color: var(--el-color-fg); padding: 8px">
-                                ${badges(['success'])}
+                                ${badges(variants)}
                             </div>
                         `);
                         const results = await axe.run(wrapper, { runOnly: ['color-contrast'] });
 
                         expect(unread(results)).toEqual([]);
-                        expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(3);
+                        expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(15);
                     });
                 }
             });

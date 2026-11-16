@@ -113,7 +113,7 @@ export const Look = {
             <el-progress-bar
                 value="80"
                 label="Storage"
-                style="--el-progress-bar-indicator-color:var(--el-color-danger, #dc2626)"
+                style="--el-progress-bar-indicator-color:var(--el-color-danger, #d52222)"
             ></el-progress-bar>
         </div>
     `,
