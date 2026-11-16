@@ -2,7 +2,7 @@
 
 `tag` is a label for one of several things that belong to something: a keyword of an article, a filter that is set, a recipient. With `removable` it has a button that asks to take it away. It speaks the library's shared vocabulary: a semantic `variant`, an `appearance` and a `size`.
 
-Without a theme imported the tag has a muted surface and the text colour of the page; import a theme to skin it.
+Without a theme imported the tag has a muted surface and the text that goes with it, a light surface in a light colour scheme and a dark one in a dark scheme; import a theme to skin it.
 
 ## How to use
 

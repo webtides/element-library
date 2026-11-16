@@ -159,6 +159,53 @@ describe('Feature | Tag', () => {
         });
     });
 
+    // Without a theme nothing says which colours the page has. A fill brings the text on it along,
+    // the two are a pair. Text without a fill is the text of the page, or mixed with it.
+    describe('without a theme', () => {
+        const tags = variants
+            .flatMap((variant) =>
+                appearances.map(
+                    (appearance) => `<el-tag variant="${variant}" appearance="${appearance}">Status</el-tag>`,
+                ),
+            )
+            .join('');
+        // What axe could not read, as the tag with its contrast.
+        const unread = (results) =>
+            results.violations.flatMap((violation) =>
+                violation.nodes.map((node) => `${node.html}: ${node.any[0]?.data?.contrastRatio}`),
+            );
+
+        for (const [page, colours] of [
+            ['a light page', 'color-scheme: light; background: rgb(255, 255, 255); color: rgb(0, 0, 0)'],
+            ['a page in a dark scheme', 'color-scheme: dark; background: Canvas; color: CanvasText'],
+            [
+                'a page that paints dark colours and names no scheme',
+                'color-scheme: light; background: rgb(18, 18, 18); color: rgb(255, 255, 255)',
+            ],
+        ]) {
+            it(`can be read in every variant and appearance on ${page}`, async () => {
+                const wrapper = await fixture(`<div style="${colours}; padding: 8px">${tags}</div>`);
+                const results = await axe.run(wrapper, { runOnly: ['color-contrast'] });
+
+                expect(unread(results)).toEqual([]);
+                expect(results.passes.flatMap((pass) => pass.nodes)).toHaveLength(15);
+            });
+        }
+
+        it('has a neutral fill and the text for it by the colour scheme, not by the text of the page', async () => {
+            const wrapper = await fixture(`
+                <div style="color: rgb(0, 0, 255)">
+                    <el-tag style="color-scheme: light">a</el-tag>
+                    <el-tag style="color-scheme: dark">a</el-tag>
+                </div>
+            `);
+            const [light, dark] = [...wrapper.children].map(paint);
+
+            expect(light).toEqual({ background: 'rgb(229, 231, 235)', border: TRANSPARENT, text: 'rgb(28, 25, 23)' });
+            expect(dark).toEqual({ background: 'rgb(55, 65, 81)', border: TRANSPARENT, text: 'rgb(243, 244, 246)' });
+        });
+    });
+
     it('cuts off a text that does not fit, and keeps the remove button', async () => {
         const wrapper = await fixture(`
             <div style="width: 120px">

@@ -2,7 +2,7 @@
 
 `badge` is a short label that marks something with a status or a count: "New", "Beta", "3". It is pure presentation, without a role and without behaviour. It speaks the library's shared vocabulary for its colours: a semantic `variant` and an `appearance`.
 
-Without a theme imported the badge has a muted surface and the text colour of the page; import a theme to skin it.
+Without a theme imported the badge has a muted surface and the text that goes with it, a light surface in a light colour scheme and a dark one in a dark scheme; import a theme to skin it.
 
 ## How to use
 

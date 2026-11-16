@@ -25,15 +25,20 @@ const css = String.raw;
  * a dark one, like the fills themselves are the other way round. A warning colour stays light in
  * both schemes, so its fill carries dark text, and as text on the page it is mixed half and half
  * with `--el-color-fg`.
+ *
+ * Without a theme a fill and the text on it are a pair that does not depend on the page: the text
+ * colour of the page is made for the background of the page, not for a fill. The neutral pair
+ * follows the colour scheme (`light-dark()`), the others are one pair for both. Text without a
+ * fill stands on the page and has its text colour, and a warning colour is mixed with that one.
  * @param {string} [host] - `':host'` (the default), or the tag of a component without a shadow root.
  * @returns {string}
  */
 export default function variantsStyle(host = ':host') {
     return css`
         ${hostSelector(host)} {
-            --_el-variant-fill: var(--el-color-bg-muted, #e5e7eb);
+            --_el-variant-fill: var(--el-color-bg-muted, light-dark(#e5e7eb, #374151));
             --_el-variant-fill-border: var(--el-color-border, transparent);
-            --_el-variant-on-fill: var(--el-color-fg, currentColor);
+            --_el-variant-on-fill: var(--el-color-fg, light-dark(#1c1917, #f3f4f6));
             --_el-variant-border: var(--el-color-border, currentColor);
             --_el-variant-text: var(--el-color-fg, currentColor);
         }
@@ -59,7 +64,7 @@ export default function variantsStyle(host = ':host') {
             --_el-variant-fill-border: var(--el-color-warning, #f59e0b);
             --_el-variant-on-fill: #1c1917;
             --_el-variant-border: var(--el-color-warning, #f59e0b);
-            --_el-variant-text: color-mix(in srgb, var(--el-color-warning, #f59e0b), var(--el-color-fg, #1c1917));
+            --_el-variant-text: color-mix(in srgb, var(--el-color-warning, #f59e0b), var(--el-color-fg, currentColor));
         }
 
         ${hostSelector(host, "[variant='danger']")} {

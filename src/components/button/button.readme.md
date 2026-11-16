@@ -104,6 +104,8 @@ A pressed button (`:active`) is darker than a hovered one; an `outlined` or `pla
 
 The label of an `outlined` or `plain` `warning` button is `--el-color-warning` mixed half and half with `--el-color-fg`; the border keeps the token. A warning colour that carries dark text as a fill is too light for text on a light background.
 
+Without a theme a fill and the label on it are a pair that does not depend on the page. The neutral pair follows the colour scheme (`light-dark()`): a light grey with a dark label, and a dark grey with a light label in a dark scheme. The other four are one pair for both schemes. A label without a fill has the text colour of the page, and the warning colour is mixed with that one.
+
 ## Variant, appearance and size
 
 The three properties are independent of each other, and every combination works.

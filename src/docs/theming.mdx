@@ -125,6 +125,8 @@ A theme does not set anything per appearance or per size: one colour per variant
 
 The text on a brand, success or danger fill is `--el-color-bg`: these colours are dark in a light scheme and light in a dark one, and the background colour is the other way round.
 
+Without a theme the variants have colours of their own. A fill and the text on it are a pair that does not depend on the page: the text colour of the page is made for the background of the page, not for a fill. The neutral pair follows the colour scheme, as `light-dark()` resolves it: `#e5e7eb` with `#1c1917` in a light scheme, `#374151` with `#f3f4f6` in a dark one. The other four are one pair for both schemes. Text without a fill stands on the page and has its text colour, and the warning colour is mixed with that one. So every variant can be read in every appearance on a light page and on a dark one. A browser that does not know `light-dark()` paints no neutral fill: the text of the page on nothing.
+
 The three attributes are on the host, so a stylesheet can select them: `el-button[variant='danger']`, `el-button[appearance='plain']`.
 
 `el-card` has an `appearance` with the same three values and no `variant`: it paints a surface, not the colour of a meaning. `outlined`, its default, is a surface in `--el-color-bg` with a border in `--el-color-border` and the shadow `--el-shadow-md`; `filled` has `--el-color-bg-muted` instead; `plain` paints nothing.
