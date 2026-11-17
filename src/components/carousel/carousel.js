@@ -18,7 +18,8 @@ const DEFAULT_OPTIONS = {
 /**
  * Carousel/slider component backed by Glide.js. Direct children of the host element are
  * treated as slides; the component renders Glide's controls (navigation arrows and bullet
- * pager) inside the shadow DOM around them.
+ * pager) inside the shadow DOM around them. A bullet is a button named by `dotLabel` and the
+ * number of its slide, and `aria-pressed` marks the one of the slide that shows.
  *
  * The children of the element stay what the page wrote. The copies of the first and the last
  * slides that Glide needs for looping are kept in the shadow root, so a framework can hydrate
@@ -55,6 +56,8 @@ const DEFAULT_OPTIONS = {
  *   plain list (useful for SSR or feature-flagging the carousel off).
  * @property {string} slidePrefix - Prefix used when generating per-slide identifiers.
  * @property {boolean} bullets - Whether to render the bullet pager.
+ * @property {string} dotLabel - Accessible label of a bullet, followed by the number of its slide
+ *   (`'Go to slide 2'`). Default `'Go to slide'`.
  * @property {boolean} arrows - Whether to render the previous/next navigation arrows.
  */
 export default class Carousel extends TemplateElement {
@@ -89,6 +92,7 @@ export default class Carousel extends TemplateElement {
             disabled: false,
             slidePrefix: 'slide',
             bullets: true,
+            dotLabel: 'Go to slide',
             arrows: true,
         };
     }
@@ -162,11 +166,10 @@ export default class Carousel extends TemplateElement {
     updateBulletClasses() {
         const bullets = Array.from(this.getRoot().querySelectorAll('.glide__bullet'));
         bullets.forEach((bullet, index) => {
-            if (index === this.#glide.index) {
-                bullet.part.add('selected-dot');
-            } else {
-                bullet.part.remove('selected-dot');
-            }
+            const selected = index === this.#glide.index;
+            bullet.part.toggle('selected-dot', selected);
+            // What the part says to the eye, for assistive technology.
+            bullet.setAttribute('aria-pressed', String(selected));
         });
     }
 
@@ -174,7 +177,17 @@ export default class Carousel extends TemplateElement {
     renderBullets() {
         let bullets = [];
         for (let i = 0; i < this.#uniqueChildren.length; i++) {
-            bullets.push(html` <div part="dot" class="glide__bullet" data-glide-dir="=${i}"></div> `);
+            // A button: the keyboard reaches it, and Enter and Space are the click Glide listens for.
+            bullets.push(html`
+                <button
+                    type="button"
+                    part="dot"
+                    class="glide__bullet"
+                    data-glide-dir="=${i}"
+                    aria-label="${this.dotLabel} ${i + 1}"
+                    aria-pressed="false"
+                ></button>
+            `);
         }
         return bullets;
     }

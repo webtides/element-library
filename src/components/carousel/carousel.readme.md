@@ -35,6 +35,7 @@ import '@webtides/element-library/carousel/define';
 | `disabled` | `boolean` | `false` | When `true`, Glide is not mounted and slides render as a plain list (useful for SSR or feature-flagging the carousel off). |
 | `slidePrefix` | `string` | `'slide'` | Prefix used when generating per-slide identifiers. |
 | `bullets` | `boolean` | `true` | Whether to render the bullet pager. |
+| `dotLabel` | `string` | `'Go to slide'` | Accessible label of a bullet, followed by the number of its slide (`'Go to slide 2'`). Set it as `dot-label`. |
 | `arrows` | `boolean` | `true` | Whether to render the previous/next navigation arrows. |
 
 #### Methods
@@ -78,7 +79,7 @@ import '@webtides/element-library/carousel/define';
 The arrows and the bullets have the look and the place of the shared style of the library, the same as in `el-slider`, and read the `--el-*` design tokens:
 
 - **Arrows**: buttons on the track, in the middle of its height, `--el-space-2` in from its two sides. A square of `--el-control-height` with the surface `--el-color-bg`, the text colour `--el-color-fg`, a border of `--el-border-width` in `--el-color-border` and the radius `--el-radius-md`. Without a theme the surface and the text colour are the ones of the browser for the colour scheme (`Canvas`, `CanvasText`). The keyboard focus shows as a ring inside of the arrow (`--el-focus-ring-width`, `--el-color-focus-ring`, the text colour of the arrow without that token): around it, the ring would lie on the slide. An arrow that leads nowhere keeps its surface, and its sign fades.
-- **Bullets**: a row under the track, in the middle, so that no bullet lies on a slide. A bullet is a ring of 10 px in `--el-color-fg-muted`, the one of the slide that shows a disc in `--el-color-accent`; without a theme both have the text colour of the page. A click counts in a square of 24 px around a bullet, and the bullets are that far apart. The bullets are no buttons: the keyboard does not reach them.
+- **Bullets**: a row under the track, in the middle, so that no bullet lies on a slide. A bullet is a ring of 10 px in `--el-color-fg-muted`, the one of the slide that shows a disc in `--el-color-accent`; without a theme both have the text colour of the page. A click counts in a square of 24 px around a bullet, and the bullets are that far apart. The keyboard focus of a bullet shows as a ring around it.
 
 On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high. The bullets keep their size: each gets a hit area of `--el-touch-target` around it, the bullets move apart by as much, and their row wraps when it gets wider than the carousel. Without that token, and on a fine pointer, the sizes stay as they are.
 
@@ -91,6 +92,11 @@ el-carousel::part(dots) {
     z-index: 1;
 }
 ```
+
+## Accessibility
+
+- The arrows are buttons named "Previous slide" and "Next slide", or by what is in their slots.
+- Each bullet is a button named by `dot-label` and the number of its slide; `aria-pressed` marks the bullet of the slide that shows. Enter and Space go to the slide of the bullet that has the focus.
 
 ## Looping, and server-rendered slides
 

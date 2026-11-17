@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import { accessibleName, aTimeout, fixture, nextFrame, sizeOf, useTouchScreen } from '../../test-helpers.js';
 import { define } from './carousel.js';
 define();
 
@@ -54,6 +55,100 @@ describe('Feature | Carousel', () => {
             'Zurück',
             'Weiter',
         ]);
+    });
+
+    it('has no detectable a11y violations', async () => {
+        const el = await carouselFixture();
+        const results = await axe.run(el);
+
+        expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    });
+
+    describe('the bullets', () => {
+        const bulletsOf = (el) => [...el.shadowRoot.querySelectorAll('[part~="dot"]')];
+        const pressed = (el) => bulletsOf(el).map((bullet) => bullet.getAttribute('aria-pressed'));
+
+        it('are buttons named by the number of their slide', async () => {
+            const el = await carouselFixture();
+            const bullets = bulletsOf(el);
+
+            expect(bullets.map((bullet) => bullet.localName)).toEqual(['button', 'button', 'button']);
+            expect(await Promise.all(bullets.map(accessibleName))).toEqual([
+                'Go to slide 1',
+                'Go to slide 2',
+                'Go to slide 3',
+            ]);
+            const results = await axe.run(el, { runOnly: ['button-name', 'aria-allowed-attr', 'nested-interactive'] });
+            expect(results.violations.map((violation) => violation.id)).toEqual([]);
+        });
+
+        it('take their label from dot-label', async () => {
+            const wrapper = await fixture(`
+                <div style="width: 320px">
+                    <el-carousel dot-label="Gehe zu Folie">
+                        <div>1</div>
+                        <div>2</div>
+                    </el-carousel>
+                </div>
+            `);
+            await nextFrame();
+            const bullets = bulletsOf(wrapper.querySelector('el-carousel'));
+
+            expect(await Promise.all(bullets.map(accessibleName))).toEqual(['Gehe zu Folie 1', 'Gehe zu Folie 2']);
+        });
+
+        it('say which slide shows, and follow the carousel', async () => {
+            const el = await carouselFixture();
+            expect(pressed(el)).toEqual(['true', 'false', 'false']);
+
+            el.next();
+            await aTimeout(50);
+
+            expect(pressed(el)).toEqual(['false', 'true', 'false']);
+            // The eye is told the same.
+            expect(bulletsOf(el).map((bullet) => bullet.part.contains('selected-dot'))).toEqual([false, true, false]);
+        });
+
+        it('are reached with the Tab key, and Enter goes to the slide of the one that has the focus', async () => {
+            const wrapper = await fixture(`
+                <div style="width: 320px">
+                    <button>Before</button>
+                    <el-carousel>
+                        <div style="height: 160px">1</div>
+                        <div style="height: 160px">2</div>
+                        <div style="height: 160px">3</div>
+                    </el-carousel>
+                </div>
+            `);
+            await nextFrame();
+            const el = wrapper.querySelector('el-carousel');
+            const last = bulletsOf(el).at(-1);
+
+            wrapper.querySelector('button').focus();
+            // The two arrows, then the bullets in their order.
+            for (let presses = 0; presses < 5; presses++) await userEvent.tab();
+            expect(el.shadowRoot.activeElement).toBe(last);
+            expect(last.matches(':focus-visible')).toBe(true);
+
+            await userEvent.keyboard('{Enter}');
+            await aTimeout(50);
+
+            expect(el.api.index).toBe(2);
+            expect(pressed(el)).toEqual(['false', 'false', 'true']);
+            // The focus stays where the user put it.
+            expect(el.shadowRoot.activeElement).toBe(last);
+        });
+
+        it('go to their slide with the Space key as well', async () => {
+            const el = await carouselFixture();
+            const second = bulletsOf(el)[1];
+
+            second.focus();
+            await userEvent.keyboard(' ');
+            await aTimeout(50);
+
+            expect(el.api.index).toBe(1);
+        });
     });
 
     describe('the clones for looping', () => {

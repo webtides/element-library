@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `dot-label` (`dotLabel`): the accessible label of a bullet, followed by the number of its slide. Default `'Go to slide'`, which names the bullets "Go to slide 1", "Go to slide 2" and so on. It is the property the dots of `el-slider` have. ([#163](https://github.com/webtides/element-library/issues/163))
+
 ### Changed
 
 - BREAKING: the arrows and the bullets have the look and the place of the ones of `el-slider`, and read the tokens of the theme. The theme of Glide is gone: white controls that lay on the slides and showed on a dark picture only, in every theme of the library. The bullets are in a row under the slides and no longer on them, so the carousel is higher by that row (24 px). A bullet is a ring of 10 px in `--el-color-fg-muted`, and the one of the slide that shows a disc in `--el-color-accent` (they were 13 px and white). An arrow is a square of `--el-control-height` with the surface, the text colour, the border and the radius of the tokens, `--el-space-2` in from the sides (was `2em`), in the middle of the height of the slides. Left empty, an arrow shows an arrow head (it showed nothing). The keyboard focus of an arrow shows, as a ring inside of it (the stylesheet took the outline away). An arrow that Glide marks as leading nowhere keeps its surface and its sign fades (the whole arrow faded to a third). Without a theme an arrow has the surface and the text colour of the browser for the colour scheme, and the bullets the text colour of the page. On a page that runs from right to left the arrow back is at the right. The parts keep their names. A rule of the page for `::part(arrow)`, `::part(dot)` or `::part(selected-dot)` now meets another look: a bullet is drawn with its border, so `border-color` colours it and `background` does not. A page that wants the bullets on the slides again lays them there with one rule, see the readme. ([#162](https://github.com/webtides/element-library/issues/162))
@@ -20,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- The bullets are buttons. The Tab key reaches them, Enter and Space go to the slide of the one that has the focus, and its focus shows as a ring around it. Each has an accessible name (see `dot-label`), and `aria-pressed` marks the one of the slide that shows. They were `div` elements that took a click and nothing else: a user of the keyboard had the two arrows only, and a screen reader did not announce them. ([#163](https://github.com/webtides/element-library/issues/163))
 - The arrow buttons have an accessible name when their slots are empty: "Previous slide" and "Next slide", for screen readers only. What is put into the `arrow-left` and `arrow-right` slots replaces that name, as it named the button before. An arrow with an empty slot was a button without a name (axe `button-name`). ([#94](https://github.com/webtides/element-library/issues/94))
 - Going on from the last slide shows the first slide coming in. It showed a copy of the second one, which then jumped to the first: the copies after the last slide were in the wrong order. ([#96](https://github.com/webtides/element-library/issues/96))
 - `api.update()` keeps the slides. After an update Glide took the `<slot>` for its only slide, so the carousel had one empty slide. ([#96](https://github.com/webtides/element-library/issues/96))

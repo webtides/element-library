@@ -349,16 +349,18 @@ describe('Feature | Styles | slide-controls', () => {
             }
         });
 
-        it('shows around a dot of the slider, without a theme and with one', async () => {
-            // The bullets of the carousel are no buttons, and the Tab key does not reach them.
+        it('shows around a dot, without a theme and with one', async () => {
             for (const [style, ring] of [
                 ['', ['solid', '2px', 'rgb(40, 50, 60)', '2px']],
                 [THEME, ['solid', '3px', 'rgb(200, 0, 100)', '1px']],
             ]) {
-                const [, slider, before] = await bothFixture(style);
-                const dot = controlsOf(slider).dots[1];
-                await tabTo(before, dot);
-                expect(ringOf(dot)).toEqual(ring);
+                const [carousel, slider, before] = await bothFixture(style);
+
+                for (const el of [carousel, slider]) {
+                    const dot = controlsOf(el).dots[1];
+                    await tabTo(before, dot);
+                    expect(ringOf(dot), el.localName).toEqual(ring);
+                }
             }
         });
 
