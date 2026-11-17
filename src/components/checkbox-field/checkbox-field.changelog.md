@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.1] - 2026-11-17
+
 ### Fixed
 
 - `checked` set from outside moves the checkbox, also after the user has pressed it. The field wrote the `checked` attribute of its native input alone, which is the default of the control: after a press the control no longer follows it. `field.checked = false`, or the `checked` attribute, took the check mark away, while the native checkbox stayed checked and the form went on submitting the value. The field now writes the property of the input as well, before it dispatches `input-change`. ([#185](https://github.com/webtides/element-library/issues/185))

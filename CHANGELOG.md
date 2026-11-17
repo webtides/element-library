@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.3.1] - 2026-11-17
+
 ### button
 
 - Changed: an `el-button` of the type `submit` makes its hidden native `<button type="submit">` when the form is first submitted with it: with a click, or with Enter in an `<input>` or a `<select>` of the form. Before, it appended that button as soon as it started. Until the first submit the children of the `el-button` are what the page wrote, and `form.querySelector('[type="submit"]')` does not find a native button in it. When the page replaces the content of the button, the native button is made again with the next submit, and no longer with the next render. A native submit button that the page writes is taken as before. ([#184](https://github.com/webtides/element-library/issues/184))
