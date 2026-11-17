@@ -2,6 +2,7 @@ import { createAttributeFromField } from '@custom-elements-manifest/analyzer/src
 import { getDefaultValuesFromConstructorVisitor } from '@custom-elements-manifest/analyzer/src/features/analyse-phase/creators/createClass.js';
 import { handleJsDoc } from '@custom-elements-manifest/analyzer/src/features/analyse-phase/creators/handlers.js';
 import { extractMixinNodes, isMixin } from '@custom-elements-manifest/analyzer/src/utils/mixins.js';
+import { handleJsDocType } from '@custom-elements-manifest/analyzer/src/utils/jsdoc.js';
 import { handleName } from '@custom-elements-manifest/analyzer/src/features/analyse-phase/creators/createMixin.js';
 // Needs the `prettier` dev dependency: this package imports `@prettier/sync`, which has prettier as a
 // peer. Without it this config fails to import, and `cem analyze` then prints the error, falls back
@@ -213,9 +214,57 @@ function inferTagNames() {
 }
 
 /**
+ * NESTED-PARAMETERS — the type of a parameter whose properties are documented one by one:
+ *
+ *     @param {object} [options]
+ *     @param {number} [options.duration] - How long the toast stays.
+ *
+ * TypeScript reads the second tag as a property of the first, and the type of `options` is a
+ * literal made of those tags. The analyzer takes the text of that type, which is the text of the
+ * tags with the stars of the comment: nothing a tool that reads the manifest can use as a type,
+ * and one that formats what it writes stops there. The parameter gets the object type the tags
+ * describe, `{ duration?: number }`.
+ */
+function nestedParametersPlugin() {
+    function typeText(ts, type) {
+        if (type.kind !== ts.SyntaxKind.JSDocTypeLiteral) return handleJsDocType(type.getText());
+        const properties = (type.jsDocPropertyTags ?? []).map((tag) => {
+            const name = ts.isQualifiedName(tag.name) ? tag.name.right.text : tag.name.text;
+            const text = tag.typeExpression ? typeText(ts, tag.typeExpression.type) : 'unknown';
+            return `${name}${tag.isBracketed ? '?' : ''}: ${text}`;
+        });
+        const object = properties.length > 0 ? `{ ${properties.join(', ')} }` : 'object';
+        return type.isArrayType ? `Array<${object}>` : object;
+    }
+
+    return {
+        name: 'element-js - NESTED-PARAMETERS',
+        analyzePhase({ ts, node, moduleDoc }) {
+            if (!ts.isMethodDeclaration(node) && !ts.isFunctionDeclaration(node)) return;
+            const name = node.name?.getText();
+            const doc = ts.isMethodDeclaration(node)
+                ? moduleDoc?.declarations
+                      ?.find((declaration) => declaration.name === node.parent?.name?.getText())
+                      ?.members?.find((member) => member.kind === 'method' && member.name === name)
+                : moduleDoc?.declarations?.find(
+                      (declaration) => declaration.kind === 'function' && declaration.name === name,
+                  );
+            if (!doc?.parameters) return;
+
+            ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach((tag) => {
+                const type = tag.typeExpression?.type;
+                if (type?.kind !== ts.SyntaxKind.JSDocTypeLiteral) return;
+                const parameter = doc.parameters.find((entry) => entry.name === tag.name.getText());
+                if (parameter) parameter.type = { text: typeText(ts, type) };
+            });
+        },
+    };
+}
+
+/**
  * SUBCLASS-DOCS — what a component says about itself wins over what the analyzer copies from its
  * superclass. `el-drawer` extends `el-dialog`, and the analyzer gives a class everything its
- * superclass has. Two things come out wrong without this step:
+ * superclass has. Three things come out wrong without this step:
  *
  * - The events. The drawer fires the events of the dialog under names of its own, `drawer-show`
  *   where the dialog fires `dialog-show`, and would be listed with both. An inherited event that
@@ -224,10 +273,33 @@ function inferTagNames() {
  * - The descriptions of the attributes. A class that documents an inherited property itself
  *   (`@property {boolean} open - Whether the drawer is open.`) gets that text on the field, but
  *   the attribute keeps the text of the superclass. An attribute has the description of its field.
+ * - The types. For a property, an attribute or an event that a class has and its superclass has
+ *   as well, the analyzer writes the type of the superclass over the one of the class. A field
+ *   whose value is a list (`@fires {CustomEvent<string[]>} input-change`) was listed with the
+ *   type of the form field (`CustomEvent<string>`). The type a class gives wins, and for what a
+ *   class does not type itself, the type of the nearest class above it that does. An attribute
+ *   has the type of its field, as it has its description.
  */
 function subclassDocsPlugin() {
+    const TYPED = ['members', 'attributes', 'events'];
+    // What every class says itself, as it is before the analyzer applies the inheritance.
+    const ownTypes = new Map();
+
     return {
         name: 'element-js - SUBCLASS-DOCS',
+        initialize() {
+            ownTypes.clear();
+        },
+        moduleLinkPhase({ moduleDoc }) {
+            const classes = moduleDoc?.declarations?.filter((declaration) => declaration.kind === 'class');
+            classes?.forEach((klass) => {
+                TYPED.forEach((kind) => {
+                    klass[kind]?.forEach((item) => {
+                        if (item.type?.text) ownTypes.set(`${klass.name}/${kind}/${item.name}`, item.type.text);
+                    });
+                });
+            });
+        },
         packageLinkPhase({ customElementsManifest }) {
             const classes = (customElementsManifest.modules ?? [])
                 .flatMap((module) => module.declarations ?? [])
@@ -235,6 +307,18 @@ function subclassDocsPlugin() {
             const byName = new Map(classes.map((klass) => [klass.name, klass]));
 
             classes.forEach((klass) => {
+                TYPED.forEach((kind) => {
+                    klass[kind]?.forEach((item) => {
+                        for (let from = klass; from; from = byName.get(from.superclass?.name)) {
+                            const text = ownTypes.get(`${from.name}/${kind}/${item.name}`);
+                            if (text) {
+                                item.type = { ...item.type, text };
+                                break;
+                            }
+                        }
+                    });
+                });
+
                 if (klass.events && klass.tagNameWithoutPrefix) {
                     const own = new Set(
                         klass.events.filter((event) => !event.inheritedFrom).map((event) => event.name),
@@ -251,6 +335,7 @@ function subclassDocsPlugin() {
                     if (!attribute.inheritedFrom || !attribute.fieldName) return;
                     const field = klass.members?.find((member) => member.name === attribute.fieldName);
                     if (field?.description) attribute.description = field.description;
+                    if (field?.type?.text) attribute.type = { ...attribute.type, text: field.type.text };
                 });
             });
         },
@@ -316,6 +401,7 @@ export default {
         memberDenyListPlugin(),
         staticPropertiesPlugin(),
         inferTagNames(),
+        nestedParametersPlugin(),
         subclassDocsPlugin(),
         customWebTypesPlugin(),
     ],

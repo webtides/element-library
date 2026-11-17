@@ -44,7 +44,7 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | `null` | The selected option's value. |
+| `value` | `string \| null` | `null` | The selected option's value. |
 | `options` | `Array<string \| { value: string, label?: string, disabled?: boolean }>` | `[]` | Options to render. Strings are used as both value and label; objects allow a separate label/disabled. |
 
 #### Events

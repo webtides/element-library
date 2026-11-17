@@ -22,6 +22,8 @@ import style from './tab-link.style.js';
  *   `<el-tab-panel>`'s `name`).
  * @attribute {boolean} disabled - When present, the link does not dispatch `tab-select` on click
  *   and is exposed as disabled (`aria-disabled="true"`).
+ * @attribute {'true'|'false'} aria-selected - Whether the link is the selected one. The parent
+ *   `<el-tab-group>` writes it, and the `active` state follows it.
  */
 export default class TabLink extends StyledElement {
     static observedAttributes = ['disabled', 'aria-selected'];

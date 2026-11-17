@@ -10,12 +10,12 @@ import { BaseElement, defineElement } from '@webtides/element-js';
  *
  * @slot - Default slot for the element(s) being transitioned.
  *
- * @attr enter - Space-separated classes added throughout the enter transition.
- * @attr enter-start - Classes applied at the start of the enter transition.
- * @attr enter-end - Classes applied at the end of the enter transition.
- * @attr leave - Space-separated classes added throughout the leave transition.
- * @attr leave-start - Classes applied at the start of the leave transition.
- * @attr leave-end - Classes applied at the end of the leave transition.
+ * @attr {string} enter - Space-separated classes added throughout the enter transition.
+ * @attr {string} enter-start - Classes applied at the start of the enter transition.
+ * @attr {string} enter-end - Classes applied at the end of the enter transition.
+ * @attr {string} leave - Space-separated classes added throughout the leave transition.
+ * @attr {string} leave-start - Classes applied at the start of the leave transition.
+ * @attr {string} leave-end - Classes applied at the end of the leave transition.
  *
  * @property {boolean} show - When `true` the host plays the enter transition; when `false`
  *   the leave transition.

@@ -34,7 +34,7 @@ npm i --save @webtides/element-js
 
 In addition to the components, the published package includes:
 
-- `custom-elements.json` — Custom Elements Manifest, consumed by editors and documentation tools.
+- `custom-elements.json` — Custom Elements Manifest, consumed by editors, documentation tools and generators. It has the tags with their attributes, properties and events, and a type for each. The library ships no typings for one framework: the ones a framework checks its templates with are generated from this file, in the project that uses the framework.
 - `web-types.json` — JetBrains-style web-types for WebStorm / IntelliJ autocomplete.
 - `*.d.ts` declarations — type information for editor support, even though the source is JavaScript.
 

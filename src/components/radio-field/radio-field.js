@@ -17,7 +17,7 @@ import style from './radio-field.style.js';
  * @cssstate touched - Set once the user has left the group, or the browser has refused a submit
  *   because of it. Inherits `valid` and `invalid` from `FormField`.
  *
- * @property {string} value - The selected option's value.
+ * @property {string | null} value - The selected option's value.
  * @property {Array<string | { value: string, label?: string, disabled?: boolean }>} options -
  *   Options to render. Accepts plain strings (`['Yes', 'No']`) or option objects
  *   (`[{ value, label, disabled? }]`). Strings are used as both value and label.
