@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
+import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import {
     accessibleDescription,
@@ -108,6 +109,45 @@ describe('Feature | SwitchField', () => {
             await nextFrame();
             expect(data(form)).toEqual({ 'form-value': 'yes' });
             expect(el.checked).toBe(true);
+        });
+
+        // The `checked` attribute of the control is its default: once the user has pressed the
+        // control, it follows its property alone.
+        it('moves a control the user has pressed when the page sets checked', async () => {
+            const form = await inForm('form-outside', 'value="yes"');
+            const el = form.firstElementChild;
+            const input = el.querySelector('input');
+            const changes = [];
+            el.addEventListener('input-change', () => changes.push([el.checked, input.checked]));
+            const settled = async () => {
+                await nextFrame();
+                await nextFrame();
+                return { checked: el.checked, control: input.checked, submitted: new FormData(form).get(el.name) };
+            };
+            const on = { checked: true, control: true, submitted: 'yes' };
+            const off = { checked: false, control: false, submitted: null };
+
+            await userEvent.click(el.querySelector('label'));
+            expect(await settled()).toEqual(on);
+
+            el.checked = false;
+            expect(await settled()).toEqual(off);
+            el.checked = true;
+            expect(await settled()).toEqual(on);
+
+            el.setAttribute('checked', 'false');
+            expect(await settled()).toEqual(off);
+            el.setAttribute('checked', 'true');
+            expect(await settled()).toEqual(on);
+
+            // One event for every change, and by then the control says what the field says.
+            expect(changes).toEqual([
+                [true, true],
+                [false, false],
+                [true, true],
+                [false, false],
+                [true, true],
+            ]);
         });
 
         it('submits "on" when it has no value, like a native checkbox', async () => {

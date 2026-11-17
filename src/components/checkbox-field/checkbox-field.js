@@ -50,7 +50,13 @@ export default class CheckboxField extends FormField {
                 this.setAttribute('checked', checked ? 'true' : 'false');
                 if (checked) this._internals.states.add('checked');
                 else this._internals.states.delete('checked');
-                this.dispatch(FormFieldEvents.INPUT_CHANGE, this.$refs.input.value);
+                // The `checked` attribute the template writes is only the default of the control:
+                // once the user has pressed it, the browser no longer follows the attribute. So a
+                // state from outside is written to the control as well, before the event says
+                // that it has changed.
+                const input = this.$refs.input;
+                if (input.checked !== !!checked) input.checked = !!checked;
+                this.dispatch(FormFieldEvents.INPUT_CHANGE, input.value);
             },
         };
     }
