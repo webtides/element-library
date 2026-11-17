@@ -136,6 +136,8 @@ A button is a square of the control height of its size, and grows in width with 
 
 The buttons are text on nothing, with a tint of the text colour under the pointer. The current page has the fill of the accent colour (`--el-color-accent`) with the colour of the page background on it, like a brand button. Without a theme the buttons have the text colour of the page, and the current page a blue fill.
 
+The keyboard focus shows as a ring around the button: `--el-focus-ring-width` wide, in `--el-color-focus-ring`, and `--el-focus-ring-offset` away from its edge. Without `--el-color-focus-ring` the ring has the text colour of the buttons: `--el-color-fg`, or the text colour of the page. That holds for the current page as well, whose own text is the colour for its fill and may be the colour of the page around it. Its ring is the outline of its place in the row then, the `li` around the button: it has the corners of `--el-radius-md`, and not those a page gives to `::part(current)`. Where the user forces colours, that outline is the ring of the current page with a theme as well, in a colour of the system.
+
 There is no `variant`. For another look paint the parts:
 
 ```css

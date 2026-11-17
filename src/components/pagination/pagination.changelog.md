@@ -22,3 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `size` (`small`, `medium`, `large`), reflected. The buttons are squares of the control height of the size, and at least `--el-touch-target` on a touch screen.
 - `label`, `page-label`, `previous-label` and `next-label` for the names in another language, and the slots `previous-icon` and `next-icon`.
 - With forced colours the current page has the colours of a selection; the arrow heads turn with the reading direction.
+
+### Fixed
+
+- Without a theme the keyboard focus of the current page shows on every page: a ring around it in the text colour of the other buttons, `--el-color-fg` or the text colour of the page. Before, the ring had the colour of the text on the fill of the current page, a white ring on a white page. The ring of the other buttons, and every ring with `--el-color-focus-ring`, is as it was. Where the user forces colours, the ring of the current page has a colour of the system, with a theme as well. ([#160](https://github.com/webtides/element-library/issues/160))

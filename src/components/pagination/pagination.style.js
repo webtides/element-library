@@ -21,6 +21,10 @@ const style = css`
 
     li {
         display: flex;
+        /* Whether a theme gives the focus ring a colour: transparent with --el-color-focus-ring.
+           Without the token the var() has no value and the property is invalid, so what reads it
+           takes its fallback. A stylesheet cannot ask whether a property is set in another way. */
+        --_el-pagination-ring-themed: color-mix(in srgb, var(--el-color-focus-ring) 0%, transparent);
     }
 
     /* ── Buttons ──────────────────────────────────────────────────────────── */
@@ -84,6 +88,7 @@ const style = css`
         background: color-mix(in srgb, currentColor 24%, transparent);
     }
 
+    /* The ring of a theme, and without one a ring in the colour of the text. */
     [part~='button']:focus-visible {
         outline: var(--el-focus-ring-width, 2px) solid var(--el-color-focus-ring, currentColor);
         outline-offset: var(--el-focus-ring-offset, 2px);
@@ -100,6 +105,22 @@ const style = css`
         cursor: default;
     }
 
+    /* The text of the current page is the colour for its fill, and that may be the colour of the
+       page around it: a ring in it would not show there. So without a theme the ring of the
+       current page is the outline of its place in the row. The place has the box of the button
+       and the text colour of the other buttons, which is made for the page. With a theme that
+       outline shows nothing, and the ring is the one of the button. */
+    [part~='current']:focus-visible {
+        outline-color: var(--el-color-focus-ring, transparent);
+    }
+
+    li:has(> [part~='current']:focus-visible) {
+        outline: var(--el-focus-ring-width, 2px) solid
+            var(--_el-pagination-ring-themed, var(--el-color-fg, currentColor));
+        outline-offset: var(--el-focus-ring-offset, 2px);
+        border-radius: var(--el-radius-md, 4px);
+    }
+
     /* Forced colours take the fill away. The colours of a selection mark the page there. The
        button is taken out of the forcing as a whole: a browser would paint a plate in the colour
        of the page behind the figure, on which the text colour of a selection cannot be read. */
@@ -110,6 +131,12 @@ const style = css`
             forced-color-adjust: none;
             background: Highlight;
             color: HighlightText;
+        }
+
+        /* The browser gives the outline of the place a colour of the system, with a theme as
+           well. The button is out of the forcing and would draw the ring of the theme over it. */
+        [part~='current']:focus-visible {
+            outline-color: transparent;
         }
     }
 

@@ -675,6 +675,179 @@ describe('Feature | Pagination', () => {
         });
     });
 
+    // The text of the current page is the colour for its fill. Without a theme a ring in that colour
+    // does not show on a page that has it, a white ring on a white page. So the ring of the current
+    // page is the outline of its place in the row, in the text colour of the page.
+    describe('the keyboard focus', () => {
+        const outlineOf = (element) => {
+            const { outlineStyle, outlineWidth, outlineColor, outlineOffset } = getComputedStyle(element);
+            return [outlineStyle, outlineWidth, outlineColor, outlineOffset];
+        };
+        const place = (button) => button.parentElement;
+        // No outline, or one whose colour shows nothing, as Chromium writes it for a mix.
+        const showsNothing = ([style, , colour]) =>
+            style === 'none' || /^(rgba\(0, 0, 0, 0\)|color\(srgb 0 0 0 \/ 0\))$/.test(colour);
+        // A pagination on its first page, behind a button that has the focus. The page before does
+        // not exist: the first Tab is on the current page, the second on the page after it.
+        const onFirstPage = async (style = '') => {
+            const wrapper = await fixture(`
+                <div style="${style}">
+                    <button>Before</button>
+                    <el-pagination total="200"></el-pagination>
+                </div>
+            `);
+            await rendered();
+            wrapper.querySelector('button').focus();
+            return [wrapper, wrapper.querySelector('el-pagination')];
+        };
+        const tabTo = async (el, button) => {
+            await userEvent.tab();
+            expect(el.shadowRoot.activeElement).toBe(button);
+            expect(button.matches(':focus-visible')).toBe(true);
+        };
+
+        for (const [page, colours] of [
+            ['a light page', 'color-scheme: light; background: rgb(255, 255, 255); color: rgb(0, 0, 0)'],
+            ['a page in a dark scheme', 'color-scheme: dark; background: Canvas; color: CanvasText'],
+            [
+                'a page that paints dark colours and names no scheme',
+                'color-scheme: light; background: rgb(18, 18, 18); color: rgb(255, 255, 255)',
+            ],
+        ]) {
+            it(`shows around the current page in the text colour of the page, without a theme on ${page}`, async () => {
+                const [wrapper, el] = await onFirstPage(`${colours}; padding: 8px`);
+                const text = getComputedStyle(wrapper).color;
+
+                await tabTo(el, current(el));
+                expect(outlineOf(place(current(el)))).toEqual(['solid', '2px', text, '2px']);
+                // The button shows none in the colour of its own text, the one for its fill.
+                expect(getComputedStyle(current(el)).color).toBe('rgb(255, 255, 255)');
+                expect(outlineOf(current(el))).toEqual(['solid', '2px', TRANSPARENT, '2px']);
+
+                // A page without a fill has the ring it had, in the colour of its text.
+                await tabTo(el, pageButton(el, 2));
+                expect(outlineOf(pageButton(el, 2))).toEqual(['solid', '2px', text, '2px']);
+                expect(outlineOf(place(pageButton(el, 2)))[0]).toBe('none');
+                expect(outlineOf(place(current(el)))[0]).toBe('none');
+                wrapper.remove();
+            });
+        }
+
+        it('has the box and the corners of the button, whatever its size and its number', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <button>Before</button>
+                    <el-pagination total="200"></el-pagination>
+                    <el-pagination total="200" size="small"></el-pagination>
+                    <el-pagination total="200" size="large"></el-pagination>
+                    <el-pagination total="99999990" page="5000000" size="small"></el-pagination>
+                </div>
+            `);
+            await rendered();
+            const [first, ...others] = wrapper.querySelectorAll('el-pagination');
+            const box = (element) => {
+                const { x, y, width, height } = element.getBoundingClientRect();
+                return [x, y, width, height];
+            };
+
+            for (const el of [first, ...others]) {
+                expect(box(place(current(el)))).toEqual(box(current(el)));
+            }
+            expect(sizeOf(current(others[2])).width).toBeGreaterThan(32);
+
+            wrapper.querySelector('button').focus();
+            await tabTo(first, current(first));
+            expect(getComputedStyle(place(current(first))).borderTopLeftRadius).toBe('4px');
+            expect(getComputedStyle(current(first)).borderTopLeftRadius).toBe('4px');
+            wrapper.remove();
+        });
+
+        it('shows around the current page with the ring of a theme, and nothing from its place', async () => {
+            const [wrapper, el] = await onFirstPage(tokens);
+
+            await tabTo(el, current(el));
+            expect(outlineOf(current(el))).toEqual(['solid', '3px', 'rgb(200, 0, 100)', '1px']);
+            expect(showsNothing(outlineOf(place(current(el))))).toBe(true);
+            // The corners of the theme, should the place ever show its outline.
+            expect(getComputedStyle(place(current(el))).borderTopLeftRadius).toBe('6px');
+            wrapper.remove();
+        });
+
+        // A page that sets the colour of the ring and nothing else has the ring it had.
+        it('shows the ring of the button for a ring colour that is set alone', async () => {
+            const [wrapper, el] = await onFirstPage('--el-color-focus-ring: rgb(200, 0, 0)');
+
+            await tabTo(el, current(el));
+            expect(outlineOf(current(el))).toEqual(['solid', '2px', 'rgb(200, 0, 0)', '2px']);
+            expect(showsNothing(outlineOf(place(current(el))))).toBe(true);
+            wrapper.remove();
+        });
+
+        // The text colour of the other buttons, which have the ring in it: --el-color-fg before the
+        // colour the page inherits.
+        it('takes the text colour of a theme that gives the ring no colour', async () => {
+            const [wrapper, el] = await onFirstPage('--el-color-fg: rgb(10, 10, 10); color: rgb(90, 90, 90)');
+
+            await tabTo(el, current(el));
+            expect(outlineOf(place(current(el)))).toEqual(['solid', '2px', 'rgb(10, 10, 10)', '2px']);
+            await tabTo(el, pageButton(el, 2));
+            expect(outlineOf(pageButton(el, 2))).toEqual(['solid', '2px', 'rgb(10, 10, 10)', '2px']);
+            wrapper.remove();
+        });
+
+        it('follows the page that is chosen with a key, and does not show for a click', async () => {
+            const [wrapper, el] = await onFirstPage();
+            const shown = () => [outlineOf(place(current(el)))[0], outlineOf(current(el))[0]];
+
+            await tabTo(el, current(el));
+            await tabTo(el, pageButton(el, 2));
+            await userEvent.keyboard('{Enter}');
+            await rendered();
+            expect(current(el).dataset.page).toBe('2');
+            expect(el.shadowRoot.activeElement).toBe(current(el));
+            expect(shown()).toEqual(['solid', 'solid']);
+
+            // The focus goes to the page that was chosen with the pointer as well, without a ring.
+            await userEvent.click(pageButton(el, 3));
+            await rendered();
+            expect(current(el).dataset.page).toBe('3');
+            expect(el.shadowRoot.activeElement).toBe(current(el));
+            expect(shown()).toEqual(['none', 'none']);
+            wrapper.remove();
+        });
+
+        // The browser gives the outline of the place a colour of the system. The button of the
+        // current page is out of the forcing, and would draw the ring of a theme over it.
+        describe('where the user forces colours', () => {
+            useForcedColors();
+
+            for (const [name, style] of [
+                ['without a theme', ''],
+                ['with a theme', tokens],
+            ]) {
+                it(`shows around the current page in a colour of the system, ${name}`, async () => {
+                    const [wrapper, el] = await onFirstPage(style);
+
+                    await tabTo(el, current(el));
+                    const ring = outlineOf(place(current(el)));
+                    expect(matchMedia('(forced-colors: active)').matches).toBe(true);
+                    expect(ring[0]).toBe('solid');
+                    // The colour the system gives to text on the page.
+                    expect(ring[2]).toBe(getComputedStyle(place(current(el))).color);
+                    expect(showsNothing(ring)).toBe(false);
+                    expect(outlineOf(current(el))[2]).toBe(TRANSPARENT);
+
+                    // The other pages have the ring the browser forces on the button.
+                    await tabTo(el, pageButton(el, 2));
+                    expect(outlineOf(pageButton(el, 2))[0]).toBe('solid');
+                    expect(showsNothing(outlineOf(pageButton(el, 2)))).toBe(false);
+                    expect(outlineOf(place(pageButton(el, 2)))[0]).toBe('none');
+                    wrapper.remove();
+                });
+            }
+        });
+    });
+
     describe('size', () => {
         it('is medium by default, and says so on the host', async () => {
             const el = await fixture(`<el-pagination total="100"></el-pagination>`);
