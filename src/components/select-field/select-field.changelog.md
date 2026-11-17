@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the select is at least `--el-touch-target` high (42 px with the default theme before). Unchanged on a fine pointer and without the token.

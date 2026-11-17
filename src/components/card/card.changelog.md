@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-card`: a surface that groups what belongs together, a form, a section of settings, an entry of a list. Pure presentation, without a role and without behaviour. ([#76](https://github.com/webtides/element-library/issues/76), [#81](https://github.com/webtides/element-library/issues/81))

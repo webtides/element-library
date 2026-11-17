@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-date-field`: a date, a time or both, entered in the control of the browser and picked in its picker. An `el-input-field` with the `type` `date` (the default), `time`, `datetime-local`, `month` or `week`, so it has the label, the messages, `required`, the sizes and the place in a form of an input field. ([#146](https://github.com/webtides/element-library/issues/146))

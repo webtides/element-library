@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-breadcrumb-item`: one entry of an `el-breadcrumb`, an item of its list (`role="listitem"`). ([#123](https://github.com/webtides/element-library/issues/123))

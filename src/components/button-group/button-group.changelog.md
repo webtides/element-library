@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-button-group`: a row of `el-button` that reads as one control. A group to assistive technology (`role="group"`), named by `label`. ([#124](https://github.com/webtides/element-library/issues/124))

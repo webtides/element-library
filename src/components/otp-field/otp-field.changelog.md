@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-otp-field`: an `el-input-field` for a one-time code, the short code of a second factor. One native `<input>` for the whole code, so the code from an SMS, a paste, a password manager and a screen reader work on one control. ([#141](https://github.com/webtides/element-library/issues/141))

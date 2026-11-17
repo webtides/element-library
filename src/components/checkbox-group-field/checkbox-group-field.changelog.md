@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-checkbox-group-field`: a choice of any number of options, the group of checkboxes that `el-radio-field` is for radios. A native `<fieldset>`/`<legend>` wrapping one `<input type="checkbox">` per option, all under one name, with the label, the help message, the error message and the layout of every field. ([#137](https://github.com/webtides/element-library/issues/137))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-badge`: a short label that marks something with a status or a count. Pure presentation, without a role and without behaviour. ([#74](https://github.com/webtides/element-library/issues/74))

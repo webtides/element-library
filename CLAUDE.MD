@@ -8,7 +8,7 @@ This document provides context for AI assistants working with the `@webtides/ele
 
 - **Repository**: https://github.com/webtides/element-library
 - **License**: MIT
-- **Version**: 0.1.0
+- **Version**: 0.3.0
 - **Status**: Work in progress - subject to breaking changes until 1.0 release
 
 ## Technology Stack

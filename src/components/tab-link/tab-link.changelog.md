@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - The link is a tab: it has `role="tab"`, and Enter and Space select it like a click does. In an `el-tab-group` it carries `aria-selected`, and only the selected link is in the tab order. Before, it had no role and reacted to a click only. A role the page sets itself is kept. ([#97](https://github.com/webtides/element-library/issues/97))

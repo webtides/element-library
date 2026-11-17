@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-tooltip`: a short text that explains another element, its anchor. It stands next to the anchor in the page and names it by id with `for`, the way a `<label>` names its field. ([#71](https://github.com/webtides/element-library/issues/71))

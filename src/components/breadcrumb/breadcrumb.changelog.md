@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-breadcrumb`: the trail from the start page to the current page. A `nav` landmark, named by `label` ("Breadcrumb" by default), that holds a list; every `el-breadcrumb-item` slotted into it is an entry of that list. ([#123](https://github.com/webtides/element-library/issues/123))

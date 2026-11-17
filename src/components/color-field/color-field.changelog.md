@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-color-field`: a colour, picked in the picker of the browser. A native `<input type="color">` with the label, the help message, the error message and the layout of every field; it is submitted with its form by the control. ([#144](https://github.com/webtides/element-library/issues/144))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-empty-state`: what stands in the place of a list or a collection while there is nothing in it. Pure presentation, without a role and without behaviour. ([#83](https://github.com/webtides/element-library/issues/83))

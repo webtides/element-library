@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-tag-field`: a list of short texts the user writes. A text input that turns what is entered into entries, each an `el-tag` with a remove button, with the label, the help message, the error message and the layout of every field. ([#142](https://github.com/webtides/element-library/issues/142))

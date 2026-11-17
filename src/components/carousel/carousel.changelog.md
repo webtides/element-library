@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - `dot-label` (`dotLabel`): the accessible label of a bullet, followed by the number of its slide. Default `'Go to slide'`, which names the bullets "Go to slide 1", "Go to slide 2" and so on. It is the property the dots of `el-slider` have. ([#163](https://github.com/webtides/element-library/issues/163))

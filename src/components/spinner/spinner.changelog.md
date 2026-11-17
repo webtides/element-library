@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-spinner`: a spinner for a wait of unknown length, on its own, for a section or a page that is loading. A ring with a quarter that turns, exposed as a progress bar without a value (`role="progressbar"`) and named by `label`, "Loading" by default. ([#78](https://github.com/webtides/element-library/issues/78), [#82](https://github.com/webtides/element-library/issues/82))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-copy-button`: a button that copies a text to the clipboard and says whether that worked. A native `<button>` that shows an icon and is named by `label`, "Copy" by default. ([#125](https://github.com/webtides/element-library/issues/125))

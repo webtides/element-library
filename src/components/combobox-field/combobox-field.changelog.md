@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-combobox-field`: a text the user writes, with suggestions the browser offers while they type. An `el-input-field` with a native `<datalist>`, so it has the label, the messages, `required`, `pattern`, the sizes and the place in a form of an input field. ([#145](https://github.com/webtides/element-library/issues/145))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - `appearance` (`filled` by default, `outlined` or `plain`): how the colours of the variant are painted. It works with every variant, so a `plain` button, text only, exists in every colour; before, only the `text` variant in the brand colour did. ([#69](https://github.com/webtides/element-library/issues/69))

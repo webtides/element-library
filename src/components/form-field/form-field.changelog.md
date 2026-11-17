@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - The readme says how the fields take part in a native `<form>` ("In a form"): what is submitted, what `disabled` and `required` do, and what does not work yet. Every statement there is covered by a test of the field. ([#69](https://github.com/webtides/element-library/issues/69))

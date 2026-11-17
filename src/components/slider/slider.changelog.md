@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - `dot-label` (`dotLabel`): the accessible label of a pager dot, followed by the number of its item. Default `'Go to item'`, which names the dots "Go to item 1", "Go to item 2" and so on. ([#94](https://github.com/webtides/element-library/issues/94))

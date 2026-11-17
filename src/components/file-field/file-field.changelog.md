@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-file-field`: one or several files for a form. A native `<input type="file">` with the label, the help message, the error message and the layout of every field; the dialog, a drop onto the control and the form submission are the ones of the browser. ([#140](https://github.com/webtides/element-library/issues/140))

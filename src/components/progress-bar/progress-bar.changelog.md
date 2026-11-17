@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-progress-bar`: a track that fills with the progress of a task, an upload, an import, the steps of a form. Exposed as a progress bar (`role="progressbar"`) with its value, and named by `label`, "Progress" by default. ([#121](https://github.com/webtides/element-library/issues/121))

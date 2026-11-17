@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-rating-field`: a rating as a number from 1 to `max`, drawn as a row of stars. A native `<fieldset>`/`<legend>` wrapping one `<input type="radio">` per step, with the label, the help message, the error message and the layout of every field; grouping, arrow keys and form submission are native. ([#138](https://github.com/webtides/element-library/issues/138))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-popover`: a panel that floats next to an anchor. A click on the anchor opens it; a second click, a click beside it or `Escape` closes it. ([#70](https://github.com/webtides/element-library/issues/70))

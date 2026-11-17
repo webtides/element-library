@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-tag`: a label for one of several things that belong to something, a keyword or a filter that is set. ([#75](https://github.com/webtides/element-library/issues/75))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-toast`: the region of a page where toasts appear. A toast is an `el-notification`; the region gives it its place at an edge of the viewport and puts several of them into a stack. ([#72](https://github.com/webtides/element-library/issues/72))

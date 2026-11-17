@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Keyboard support: the arrow keys move to the next and the previous link and select it, Home and End go to the first and the last one. Disabled links are skipped, and the arrow keys wrap around. Before, a tab could only be changed with a click. ([#97](https://github.com/webtides/element-library/issues/97))

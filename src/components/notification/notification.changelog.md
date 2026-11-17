@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - `close-label` (`closeLabel`): the accessible label of the close button, as on `el-dialog`. Default `'Close'`. Before, the label was fixed, so a screen reader announced the button in English on a page in another language. ([#98](https://github.com/webtides/element-library/issues/98))

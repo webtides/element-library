@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-divider`: a line between two groups of content, the regions of a card, the entries of a menu, the controls of a toolbar. The line is a native `<hr>`, a separator to assistive technology. ([#120](https://github.com/webtides/element-library/issues/120))

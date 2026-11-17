@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-skeleton`: a quiet shape in the place of content that is still loading. It has no role and no content; the region that loads says so with `aria-busy`. ([#77](https://github.com/webtides/element-library/issues/77))

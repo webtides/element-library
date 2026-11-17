@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the header is at least `--el-touch-target` high. With the default and the sketchy theme it already was; with the high-contrast theme it was 46 px with a target of 48 px. Unchanged on a fine pointer and without the token.

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-avatar`: the picture that stands for a person or a thing. It shows the first of these that it has: the `image`, the `initials`, an icon (the `icon` slot, and the outline of a person without it). ([#79](https://github.com/webtides/element-library/issues/79))

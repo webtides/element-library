@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Changed
 
 - On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high (20 × 20 px before). Its icon keeps its size, and the header grows with the button. Unchanged on a fine pointer and without the token.

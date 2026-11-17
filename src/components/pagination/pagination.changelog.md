@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-pagination`: the way through a list that is split into pages. A `nav` landmark with a button per page, the current one marked with `aria-current="page"`, and a button for the page before and the page after. ([#80](https://github.com/webtides/element-library/issues/80))

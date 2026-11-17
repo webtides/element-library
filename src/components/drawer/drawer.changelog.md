@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-drawer`: a panel that slides in from an edge of the viewport and lies over the page, for a navigation, a filter or the details of a row. It is `el-dialog` at another place: a modal on the native `<dialog>` element, so the platform keeps the focus inside, makes the page behind it `inert`, renders it in the top layer and gives the focus back when it closes. ([#73](https://github.com/webtides/element-library/issues/73))

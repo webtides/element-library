@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 
 - Initial `el-progress-ring`: a ring that closes with the progress of a task, for a place with little room. Exposed as a progress bar (`role="progressbar"`) with its value, and named by `label`, "Progress" by default. ([#122](https://github.com/webtides/element-library/issues/122))

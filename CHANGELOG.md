@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-17
+
 ### Packaging
 
 - Added: `@floating-ui/dom` (`^1.8.0`) is a dependency of the library. It computes the place of the panel of `el-popover` and of `el-tooltip`: the side of the anchor, the change of sides without room, the push back into the viewport, the arrow. Only the popover and the tooltip import it, so a page that registers single components and uses neither does not load it; `@webtides/element-library/all` does. ([#70](https://github.com/webtides/element-library/issues/70), [#71](https://github.com/webtides/element-library/issues/71))
