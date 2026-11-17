@@ -268,8 +268,9 @@ describe('Feature | Button', () => {
     });
 
     // A form is submitted with a submit button that belongs to it. The control of the element is in
-    // the shadow root and has no form, so a button of the type `submit` keeps a hidden native submit
-    // button in its content, in the page.
+    // the shadow root and has no form, so a button of the type `submit` submits with a hidden native
+    // submit button in its content, in the page. It makes that button when the form is first
+    // submitted with it.
     describe('as the submit button of a form', () => {
         const submitterOf = (el) => el.querySelector(':scope > button[type="submit"]');
         const listen = (form) => {
@@ -402,7 +403,10 @@ describe('Feature | Button', () => {
                     >
                 </form>
             `);
-            const submitter = submitterOf(form.querySelector('el-button'));
+            const submits = listen(form);
+
+            await userEvent.click(form.querySelector('el-button'));
+            const { submitter } = submits[0];
 
             expect(submitter.formAction).toBe(new URL('/other', location.href).href);
             expect(submitter.formMethod).toBe('get');
@@ -463,9 +467,82 @@ describe('Feature | Button', () => {
                 await pressEnterIn(form);
                 expect(submits).toHaveLength(0);
             });
+
+            it('submits from a field outside of the form, which names the form', async () => {
+                const wrapper = await fixture(`
+                    <div>
+                        <form id="button-form-enter-outside">
+                            <input name="first" value="1" />
+                            <el-button type="submit" name="action" value="save">Save</el-button>
+                        </form>
+                        <input name="second" value="2" form="button-form-enter-outside" />
+                    </div>
+                `);
+                const submits = listen(wrapper.querySelector('form'));
+
+                wrapper.querySelector('div > input').focus();
+                await userEvent.keyboard('{Enter}');
+
+                expect(submits.map(({ data }) => data)).toEqual([{ first: '1', second: '2', action: 'save' }]);
+            });
+
+            // Enter in a textarea is a line break. The browser does not submit, and the button has
+            // no reason to change its content.
+            it('leaves the content of the button alone for Enter in a textarea, and in another form', async () => {
+                const wrapper = await fixture(`
+                    <div>
+                        <form>
+                            <textarea name="text"></textarea>
+                            <el-button type="submit">Save</el-button>
+                        </form>
+                        <form><input name="a" /><input name="b" /></form>
+                    </div>
+                `);
+                const el = wrapper.querySelector('el-button');
+
+                wrapper.querySelector('textarea').focus();
+                await userEvent.keyboard('{Enter}');
+                wrapper.querySelector('input').focus();
+                await userEvent.keyboard('{Enter}');
+
+                expect(wrapper.querySelector('textarea').value).toBe('\n');
+                expect(el.children).toHaveLength(0);
+            });
         });
 
         describe('the native submit button', () => {
+            // A framework that hydrates a server-rendered page expects the children it rendered,
+            // and no other: Svelte gives up the hydration for a child it does not know and renders
+            // the page again. The element can have started by then.
+            it('is not there until the form is submitted with the button', async () => {
+                const form = await fixture(`
+                    <form>
+                        <input name="a" /><input name="b" />
+                        <el-button type="submit" name="action" value="save"><svg slot="prefix"></svg>Save</el-button>
+                    </form>
+                `);
+                const submits = listen(form);
+                const el = form.querySelector('el-button');
+                const written = [...el.childNodes];
+                const sameNodes = (nodes, expected) =>
+                    nodes.length === expected.length && nodes.every((node, index) => node === expected[index]);
+
+                // What makes the button render does not make it change its content.
+                el.loading = true;
+                el.value = 'publish';
+                await nextFrame();
+                await nextFrame();
+                el.loading = false;
+                await nextFrame();
+                await nextFrame();
+                expect(sameNodes([...el.childNodes], written)).toBe(true);
+                expect(submitterOf(el)).toBe(null);
+
+                await userEvent.click(el);
+                expect(submits.map(({ data }) => data)).toEqual([{ a: '', b: '', action: 'publish' }]);
+                expect(sameNodes([...el.childNodes], [...written, submitterOf(el)])).toBe(true);
+            });
+
             it('is one, hidden, and no part of what the button shows or says', async () => {
                 const style = document.createElement('style');
                 // A reset or a rule of the page for buttons.
@@ -473,7 +550,10 @@ describe('Feature | Button', () => {
                 document.head.append(style);
 
                 const form = await fixture(`<form><el-button type="submit">Save</el-button></form>`);
+                listen(form);
                 const el = form.querySelector('el-button');
+                await userEvent.click(el);
+                await userEvent.click(el);
                 const submitter = submitterOf(el);
                 await nextFrame();
 
@@ -488,16 +568,24 @@ describe('Feature | Button', () => {
                 expect(results.violations.map((violation) => violation.id)).toEqual([]);
             });
 
-            it('is there for the type submit only', async () => {
-                const wrapper = await fixture(`
+            it('is made for the type submit only, and goes with the type', async () => {
+                const form = await fixture(`
                     <form>
+                        <input name="a" /><input name="b" />
                         <el-button>Plain</el-button>
                         <el-button type="reset">Reset</el-button>
                         <el-button type="submit" href="https://example.com">Link</el-button>
                         <el-button type="submit">Save</el-button>
                     </form>
                 `);
-                const [plain, reset, link, submit] = wrapper.querySelectorAll('el-button');
+                listen(form);
+                const [plain, reset, link, submit] = form.querySelectorAll('el-button');
+                const pressEnter = async () => {
+                    form.querySelector('input').focus();
+                    await userEvent.keyboard('{Enter}');
+                };
+
+                await pressEnter();
                 expect([plain, reset, link, submit].map((el) => !!submitterOf(el))).toEqual([
                     false,
                     false,
@@ -509,6 +597,9 @@ describe('Feature | Button', () => {
                 plain.type = 'submit';
                 await nextFrame();
                 await nextFrame();
+                expect([plain, submit].map((el) => !!submitterOf(el))).toEqual([false, false]);
+
+                await pressEnter();
                 expect([plain, submit].map((el) => !!submitterOf(el))).toEqual([true, false]);
 
                 plain.href = 'https://example.com';
@@ -517,34 +608,37 @@ describe('Feature | Button', () => {
                 expect(!!submitterOf(plain)).toBe(false);
             });
 
-            it('comes back when the page replaces the content of the button', async () => {
+            it('is made again when the page has replaced the content of the button', async () => {
                 const form = await fixture(`
                     <form><input name="a" /><input name="b" /><el-button type="submit">Save</el-button></form>
                 `);
                 const submits = listen(form);
                 const el = form.querySelector('el-button');
+                await userEvent.click(el);
 
                 el.textContent = 'Saved';
                 await nextFrame();
                 await nextFrame();
+                expect(el.querySelectorAll('button')).toHaveLength(0);
 
-                expect(el.querySelectorAll('button')).toHaveLength(1);
                 form.querySelector('input').focus();
                 await userEvent.keyboard('{Enter}');
-                expect(submits).toHaveLength(1);
+                expect(submits).toHaveLength(2);
+                expect(el.querySelectorAll('button')).toHaveLength(1);
             });
 
-            it('is made for a click that comes before that', async () => {
+            it('is made again for a click, without a render in between', async () => {
                 const form = await fixture(
                     `<form><el-button type="submit" name="action" value="save">Save</el-button></form>`,
                 );
                 const submits = listen(form);
                 const el = form.querySelector('el-button');
 
+                el.click();
                 el.textContent = 'Saved';
                 el.click();
 
-                expect(submits.map(({ data }) => data)).toEqual([{ action: 'save' }]);
+                expect(submits.map(({ data }) => data)).toEqual([{ action: 'save' }, { action: 'save' }]);
             });
 
             it('takes the one that the page has written, or that was copied with the button', async () => {

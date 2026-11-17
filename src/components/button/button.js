@@ -44,12 +44,15 @@ const SUBMITTER_ATTRIBUTES = ['form', 'formaction', 'formenctype', 'formmethod',
  * `aria-controls` as references to the elements they name.
  *
  * The element is form-associated: a `<fieldset disabled>` around it disables it, and it is listed in
- * the `elements` of its form. A button of the type `submit` keeps a hidden native
- * `<button type="submit">` in its content, which is what the form is submitted with: it is the
- * `submitter` of the `submit` event, its `name` and `value` are in the data of the form, and Enter in
- * a field of the form finds it. The attributes `form`, `formaction`, `formenctype`, `formmethod`,
- * `formnovalidate` and `formtarget` of the element do what they do on a native button. A `click`
- * listener of the page that calls `preventDefault()` keeps the button from submitting or resetting.
+ * the `elements` of its form. A button of the type `submit` submits its form with a hidden native
+ * `<button type="submit">` in its content: it is the `submitter` of the `submit` event, its `name`
+ * and `value` are in the data of the form, and Enter in a field of the form finds it. The element
+ * makes that button when the form is first submitted with it, by a click or by Enter in a field.
+ * Until then its content is what the page wrote, so a framework can hydrate a server-rendered
+ * button, also when the element has started before the framework does. The attributes `form`,
+ * `formaction`, `formenctype`, `formmethod`, `formnovalidate` and `formtarget` of the element do
+ * what they do on a native button. A `click` listener of the page that calls `preventDefault()`
+ * keeps the button from submitting or resetting.
  *
  * @element el-button
  *
@@ -106,12 +109,19 @@ export default class Button extends TemplateElement {
      */
     _submitter = undefined;
 
+    /**
+     * Where the element listens for Enter in a field of its form, see `afterUpdate()`.
+     * @private
+     * @type {Node | undefined}
+     */
+    _keydownRoot = undefined;
+
     constructor() {
         super({
             styles: [style],
             shadowRender: true,
-            // The native submit button is in the content of the element. When the page replaces
-            // the content, the next render puts it back.
+            // A native submit button that the page writes into the content of the element is
+            // taken with the next render, see `_syncSubmitter()`.
             mutationObserverOptions: { childList: true },
             // The shared style modules select the host by these attributes.
             propertyOptions: {
@@ -199,7 +209,38 @@ export default class Button extends TemplateElement {
     afterUpdate() {
         this._syncAriaRelations();
         this._syncSubmitter();
+
+        // `keydown` passes the root of its tree on the way to the field, the document or a shadow
+        // root: there the element hears Enter before the browser looks for the submit button.
+        if (!this._keydownRoot) {
+            this._keydownRoot = this.getRootNode();
+            this._keydownRoot.addEventListener('keydown', this._onRootKeydown, true);
+        }
     }
+
+    disconnected() {
+        this._keydownRoot?.removeEventListener('keydown', this._onRootKeydown, true);
+        this._keydownRoot = undefined;
+    }
+
+    /**
+     * Enter in a field of the form submits the form with its first submit button, and without one
+     * only a form with a single field. The browser looks for that button once every listener has
+     * had the key, so the native submit button of the element is made here, if it is not there yet.
+     *
+     * Only for a key the browser may submit with: Enter in an `<input>` or a `<select>` of the
+     * form, and not while a text is being composed. Enter in a `<textarea>` is a line break, and
+     * leaves the content of the element as it is.
+     * @private
+     * @param {KeyboardEvent} event
+     */
+    _onRootKeydown = (event) => {
+        if (event.key !== 'Enter' || event.isComposing || this.isLink || this.type !== 'submit') return;
+        const field = event.target;
+        const form = this._internals.form;
+        if (!form || field?.form !== form || !field.matches('input, select')) return;
+        this._syncSubmitter(true);
+    };
 
     /** Focuses the underlying control. */
     focus(options) {
@@ -234,7 +275,7 @@ export default class Button extends TemplateElement {
                     // Both are taken here, while the button is not disabled, and act once the page
                     // has had the click.
                     if (this.type === 'submit') {
-                        const submitter = this._syncSubmitter();
+                        const submitter = this._syncSubmitter(true);
                         this._afterListeners(event, () => submitter?.form?.requestSubmit(submitter));
                     } else if (this.type === 'reset') {
                         const form = this._internals.form;
@@ -294,15 +335,27 @@ export default class Button extends TemplateElement {
      * button has. It is disabled while the element is disabled or loading, which keeps Enter from
      * submitting as well. One that is in the content already is taken: written by the page, for a
      * form that is submitted with Enter before the script has run, or copied with the element.
+     *
+     * The element makes the button only when the form is about to be submitted with it (`create`):
+     * with a click, or with Enter in a field. A render does not. The content of the element is what
+     * the page wrote until then: a framework that hydrates a server-rendered page after the element
+     * has started finds the children it rendered, and no other.
      * @private
-     * @returns {HTMLButtonElement | null} The submit button, or `null` for a button of another type.
+     * @param {boolean} [create] - Whether to make the button when there is none.
+     * @returns {HTMLButtonElement | null} The submit button, or `null`: for a button of another
+     *   type, and while there is none and none was asked for.
      */
-    _syncSubmitter() {
+    _syncSubmitter(create = false) {
         const ours = this._submitter?.parentNode === this ? this._submitter : null;
         let submitter = ours ?? this.querySelector(':scope > button[type="submit"][hidden]');
 
         if (this.isLink || this.type !== 'submit') {
             ours?.remove();
+            this._submitter = undefined;
+            return null;
+        }
+
+        if (!submitter && !create) {
             this._submitter = undefined;
             return null;
         }

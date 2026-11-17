@@ -147,11 +147,19 @@ An `el-button` of the type `submit` submits its form as a native submit button d
 
 #### The native submit button
 
-A form is submitted with a submit button that belongs to it. The control of `el-button` is in a shadow root and has no form, so a button of the type `submit` keeps a hidden native `<button type="submit">` as a child of the element. That button carries the `name`, the `value` and the attributes above.
+A form is submitted with a submit button that belongs to it. The control of `el-button` is in a shadow root and has no form, so a button of the type `submit` submits with a hidden native `<button type="submit">` that is a child of the element. That button carries the `name`, the `value` and the attributes above.
 
+- The element makes it when the form is first submitted with the button: with a click on the `el-button`, or with Enter in an `<input>` or a `<select>` of the form. Until then the children of the `el-button` are what the page wrote. After that it stays, as the last child.
 - It is the `submitter` of the `submit` event: `event.submitter.closest('el-button')` is the `el-button`.
 - Enter in a field clicks it, so a `click` listener on the `el-button` hears that click, with the native button as its target. A native submit button hears the same click.
-- When the page replaces the content of the `el-button`, the element puts it back.
+- When the page replaces the content of the `el-button`, the element makes it again with the next submit.
+- `form.querySelector('[type="submit"]')` does not find it before the first submit. `form.elements` lists the `el-button` from the start.
+
+#### On a page that a framework hydrates
+
+A framework that hydrates a server-rendered page expects the children it rendered, and no other. The element adds its native submit button for a submit only, so a server-rendered `el-button` hydrates also when the element has started before the framework does (Svelte 5: no `hydration_mismatch`). The page has nothing to write for that.
+
+One case is left: a submit before the hydration that does not leave the page, such as a click on the button of a form that is not valid. The native button is there afterwards, and the framework finds a child it did not render. A page that writes the native submit button itself, as in [Before the script has run](#before-the-script-has-run), does not have that case: the framework has rendered the button and expects it.
 
 #### The `disabled` attribute
 

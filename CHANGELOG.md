@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### button
+
+- Changed: an `el-button` of the type `submit` makes its hidden native `<button type="submit">` when the form is first submitted with it: with a click, or with Enter in an `<input>` or a `<select>` of the form. Before, it appended that button as soon as it started. Until the first submit the children of the `el-button` are what the page wrote, and `form.querySelector('[type="submit"]')` does not find a native button in it. When the page replaces the content of the button, the native button is made again with the next submit, and no longer with the next render. A native submit button that the page writes is taken as before. ([#184](https://github.com/webtides/element-library/issues/184))
+- Fixed: a server-rendered `el-button` of the type `submit` no longer breaks the hydration of its page. The element appended its native submit button as soon as it started, and a framework that hydrated after that found a child it had not rendered (Svelte 5: `hydration_mismatch`, the page was built again, and what the user had typed into the form by then was gone). See "On a page that a framework hydrates" in the readme of the button. ([#184](https://github.com/webtides/element-library/issues/184))
+
 ### checkbox-field
 
 - Fixed: `checked` set from outside moves the checkbox, also after the user has pressed it. The field wrote the `checked` attribute of its native input alone, which is the default of the control: after a press the control no longer follows it. `field.checked = false`, or the `checked` attribute, took the check mark away, while the native checkbox stayed checked and the form went on submitting the value. The field now writes the property of the input as well, before it dispatches `input-change`. ([#185](https://github.com/webtides/element-library/issues/185))
