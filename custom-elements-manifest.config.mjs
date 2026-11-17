@@ -396,6 +396,17 @@ export default {
         '**/*.test.feature.js',
         '**/glide/**',
     ],
+    // The modules in the order of their paths. The analyzer takes the files in the order its
+    // search finds them, and that order is another one with every run: the manifest listed its
+    // modules differently every time, and `web-types.json` with it, which has what two components
+    // document (a CSS property) in the order of the modules. The same sources give the same
+    // files. Apart from the order, this is what the analyzer does without the option.
+    overrideModuleCreation: ({ ts, globs }) =>
+        [...globs]
+            .sort()
+            .map((file) =>
+                ts.createSourceFile(file, fs.readFileSync(path.resolve(file), 'utf8'), ts.ScriptTarget.ES2015, true),
+            ),
     plugins: [
         methodDenyListPlugin(),
         memberDenyListPlugin(),

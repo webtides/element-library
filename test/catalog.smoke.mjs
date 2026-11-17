@@ -37,6 +37,16 @@ const strayModules = manifest.modules
     .filter((path) => /\.(test\.\w+|stories)\.js$/.test(path));
 assert.deepEqual(strayModules, [], 'custom-elements.json lists no test or story modules (did its config load?)');
 
+// The analyzer finds the files in an order that is another one with every run. The config of the
+// manifest hands them over in the order of their paths, so that the same sources give the same
+// manifest and the same `web-types.json`, byte for byte.
+const modulePaths = manifest.modules.map((module) => module.path);
+assert.deepEqual(
+    modulePaths,
+    [...modulePaths].sort(),
+    'the modules of custom-elements.json are in the order of their paths',
+);
+
 // The manifest is what a tool reads that knows nothing else about the components: the completion of
 // an editor, a generator of the typings a template language checks its markup with. Such a tool
 // writes the types of the manifest into TypeScript as they are. So each of them has to be a type,
