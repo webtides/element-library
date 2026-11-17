@@ -34,9 +34,9 @@ const DEFAULT_OPTIONS = {
  * @slot - Default slot. Direct children become slides (unless they have a `slot`
  *   attribute).
  * @slot arrow-left - Content of the "previous" navigation button; it names the button. Left
- *   empty, the button is named "Previous slide" for screen readers and shows nothing.
+ *   empty, the button shows an arrow head and is named "Previous slide" for screen readers.
  * @slot arrow-right - Content of the "next" navigation button; it names the button. Left empty,
- *   the button is named "Next slide" for screen readers and shows nothing.
+ *   the button shows an arrow head and is named "Next slide" for screen readers.
  *
  * @csspart track - The Glide track wrapper.
  * @csspart slides - The slides container.
@@ -208,14 +208,40 @@ export default class Carousel extends TemplateElement {
                                       class="glide__arrow glide__arrow--left"
                                       data-glide-dir="<"
                                   >
-                                      <slot name="arrow-left"><span class="visually-hidden">Previous slide</span></slot>
+                                      <slot name="arrow-left">
+                                          <svg
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              stroke-width="2"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              aria-hidden="true"
+                                          >
+                                              <polyline points="15 18 9 12 15 6"></polyline>
+                                          </svg>
+                                          <span class="visually-hidden">Previous slide</span>
+                                      </slot>
                                   </button>
                                   <button
                                       part="arrow arrow-right"
                                       class="glide__arrow glide__arrow--right"
                                       data-glide-dir=">"
                                   >
-                                      <slot name="arrow-right"><span class="visually-hidden">Next slide</span></slot>
+                                      <slot name="arrow-right">
+                                          <svg
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              stroke-width="2"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              aria-hidden="true"
+                                          >
+                                              <polyline points="9 18 15 12 9 6"></polyline>
+                                          </svg>
+                                          <span class="visually-hidden">Next slide</span>
+                                      </slot>
                                   </button>
                               </div>
                           `

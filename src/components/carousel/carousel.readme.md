@@ -56,8 +56,8 @@ import '@webtides/element-library/carousel/define';
 | Name | Description |
 | --- | --- |
 | _(default)_ | Direct children become slides (unless they have a `slot` attribute). |
-| `arrow-left` | Content of the "previous" navigation button; it names the button. Left empty, the button is named "Previous slide" for screen readers and shows nothing. |
-| `arrow-right` | Content of the "next" navigation button; it names the button. Left empty, the button is named "Next slide" for screen readers and shows nothing. |
+| `arrow-left` | Content of the "previous" navigation button; it names the button. Left empty, the button shows an arrow head and is named "Previous slide" for screen readers. |
+| `arrow-right` | Content of the "next" navigation button; it names the button. Left empty, the button shows an arrow head and is named "Next slide" for screen readers. |
 
 #### CSS Parts
 
@@ -75,7 +75,22 @@ import '@webtides/element-library/carousel/define';
 
 #### CSS Custom Properties
 
-`--el-touch-target` is the only design token this component reads. On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least that wide and high. The bullets keep their size: each gets a hit area of `--el-touch-target` around its dot, the bullets move apart by as much, and their row wraps when it gets wider than the carousel. Without that token, and on a fine pointer, the sizes stay as they are.
+The arrows and the bullets have the look and the place of the shared style of the library, the same as in `el-slider`, and read the `--el-*` design tokens:
+
+- **Arrows**: buttons on the track, in the middle of its height, `--el-space-2` in from its two sides. A square of `--el-control-height` with the surface `--el-color-bg`, the text colour `--el-color-fg`, a border of `--el-border-width` in `--el-color-border` and the radius `--el-radius-md`. Without a theme the surface and the text colour are the ones of the browser for the colour scheme (`Canvas`, `CanvasText`). The keyboard focus shows as a ring inside of the arrow (`--el-focus-ring-width`, `--el-color-focus-ring`, the text colour of the arrow without that token): around it, the ring would lie on the slide. An arrow that leads nowhere keeps its surface, and its sign fades.
+- **Bullets**: a row under the track, in the middle, so that no bullet lies on a slide. A bullet is a ring of 10 px in `--el-color-fg-muted`, the one of the slide that shows a disc in `--el-color-accent`; without a theme both have the text colour of the page. A click counts in a square of 24 px around a bullet, and the bullets are that far apart. The bullets are no buttons: the keyboard does not reach them.
+
+On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high. The bullets keep their size: each gets a hit area of `--el-touch-target` around it, the bullets move apart by as much, and their row wraps when it gets wider than the carousel. Without that token, and on a fine pointer, the sizes stay as they are.
+
+A page reaches every one of them with `::part()`. Bullets that lie on the slides, over pictures for example, take one rule. Their colours are then for the page to choose, which knows what its slides show:
+
+```css
+el-carousel::part(dots) {
+    grid-area: 1 / 1;
+    align-self: end;
+    z-index: 1;
+}
+```
 
 ## Looping, and server-rendered slides
 

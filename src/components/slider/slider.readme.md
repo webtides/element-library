@@ -62,11 +62,11 @@ import '@webtides/element-library/slider/define';
 
 #### Slots
 
-| Name          | Description                                                    |
-| ------------- | -------------------------------------------------------------- |
-| _(default)_   | Place item nodes here; each must match `itemSelector`.         |
-| `arrow-left`  | Content of the "previous" navigation button (defaults to `⟨`). |
-| `arrow-right` | Content of the "next" navigation button (defaults to `⟩`).     |
+| Name | Description |
+| --- | --- |
+| _(default)_ | Place item nodes here; each must match `itemSelector`. |
+| `arrow-left` | Content of the "previous" navigation button; it names the button. Left empty, the button shows an arrow head and is named "Previous item" for screen readers. |
+| `arrow-right` | Content of the "next" navigation button; it names the button. Left empty, the button shows an arrow head and is named "Next item" for screen readers. |
 
 #### CSS Parts
 
@@ -85,11 +85,25 @@ import '@webtides/element-library/slider/define';
 
 #### CSS Custom Properties
 
-This component is headless by default and reads the library's `--el-*` design tokens (e.g. `--el-color-accent`, `--el-color-border`, `--el-radius-md`). Skin it by setting these via a theme — see the Storybook _Docs / Theming_ page.
+The arrows and the dots have the look and the place of the shared style of the library, the same as in `el-carousel`, and read the `--el-*` design tokens:
 
-On a touch screen (`@media (any-pointer: coarse)`) the dots and the arrows are at least `--el-touch-target` wide and high. The glyphs keep their size, and the row of dots wraps when it gets wider than the slider. Without that token, and on a fine pointer, the sizes stay as they are.
+- **Arrows**: buttons on the scroller, in the middle of its height, `--el-space-2` in from its two sides. A square of `--el-control-height` with the surface `--el-color-bg`, the text colour `--el-color-fg`, a border of `--el-border-width` in `--el-color-border` and the radius `--el-radius-md`. Without a theme the surface and the text colour are the ones of the browser for the colour scheme (`Canvas`, `CanvasText`). The keyboard focus shows as a ring inside of the arrow (`--el-focus-ring-width`, `--el-color-focus-ring`, the text colour of the arrow without that token): around it, the ring would lie on the item. An arrow that leads nowhere keeps its surface, and its sign fades.
+- **Dots**: a row under the scroller, in the middle, so that no dot lies on a item. A dot is a ring of 10 px in `--el-color-fg-muted`, the one of the item that shows a disc in `--el-color-accent`; without a theme both have the text colour of the page. A click counts in a square of 24 px around a dot, and the dots are that far apart. The keyboard focus of a dot shows as a ring around it.
+
+On a touch screen (`@media (any-pointer: coarse)`) the arrows are at least `--el-touch-target` wide and high. The dots keep their size: each gets a hit area of `--el-touch-target` around it, the dots move apart by as much, and their row wraps when it gets wider than the slider. Without that token, and on a fine pointer, the sizes stay as they are.
+
+A page reaches every one of them with `::part()`. Dots that lie on the items, over pictures for example, take one rule. Their colours are then for the page to choose, which knows what its items show:
+
+```css
+el-slider::part(dots) {
+    grid-area: 1 / 1;
+    align-self: end;
+    z-index: 1;
+}
+```
 
 ## Accessibility
 
 - The scroller can be focused with the keyboard, where the arrow keys scroll it.
 - Each pager dot is a button named by `dot-label` and the number of its item; `aria-pressed` marks the dot of the selected item.
+- The arrows are buttons named "Previous item" and "Next item", or by what is in their slots. The arrow that leads nowhere is disabled.

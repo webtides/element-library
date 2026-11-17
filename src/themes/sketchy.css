@@ -142,14 +142,9 @@
 /* ---------------------------------------------------------------------------
  * Component flourishes
  *
- * The accordion, tab and slider components now read the design tokens (so every
- * theme can decorate them). The extras below are sketch-only: a soft cutout
+ * The accordion, tab, slider and carousel components read the design tokens (so
+ * every theme can decorate them). The extras below are sketch-only: a soft cutout
  * shadow and spacing that wouldn't suit the other themes.
- *
- * Carousel is different — it inlines Glide's own hardcoded theme (white arrows
- * meant to sit over images) and reads no tokens, so it's re-skinned here,
- * sketchy-only, via ::part() with !important to beat Glide's class selectors.
- * ::part() pierces the shadow boundary from this document-level sheet.
  * ------------------------------------------------------------------------- */
 
 /* Accordion — lift each hand-drawn card off the page */
@@ -160,22 +155,4 @@ el-accordion {
 /* Tabs — small gap between the boxed tabs */
 el-tab-link {
   margin-right: var(--el-space-1);
-}
-
-/* Carousel — re-skin Glide's hardcoded arrows + bullets as sketch controls */
-el-carousel::part(arrow) {
-  background: var(--el-color-bg) !important;
-  color: var(--el-color-fg) !important;
-  border: var(--el-border-width) solid var(--el-color-border) !important;
-  border-radius: var(--el-radius-md) !important;
-  box-shadow: var(--el-shadow-md) !important;
-  text-shadow: none !important;
-}
-el-carousel::part(dot) {
-  background: var(--el-color-bg) !important;
-  border: 2px solid var(--el-color-border) !important;
-  box-shadow: none !important;
-}
-el-carousel::part(selected-dot) {
-  background: var(--el-color-accent) !important;
 }

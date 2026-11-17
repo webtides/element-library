@@ -189,7 +189,7 @@ describe('Feature | Carousel', () => {
 
             for (const bullet of bullets) {
                 // The dot itself keeps its size.
-                expect(sizeOf(bullet)).toEqual({ width: 13, height: 13 });
+                expect(sizeOf(bullet)).toEqual({ width: 10, height: 10 });
 
                 bullet.scrollIntoView({ block: 'center' });
                 const { left, top, width, height } = bullet.getBoundingClientRect();

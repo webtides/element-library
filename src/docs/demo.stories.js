@@ -682,8 +682,6 @@ export const Page = {
                             ${swatchSlide('Brand', ['#1e3a8a', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'])}
                             ${swatchSlide('Neutral', ['#0f172a', '#334155', '#64748b', '#cbd5e1', '#f1f5f9'])}
                             ${swatchSlide('Accent', ['#065f46', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'])}
-                            <span slot="arrow-left" aria-hidden="true">‹</span>
-                            <span slot="arrow-right" aria-hidden="true">›</span>
                         </el-carousel>
                     </div>
                 </section>

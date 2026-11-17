@@ -15,8 +15,10 @@ import style from './slider.style.js';
  *   the slider re-aligns to the current index. `detail` is the current index.
  *
  * @slot - Default slot. Place item nodes here; each must match `itemSelector`.
- * @slot arrow-left - Content of the "previous" navigation button (defaults to `⟨`).
- * @slot arrow-right - Content of the "next" navigation button (defaults to `⟩`).
+ * @slot arrow-left - Content of the "previous" navigation button; it names the button. Left
+ *   empty, the button shows an arrow head and is named "Previous item" for screen readers.
+ * @slot arrow-right - Content of the "next" navigation button; it names the button. Left empty,
+ *   the button shows an arrow head and is named "Next item" for screen readers.
  *
  * @csspart scroller - The horizontally scrolling track.
  * @csspart controls - Applied to both the dots wrapper and the arrows wrapper.
@@ -322,14 +324,40 @@ export default class Slider extends TemplateElement {
                 class="arrow-left"
                 ?disabled=${disabledLeft}
             >
-                <slot name="arrow-left">&lang;</slot>
+                <slot name="arrow-left">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    <span class="visually-hidden">Previous item</span>
+                </slot>
             </button>
             <button
                 part="arrow arrow-right ${disabledRight ? 'arrow-disabled' : ''}"
                 class="arrow-right"
                 ?disabled=${disabledRight}
             >
-                <slot name="arrow-right">&rang;</slot>
+                <slot name="arrow-right">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                    <span class="visually-hidden">Next item</span>
+                </slot>
             </button>
         `;
     }
