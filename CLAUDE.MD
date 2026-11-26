@@ -82,6 +82,8 @@ element-library/
 - **form-field**: Base form field
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
+- **list**: List of rows: `role="list"`, one density, a line between two rows, and one line where the texts of all rows begin (subgrid)
+- **list-item**: One row of a list: a start, a title, a line under it, an end and a control of its own; a link as a whole with `href`
 - **scroll-to**: Scroll to target element
 - **notification**: Alert with variants, auto-dismiss and a live region, inline or as a toast
 - **otp-field**: One-time code of a second factor: one native input (extends the input field) that takes spaces and hyphens out and says when the code is complete

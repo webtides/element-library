@@ -19,7 +19,9 @@ export default {
                     'badge and a tag, filters as removable tags with a popover to bring one back, a button group ' +
                     'that sorts, a progress ring for the share that is shown, a progress bar for the place in the ' +
                     'list, a pagination, skeletons and a spinner while it loads, an empty state, and a drawer ' +
-                    'with the details: a breadcrumb, a divider and a copy button for the import path), a ' +
+                    'with the details: a breadcrumb, a divider and a copy button for the import path), a list of ' +
+                    'what the last releases brought (rows that are links as a whole, with an icon at the start, ' +
+                    'a mark on the newest, a version at the end and a copy button as a control of its own), a ' +
                     'lazy-loaded pattern gallery, a request-access form built from ' +
                     'the field components (a submit with a field missing shows the messages of the fields, a ' +
                     'complete one floats a success toast, and "Start over" resets the form; the role has ' +
@@ -123,6 +125,53 @@ const lazyGallery = (title, caption) => html`
     </section>
 `;
 
+// An icon at the start of a row of a list. It only decorates the title.
+const startIcon = (name) =>
+    html`<el-svg-use
+        slot="start"
+        name="${name}"
+        spritePath=""
+        aria-hidden="true"
+        style="display:inline-block;width:1.5rem;height:1.5rem"
+    ></el-svg-use>`;
+
+// What the last releases brought, as a list of rows. A row with `href` is a link as a whole; the
+// version in `end` belongs to it, the copy button in `action` is a target of its own.
+const latestList = html`
+    <section id="latest" class="py-12">
+        <h2 class="text-2xl font-bold mb-2">Lately in the kit</h2>
+        <p class="opacity-70 mb-6 text-sm">What the last releases brought. A row leads to its place on this page.</p>
+        <el-list label="Lately in the kit" appearance="outlined">
+            <el-list-item href="#latest" mark="New" current="true">
+                ${startIcon('icon-layers')} Lists and their rows
+                <span slot="description">A start, a title, a line under it and an end, for every list of a page.</span>
+                <el-badge slot="end" variant="success">Next</el-badge>
+            </el-list-item>
+            <el-list-item href="#start">
+                ${startIcon('icon-palette')} Fields for a date, a colour and a file
+                <span slot="description">Native controls with the label and the messages of a field.</span>
+                <span slot="end">0.3.0</span>
+            </el-list-item>
+            <el-list-item href="#kit">
+                ${startIcon('icon-grid')} Cards, avatars, badges and tags
+                <span slot="description">The surfaces the list of the kit is built from.</span>
+                <span slot="end">0.3.0</span>
+            </el-list-item>
+            <el-list-item truncate="true">
+                ${startIcon('icon-user')}
+                <code id="demo-install">npm i --save @webtides/element-library</code>
+                <span slot="description">Every component of this page is in the one package.</span>
+                <el-copy-button
+                    slot="action"
+                    from="demo-install"
+                    size="small"
+                    label="Copy the install command"
+                ></el-copy-button>
+            </el-list-item>
+        </el-list>
+    </section>
+`;
+
 const scrollTopButton = html`
     <div style="position:fixed;right:1.5rem;bottom:1.5rem;z-index:50">
         <el-scroll-to-top duration="600">
@@ -193,6 +242,12 @@ const kit = [
     { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },
     { tag: 'el-tag', category: 'Surfaces', blurb: 'A label for a keyword or a filter, removable.' },
     { tag: 'el-divider', category: 'Surfaces', blurb: 'A line between two groups of content.', fresh: true },
+    {
+        tag: 'el-list',
+        category: 'Surfaces',
+        blurb: 'Rows with a start, a title, a line under it and an end.',
+        fresh: true,
+    },
 ];
 
 const PER_PAGE = 6;
@@ -750,6 +805,8 @@ export const Page = {
                     <demo-kit-browser></demo-kit-browser>
                 </section>
 
+                <!-- ───────── What the last releases brought (list of rows) ───────── -->
+                ${latestList}
                 ${lazyGallery(
                     'Patterns in production',
                     html`These examples load lazily via <code>el-lazy-src</code> as the gallery scrolls into view.`,
