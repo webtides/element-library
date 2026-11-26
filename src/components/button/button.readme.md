@@ -157,7 +157,7 @@ button.addEventListener('button-toggle', (event) => {
 
 - **Not a value of a form.** A toggle button submits nothing. A setting that is saved with a form is an [`el-switch-field`](../switch-field/switch-field.readme.md) or an [`el-checkbox-field`](../checkbox-field/checkbox-field.readme.md).
 - **Not a button whose name changes with its state.** A button that reads "Mute" and then "Unmute" says its state with its name, and is no toggle: with `aria-pressed` on top a screen reader would announce "Unmute, pressed". Give a toggle button one name that stays ("Mute"), and let the state say the rest.
-- **Not one choice of several.** A toggle button knows nothing of its neighbours: in a row of them, any number can be pressed.
+- **Not one choice of several.** A toggle button knows nothing of its neighbours: in a row of them, any number can be pressed. A row of which one is chosen at a time is an [`el-segmented-field`](../segmented-field/segmented-field.readme.md).
 - **Not a link.** `toggle` is ignored on a button with `href`.
 
 ## In a form

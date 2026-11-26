@@ -39,6 +39,7 @@ import './src/components/range-field/range-field.define.js';
 import './src/components/rating-field/rating-field.define.js';
 import './src/components/scroll-to/scroll-to.define.js';
 import './src/components/scroll-to-top/scroll-to-top.define.js';
+import './src/components/segmented-field/segmented-field.define.js';
 import './src/components/select-field/select-field.define.js';
 import './src/components/skeleton/skeleton.define.js';
 import './src/components/slider/slider.define.js';

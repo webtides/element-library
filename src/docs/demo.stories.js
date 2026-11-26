@@ -27,7 +27,8 @@ export default {
                     'lazy-loaded pattern gallery, a request-access form built from ' +
                     'the field components (a submit with a field missing shows the messages of the fields, a ' +
                     'complete one floats a success toast, and "Start over" resets the form; the role has ' +
-                    'suggestions, the start is a date from today on, the brand colour comes from the picker of ' +
+                    'suggestions, the start is a date from today on, the way to get in touch is one choice of ' +
+                    'three in a row of joined buttons, the brand colour comes from the picker of ' +
                     'the browser), an FAQ accordion, and the ' +
                     'transition + scroll helpers. The design-system framing leans into the ' +
                     'theming story — flip the **Theme** and **Color scheme** toolbar switches to see the whole page ' +
@@ -239,6 +240,12 @@ const kit = [
     { tag: 'el-combobox-field', category: 'Forms', blurb: 'A text input with suggestions to pick from.', fresh: true },
     { tag: 'el-date-field', category: 'Forms', blurb: 'A date or a time, with an earliest and a latest.', fresh: true },
     { tag: 'el-color-field', category: 'Forms', blurb: 'A colour, picked in the picker of the browser.', fresh: true },
+    {
+        tag: 'el-segmented-field',
+        category: 'Forms',
+        blurb: 'One choice of a few, as a row of joined buttons.',
+        fresh: true,
+    },
     { tag: 'el-dialog', category: 'Overlays', blurb: 'A modal on the native dialog: focus, backdrop and Escape.' },
     { tag: 'el-drawer', category: 'Overlays', blurb: 'A panel that slides in from an edge of the viewport.' },
     { tag: 'el-popover', category: 'Overlays', blurb: 'A panel that floats next to its anchor.' },
@@ -958,6 +965,20 @@ export const Page = {
                                     { value: 'annual', label: 'Annual' },
                                 ]}"
                             ></el-radio-field>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <el-segmented-field
+                                name="contact"
+                                label="How should we get in touch?"
+                                value="email"
+                                help-message="One of the three. You can change it later."
+                                .options="${[
+                                    { value: 'email', label: 'Email' },
+                                    { value: 'call', label: 'A call' },
+                                    { value: 'chat', label: 'Chat' },
+                                ]}"
+                            ></el-segmented-field>
                         </div>
 
                         <div class="sm:col-span-2">

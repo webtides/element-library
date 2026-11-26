@@ -98,6 +98,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | rating-field         | A rating from 1 to max as a row of stars, built on a native radio group         | `0.1.0` |
 | scroll-to            |                                                                                 | `0.1.0` |
 | scroll-to-top        |                                                                                 | `0.1.0` |
+| segmented-field      | One choice of a few options as a row of joined buttons, on native radios        | `0.1.0` |
 | select-field         |                                                                                 | `0.1.0` |
 | skeleton             | A shape in the place of content that is still loading, with sheen and pulse     | `0.1.0` |
 | slider               | CSS only slider element to slide child elements                                 | `0.4.3` |

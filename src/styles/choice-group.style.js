@@ -5,7 +5,7 @@ const css = String.raw;
 /**
  * A group of choices in a field: a fieldset with a legend that holds the options, each of them a
  * label around a native radio or checkbox (`el-radio-field`, `el-checkbox-group-field`,
- * `el-rating-field`).
+ * `el-rating-field`, `el-segmented-field`).
  *
  * - The fieldset is the column of the field. It loses the border and the padding of the browser
  *   and stacks the legend, the help message, the options and the error message: all of them are
