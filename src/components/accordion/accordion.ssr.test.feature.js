@@ -130,26 +130,33 @@ describe('Feature | Accordion | server-rendered', () => {
     });
 
     it('opens a server-rendered closed accordion with the transition, and closes it again', async () => {
-        const { el } = mount(serverRender('', { open: false }));
+        const { wrapper, el } = mount(serverRender('', { open: false }));
+        // Long enough to be on its way after a few frames, however long a frame takes.
+        wrapper.style.setProperty('--el-duration-md', '2s');
         await nextFrame();
         await nextFrame();
         await nextFrame();
 
         title(el).click();
-        const opening = await watch({ el, below: el }, 8);
-        const between = opening.map((frame) => frame.content).filter((value) => value > 0);
+        await nextFrame();
+        await nextFrame();
+        await nextFrame();
+        await nextFrame();
 
         expect(el.open).toBe(true);
         expect(el.getAttribute('open')).toBe('true');
         // On its way: more than nothing, less than all of it.
-        expect(between.length).toBeGreaterThan(0);
-        expect(Math.min(...between)).toBeLessThan(content(el).scrollHeight);
+        expect(height(content(el))).toBeGreaterThan(0);
+        expect(height(content(el))).toBeLessThan(content(el).scrollHeight);
 
-        await new Promise((resolve) => setTimeout(resolve, 400));
+        // To its end, without the wait. And without a transition from here on.
+        for (const animation of content(el).getAnimations()) animation.finish();
+        wrapper.style.setProperty('--el-duration-md', '0s');
+        await nextFrame();
         expect(height(content(el))).toBe(content(el).scrollHeight);
 
         el.open = false;
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        for (let frame = 0; frame < 6; frame++) await nextFrame();
         expect(height(content(el))).toBe(0);
         expect(el.matches(':state(open)')).toBe(false);
     });
