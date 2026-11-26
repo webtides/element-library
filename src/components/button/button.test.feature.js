@@ -4,6 +4,7 @@ import axe from 'axe-core';
 import {
     accessibleDescription,
     accessibleName,
+    accessibleRole,
     aTimeout,
     fixture,
     forcePseudoClasses,
@@ -12,8 +13,10 @@ import {
     useForcedColors,
     useTouchScreen,
 } from '../../test-helpers.js';
-import { define } from './button.js';
+import Button, { define } from './button.js';
+import { define as defineGroup } from '../button-group/button-group.js';
 define();
+defineGroup();
 
 describe('Feature | Button', () => {
     it('can connect without errors', async () => {
@@ -1350,6 +1353,443 @@ describe('Feature | Button', () => {
                     expect(inside).toBe('none');
                 });
             }
+        });
+    });
+
+    describe('a toggle button', () => {
+        const control = (el) => el.shadowRoot.querySelector('[part="base"]');
+        const rendered = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+        // The ring of a pressed button: what its control generates in front of its content.
+        const ringOf = (el) => {
+            const { content, borderTopWidth, borderTopStyle, borderTopColor } = getComputedStyle(
+                control(el),
+                '::before',
+            );
+            return content === 'none' ? 'none' : `${borderTopWidth} ${borderTopStyle} ${borderTopColor}`;
+        };
+        const variants = ['neutral', 'brand', 'success', 'warning', 'danger'];
+        const appearances = ['filled', 'outlined', 'plain'];
+
+        describe('its state', () => {
+            it('is not pressed by default, and says so', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+
+                expect(el.pressed).toBe(false);
+                expect(el.getAttribute('pressed')).toBe('false');
+                expect(control(el).getAttribute('aria-pressed')).toBe('false');
+            });
+
+            it('takes the state from the attribute', async () => {
+                const el = await fixture(`<el-button toggle="true" pressed="true">Bold</el-button>`);
+
+                expect(el.pressed).toBe(true);
+                expect(control(el).getAttribute('aria-pressed')).toBe('true');
+            });
+
+            it('takes the state from the property, and writes it to the attribute', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+
+                el.pressed = true;
+                await rendered();
+                expect(el.getAttribute('pressed')).toBe('true');
+                expect(control(el).getAttribute('aria-pressed')).toBe('true');
+
+                el.setAttribute('pressed', 'false');
+                await rendered();
+                expect(el.pressed).toBe(false);
+                expect(control(el).getAttribute('aria-pressed')).toBe('false');
+            });
+
+            it('flips with a click, and with the Space and the Enter key', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+
+                await userEvent.click(el);
+                await rendered();
+                expect(el.pressed).toBe(true);
+                expect(el.getAttribute('pressed')).toBe('true');
+                expect(control(el).getAttribute('aria-pressed')).toBe('true');
+
+                el.focus();
+                await userEvent.keyboard(' ');
+                await rendered();
+                expect(el.pressed).toBe(false);
+
+                await userEvent.keyboard('{Enter}');
+                await rendered();
+                expect(el.pressed).toBe(true);
+            });
+
+            it('has flipped when click() returns', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+
+                el.click();
+                expect(el.pressed).toBe(true);
+                el.click();
+                expect(el.pressed).toBe(false);
+            });
+
+            it('does not flip while it is disabled or loading', async () => {
+                const disabled = await fixture(`<el-button toggle="true" disabled="true">Bold</el-button>`);
+                const loading = await fixture(`<el-button toggle="true" loading="true">Bold</el-button>`);
+
+                disabled.click();
+                control(loading).click();
+                await rendered();
+                expect(disabled.pressed).toBe(false);
+                expect(loading.pressed).toBe(false);
+            });
+
+            it('becomes a toggle when toggle is set from a script, with the attribute of its state', async () => {
+                const el = await fixture(`<el-button>Bold</el-button>`);
+                expect(el.hasAttribute('pressed')).toBe(false);
+
+                el.toggle = true;
+                await rendered();
+                expect(el.getAttribute('pressed')).toBe('false');
+                expect(control(el).getAttribute('aria-pressed')).toBe('false');
+
+                el.click();
+                await rendered();
+                expect(el.getAttribute('pressed')).toBe('true');
+            });
+
+            it('is in the markup a server renders', () => {
+                const source = document.createElement('el-button');
+                Object.assign(source, source.properties(), { toggle: true, pressed: true });
+                // The quotes are the ones of the renderer.
+                expect(source.template().toString()).toMatch(/aria-pressed=(["'])true\1/);
+
+                Object.assign(source, { pressed: false });
+                expect(source.template().toString()).toMatch(/aria-pressed=(["'])false\1/);
+
+                Object.assign(source, { toggle: false });
+                expect(source.template().toString()).not.toContain('aria-pressed');
+                expect(new Button().properties()).toMatchObject({ toggle: false, pressed: false });
+            });
+        });
+
+        describe('what the page learns', () => {
+            it('fires button-toggle with the new state when a click has flipped it', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+                const seen = [];
+                el.addEventListener('button-toggle', (event) => seen.push([event.detail.pressed, el.pressed]));
+
+                el.click();
+                el.click();
+                expect(seen).toEqual([
+                    [true, true],
+                    [false, false],
+                ]);
+            });
+
+            it('fires nothing when pressed is set from a script', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+                let fired = 0;
+                el.addEventListener('button-toggle', () => fired++);
+
+                el.pressed = true;
+                el.setAttribute('pressed', 'false');
+                await rendered();
+                expect(fired).toBe(0);
+            });
+
+            it('does not flip when a click listener of the page prevents the click', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+                let fired = 0;
+                el.addEventListener('button-toggle', () => fired++);
+                el.addEventListener('click', (event) => event.preventDefault(), { once: true });
+
+                el.click();
+                await aTimeout(20);
+                expect(el.pressed).toBe(false);
+                expect(fired).toBe(0);
+
+                // The next click is not prevented.
+                el.click();
+                expect(el.pressed).toBe(true);
+                expect(fired).toBe(1);
+            });
+        });
+
+        describe('for assistive technology', () => {
+            it('is announced as a toggle button with its state', async () => {
+                const el = await fixture(`<el-button toggle="true">Bold</el-button>`);
+                const pressedOf = async () => {
+                    const { cdp } = await import('vite-plus/test/browser');
+                    const session = cdp();
+                    await session.send('DOM.enable');
+                    const marker = `toggle-${crypto.randomUUID()}`;
+                    control(el).setAttribute('data-test-marker', marker);
+                    await session.send('DOM.getDocument', { depth: 0 });
+                    const { searchId } = await session.send('DOM.performSearch', {
+                        query: marker,
+                        includeUserAgentShadowDOM: true,
+                    });
+                    const { nodeIds } = await session.send('DOM.getSearchResults', {
+                        searchId,
+                        fromIndex: 0,
+                        toIndex: 1,
+                    });
+                    control(el).removeAttribute('data-test-marker');
+                    const { nodes } = await session.send('Accessibility.getPartialAXTree', {
+                        nodeId: nodeIds[0],
+                        fetchRelatives: false,
+                    });
+                    return nodes[0].properties.find((property) => property.name === 'pressed')?.value.value;
+                };
+
+                expect(await accessibleRole(control(el))).toBe('button');
+                expect(await accessibleName(control(el))).toBe('Bold');
+                expect(await pressedOf()).toBe('false');
+
+                el.click();
+                await rendered();
+                expect(await pressedOf()).toBe('true');
+            });
+
+            it('has no aria-pressed on a button that is no toggle', async () => {
+                const el = await fixture(`<el-button>Save</el-button>`);
+                expect(control(el).hasAttribute('aria-pressed')).toBe(false);
+                expect(el.hasAttribute('pressed')).toBe(false);
+
+                // `pressed` alone does not make a toggle.
+                const pressed = await fixture(`<el-button pressed="true">Save</el-button>`);
+                expect(control(pressed).hasAttribute('aria-pressed')).toBe(false);
+                pressed.click();
+                expect(pressed.pressed).toBe(true);
+                expect(ringOf(pressed)).toBe('none');
+            });
+
+            it('has no detectable a11y violations, pressed or not', async () => {
+                const wrapper = await fixture(`
+                    <div style="color: rgb(0, 0, 0); background: rgb(255, 255, 255)">
+                        <el-button toggle="true">Bold</el-button>
+                        <el-button toggle="true" pressed="true" appearance="outlined">Italic</el-button>
+                        <el-button toggle="true" pressed="true" appearance="plain" circle="true" aria-label="Favourite">★</el-button>
+                    </div>
+                `);
+                const results = await axe.run(wrapper);
+                expect(results.violations.map((violation) => violation.id)).toEqual([]);
+            });
+        });
+
+        describe('aria-pressed that the page sets itself', () => {
+            it('goes to the control as it is, and no click changes it', async () => {
+                const el = await fixture(`<el-button aria-pressed="false">Bold</el-button>`);
+                expect(control(el).getAttribute('aria-pressed')).toBe('false');
+
+                el.click();
+                await rendered();
+                expect(control(el).getAttribute('aria-pressed')).toBe('false');
+                expect(el.pressed).toBe(false);
+
+                el.setAttribute('aria-pressed', 'true');
+                await rendered();
+                expect(control(el).getAttribute('aria-pressed')).toBe('true');
+                // And it shows, as the state of a toggle does.
+                expect(ringOf(el)).not.toBe('none');
+            });
+
+            it('gives way to the state of a toggle', async () => {
+                const el = await fixture(`<el-button toggle="true" aria-pressed="true">Bold</el-button>`);
+                expect(control(el).getAttribute('aria-pressed')).toBe('false');
+            });
+        });
+
+        describe('a link', () => {
+            it('is no toggle', async () => {
+                const el = await fixture(`<el-button toggle="true" href="#target">Go</el-button>`);
+                expect(control(el).hasAttribute('aria-pressed')).toBe(false);
+                expect(el.hasAttribute('pressed')).toBe(false);
+            });
+        });
+
+        describe('how it shows', () => {
+            const TRANSPARENT = 'rgba(0, 0, 0, 0)';
+            const grid = (tokens = '') => `
+                <div style="${tokens}">
+                    ${variants
+                        .flatMap((variant) =>
+                            appearances.map(
+                                (appearance) => `
+                                    <el-button toggle="true" variant="${variant}" appearance="${appearance}">a</el-button>
+                                    <el-button toggle="true" pressed="true" variant="${variant}" appearance="${appearance}">a</el-button>
+                                `,
+                            ),
+                        )
+                        .join('')}
+                </div>
+            `;
+            const pairs = (wrapper) => {
+                const buttons = [...wrapper.querySelectorAll('el-button')];
+                return buttons.filter((_, index) => index % 2 === 0).map((off, index) => [off, buttons[index * 2 + 1]]);
+            };
+            const theme = `
+                --el-color-bg: rgb(255, 255, 255); --el-color-fg: rgb(10, 10, 10);
+                --el-color-bg-muted: rgb(230, 230, 230); --el-color-border: rgb(150, 150, 150);
+                --el-color-accent: rgb(0, 0, 200); --el-color-success: rgb(0, 120, 0);
+                --el-color-warning: rgb(240, 160, 0); --el-color-danger: rgb(200, 0, 0);
+                color: rgb(10, 10, 10); background: rgb(255, 255, 255);
+            `;
+
+            for (const [name, tokens] of [
+                ['with a theme', theme],
+                [
+                    'without a theme, in a light scheme',
+                    'color-scheme: light; color: rgb(0, 0, 0); background: rgb(255, 255, 255)',
+                ],
+                [
+                    'without a theme, in a dark scheme',
+                    'color-scheme: dark; color: rgb(255, 255, 255); background: rgb(18, 18, 18)',
+                ],
+            ]) {
+                it(`has a ring in the colour of its label in every variant and appearance, ${name}`, async () => {
+                    const wrapper = await fixture(grid(tokens));
+
+                    for (const [off, on] of pairs(wrapper)) {
+                        const which = `${on.variant} ${on.appearance}`;
+                        const label = getComputedStyle(control(on)).color;
+
+                        expect(ringOf(off), which).toBe('none');
+                        expect(ringOf(on), which).toBe(`2px solid ${label}`);
+                        expect(label, which).not.toBe(TRANSPARENT);
+                        // The label can be read on the surface of the button, and so can the ring:
+                        // the surface of a pressed button is not another fill than the one of its label.
+                        if (on.appearance === 'filled') {
+                            expect(getComputedStyle(control(on)).backgroundColor, which).toBe(
+                                getComputedStyle(control(off)).backgroundColor,
+                            );
+                        } else {
+                            expect(getComputedStyle(control(off)).backgroundColor, which).toBe(TRANSPARENT);
+                            expect(getComputedStyle(control(on)).backgroundColor, which).not.toBe(TRANSPARENT);
+                        }
+                    }
+                });
+            }
+
+            it('keeps the size of the button', async () => {
+                const wrapper = await fixture(grid(theme));
+                for (const [off, on] of pairs(wrapper)) {
+                    expect(sizeOf(control(on)), `${on.variant} ${on.appearance}`).toEqual(sizeOf(control(off)));
+                }
+            });
+
+            it('follows the shape of the button', async () => {
+                const wrapper = await fixture(`
+                    <div style="--el-radius-md: 6px">
+                        <el-button toggle="true" pressed="true">a</el-button>
+                        <el-button toggle="true" pressed="true" pill="true">a</el-button>
+                        <el-button toggle="true" pressed="true" circle="true">a</el-button>
+                    </div>
+                `);
+                const radius = (el, pseudo) => getComputedStyle(control(el), pseudo).borderTopLeftRadius;
+
+                for (const el of wrapper.querySelectorAll('el-button')) {
+                    expect(radius(el, '::before'), el.outerHTML).toBe(radius(el));
+                }
+            });
+
+            it('gets one step more of the tint under the pointer and when pressed down', async () => {
+                const el = await fixture(`<el-button toggle="true" pressed="true" appearance="outlined">a</el-button>`);
+                const tint = () => getComputedStyle(control(el)).backgroundColor;
+                const resting = tint();
+
+                await forcePseudoClasses(control(el), ['hover']);
+                const hovered = tint();
+                await forcePseudoClasses(control(el), ['hover', 'active']);
+                const down = tint();
+
+                const alpha = (colour) => Number(colour.match(/[\d.]+(?=\)$)/)[0]);
+                expect(alpha(hovered)).toBeGreaterThan(alpha(resting));
+                expect(alpha(down)).toBeGreaterThan(alpha(hovered));
+            });
+
+            describe('in a group', () => {
+                it('keeps the joined corners and the lines to its neighbours', async () => {
+                    const wrapper = await fixture(`
+                        <div style="${theme} --el-radius-md: 6px; --el-border-width: 1px">
+                            <el-button-group label="Off">
+                                <el-button>a</el-button><el-button>b</el-button><el-button>c</el-button>
+                            </el-button-group>
+                            <el-button-group label="On">
+                                <el-button toggle="true" pressed="true">a</el-button>
+                                <el-button toggle="true" pressed="true">b</el-button>
+                                <el-button toggle="true" pressed="true">c</el-button>
+                            </el-button-group>
+                        </div>
+                    `);
+                    const [off, on] = [...wrapper.querySelectorAll('el-button-group')].map((group) => [
+                        ...group.children,
+                    ]);
+                    const corners = (el, pseudo) => {
+                        const style = getComputedStyle(control(el), pseudo);
+                        return [
+                            style.borderTopLeftRadius,
+                            style.borderTopRightRadius,
+                            style.borderBottomRightRadius,
+                            style.borderBottomLeftRadius,
+                        ];
+                    };
+                    const borders = (el) => {
+                        const style = getComputedStyle(control(el));
+                        return [style.borderLeftColor, style.borderRightColor, style.borderLeftWidth, style.marginLeft];
+                    };
+
+                    on.forEach((button, index) => {
+                        // The corners of the button, and the ring has the same.
+                        expect(corners(button), index).toEqual(corners(off[index]));
+                        expect(corners(button, '::before'), index).toEqual(corners(button));
+                        // The line to the neighbour in front, and the place on its border.
+                        expect(borders(button), index).toEqual(borders(off[index]));
+                        expect(sizeOf(button), index).toEqual(sizeOf(off[index]));
+                    });
+                    expect(corners(on[1])).toEqual(['0px', '0px', '0px', '0px']);
+                    expect(corners(on[0])).toEqual(['6px', '0px', '0px', '6px']);
+                });
+            });
+
+            describe('where the user forces colours', () => {
+                useForcedColors();
+
+                it('keeps the ring, and makes it wider', async () => {
+                    const wrapper = await fixture(grid());
+
+                    expect(matchMedia('(forced-colors: active)').matches).toBe(true);
+                    for (const [off, on] of pairs(wrapper)) {
+                        const which = `${on.variant} ${on.appearance}`;
+                        expect(ringOf(off), which).toBe('none');
+                        expect(ringOf(on), which).toBe(`3px solid ${getComputedStyle(control(on)).color}`);
+                    }
+                });
+            });
+        });
+
+        describe('the keyboard focus without a theme', () => {
+            it('shows a second ring inside of the ring of a pressed button', async () => {
+                const wrapper = await fixture(`
+                    <div>
+                        <button>Before</button>
+                        <el-button toggle="true">Off</el-button>
+                        <el-button toggle="true" pressed="true">On</el-button>
+                    </div>
+                `);
+                const [off, on] = wrapper.querySelectorAll('el-button');
+                const focusInset = (el) => getComputedStyle(control(el), '::after').top;
+
+                wrapper.querySelector('button').focus();
+                await userEvent.tab();
+                expect(off.shadowRoot.activeElement).toBe(control(off));
+                const offInset = focusInset(off);
+                await userEvent.tab();
+                expect(on.shadowRoot.activeElement).toBe(control(on));
+
+                expect(offInset).toBe('1px');
+                // Past the ring of the pressed button, which is 2px wide.
+                expect(focusInset(on)).toBe('5px');
+            });
         });
     });
 

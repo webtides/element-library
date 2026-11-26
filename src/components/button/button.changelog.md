@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `toggle`: the button is a toggle button, one that stays pressed. A click flips `pressed`, and so do the Space and the Enter key; the control has `aria-pressed` with the state, so a screen reader announces a toggle button. `pressed` is a property and an attribute the page can set and read, and a toggle button writes the attribute itself (`pressed="true"`, `"false"`). `toggle` is ignored on a button with `href`. ([#172](https://github.com/webtides/element-library/issues/172))
+- `button-toggle`, fired when a click has flipped a toggle button, with the new state in `detail.pressed`. Not fired when `pressed` is set from a script. A `click` listener of the page that calls `preventDefault()` keeps the button from flipping. ([#172](https://github.com/webtides/element-library/issues/172))
+- A pressed button shows that it is pressed: a ring inside of its edge in the colour of its label, in every variant and appearance, and a tint of the text colour where the button has no fill. The ring is a border, so it stays where the user forces colours, and it has the corners of the button, the joined ones of an `el-button-group` as well. Before, no rule selected a pressed button, and it looked like one that is not pressed. ([#172](https://github.com/webtides/element-library/issues/172))
+
+### Changed
+
+- A button with `aria-pressed="true"` that the page sets itself shows the ring of a pressed button as well. The attribute goes to the control as before, and no click changes it. ([#172](https://github.com/webtides/element-library/issues/172))
+
 ## [0.3.1] - 2026-11-17
 
 ### Changed

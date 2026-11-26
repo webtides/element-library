@@ -51,6 +51,8 @@ import '@webtides/element-library/button/define';
 | `caret` | `boolean` | `false` | Appends a dropdown caret after the label. |
 | `loading` | `boolean` | `false` | Shows a spinner and blocks interaction. |
 | `disabled` | `boolean` | `false` | Disables the button. Reflected: the attribute is there while the button is disabled, see [In a form](#in-a-form). |
+| `toggle` | `boolean` | `false` | The button is a toggle button: a click flips `pressed`, see [A toggle button](#a-toggle-button). Button-only. |
+| `pressed` | `boolean` | `false` | Whether a toggle button is pressed. Reflected on a toggle button (`pressed="true"` / `"false"`). Without `toggle` it does nothing. |
 | `type` | `string` | `'button'` | `button`, `submit` or `reset`. `submit` / `reset` act on the form of the button, see [In a form](#in-a-form). Button-only. |
 | `name` | `string` | `''` | Name submitted with the form, when the form is submitted with this button. Button-only. |
 | `value` | `string` | `''` | Value submitted under that name. Button-only. |
@@ -71,7 +73,11 @@ The attributes `form`, `formaction`, `formenctype`, `formmethod`, `formnovalidat
 
 #### Events
 
-_None custom — native `click`, `focus` and `blur` behave as usual._
+| Name | Detail | Description |
+| --- | --- | --- |
+| `button-toggle` | `{ pressed: boolean }` | Fired when a click has flipped a toggle button. `detail.pressed` is the new state. Not fired when `pressed` is set from a script. |
+
+Native `click`, `focus` and `blur` behave as usual.
 
 #### Slots
 
@@ -121,6 +127,38 @@ The three properties are independent of each other, and every combination works.
 `variant`, `appearance` and `size` are reflected: the element writes them onto itself as attributes, the defaults included (`<el-button variant="neutral" appearance="filled" size="medium">`), so that they can be selected from a stylesheet (`el-button[variant='brand']`). A value the button does not know is painted like the default.
 
 The `hidden` attribute hides the button.
+
+## A toggle button
+
+With `toggle` the button stays pressed: "Bold" in the toolbar of an editor, "Mute", a filter above a list, the star of a favourite.
+
+```html
+<el-button toggle="true" appearance="outlined">Bold</el-button>
+<el-button toggle="true" pressed="true" appearance="outlined">Italic</el-button>
+<el-button toggle="true" appearance="plain" circle="true" aria-label="Favourite">★</el-button>
+```
+
+```js
+button.addEventListener('button-toggle', (event) => {
+    editor.bold = event.detail.pressed;
+});
+```
+
+- **The state** is `pressed`, a property and an attribute (`pressed="true"`, `pressed="false"`). A toggle button writes the attribute itself, so a stylesheet can select it: `el-button[pressed='true']`.
+- **A click flips it**, and so do the Space and the Enter key. Then the button fires `button-toggle`. A `click` listener of the page that calls `preventDefault()` keeps the button from flipping. Setting `pressed` from a script changes the state and fires nothing.
+- **A screen reader** announces a toggle button with its state: the control has `aria-pressed="true"` or `"false"`. A button without `toggle` has no `aria-pressed`.
+- **A pressed button shows it** with a ring inside of its edge, in the colour of its label, in every variant and appearance. An `outlined` and a `plain` button get a tint of their text colour as well; a fill is not changed, the label on it would lose contrast. The ring is a shape and a border: it tells the button apart without a colour, and stays where the user forces colours, a little wider. It is the `::before` of the control (`::part(base)::before`).
+- **In an `el-button-group`** a pressed button keeps its joined corners and the line to its neighbour; the ring has the corners of the button.
+- **In server-rendered markup** `aria-pressed` and the ring are there before the script has run. The click needs the script.
+
+`aria-pressed` that the page sets itself, on a button without `toggle`, goes to the control as before, and no click changes it. Such a button shows the ring as well.
+
+#### What it is not
+
+- **Not a value of a form.** A toggle button submits nothing. A setting that is saved with a form is an [`el-switch-field`](../switch-field/switch-field.readme.md) or an [`el-checkbox-field`](../checkbox-field/checkbox-field.readme.md).
+- **Not a button whose name changes with its state.** A button that reads "Mute" and then "Unmute" says its state with its name, and is no toggle: with `aria-pressed` on top a screen reader would announce "Unmute, pressed". Give a toggle button one name that stays ("Mute"), and let the state say the rest.
+- **Not one choice of several.** A toggle button knows nothing of its neighbours: in a row of them, any number can be pressed.
+- **Not a link.** `toggle` is ignored on a button with `href`.
 
 ## In a form
 
@@ -184,8 +222,7 @@ The element itself has no role. What takes the focus and what a screen reader an
 <!-- An icon button gets its name -->
 <el-button circle="true" aria-label="Add">+</el-button>
 
-<!-- A toggle, a button that opens something -->
-<el-button aria-pressed="true">Bold</el-button>
+<!-- A button that opens something -->
 <el-button aria-expanded="false" aria-controls="filters">Filters</el-button>
 
 <!-- Described by a text elsewhere in the page -->
@@ -198,7 +235,8 @@ The element itself has no role. What takes the focus and what a screen reader an
 | `aria-label`, `aria-description`, `aria-expanded`, `aria-haspopup`, `aria-pressed`, `aria-current` | As the same attribute, with every change. |
 | `aria-labelledby`, `aria-describedby`, `aria-controls` | As references to the elements they name. An id does not reach out of the shadow root the control is in. |
 
-- The attributes stay on the element as well, where a stylesheet can select them: `el-button[aria-pressed='true']`.
+- The attributes stay on the element as well, where a stylesheet can select them: `el-button[aria-expanded='true']`.
+- `aria-pressed` is the state of a button that stays pressed. With [`toggle`](#a-toggle-button) the button keeps that state itself, and an `aria-pressed` of the page gives way to it.
 - An empty attribute counts as not set.
 - `aria-disabled` and `aria-busy` are not passed on. The button sets them itself, from `disabled` and `loading`.
 - The elements behind an id are looked up in the document, or in the shadow root the button is used in, when the button renders. An element that comes into the page later is found once the attribute is set again.

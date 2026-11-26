@@ -16,8 +16,8 @@ export default {
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
                     'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
                     'tabs, a token-catalogue slider of cards, a list of the kit to browse (cards with an avatar, a ' +
-                    'badge and a tag, filters as removable tags with a popover to bring one back, a button group ' +
-                    'that sorts, a progress ring for the share that is shown, a progress bar for the place in the ' +
+                    'badge and a tag, filters as removable tags with a popover to bring one back, a toggle button ' +
+                    'that shows what is new only, a button group that sorts, a progress ring for the share that is shown, a progress bar for the place in the ' +
                     'list, a pagination, skeletons and a spinner while it loads, an empty state, and a drawer ' +
                     'with the details: a breadcrumb, a divider and a description list with a copy button for the ' +
                     'import path), a list of ' +
@@ -342,6 +342,7 @@ class DemoKitBrowser extends TemplateElement {
             page: 1,
             shown: [...categories],
             sort: 'category',
+            freshOnly: false,
             loading: false,
             selected: null,
         };
@@ -359,6 +360,12 @@ class DemoKitBrowser extends TemplateElement {
                 'pagination-change': (event) => {
                     this.page = event.detail.page;
                 },
+                // The toggle button says what it is now. The list shows what came last only, or all of it.
+                'button-toggle': (event) => {
+                    if (!event.target.matches('[data-fresh]')) return;
+                    this.freshOnly = event.detail.pressed;
+                    this.page = 1;
+                },
             },
             '[data-show]': {
                 click: (event) => {
@@ -368,7 +375,12 @@ class DemoKitBrowser extends TemplateElement {
                     this._setShown(categories.filter((name) => shown.includes(name)));
                 },
             },
-            '[data-reset]': { click: () => this._setShown([...categories]) },
+            '[data-reset]': {
+                click: () => {
+                    this.freshOnly = false;
+                    this._setShown([...categories]);
+                },
+            },
             '[data-reload]': { click: () => this._reload() },
             '[data-sort]': {
                 click: (event) => {
@@ -445,8 +457,12 @@ class DemoKitBrowser extends TemplateElement {
                         style="display:inline-block;width:3rem;height:3rem"
                     ></el-svg-use>
                     <h3 slot="heading" class="text-lg font-semibold">Nothing to show</h3>
-                    Every category is hidden. Bring one back, or show them all.
-                    <el-button slot="action" variant="brand" data-reset>Show every category</el-button>
+                    ${
+                        this.freshOnly && this.shown.length > 0
+                            ? 'Nothing of what is shown is new.'
+                            : 'Every category is hidden. Bring one back, or show them all.'
+                    }
+                    <el-button slot="action" variant="brand" data-reset>Show everything</el-button>
                 </el-empty-state>
             `;
         }
@@ -459,7 +475,7 @@ class DemoKitBrowser extends TemplateElement {
     }
 
     template() {
-        const shown = kit.filter((item) => this.shown.includes(item.category));
+        const shown = kit.filter((item) => this.shown.includes(item.category) && (!this.freshOnly || item.fresh));
         const items = this.sort === 'name' ? [...shown].sort((a, b) => a.tag.localeCompare(b.tag)) : shown;
         const hidden = categories.filter((name) => !this.shown.includes(name));
         const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
@@ -490,6 +506,15 @@ class DemoKitBrowser extends TemplateElement {
                     ></el-progress-ring>
                 </div>
                 <div class="flex items-center gap-3">
+                    <el-button
+                        size="small"
+                        appearance="outlined"
+                        toggle="true"
+                        pressed="${this.freshOnly ? 'true' : 'false'}"
+                        data-fresh
+                    >
+                        New only
+                    </el-button>
                     <el-button-group label="Order of the list">
                         ${sortButton('category', 'By category')} ${sortButton('name', 'A to Z')}
                     </el-button-group>

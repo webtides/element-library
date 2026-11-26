@@ -1,5 +1,6 @@
 import { TemplateElement, defineElement, html, classMap, spreadAttributes } from '@webtides/element-js';
 import style from './button.style.js';
+import Events from './button.events.js';
 
 /**
  * The ARIA attributes of the element that its control takes over. The control is what has the
@@ -54,7 +55,14 @@ const SUBMITTER_ATTRIBUTES = ['form', 'formaction', 'formenctype', 'formmethod',
  * what they do on a native button. A `click` listener of the page that calls `preventDefault()`
  * keeps the button from submitting or resetting.
  *
+ * With `toggle` the button stays pressed: a click flips `pressed`, the control says so to assistive
+ * technology (`aria-pressed`), and the button shows it. A `click` listener of the page that calls
+ * `preventDefault()` keeps the button from flipping, as it keeps it from submitting.
+ *
  * @element el-button
+ *
+ * @fires {CustomEvent<{ pressed: boolean }>} button-toggle - Fired when a click has flipped a
+ *   toggle button. `detail.pressed` is the new state. Not fired when `pressed` is set from a script.
  *
  * @slot - The button's label.
  * @slot prefix - A presentational prefix icon or similar element.
@@ -80,6 +88,10 @@ const SUBMITTER_ATTRIBUTES = ['form', 'formaction', 'formenctype', 'formmethod',
  * @property {boolean} loading - Shows a spinner and blocks interaction.
  * @property {boolean} disabled - Disables the button. Reflected to the `disabled` attribute, which is
  *   there while the button is disabled and gone while it is not.
+ * @property {boolean} toggle - The button is a toggle button: it stays pressed. A click flips
+ *   `pressed`, and the control has `aria-pressed`. Ignored when `href` is set. Default `false`.
+ * @property {boolean} pressed - Whether a toggle button is pressed. Reflected to the `pressed`
+ *   attribute of a toggle button. Without `toggle` it does nothing. Default `false`.
  * @property {'button'|'submit'|'reset'} type - Behaviour when activated. `submit` / `reset` act on
  *   the form of the button: the nearest ancestor `<form>`, or the one its `form` attribute names.
  *   Ignored when `href` is set. Default `'button'`.
@@ -130,6 +142,8 @@ export default class Button extends TemplateElement {
                 size: { reflect: true },
                 // For the platform the attribute is what disables the element, see `reflectProperty()`.
                 disabled: { reflect: true },
+                // The attribute of a toggle button says whether it is pressed, see `reflectProperty()`.
+                pressed: { reflect: true },
                 // What a form submits is text. element-js parses every attribute, so that text which
                 // reads as a number arrives as one: "1.50" as 1.5.
                 name: { parse: false },
@@ -148,6 +162,8 @@ export default class Button extends TemplateElement {
             caret: false,
             loading: false,
             disabled: false,
+            toggle: false,
+            pressed: false,
             type: 'button',
             name: '',
             value: '',
@@ -161,6 +177,21 @@ export default class Button extends TemplateElement {
     /** Whether the button renders as a link rather than a native button. */
     get isLink() {
         return !!this.href;
+    }
+
+    /**
+     * Whether the button is a toggle button: one that stays pressed. A link leads somewhere, it
+     * has no state to stay in.
+     */
+    get isToggle() {
+        return !!this.toggle && !this.isLink;
+    }
+
+    watch() {
+        return {
+            // A button that becomes a toggle gets the attribute of its state.
+            toggle: () => this.reflectProperty({ property: 'pressed', newValue: this.pressed }),
+        };
     }
 
     /**
@@ -196,6 +227,10 @@ export default class Button extends TemplateElement {
      * @param {{ property: string, newValue: unknown }} options
      */
     reflectProperty(options) {
+        if (options.property === 'pressed') {
+            this._reflectPressed(options.newValue);
+            return;
+        }
         if (options.property !== 'disabled') {
             super.reflectProperty(options);
             return;
@@ -204,6 +239,24 @@ export default class Button extends TemplateElement {
         else if (!this.hasAttribute('disabled')) this.setAttribute('disabled', 'true');
         // element-js reads an attribute that is gone as `null`. The property stays a boolean.
         if (options.newValue === null) this.disabled = false;
+    }
+
+    /**
+     * `pressed` is the attribute of a toggle button: `"true"` or `"false"`, so that the page can
+     * read the state and select by it. On a button that is no toggle the attribute says nothing,
+     * and the element does not write it there.
+     * @private
+     * @param {unknown} pressed
+     */
+    _reflectPressed(pressed) {
+        // element-js reads an attribute that is gone as `null`. The property stays a boolean.
+        if (pressed === null || pressed === undefined || pressed === '') {
+            this.pressed = false;
+            return;
+        }
+        if (!this.isToggle) return;
+        const text = pressed ? 'true' : 'false';
+        if (this.getAttribute('pressed') !== text) this.setAttribute('pressed', text);
     }
 
     afterUpdate() {
@@ -270,6 +323,14 @@ export default class Button extends TemplateElement {
                         return;
                     }
                     if (this.isLink) return;
+                    // A toggle flips once the page has had the click, and not when a listener has
+                    // prevented it: as a native checkbox takes its check mark back then.
+                    if (this.isToggle) {
+                        this._afterListeners(event, () => {
+                            this.pressed = !this.pressed;
+                            this.dispatch(Events.TOGGLE, { pressed: this.pressed });
+                        });
+                    }
                     // The control is in the shadow root, where it has no form. A submit goes through
                     // the native submit button of the element, a reset to the form of the element.
                     // Both are taken here, while the button is not disabled, and act once the page
@@ -391,7 +452,13 @@ export default class Button extends TemplateElement {
      * @returns {Object<string, string | undefined>}
      */
     _ariaAttributes() {
-        return Object.fromEntries(ARIA_ATTRIBUTES.map((name) => [name, this.getAttribute(name) || undefined]));
+        const attributes = Object.fromEntries(
+            ARIA_ATTRIBUTES.map((name) => [name, this.getAttribute(name) || undefined]),
+        );
+        // The state of a toggle button is its own. Without `toggle` the `aria-pressed` of the page
+        // goes through as it is, and a button that has neither has no `aria-pressed`.
+        if (this.isToggle) attributes['aria-pressed'] = this.pressed ? 'true' : 'false';
+        return attributes;
     }
 
     /**
@@ -481,3 +548,5 @@ export default class Button extends TemplateElement {
 export function define() {
     defineElement('el-button', Button);
 }
+
+export { Events };

@@ -124,6 +124,54 @@ const style = css`
         text-decoration: underline;
     }
 
+    /* ── Pressed ──────────────────────────────────────────────────────────── */
+
+    /* A toggle button that is pressed (aria-pressed, from the toggle property or from the page)
+       has a ring inside of its edge, in the colour of its label. The ring is a shape, so it tells
+       the button apart in every variant and appearance, and without a colour to rely on: it is a
+       border, which forced colours keep. It has the corners of the button, the joined ones of a
+       group as well, and leaves the border of the button alone: the line to a neighbour stays. */
+    .button[aria-pressed='true']::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 0.125rem solid currentColor;
+        border-radius: inherit;
+        pointer-events: none;
+    }
+
+    /* A button without a fill gets a tint of its text colour as well, one step more than under
+       the pointer. A fill is not changed: the text on it would lose contrast. */
+    :host([appearance='outlined']) .button[aria-pressed='true'],
+    :host([appearance='plain']) .button[aria-pressed='true'] {
+        background: color-mix(in srgb, currentColor 16%, transparent);
+    }
+
+    @media (hover: hover) {
+        :host([appearance='outlined']) .button[aria-pressed='true']:hover,
+        :host([appearance='plain']) .button[aria-pressed='true']:hover {
+            background: color-mix(in srgb, currentColor 20%, transparent);
+        }
+    }
+
+    :host([appearance='outlined']) .button[aria-pressed='true']:active,
+    :host([appearance='plain']) .button[aria-pressed='true']:active {
+        background: color-mix(in srgb, currentColor 28%, transparent);
+    }
+
+    /* Without a theme the focus ring is inside of the control as well. It moves further in, so a
+       pressed button with the focus shows two rings and not one that is a little wider. */
+    .button[aria-pressed='true']:focus-visible::after {
+        inset: calc(var(--el-border-width, 1px) + 0.25rem);
+    }
+
+    /* Forced colours leave the ring as the only mark: it is wider there. */
+    @media (forced-colors: active) {
+        .button[aria-pressed='true']::before {
+            border-width: 0.1875rem;
+        }
+    }
+
     /* ── Shapes ───────────────────────────────────────────────────────────── */
 
     .button--pill {

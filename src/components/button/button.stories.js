@@ -158,6 +158,44 @@ export const AsLink = {
     `,
 };
 
+export const Toggle = {
+    name: 'A toggle button',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'With `toggle` a click flips `pressed`. A pressed button has a ring inside of its edge, in every variant and appearance, and a tint where it has no fill.',
+            },
+        },
+    },
+    render: () => html`
+        <div style="display:grid;gap:1rem">
+            ${appearances.map(
+                (appearance) => html`
+                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
+                        ${variants.map(
+                            (variant) => html`
+                                <el-button toggle="true" variant="${variant}" appearance="${appearance}">Off</el-button>
+                                <el-button toggle="true" pressed="true" variant="${variant}" appearance="${appearance}">
+                                    On
+                                </el-button>
+                            `,
+                        )}
+                    </div>
+                `,
+            )}
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
+                <el-button toggle="true" appearance="outlined" circle="true" aria-label="Favourite">★</el-button>
+                <el-button toggle="true" pressed="true" appearance="outlined" circle="true" aria-label="Favourite">
+                    ★
+                </el-button>
+                <el-button toggle="true" pressed="true" appearance="outlined" pill="true">Mute</el-button>
+                <el-button toggle="true" pressed="true" appearance="outlined" disabled="true">Mute</el-button>
+            </div>
+        </div>
+    `,
+};
+
 /** What the form was submitted with, written below it. */
 const showSubmit = (event) => {
     event.preventDefault();
