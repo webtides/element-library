@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
    Uncomment headings as needed.
 -->
 
-<!-- ## Unreleased -->
-<!-- ### Added -->
-<!-- ### Changed -->
-<!-- ### Removed -->
-<!-- ### Fixed -->
+## Unreleased
+
+### Changed
+
+- It scrolls the element around it that scrolls to the top, the content of an `el-app-frame` for example, and the window where there is none. Before, it scrolled the window whatever it was in. `duration` is ignored when that element has `scroll-behavior: smooth`. ([#176](https://github.com/webtides/element-library/issues/176))
 
 ## [0.1.0] - 2026-06-03
 

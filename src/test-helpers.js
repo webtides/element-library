@@ -104,6 +104,57 @@ export async function emulateForcedColors(enabled) {
 }
 
 /**
+ * Makes the page what is printed for the tests of the surrounding `describe`: `@media print`
+ * matches, and `@media screen` does not. Taken back after the last of these tests. Chromium only.
+ *
+ * Test files share a page, so the helper fails loudly if the page does not get its own setting
+ * back.
+ * @returns {void}
+ */
+export function usePrint() {
+    beforeAll(() => emulatePrint(true));
+    afterAll(async () => {
+        await emulatePrint(false);
+        if (matchMedia('print').matches) {
+            throw new Error('usePrint: the page did not get its own setting back');
+        }
+    });
+}
+
+/**
+ * Switches the emulation of the print media type on or off.
+ * @param {boolean} enabled
+ * @returns {Promise<void>}
+ */
+export async function emulatePrint(enabled) {
+    // An empty value takes the emulation of the media type back.
+    await cdp().send('Emulation.setEmulatedMedia', { media: enabled ? 'print' : '' });
+    await nextFrame();
+}
+
+/**
+ * Gives the page the safe areas of a phone for the tests of the surrounding `describe`: the room
+ * the notch, the rounded corners and the home indicator take, which `env(safe-area-inset-*)`
+ * reads. Taken back after the last of these tests. Chromium only.
+ * @param {{ top?: number, right?: number, bottom?: number, left?: number }} insets - In pixels.
+ * @returns {void}
+ */
+export function useSafeAreaInsets(insets) {
+    beforeAll(() => emulateSafeAreaInsets(insets));
+    afterAll(() => emulateSafeAreaInsets({}));
+}
+
+/**
+ * Sets what `env(safe-area-inset-*)` reads. An empty object takes the emulation back.
+ * @param {{ top?: number, right?: number, bottom?: number, left?: number }} insets - In pixels.
+ * @returns {Promise<void>}
+ */
+export async function emulateSafeAreaInsets(insets) {
+    await cdp().send('Emulation.setSafeAreaInsetsOverride', { insets });
+    await nextFrame();
+}
+
+/**
  * Puts an element into the given states, as "Force element state" in the developer tools does:
  * `forcePseudoClasses(button, ['hover', 'active'])`. Chromium only. Use a fresh element per test:
  * after a state is taken back, `getComputedStyle()` can still report the forced style.

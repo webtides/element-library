@@ -58,6 +58,24 @@ export function focusableElements(root) {
 }
 
 /**
+ * Whether the user can move the focus to `root` or to an element inside of it, the ones in shadow
+ * roots included. It stops at the first one it finds, which `focusableElements()` does not.
+ * @param {Element} root
+ * @returns {boolean}
+ */
+export function containsFocusable(root) {
+    const visit = (parent) => {
+        for (const element of parent.children) {
+            if (element.matches(FOCUSABLE) && takesFocus(element)) return true;
+            if (element.shadowRoot && visit(element.shadowRoot)) return true;
+            if (visit(element)) return true;
+        }
+        return false;
+    };
+    return (root.matches(FOCUSABLE) && takesFocus(root)) || visit(root);
+}
+
+/**
  * @param {HTMLElement} element
  * @returns {boolean}
  */

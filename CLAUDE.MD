@@ -59,6 +59,7 @@ element-library/
 - **accordion**: Single accordion element
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
+- **app-frame**: Frame of an application: it fills the viewport and lays out a header, a footer, a navigation, an aside and the content, which scrolls; the page writes the landmarks, the stylesheet decides narrow or wide by the width of the frame (a container query per step of `wide-from`), and the regions keep clear of the notch and the home indicator
 - **avatar**: Picture of a person or a thing: an image, initials or an icon
 - **badge**: Label for a status or a count
 - **breadcrumb**: Trail from the start page to the current page: a `nav` landmark with a list of `el-breadcrumb-item`

@@ -18,6 +18,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: a closed accordion that was rendered on the server shows its header alone from the first paint. The markup of the server had the content as it is while open, the browser painted it, and the element took it away once it started: everything below the accordion jumped up with every page load, and where scripting is off the accordion was open. The stylesheet of the element now collapses the content unless the host has `open="true"`, which holds before the element starts. An accordion with `open="true"` is server-rendered open, with the line under its header and the turned chevron, and stays that way. ([#187](https://github.com/webtides/element-library/issues/187))
 - Fixed: a closed accordion that is rendered in the browser starts closed. It was rendered open and collapsed with the transition, in front of the user and with the content below it moving. ([#187](https://github.com/webtides/element-library/issues/187))
 
+### app-frame
+
+- Added: `el-app-frame`, a new component: the frame of an application. It fills what the browser shows and lays out five regions, a header, a footer, a navigation at the start side, an aside at the end side, and the content. A region the page leaves empty takes no room, and start and end follow the reading direction. ([#176](https://github.com/webtides/element-library/issues/176))
+- Added: the frame is fixed to the edges of the viewport, which move with the address bar of a phone: it is as high as what the browser shows, and no higher. The content scrolls between the header and the footer, which stay in view. The window does not scroll in a frame; `scroller` is the element that does, for a page that sets the scroll back after a change of the view.
+- Added: narrow and wide by its own width: from the width `wide-from` names (`30rem`, `40rem`, `48rem` by default, `64rem` or `80rem`) the navigation and the aside are columns beside the content, and each scrolls on its own. Below it the three are one column that scrolls. The stylesheet decides, with a container query per step, so a server-rendered frame has its layout before the script has run. `wide` reads what the stylesheet has decided.
+- Added: `--el-app-frame-navigation-size` (`16rem`) and `--el-app-frame-aside-size` (`20rem`) are the widths of the two columns.
+- Added: the page writes the landmarks: `<header slot="header">`, `<nav slot="navigation" aria-label="…">`, `<main id="…">`, `<aside slot="aside">` and `<footer slot="footer">`. The frame adds none of its own.
+- Added: the first stop of the Tab key is a link that skips to the content, with the text of `skip-label`. It is a link to the id of the `main` of the page, which works before the script has run. After it the content is in view from its start, the keys scroll it, and the Tab key goes on inside of it.
+- Added: on a phone with `viewport-fit=cover` nothing in a region lies under the notch, the rounded corners or the home indicator. The surface of a region (`::part(header)`, `::part(footer)`, …) reaches the edge of the screen, and what is in it does not. A region tells the components in it how far its surface reaches, in CSS properties that are inherited.
+- Added: a region that scrolls and has nothing in it that takes the focus is a stop of the Tab key itself, so the keyboard can scroll it in every browser.
+- Added: on paper the frame is as long as its content, which prints whole.
+- Added: lines between the regions from `--el-color-border` and `--el-border-width`. They are borders, which stay where the user forces colours, and they are there without a theme then. Without a theme the frame paints nothing.
+
 ### button
 
 - Added: `toggle`: the button is a toggle button, one that stays pressed. A click flips `pressed`, and so do the Space and the Enter key; the control has `aria-pressed` with the state, so a screen reader announces a toggle button. `pressed` is a property and an attribute the page can set and read, and a toggle button writes the attribute itself (`pressed="true"`, `"false"`). `toggle` is ignored on a button with `href`. ([#172](https://github.com/webtides/element-library/issues/172))
@@ -37,6 +50,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### list-item
 
 - Added: `el-list-item`, a new component: one row of an `el-list`, an item of its list (`role="listitem"`). It has a start (`start` slot), a title (default slot), a line under it (`description`), an end (`end`) and a control of its own (`action`). With `href` the row is a link as a whole: the title is a native link (`target` is passed on, `rel` is written with it), and its target is the whole row. A control in `action` lies on top of the link and stays a target of its own. On a touch screen a row that is a link is at least `--el-touch-target` high. `current` marks the current or the chosen row: `aria-current` (`"page"` on the link, `"true"` on a row without one), a tint, a bar at the start in the accent colour and a heavier title. The bar is a border, so it stays where the user forces colours. `mark` draws a dot in the padding at the start of the row, which does not move the texts. Its text is read in front of the title and is part of the name of the link (`mark="Unread"`). A long title breaks into more lines, inside of a word where it has to, so a text a user typed cannot widen the page. `truncate` cuts the title and the line under it after one line. The row runs no script: its link works before the element takes over, and without JavaScript in server-rendered markup. ([#192](https://github.com/webtides/element-library/issues/192))
+
+### scroll-to-top
+
+- Changed: it scrolls the element around it that scrolls to the top, the content of an `el-app-frame` for example, and the window where there is none. Before, it scrolled the window whatever it was in. `duration` is ignored when that element has `scroll-behavior: smooth`. ([#176](https://github.com/webtides/element-library/issues/176))
 
 ### segmented-field
 

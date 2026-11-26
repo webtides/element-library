@@ -2,6 +2,8 @@
 
 `scroll-to-top` is a wrapper that smoothly scrolls the page to the top. Place any `click`-emitting child element inside (e.g. `<a>` or `<button>`); when it fires a `click`, `scroll-to-top` captures it and scrolls to the top.
 
+It scrolls what scrolls it: the element around it that has more content than height and an overflow that scrolls, the content of an [`el-app-frame`](../app-frame/app-frame.readme.md) for example. Where there is none, it scrolls the window.
+
 ## How to use
 
 #### Install

@@ -4,6 +4,42 @@ import { define } from './scroll-to-top.js';
 define();
 
 describe('Feature | ScrollToTop', () => {
+    // These two come first: a test further down leaves an animation of the window running.
+    it('scrolls the element around it that scrolls, and leaves the window where it is', async () => {
+        fixtureSync(`<div style="height: 2000px">TEST</div>`);
+        const box = await fixture(`
+            <div style="height: 200px; overflow: auto">
+                <div style="height: 1000px">Long</div>
+                <el-scroll-to-top duration="1"><button>Scroll to top</button></el-scroll-to-top>
+            </div>
+        `);
+        box.scrollTop = 500;
+        window.scrollTo(0, 300);
+        const scrollOfTheWindow = window.scrollY;
+        expect(scrollOfTheWindow).not.toBe(0);
+
+        box.querySelector('button').click();
+
+        await expect.poll(() => box.scrollTop).toBe(0);
+        expect(window.scrollY).toBe(scrollOfTheWindow);
+        window.scrollTo(0, 0);
+    });
+
+    it('scrolls the window from inside an element that has an overflow but nothing to scroll', async () => {
+        fixtureSync(`<div style="height: 2000px">TEST</div>`);
+        const box = await fixture(`
+            <div style="overflow: auto">
+                <el-scroll-to-top duration="1"><button>Scroll to top</button></el-scroll-to-top>
+            </div>
+        `);
+        window.scrollTo(0, document.body.scrollHeight);
+        expect(window.scrollY).not.toBe(0);
+
+        box.querySelector('button').click();
+
+        await expect.poll(() => window.scrollY).toBe(0);
+    });
+
     it('scrolls back to the top when a click event is fired inside the element', async () => {
         // make the body actually scrollable
         fixtureSync(`<div style="height: 2000px">TEST</div>`);

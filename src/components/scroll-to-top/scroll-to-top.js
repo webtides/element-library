@@ -1,17 +1,19 @@
 import { StyledElement, defineElement } from '@webtides/element-js';
+import { scrollContainer } from '../../utils/scroll.js';
 import style from './scroll-to-top.style.js';
 
 /**
- * Wraps any click-emitting child (`<a>`, `<button>`, …) and smoothly scrolls the window
- * to the top when the child is clicked.
+ * Wraps any click-emitting child (`<a>`, `<button>`, …) and smoothly scrolls to the top when the
+ * child is clicked: the window, or the element around it that scrolls, the content of an
+ * `el-app-frame` for example.
  *
  * @element el-scroll-to-top
  *
  * @slot - Default slot. Any child that emits a `click` event will trigger the scroll.
  *
  * @property {number} duration - Duration of the easing animation in milliseconds. Ignored
- *   when the page's `html` element has `scroll-behavior: smooth` (the browser drives the
- *   scroll in that case).
+ *   when what scrolls has `scroll-behavior: smooth`, the `html` element for the window (the
+ *   browser drives the scroll in that case).
  * @property {boolean} preventDefault - When `true`, the captured click's default action is
  *   suppressed.
  */
@@ -45,19 +47,21 @@ export default class ScrollToTop extends StyledElement {
     }
 
     /**
-     * Scroll the window to the top.
+     * Scroll to the top: the element around this one that scrolls, or the window.
      * @returns {void}
      */
     scrollToTop() {
-        const htmlScroll = window
-            .getComputedStyle(document.querySelectorAll('html')[0], null)
-            .getPropertyValue('scroll-behavior');
+        const container = scrollContainer(this);
+        const target = container ?? window;
+        const behavior = getComputedStyle(container ?? document.documentElement).getPropertyValue('scroll-behavior');
 
-        if (htmlScroll === 'smooth') {
-            window.scrollTo(0, 0);
+        if (behavior === 'smooth') {
+            target.scrollTo(0, 0);
         } else {
             const duration = this.duration;
-            const difference = document.documentElement.scrollTop || document.body.scrollTop;
+            const difference = container
+                ? container.scrollTop
+                : document.documentElement.scrollTop || document.body.scrollTop;
             const startTime = performance.now();
 
             // noinspection JSAnnotator
@@ -65,7 +69,7 @@ export default class ScrollToTop extends StyledElement {
                 let normalizedTime = (timeStamp - startTime) / duration;
                 if (normalizedTime > 1) normalizedTime = 1;
 
-                window.scrollTo(0, difference * Math.cos(normalizedTime * Math.PI));
+                target.scrollTo(0, difference * Math.cos(normalizedTime * Math.PI));
                 if (normalizedTime < 1) window.requestAnimationFrame(step);
             }
             window.requestAnimationFrame(step);

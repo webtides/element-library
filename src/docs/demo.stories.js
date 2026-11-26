@@ -297,6 +297,12 @@ const kit = [
         blurb: 'Values under their names, stacked or side by side.',
         fresh: true,
     },
+    {
+        tag: 'el-app-frame',
+        category: 'Surfaces',
+        blurb: 'The frame of an application: five regions around its content.',
+        fresh: true,
+    },
 ];
 
 const PER_PAGE = 6;
