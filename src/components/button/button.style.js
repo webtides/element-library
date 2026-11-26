@@ -11,6 +11,13 @@ const style = css`
         vertical-align: middle;
     }
 
+    /* The button that opens the navigation of an el-app-frame is not there where the navigation
+       is a column beside the content. The frame says so in a property that is inherited, so this
+       holds before any script has run. Outside of a frame the button is as any other. */
+    :host([data-navigation-toggle]) {
+        display: var(--_el-context-navigation-toggle-display, inline-block);
+    }
+
     /* ── Base control ─────────────────────────────────────────────────────── */
 
     .button {

@@ -155,7 +155,36 @@ const style = css`
         border-block-start: ${line};
     }
 
-    /* The one thing that scrolls: the navigation, the content and the aside below each other. */
+    /* The navigation does not show where the frame is narrow. The script puts it into a drawer
+       there, which opens from any element with data-navigation-toggle. */
+    .navigation {
+        display: none;
+    }
+
+    /* An el-button that opens the navigation is not there where there is nothing to open: no
+       navigation, or one for the wide frame only. It reads this in its own stylesheet. */
+    .frame:not(.frame--navigation),
+    .frame[data-wide-only~='navigation'] {
+        --_el-context-navigation-toggle-display: none;
+    }
+
+    /* The drawer of the navigation: as wide as the column is, and the navigation of the page
+       brings its own padding. */
+    .drawer {
+        --el-drawer-size: var(--el-app-frame-navigation-size, 16rem);
+    }
+
+    .drawer::part(body) {
+        padding: 0;
+    }
+
+    /* A drawer hides what is in it while it is closed, but only once it has rendered. Until then
+       the navigation of the page would show in the place of the drawer, for a frame. */
+    .drawer:not(:state(connected)) {
+        display: none;
+    }
+
+    /* The one thing that scrolls: the content and the aside below each other. */
     .body {
         ${noInsets}
 
@@ -165,10 +194,6 @@ const style = css`
         /* The end of the content is the end: the page behind the frame does not move. */
         overscroll-behavior: contain;
         padding-inline: var(--_el-app-frame-start) var(--_el-app-frame-end);
-    }
-
-    .navigation {
-        border-block-end: ${line};
     }
 
     .aside {
@@ -221,6 +246,8 @@ const wideStyle = (step) => {
         @container (min-width: ${step}) {
             ${frame} {
                 --_el-app-frame-view: wide;
+                /* The navigation is a column: there is no drawer to open. */
+                --_el-context-navigation-toggle-display: none;
 
                 grid-template-columns: auto minmax(0, 1fr) auto;
                 grid-template-areas:
@@ -250,12 +277,13 @@ const wideStyle = (step) => {
             }
 
             ${frame} .navigation {
+                ${noInsets}
                 --_el-context-inset-inline-start: var(--_el-app-frame-start);
 
+                display: block;
                 grid-area: navigation;
                 inline-size: var(--el-app-frame-navigation-size, 16rem);
                 padding-inline-start: var(--_el-app-frame-start);
-                border-block-end: 0;
                 border-inline-end: ${line};
             }
 

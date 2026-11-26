@@ -6,12 +6,14 @@ import {
     accessibleRole,
     fixture,
     nextFrame,
+    oneEvent,
     useForcedColors,
     usePrint,
     useSafeAreaInsets,
 } from '../../test-helpers.js';
 import { activeElement } from '../../utils/focus.js';
 import { define } from './app-frame.js';
+import { define as defineButton } from '../button/button.js';
 import { define as defineDialog } from '../dialog/dialog.js';
 import { define as defineDrawer } from '../drawer/drawer.js';
 import { define as definePopover } from '../popover/popover.js';
@@ -20,6 +22,7 @@ import { define as defineToast } from '../toast/toast.js';
 import { define as defineScrollTo } from '../scroll-to/scroll-to.js';
 import { define as defineScrollToTop } from '../scroll-to-top/scroll-to-top.js';
 define();
+defineButton();
 defineDialog();
 defineDrawer();
 definePopover();
@@ -203,7 +206,6 @@ describe('Feature | AppFrame', () => {
 
         it('is one column that scrolls between the header and the footer where it is narrow', async () => {
             const el = await frame(regions({ lines: 60 }), { width: 400 });
-            const [, navigationTop] = box(el, 'navigation');
             const [, contentTop] = box(el, 'content');
             const [, asideTop] = box(el, 'aside');
 
@@ -212,17 +214,15 @@ describe('Feature | AppFrame', () => {
             expect(box(el, 'header')).toEqual([0, 0, 400, 51]);
             expect(box(el, 'body')).toEqual([0, 51, 400, 518]);
             expect(box(el, 'footer')).toEqual([0, 569, 400, 31]);
-            // Below each other, each as wide as the frame.
-            expect(navigationTop).toBe(51);
-            expect(contentTop).toBeGreaterThan(navigationTop);
+            // The content and the aside below each other, each as wide as the frame.
             expect(asideTop).toBeGreaterThan(contentTop);
-            expect(box(el, 'navigation')[2]).toBe(400);
+            expect(box(el, 'content')[2]).toBe(400);
             expect(box(el, 'aside')[2]).toBe(400);
 
             el.scroller.scrollTop = 300;
             await nextFrame();
 
-            expect(box(el, 'navigation')[1]).toBe(51 - 300);
+            expect(box(el, 'content')[1]).toBe(contentTop - 300);
             expect(box(el, 'header')).toEqual([0, 0, 400, 51]);
             expect(box(el, 'footer')).toEqual([0, 569, 400, 31]);
             // The regions do not scroll in themselves there.
@@ -259,7 +259,8 @@ describe('Feature | AppFrame', () => {
             expect(el.wide).toBe(false);
 
             el.parentElement.style.width = '900px';
-            await nextFrame();
+            await rendered();
+            await rendered();
             expect(el.wide).toBe(true);
             expect(box(el, 'navigation')).toEqual([0, 51, 257, 518]);
 
@@ -271,6 +272,369 @@ describe('Feature | AppFrame', () => {
             el.setAttribute('wide-from', '40rem');
             await rendered();
             expect(el.wide).toBe(false);
+        });
+    });
+
+    describe('the navigation where the frame is narrow', () => {
+        const toggleButton = `<el-button id="toggle" data-navigation-toggle circle="true" aria-label="Menu">m</el-button>`;
+        const page = ({ toggle = toggleButton, nav = '' } = {}) => `
+            <header slot="header">${toggle}</header>
+            <nav slot="navigation" aria-label="Main" style="display: block; padding: 8px">
+                <a id="nav-one" href="#one">One</a>
+                <a id="nav-two" href="#two">Two</a>
+                <button id="nav-button" type="button">No link</button>
+                ${nav}
+            </nav>
+            <main id="content-${++ids}"><p>Content</p><a id="link" href="#x">A link in the content</a></main>
+        `;
+        const narrow = (content = page(), options = {}) => frame(content, { width: 400, ...options });
+        const drawer = (el) => el.shadowRoot.querySelector('el-drawer');
+        const surface = (el) => drawer(el)?.shadowRoot.querySelector('dialog');
+        const control = (button) => button.shadowRoot.querySelector('[part="base"]');
+        const open = async (el) => {
+            await userEvent.click(el.querySelector('#toggle'));
+            await expect.poll(() => surface(el)?.matches(':modal.showing')).toBe(true);
+            await rendered();
+        };
+        const closed = (el) => expect.poll(() => !!surface(el)?.open).toBe(false);
+
+        it('does not show the navigation, and keeps the one the page wrote', async () => {
+            const el = await narrow();
+            const nav = el.querySelector('nav');
+
+            expect(nav.getBoundingClientRect().height).toBe(0);
+            expect(part(el, 'navigation')).toBeNull();
+            expect(drawer(el)).not.toBeNull();
+            // It is where the page wrote it: a child of the frame, in the slot of the navigation.
+            expect(nav.parentElement).toBe(el);
+            expect(nav.assignedSlot.closest('el-drawer')).toBe(drawer(el));
+            // The Tab key passes it: the skip link, the button, the link in the content.
+            el.parentElement.querySelector('.before').focus();
+            const stops = [];
+            for (let i = 0; i < 3; i++) {
+                await userEvent.keyboard('{Tab}');
+                stops.push(activeElement().id || activeElement().getAttribute('part') || activeElement().className);
+            }
+            expect(stops[0]).toBe('skip-link');
+            expect(activeElement()).toBe(el.querySelector('#link'));
+        });
+
+        it('opens it as a modal drawer from the start edge, with the button of the page', async () => {
+            const el = await narrow();
+            const nav = el.querySelector('nav');
+            const toggle = el.querySelector('#toggle');
+            expect(toggle.getAttribute('aria-expanded')).toBe('false');
+
+            await open(el);
+
+            const { left, top, width, height } = surface(el).getBoundingClientRect();
+            // At the left edge of the viewport, from its top to its bottom, as wide as the column.
+            expect([left, top, width, height]).toEqual([0, 0, 256, window.innerHeight]);
+            expect(surface(el).matches(':modal')).toBe(true);
+            // The navigation of the page is in it: the same element, shown now.
+            expect(el.querySelector('nav')).toBe(nav);
+            expect(nav.getBoundingClientRect().height).toBeGreaterThan(0);
+            expect(nav.getBoundingClientRect().left).toBe(0);
+            // The frame and the button say so.
+            expect(el.navigationOpen).toBe(true);
+            expect(el.getAttribute('navigation-open')).toBe('true');
+            expect(el.matches(':state(navigation-open)')).toBe(true);
+            expect(toggle.getAttribute('aria-expanded')).toBe('true');
+            expect(control(toggle).getAttribute('aria-expanded')).toBe('true');
+        });
+
+        it('comes from the right in a right-to-left page', async () => {
+            const el = await narrow(page(), { dir: 'rtl' });
+            await open(el);
+
+            expect(Math.round(surface(el).getBoundingClientRect().right)).toBe(document.documentElement.clientWidth);
+        });
+
+        it('has the name and the close button the page gives it', async () => {
+            const el = await narrow(page(), {
+                attributes: 'navigation-label="Navigation principale" close-label="Fermer"',
+            });
+            await open(el);
+
+            expect(await accessibleRole(surface(el))).toBe('dialog');
+            expect(await accessibleName(surface(el))).toBe('Navigation principale');
+            expect(await accessibleName(drawer(el).shadowRoot.querySelector('[part~="close-button"]'))).toBe('Fermer');
+        });
+
+        it('keeps the focus in the drawer', async () => {
+            const el = await narrow();
+            await open(el);
+
+            // In the navigation or on the close button of the drawer. From its last stop the Tab key
+            // goes out of the page, to the browser, and comes back into the drawer: it never gets
+            // to the page behind it.
+            const where = () => {
+                const active = activeElement();
+                if (el.querySelector('nav').contains(active) || active.getRootNode().host === drawer(el))
+                    return 'drawer';
+                return el.contains(active) && active !== el ? 'page' : 'browser';
+            };
+            expect(where()).toBe('drawer');
+            const seen = new Set();
+            for (let i = 0; i < 8; i++) {
+                await userEvent.keyboard('{Tab}');
+                seen.add(where());
+            }
+            expect(seen.has('drawer')).toBe(true);
+            expect(seen.has('page')).toBe(false);
+        });
+
+        it('closes with Escape, and gives the focus back to the button that opened it', async () => {
+            const el = await narrow();
+            const toggle = el.querySelector('#toggle');
+            await open(el);
+
+            await userEvent.keyboard('{Escape}');
+            await closed(el);
+            await rendered();
+
+            expect(el.navigationOpen).toBe(false);
+            expect(el.matches(':state(navigation-open)')).toBe(false);
+            expect(toggle.getAttribute('aria-expanded')).toBe('false');
+            expect(activeElement()).toBe(control(toggle));
+            expect(el.querySelector('nav').getBoundingClientRect().height).toBe(0);
+        });
+
+        it('closes with a click beside it, and with its close button', async () => {
+            const el = await narrow();
+
+            await open(el);
+            // A click on the backdrop has the dialog as its target, at a point outside of its box.
+            surface(el).dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 380, clientY: 300 }));
+            await closed(el);
+            expect(el.navigationOpen).toBe(false);
+
+            await open(el);
+            await userEvent.click(drawer(el).shadowRoot.querySelector('[part~="close-button"]'));
+            await closed(el);
+            expect(el.navigationOpen).toBe(false);
+        });
+
+        it('closes with the button of the page as well', async () => {
+            const el = await narrow();
+            el.navigationOpen = true;
+            await expect.poll(() => surface(el)?.matches(':modal')).toBe(true);
+
+            // The page behind a modal is inert, so the script of a page is what clicks its button.
+            el.querySelector('#toggle').click();
+            await closed(el);
+
+            expect(el.navigationOpen).toBe(false);
+        });
+
+        it('closes when the user has followed a link in it, also where the page keeps the click', async () => {
+            const el = await narrow();
+            // A single-page application: the page takes the click and changes the view itself.
+            let followed = 0;
+            el.querySelector('nav').addEventListener('click', (event) => {
+                if (event.target.matches('a')) {
+                    event.preventDefault();
+                    followed++;
+                }
+            });
+            await open(el);
+
+            await userEvent.click(el.querySelector('#nav-two'));
+            await closed(el);
+
+            expect(followed).toBe(1);
+            expect(el.navigationOpen).toBe(false);
+        });
+
+        it('stays open for a click on something in it that is no link', async () => {
+            const el = await narrow();
+            await open(el);
+
+            await userEvent.click(el.querySelector('#nav-button'));
+            await rendered();
+
+            expect(el.navigationOpen).toBe(true);
+            expect(surface(el).matches(':modal')).toBe(true);
+        });
+
+        it('opens and closes with its property, and tells the page once each time', async () => {
+            const el = await narrow();
+            const told = [];
+            el.addEventListener('app-frame-navigation-toggle', (event) => told.push(event.detail.open));
+
+            el.navigationOpen = true;
+            await expect.poll(() => surface(el)?.matches(':modal')).toBe(true);
+            el.navigationOpen = false;
+            await closed(el);
+            await rendered();
+
+            expect(told).toEqual([true, false]);
+        });
+
+        it('keeps what the drawer says of itself in the frame', async () => {
+            const el = await narrow();
+            const heard = [];
+            for (const name of ['drawer-show', 'drawer-after-show', 'drawer-hide', 'drawer-after-hide']) {
+                el.parentElement.addEventListener(name, () => heard.push(name));
+            }
+
+            await open(el);
+            await userEvent.keyboard('{Escape}');
+            await closed(el);
+            await rendered();
+
+            expect(heard).toEqual([]);
+        });
+
+        it('says on every button of the page whether it is open', async () => {
+            const el = await narrow(
+                page({
+                    toggle: `${toggleButton}<button id="second" data-navigation-toggle type="button">Menu</button>`,
+                }),
+            );
+            const second = el.querySelector('#second');
+            expect(second.getAttribute('aria-expanded')).toBe('false');
+
+            second.focus();
+            await userEvent.keyboard('{Enter}');
+            await expect.poll(() => surface(el)?.matches(':modal')).toBe(true);
+
+            expect(second.getAttribute('aria-expanded')).toBe('true');
+            expect(el.querySelector('#toggle').getAttribute('aria-expanded')).toBe('true');
+        });
+
+        it('is as wide as the page makes the navigation', async () => {
+            const el = await narrow(page(), { style: `${theme} --el-app-frame-navigation-size: 200px;` });
+            await open(el);
+
+            expect(surface(el).getBoundingClientRect().width).toBe(200);
+        });
+
+        it('leaves nothing behind when the frame gets wide while the drawer is open', async () => {
+            const el = await narrow();
+            const nav = el.querySelector('nav');
+            const told = [];
+            el.addEventListener('app-frame-navigation-toggle', (event) => told.push(event.detail.open));
+            await open(el);
+            expect(document.documentElement.style.overflow).toBe('hidden');
+
+            el.parentElement.style.width = '1000px';
+            await expect.poll(() => el.wide && !!part(el, 'navigation')).toBe(true);
+            await rendered();
+
+            // The navigation is a column, with the element the page wrote.
+            expect(drawer(el)).toBeNull();
+            // The header has the button alone, which is not there now: a line is what is left of it.
+            expect(box(el, 'navigation')).toEqual([0, 1, 257, 599]);
+            expect(el.querySelector('nav')).toBe(nav);
+            expect(nav.getBoundingClientRect().height).toBeGreaterThan(0);
+            // No drawer, no backdrop, no lock on the scroll of the page, and the frame says so.
+            expect(el.shadowRoot.querySelector('dialog')).toBeNull();
+            expect(document.documentElement.style.overflow).not.toBe('hidden');
+            expect(el.navigationOpen).toBe(false);
+            expect(el.matches(':state(navigation-open)')).toBe(false);
+            expect(told).toEqual([true, false]);
+            // The page is not inert: the pointer and the keyboard reach it.
+            const link = el.querySelector('#nav-one');
+            const { left, top, width, height } = link.getBoundingClientRect();
+            expect(document.elementFromPoint(left + width / 2, top + height / 2)).toBe(link);
+            link.focus();
+            expect(activeElement()).toBe(link);
+
+            // And narrow again, the navigation is a drawer that is closed.
+            el.parentElement.style.width = '400px';
+            await expect.poll(() => !!drawer(el)).toBe(true);
+            await rendered();
+            expect(nav.getBoundingClientRect().height).toBe(0);
+            expect(el.navigationOpen).toBe(false);
+        });
+
+        it('does not open where the navigation is a column', async () => {
+            const el = await frame(page());
+            const told = [];
+            el.addEventListener('app-frame-navigation-toggle', (event) => told.push(event.detail.open));
+
+            el.navigationOpen = true;
+            await rendered();
+            el.querySelector('#toggle').click();
+            await rendered();
+
+            expect(el.navigationOpen).toBe(false);
+            expect(drawer(el)).toBeNull();
+            expect(told).toEqual([]);
+        });
+
+        it('has no drawer for a navigation the page has for the wide frame only, or without one', async () => {
+            const wideOnly = await narrow(page(), { attributes: 'wide-only="navigation"' });
+            const none = await narrow(`<header slot="header">${toggleButton}</header><main id="none"></main>`);
+
+            for (const el of [wideOnly, none]) {
+                expect(drawer(el)).toBeNull();
+                expect(getComputedStyle(el.querySelector('#toggle')).display).toBe('none');
+                el.navigationOpen = true;
+                await rendered();
+                expect(el.navigationOpen).toBe(false);
+            }
+        });
+
+        it('gets its drawer when the navigation comes later, and loses it when it goes', async () => {
+            const el = await narrow(`<header slot="header">${toggleButton}</header><main id="later"></main>`);
+            expect(drawer(el)).toBeNull();
+
+            el.insertAdjacentHTML('beforeend', `<nav slot="navigation" aria-label="Main"><a href="#a">A</a></nav>`);
+            await expect.poll(() => !!drawer(el)).toBe(true);
+            await rendered();
+            expect(getComputedStyle(el.querySelector('#toggle')).display).toBe('inline-block');
+
+            el.querySelector('nav').remove();
+            await expect.poll(() => !!drawer(el)).toBe(false);
+        });
+    });
+
+    describe('the button for the navigation', () => {
+        const buttons = `
+            <el-button id="library" data-navigation-toggle aria-label="Menu">m</el-button>
+            <button id="native" data-navigation-toggle type="button">Menu</button>
+        `;
+        const page = `
+            <header slot="header">${buttons}</header>
+            <nav slot="navigation" aria-label="Main"><a href="#one">One</a></nav>
+            <main id="buttons-main"><p>Content</p></main>
+        `;
+
+        it('is there where the navigation is a drawer', async () => {
+            const el = await frame(page, { width: 400 });
+
+            expect(getComputedStyle(el.querySelector('#library')).display).toBe('inline-block');
+            expect(el.querySelector('#native').hidden).toBe(false);
+        });
+
+        it('is not there where the navigation is a column', async () => {
+            const el = await frame(page);
+
+            // An el-button by the stylesheet of the frame, any other element by its script.
+            expect(getComputedStyle(el.querySelector('#library')).display).toBe('none');
+            expect(el.querySelector('#native').hidden).toBe(true);
+            expect(el.querySelector('#native').getBoundingClientRect().width).toBe(0);
+        });
+
+        it('comes and goes with the width of the frame', async () => {
+            const el = await frame(page, { width: 400 });
+
+            el.parentElement.style.width = '1000px';
+            await expect.poll(() => el.querySelector('#native').hidden).toBe(true);
+            expect(getComputedStyle(el.querySelector('#library')).display).toBe('none');
+
+            el.parentElement.style.width = '400px';
+            await expect.poll(() => el.querySelector('#native').hidden).toBe(false);
+            expect(getComputedStyle(el.querySelector('#library')).display).toBe('inline-block');
+        });
+
+        it('is a button as any other outside of a frame', async () => {
+            const wrapper = await fixture(`<div><el-button data-navigation-toggle>Menu</el-button></div>`);
+            wrappers.push(wrapper);
+
+            expect(getComputedStyle(wrapper.querySelector('el-button')).display).toBe('inline-block');
         });
     });
 
@@ -454,12 +818,11 @@ describe('Feature | AppFrame', () => {
             expect(activeElement()).toBe(el.querySelector('#first'));
         });
 
-        it('leads to the content where the frame is narrow, past the navigation above it', async () => {
-            const el = await frame(
-                `<nav slot="navigation" aria-label="Main">${paragraphs(30)}</nav>
-                 <main id="below"><a id="first" href="#x">First</a>${paragraphs(40)}</main>`,
-                { width: 400 },
-            );
+        it('leads to the start of the content where the frame is narrow, wherever the column is', async () => {
+            const el = await frame(`<main id="below"><a id="first" href="#x">First</a>${paragraphs(40)}</main>`, {
+                width: 400,
+            });
+            el.scroller.scrollTop = 300;
 
             el.parentElement.querySelector('.before').focus();
             await userEvent.keyboard('{Tab}');
@@ -468,6 +831,7 @@ describe('Feature | AppFrame', () => {
 
             const top = (node) => Math.round(node.getBoundingClientRect().top);
             expect(top(el.querySelector('main'))).toBe(top(part(el, 'body')));
+            expect(activeElement()).toBe(part(el, 'content'));
         });
     });
 
@@ -561,11 +925,9 @@ describe('Feature | AppFrame', () => {
             const el = await viewportFrame(`
                 <header slot="header">
                     <el-popover><button slot="anchor" type="button">Options</button><p>Panel</p></el-popover>
-                </header>
-                <nav slot="navigation" aria-label="Main">
                     <button id="help" type="button">Help</button>
                     <el-tooltip for="help">Explains</el-tooltip>
-                </nav>
+                </header>
                 <main id="layer">
                     <el-dialog label="Dialog"><p>In the dialog</p></el-dialog>
                     ${paragraphs(40)}
@@ -805,7 +1167,7 @@ describe('Feature | AppFrame', () => {
             const content = part(el, 'content');
 
             expect(getComputedStyle(el).position).toBe('static');
-            for (const name of ['body', 'navigation', 'content', 'aside']) {
+            for (const name of ['body', 'content', 'aside']) {
                 expect(getComputedStyle(part(el, name)).overflowY).toBe('visible');
             }
             // Nothing is cut off: the content is as high as what is in it, and the frame around it
@@ -916,6 +1278,23 @@ describe('Feature | AppFrame', () => {
             );
             const results = await axe.run(el.parentElement);
             expect(results.violations).toEqual([]);
+        });
+
+        it('passes axe where the navigation is a drawer, closed and open', async () => {
+            const el = await frame(
+                `<header slot="header"><el-button id="toggle" data-navigation-toggle aria-label="Menu">m</el-button></header>
+                 <nav slot="navigation" aria-label="Main"><a href="#one">One</a></nav>
+                 <main id="axe-drawer"><h1>Title</h1><a href="#x">A link</a></main>`,
+                { width: 400 },
+            );
+            expect((await axe.run(el.parentElement)).violations).toEqual([]);
+
+            el.navigationOpen = true;
+            await expect
+                .poll(() => el.shadowRoot.querySelector('el-drawer')?.shadowRoot.querySelector('dialog.showing:modal'))
+                .not.toBeNull();
+            await rendered();
+            expect((await axe.run(el.parentElement)).violations).toEqual([]);
         });
 
         it('passes axe while the skip link shows', async () => {

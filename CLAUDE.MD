@@ -60,7 +60,7 @@ element-library/
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
 - **app-bar**: Bar at the top of a view: a start, a title that is cut with an ellipsis and can be the heading of the view (`heading-level`), and actions at its end; in the header of an `el-app-frame` its surface reaches under the status bar of a phone
-- **app-frame**: Frame of an application: it fills the viewport and lays out a header, a footer, a navigation, an aside and the content, which scrolls; the page writes the landmarks, the stylesheet decides narrow or wide by the width of the frame (a container query per step of `wide-from`), and the regions keep clear of the notch and the home indicator; `narrow-only` and `wide-only` name the regions that are there at one width only
+- **app-frame**: Frame of an application: it fills the viewport and lays out a header, a footer, a navigation, an aside and the content, which scrolls; the page writes the landmarks, the stylesheet decides narrow or wide by the width of the frame (a container query per step of `wide-from`), and the regions keep clear of the notch and the home indicator; `narrow-only` and `wide-only` name the regions that are there at one width only; where the frame is narrow the navigation is in an `el-drawer` of the frame (one slot, rendered in the region or in the drawer), opened by any element with `data-navigation-toggle`
 - **avatar**: Picture of a person or a thing: an image, initials or an icon
 - **badge**: Label for a status or a count
 - **breadcrumb**: Trail from the start page to the current page: a `nav` landmark with a list of `el-breadcrumb-item`

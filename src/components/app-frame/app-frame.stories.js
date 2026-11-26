@@ -75,6 +75,20 @@ const icon = (path) => html`
         <path d="${path}" />
     </svg>
 `;
+const menu = html`
+    <svg
+        width="1.25em"
+        height="1.25em"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+    >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+`;
 const destinations = [
     { name: 'Inbox', current: true, icon: 'M4 13h4l2 3h4l2-3h4M4 13l2.5-8h11L20 13v6H4z' },
     { name: 'Today', icon: 'M5 6h14v14H5zM5 10h14M9 3v4M15 3v4M9 14h2v2H9z' },
@@ -120,11 +134,13 @@ const application = ({ wideFrom, skipLabel, style = '' }) => html`
         wide-from="${wideFrom}"
         skip-label="${skipLabel}"
         narrow-only="footer"
-        wide-only="navigation aside"
+        navigation-label="Lists"
+        wide-only="aside"
         style="${style}"
     >
         <header slot="header">
             <el-app-bar heading-level="1">
+                <el-button slot="start" data-navigation-toggle circle="true" aria-label="Lists">${menu}</el-button>
                 Tasks
                 <el-button
                     slot="end"
@@ -213,7 +229,7 @@ export const Application = {
     parameters: {
         docs: {
             description: {
-                story: 'The frame fills the viewport. The app bar stays in view, the content scrolls below it, and the lists and the chosen task are columns beside it. Make the window narrower than the width of `wide-from`: the columns go (`wide-only="navigation aside"`), and the destinations are a bar at the lower edge (`narrow-only="footer"`).',
+                story: 'The frame fills the viewport. The app bar stays in view, the content scrolls below it, and the lists and the chosen task are columns beside it. Make the window narrower than the width of `wide-from`: the lists open as a drawer from the button in the app bar, the chosen task goes (`wide-only="aside"`), and the destinations are a bar at the lower edge (`narrow-only="footer"`).',
             },
         },
     },
@@ -225,7 +241,7 @@ export const Phone = {
     parameters: {
         docs: {
             description: {
-                story: 'The same application in a box as wide as a phone: an app bar, the content, and the destinations at the lower edge. The frame is wide or narrow by its own width, so it is narrow here whatever the window is. A frame in a box of the page has a position and a height of its own.',
+                story: 'The same application in a box as wide as a phone: an app bar with the button that opens the lists as a drawer, the content, and the destinations at the lower edge. The frame is wide or narrow by its own width, so it is narrow here whatever the window is. A frame in a box of the page has a position and a height of its own.',
             },
         },
     },

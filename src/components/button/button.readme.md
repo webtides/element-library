@@ -148,6 +148,14 @@ An [`el-toolbar`](../toolbar/toolbar.readme.md) gives its controls one size and 
 - It works at any depth: for a button in an `el-button-group` of the toolbar, and for the anchor of an `el-popover`.
 - Outside of a toolbar nothing changes.
 
+## In the frame of an application
+
+A button with `data-navigation-toggle` opens the navigation of an [`el-app-frame`](../app-frame/app-frame.readme.md) where the frame is narrow and the navigation is a drawer. Where the navigation is a column beside the content, there is nothing to open, and the button is not there. The frame says so in a CSS property that is inherited, and the button reads it in its own stylesheet: that holds before any script has run. Outside of a frame the attribute changes nothing.
+
+```html
+<el-button data-navigation-toggle circle="true" aria-label="Navigation"><svg aria-hidden="true">…</svg></el-button>
+```
+
 ## A toggle button
 
 With `toggle` the button stays pressed: "Bold" in the toolbar of an editor, "Mute", a filter above a list, the star of a favourite.

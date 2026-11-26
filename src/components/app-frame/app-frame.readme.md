@@ -44,13 +44,16 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | `wide-from` | `'30rem' \| '40rem' \| '48rem' \| '64rem' \| '80rem'` | `'48rem'` | The width of the frame from which the navigation and the aside are columns beside the content. Another value is the default. |
 | `narrow-only` | `string` | `''` | The regions that are there only where the frame is narrow: `header`, `navigation`, `aside`, `footer`, with a space between them. |
 | `wide-only` | `string` | `''` | The regions that are there only where the frame is wide, named the same way. |
+| `navigation-open` | `boolean` | `false` | Whether the drawer of the navigation is open. It is one only where the frame is narrow. Reflected to the `navigation-open` attribute. |
+| `navigation-label` | `string` | `'Navigation'` | The title of the drawer of the navigation, and its name for assistive technology. |
+| `close-label` | `string` | `'Close'` | The name of the close button of that drawer. |
 
 #### Read-only properties
 
 | Name | Type | Description |
 | --- | --- | --- |
 | `wide` | `boolean` | Whether the frame is wide. It reads what the stylesheet has decided. |
-| `scroller` | `HTMLElement` | The element that scrolls the content: the content region where the frame is wide, the one column where it is narrow. |
+| `scroller` | `HTMLElement` | The element that scrolls the content: the content region where the frame is wide, the column of the content and the aside where it is narrow. |
 
 #### Methods
 
@@ -58,36 +61,43 @@ _None._
 
 #### Events
 
-_None._
+| Name                          | Detail              | Description                                              |
+| ----------------------------- | ------------------- | -------------------------------------------------------- |
+| `app-frame-navigation-toggle` | `{ open: boolean }` | Fired when the drawer of the navigation opens or closes. |
 
 #### Slots
 
-| Name         | Description                                                              |
-| ------------ | ------------------------------------------------------------------------ |
-| (default)    | The content of the view: the `main` of the page, with an id.             |
-| `header`     | The region at the top, an app bar as a rule.                             |
-| `navigation` | The region at the start side.                                            |
-| `aside`      | The region at the end side.                                              |
-| `footer`     | The region at the lower edge: a bar of destinations, or a line of state. |
+| Name         | Description                                                                            |
+| ------------ | -------------------------------------------------------------------------------------- |
+| (default)    | The content of the view: the `main` of the page, with an id.                           |
+| `header`     | The region at the top, an app bar as a rule.                                           |
+| `navigation` | The region at the start side, and the content of the drawer where the frame is narrow. |
+| `aside`      | The region at the end side.                                                            |
+| `footer`     | The region at the lower edge: a bar of destinations, or a line of state.               |
 
 #### CSS Parts
 
-| Name         | Description                                                                               |
-| ------------ | ----------------------------------------------------------------------------------------- |
-| `base`       | The frame: the grid of the regions.                                                       |
-| `skip-link`  | The link that skips to the content. It shows while it has the focus.                      |
-| `header`     | The region at the top. Its surface reaches under the status bar of a phone.               |
-| `body`       | The navigation, the content and the aside. Where the frame is narrow, it is what scrolls. |
-| `navigation` | The region at the start side.                                                             |
-| `content`    | The region of the content. Where the frame is wide, it is what scrolls.                   |
-| `aside`      | The region at the end side.                                                               |
-| `footer`     | The region at the lower edge. Its surface reaches under the home indicator of a phone.    |
+| Name                  | Description                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| `base`                | The frame: the grid of the regions.                                                    |
+| `skip-link`           | The link that skips to the content. It shows while it has the focus.                   |
+| `header`              | The region at the top. Its surface reaches under the status bar of a phone.            |
+| `navigation`          | The region at the start side, where the frame is wide.                                 |
+| `body`                | The content and the aside. Where the frame is narrow, it is what scrolls.              |
+| `content`             | The region of the content. Where the frame is wide, it is what scrolls.                |
+| `aside`               | The region at the end side.                                                            |
+| `footer`              | The region at the lower edge. Its surface reaches under the home indicator of a phone. |
+| `drawer`              | The surface of the drawer the navigation is in where the frame is narrow.              |
+| `drawer-header`       | The header of that drawer, with its title and its close button.                        |
+| `drawer-title`        | The title of that drawer.                                                              |
+| `drawer-close-button` | The close button of that drawer.                                                       |
+| `drawer-body`         | The body of that drawer: the navigation of the page is in it.                          |
 
 #### CSS Custom Properties
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--el-app-frame-navigation-size` | `16rem` | The width of the navigation where the frame is wide. `auto` is the width of what is in it. |
+| `--el-app-frame-navigation-size` | `16rem` | The width of the navigation where the frame is wide, and of its drawer where it is narrow. `auto` is the width of what is in it. |
 | `--el-app-frame-aside-size` | `20rem` | The width of the aside where the frame is wide. |
 
 Reads `--el-color-bg` and `--el-color-fg` for its surface and its text, `--el-color-border` and `--el-border-width` for the lines between the regions, and `--el-space-2`, `--el-space-3`, `--el-radius-md`, `--el-font-size-sm`, `--el-focus-ring-width` and `--el-color-focus-ring` for the skip link.
@@ -130,7 +140,7 @@ The window does not scroll in a frame. What follows from it:
 
 ## Narrow and wide
 
-Where the frame is narrow, the navigation, the content and the aside are below each other, in one column that scrolls between the header and the footer. From the width that `wide-from` names, the three are beside each other, and each scrolls on its own.
+From the width that `wide-from` names, the navigation and the aside are columns beside the content, and each of the three scrolls on its own. Where the frame is narrow, the content and the aside are below each other, in one column that scrolls between the header and the footer, and the navigation is a drawer.
 
 ```html
 <el-app-frame wide-from="64rem">…</el-app-frame>
@@ -139,6 +149,35 @@ Where the frame is narrow, the navigation, the content and the aside are below e
 - The width is one of five steps: `30rem`, `40rem`, `48rem` (the default), `64rem` or `80rem`. A stylesheet cannot read the width of a query from a custom property, so the frame has a query for each step, and another value is the default.
 - The width is the one of the frame itself, not of the window. A frame in a box of the page is narrow in a narrow box.
 - The stylesheet alone decides. A server does not know the width, and the frame has the right layout before the script has run. `wide` reads what the stylesheet has decided.
+
+## The navigation as a drawer
+
+Where the frame is narrow, the navigation does not show. It opens as a drawer from the start edge, and the page writes it once: the same element is the column of the wide frame and the content of the drawer of the narrow one.
+
+```html
+<el-app-frame navigation-label="Lists">
+    <header slot="header">
+        <el-app-bar heading-level="1">
+            <el-button slot="start" data-navigation-toggle circle="true" aria-label="Lists">
+                <svg aria-hidden="true">…</svg>
+            </el-button>
+            Inbox
+        </el-app-bar>
+    </header>
+    <nav slot="navigation" aria-label="Lists">…</nav>
+    <main id="main">…</main>
+</el-app-frame>
+```
+
+- **The button** is any element with `data-navigation-toggle`, anywhere in the frame: in an app bar as a rule. A click opens the drawer, and the frame writes `aria-expanded` onto the button, which says whether the navigation is open.
+- **Where the navigation is a column, the button is not there.** An `el-button` reads that from the stylesheet of the frame, before any script has run. Another element is hidden by the script of the frame (`hidden`): hide it in your stylesheet where it must not show before that.
+- **The drawer** is an [`el-drawer`](../drawer/drawer.readme.md): modal, with the focus kept in it. `Escape`, its close button and a click beside it close it, and the focus goes back to the button that opened it. `navigation-label` is its title and its name, `close-label` the name of its close button.
+- **A link** the user follows in the drawer closes it, also where the page takes the click and changes the view without loading.
+- **A change of the width** while the drawer is open, a phone that is turned or a window that grows, takes the drawer away: no backdrop, no lock on the scroll and no inert page are left, and the navigation is the column.
+- `navigation-open` opens and closes the drawer from a script, and `app-frame-navigation-toggle` tells of both. `el-app-frame:state(navigation-open)` matches while it is open.
+- A navigation the page has for the wide frame only (`wide-only="navigation"`) has no drawer.
+
+Before the script has run, the stylesheet keeps the navigation from showing where the frame is narrow. The button is there and does nothing yet.
 
 ## Regions for one width
 
@@ -210,7 +249,7 @@ On paper the frame is as long as its content: it gives up its height and what sc
 
 ## Server-side rendering
 
-The frame renders on a server with `@webtides/element-js-ssr-renderer`. Its layout is its stylesheet: the regions, the width from which it is wide, and the room for the notch need no script, and nothing moves when the element takes over. The script adds the stops of the Tab key for regions without a control, and what the skip link does beyond a link.
+The frame renders on a server with `@webtides/element-js-ssr-renderer`. Its layout is its stylesheet: the regions, the width from which it is wide, and the room for the notch need no script, and nothing moves when the element takes over. The script adds the drawer of the navigation, the stops of the Tab key for regions without a control, and what the skip link does beyond a link.
 
 Without server rendering, the regions of the page are below each other until the element is defined.
 

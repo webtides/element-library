@@ -31,6 +31,8 @@ function serverRender(attributes, children) {
     const properties = {};
     if (attributes['wide-from']) properties.wideFrom = attributes['wide-from'];
     if (attributes['skip-label']) properties.skipLabel = attributes['skip-label'];
+    if (attributes['wide-only']) properties.wideOnly = attributes['wide-only'];
+    if (attributes['narrow-only']) properties.narrowOnly = attributes['narrow-only'];
     Object.assign(source, source.properties(), properties);
     const template = source.template().toString();
 
@@ -58,10 +60,17 @@ const box = (el, node) => {
 
 /** Where every region and every element of the page is, and what the lines look like. */
 function look(el) {
+    // The region of the navigation is not there where the script has put the navigation into a
+    // drawer. It did not show before either: a region that is not shown has no size.
     const parts = ['base', 'header', 'body', 'navigation', 'content', 'aside', 'footer', 'skip-link'];
+    const shown = (name) => {
+        const node = part(el, name);
+        if (!node || getComputedStyle(node).display === 'none') return [name, 'not shown'];
+        return [name, box(el, node), getComputedStyle(node).borderTopWidth];
+    };
     return {
         frame: box(el, el),
-        parts: parts.map((name) => [name, box(el, part(el, name)), getComputedStyle(part(el, name)).borderTopWidth]),
+        parts: parts.map(shown),
         page: [...el.children].map((child) => [child.localName, box(el, child)]),
         scrolls: ['body', 'content'].map((name) => getComputedStyle(part(el, name)).overflowY),
     };
@@ -91,6 +100,29 @@ describe('Feature | AppFrame | server-rendered', () => {
         expect(box(el, part(el, 'body'))).toEqual([0, 51, 400, 518]);
         expect(box(el, part(el, 'footer'))).toEqual([0, 569, 400, 31]);
         expect(getComputedStyle(part(el, 'body')).overflowY).toBe('auto');
+        // The navigation does not show, with nothing but the stylesheet: the content is first.
+        expect(getComputedStyle(part(el, 'navigation')).display).toBe('none');
+        expect(el.querySelector('nav').getBoundingClientRect().height).toBe(0);
+        expect(Math.round(el.querySelector('h1').getBoundingClientRect().top - el.getBoundingClientRect().top)).toBe(
+            51 + 21,
+        );
+    });
+
+    it('tells a button for the navigation whether there is a drawer to open, before the element is defined', () => {
+        const toggle = `<button id="toggle" data-navigation-toggle type="button">Menu</button>`;
+        const withToggle = allRegions.replace('Header</header>', `Header ${toggle}</header>`);
+        const told = (el) =>
+            getComputedStyle(el.querySelector('#toggle')).getPropertyValue('--_el-context-navigation-toggle-display');
+
+        expect(customElements.get('el-app-frame')).toBeUndefined();
+        // Narrow: nothing is said, and the button shows.
+        expect(told(mount(serverRender({}, withToggle), 400))).toBe('');
+        // Wide, without a navigation, and with one for the wide frame only: an el-button is not there.
+        expect(told(mount(serverRender({}, withToggle), 1000))).toBe('none');
+        expect(told(mount(serverRender({ 'wide-only': 'navigation' }, withToggle), 400))).toBe('none');
+        expect(
+            told(mount(serverRender({}, `<header slot="header">${toggle}</header><main id="bare"></main>`), 400)),
+        ).toBe('none');
     });
 
     it('takes the step of the page before the element is defined', () => {
@@ -138,5 +170,8 @@ describe('Feature | AppFrame | server-rendered', () => {
         for (const after of seen) expect(after).toEqual(before);
         // The script reads what the stylesheet has decided.
         expect(frames.map((el) => el.wide)).toEqual([true, false, true, true]);
+        // And where the frame is narrow, the navigation is in a drawer now, which is closed.
+        expect(frames.map((el) => !!el.shadowRoot.querySelector('el-drawer'))).toEqual([false, true, false, false]);
+        expect(frames[1].querySelector('nav').getBoundingClientRect().height).toBe(0);
     });
 });
