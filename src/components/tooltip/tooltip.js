@@ -44,6 +44,14 @@ function focusIsVisible() {
  *
  * @property {string} for - The id of the anchor: the element the tooltip explains and opens from.
  *   It is looked up in the document or the shadow root the tooltip is in.
+ * @property {Element | null} anchor - The anchor as an element, for one that an id cannot name: an
+ *   element in another tree than the tooltip. A property only, and it comes before `for`. Default
+ *   `null`.
+ * @property {'description'|'label'} type - What the tooltip is to its anchor. `'description'`
+ *   (the default): it explains the anchor, and is its description for a screen reader.
+ *   `'label'`: it shows the name the anchor already has, of a button with an icon alone for
+ *   example. The anchor is not described by it then, and the tooltip is hidden from assistive
+ *   technology, which would read the name twice.
  * @property {boolean} open - Whether the tooltip is shown. Reflected to the `open` attribute.
  * @property {'top'|'top-start'|'top-end'|'bottom'|'bottom-start'|'bottom-end'|'left'|'left-start'|'left-end'|'right'|'right-start'|'right-end'} placement -
  *   The side of the anchor the tooltip is placed at, and with `-start` or `-end` the edge of the
@@ -84,7 +92,27 @@ export default class Tooltip extends TemplateElement {
             hideDelay: 0,
             arrow: false,
             disabled: false,
+            type: 'description',
         };
+    }
+
+    /**
+     * The anchor as an element. No property of element-js: an element is nothing to compare or to
+     * keep as state.
+     * @returns {Element | null}
+     */
+    get anchor() {
+        return this._givenAnchor ?? null;
+    }
+
+    set anchor(anchor) {
+        const given = anchor instanceof Element ? anchor : null;
+        if (given === (this._givenAnchor ?? null)) return;
+        this._givenAnchor = given;
+        if (!this.isConnected) return;
+        // What opened the tooltip, a pointer or the focus, was on the anchor it had.
+        this._dismiss();
+        this._attach();
     }
 
     connected() {
@@ -123,6 +151,9 @@ export default class Tooltip extends TemplateElement {
             },
             disabled: (disabled) => {
                 if (disabled) this._dismiss();
+            },
+            type: () => {
+                if (this.isConnected) this._attach();
             },
         };
     }
@@ -165,7 +196,7 @@ export default class Tooltip extends TemplateElement {
         this._detach();
 
         const id = String(this.for ?? '');
-        const anchor = id ? (this.getRootNode().getElementById?.(id) ?? null) : null;
+        const anchor = this.anchor ?? (id ? (this.getRootNode().getElementById?.(id) ?? null) : null);
         if (!anchor) {
             // Nothing to be placed at.
             if (this.open) this.open = false;
@@ -173,7 +204,13 @@ export default class Tooltip extends TemplateElement {
         }
 
         this._anchor = anchor;
-        this._describe(anchor, true);
+        // A tooltip that shows the name of its anchor is for the eye: the anchor has that name
+        // already, and a screen reader would read it a second time.
+        const isLabel = this.type === 'label';
+        if (isLabel) this.setAttribute('aria-hidden', 'true');
+        else this.removeAttribute('aria-hidden');
+        this._describes = !isLabel;
+        if (this._describes) this._describe(anchor, true);
 
         this._anchorListeners = new AbortController();
         const options = { signal: this._anchorListeners.signal };
@@ -190,7 +227,7 @@ export default class Tooltip extends TemplateElement {
     _detach() {
         this._anchorListeners?.abort();
         this._anchorListeners = undefined;
-        if (this._anchor) this._describe(this._anchor, false);
+        if (this._anchor && this._describes) this._describe(this._anchor, false);
         this._anchor = undefined;
     }
 

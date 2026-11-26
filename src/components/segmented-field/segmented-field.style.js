@@ -18,6 +18,23 @@ const style = css`
             display: flex;
             align-self: flex-start;
             max-width: 100%;
+
+            /* The size of the options: the one of the field, from the size module. */
+            --_el-segment-height: var(--_el-size-height);
+            --_el-segment-padding-block: var(--_el-size-padding-block);
+            --_el-segment-padding-inline: var(--_el-size-padding-inline);
+            --_el-segment-font-size: var(--_el-size-font-size);
+        }
+
+        /* A container that gives its controls one size, a toolbar, says so in properties that are
+           inherited (see sizeContextStyle()). The field reads them while the page has not set a
+           size on the field itself: the template marks the row then. Outside of such a container
+           they are not set, and the size is the one of the field. */
+        .options--inherit-size {
+            --_el-segment-height: var(--_el-context-size-height, var(--_el-size-height));
+            --_el-segment-padding-block: var(--_el-context-size-padding-block, var(--_el-size-padding-block));
+            --_el-segment-padding-inline: var(--_el-context-size-padding-inline, var(--_el-size-padding-inline));
+            --_el-segment-font-size: var(--_el-context-size-font-size, var(--_el-size-font-size));
         }
 
         /* The label is the hit area. It has no gap and no room of its own: the segment fills it,
@@ -56,12 +73,12 @@ const style = css`
                into the page, where nothing has said so. */
             box-sizing: border-box;
             min-width: 0;
-            min-height: var(--_el-size-height);
-            padding: var(--_el-size-padding-block) var(--_el-size-padding-inline);
+            min-height: var(--_el-segment-height);
+            padding: var(--_el-segment-padding-block) var(--_el-segment-padding-inline);
             border: var(--el-border-width, 1px) solid var(--el-color-border, currentColor);
             color: var(--el-color-fg, inherit);
             font-family: var(--el-font-family, inherit);
-            font-size: var(--_el-size-font-size);
+            font-size: var(--_el-segment-font-size);
             font-weight: 600;
             line-height: var(--el-line-height, 1.5);
             text-align: center;

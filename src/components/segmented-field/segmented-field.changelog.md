@@ -22,3 +22,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - `size` (`small`, `medium`, `large`): an option is as high as an `el-button` of that size. On a touch screen it is at least `--el-touch-target` high and wide.
 - The look is the stylesheet reading the native radios. A server-rendered field does not change when the element takes over, and it submits its value before the script has run.
 - `label-screen-reader-only` hides the label from the eye and keeps it as the name of the group. The field hides it with its own stylesheet, so it works on a page without an `sr-only` class.
+- In a container that gives its controls a size, an `el-toolbar`, the field takes it from there, while the page has not set `size` on the field itself. ([#194](https://github.com/webtides/element-library/issues/194))

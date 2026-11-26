@@ -112,6 +112,7 @@ element-library/
 - **tag-field**: List of short texts the user writes: a text input that turns what is entered into `el-tag` entries under one name
 - **textarea-field**: Textarea input
 - **toast**: Region where toasts appear: a stack of notifications at an edge of the viewport (a native popover while it has toasts), with `toast()` to show one
+- **toolbar**: Row of controls over a list or a view: `role="toolbar"`, one size and one appearance for its controls (inherited CSS properties), the arrow keys between them, a group at the end, tooltips for the buttons with an icon alone
 - **tooltip**: Text that explains its anchor, on hover and keyboard focus (the element is a native popover, placed with Floating UI)
 - **transition-classes**: CSS transition helper
 
@@ -192,9 +193,9 @@ export default [hostStyle(), sizeStyle(), variantsStyle(), appearanceStyle('.but
 ```
 
 - **`host`**: the `hidden` attribute, and `box-sizing: border-box` inside a shadow root.
-- **`size`**: resolves the `size` attribute (`small` / `medium` / `large`) to internal properties.
+- **`size`**: resolves the `size` attribute (`small` / `medium` / `large`) to internal properties. `sizeContextStyle()` is the other side: a container (`el-toolbar`) says its size to the controls inside of it, in inherited properties (`--_el-context-size-*`).
 - **`variants`**: resolves the `variant` attribute (`neutral` / `brand` / `success` / `warning` / `danger`) to the colours of five roles.
-- **`appearance`**: paints those colours on a surface as `filled`, `outlined` or `plain`.
+- **`appearance`**: paints those colours on a surface as `filled`, `outlined` or `plain`. `appearanceContextStyle()` is the other side for a container: one inherited switch per appearance (`--_el-context-appearance-plain`, `-outlined`), set to nothing or not set.
 - **`form-control`**: the layout of a field around its control (label, help, `.field`, error) and the look of those texts. Every field renders into the page and composes it for its own tag, together with `host`; `form-field.style.js` is the stylesheet of `el-form-field` alone. Every rule of the module names the host itself: a rule nested in `:host` does not reach into a shadow root in every browser that knows nesting, should a field compose it for one. A subclass does not get the stylesheet of its parent class (its `styles` replace it), and a rule for the tag of another field reaches that field only on a page that has both. The mark of a touched field (`.validity`) does not add to the height of the row: a negative margin gives the height of its line back, so a field is as high after it was left as before.
 - **`choice-group`**: a group of choices in a field (`el-radio-field`, `el-checkbox-group-field`, `el-rating-field`, `el-segmented-field`): the fieldset as the column of the field, an option (`.option`) as the label and hit area of its native radio or checkbox, and that control hidden from the eye, with the keyboard focus on the element after it. The layout of `.options` and what is drawn in the place of a control stay with the field.
 - **`arrow`**: the arrow of a floating surface (popover, tooltip), on the edge that faces the anchor. Its argument is the surface, not the host; `placeAtAnchor()` in `src/utils/floating.js` sets the `data-placement` it selects by. Only the two sides of the arrow that stick out have a border. The other two have no width: a transparent colour would be replaced when a user forces colours.
@@ -207,6 +208,7 @@ Rules:
 2. **Reflect the attribute**: the modules select the host by attribute, so the component declares `variant`, `appearance` and `size` with `reflect: true`.
 3. **Internal properties**: what a module sets on the host starts with `--_el-`. These are not tokens; themes set `--el-*` only.
 4. **Component styles are in no cascade layer**: element-js adopts the stylesheets of the page into every shadow root, where a component in a layer would lose against any rule of the page that is in none.
+5. **A container tells its controls in inherited properties, and never writes to them.** A control reads the context in its own stylesheet, on the element it paints, and falls back to its own value (`var(--_el-context-size-height, var(--_el-size-height))`): the look is the same before and after the script. It reads the context only while the page has given it no value of its own. A stylesheet cannot ask that, because element-js writes the defaults onto the element: the control remembers which attributes were there when it connected, before `super.connectedCallback()`, and marks the element it paints from its template (`button--inherit-size` of `el-button`). On the server no default has been written, so `hasAttribute()` is the answer there.
 
 ### Stylesheets for the Page
 

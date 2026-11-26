@@ -1793,6 +1793,140 @@ describe('Feature | Button', () => {
         });
     });
 
+    describe('in a container that gives its controls a size and an appearance', () => {
+        const control = (el) => el.shadowRoot.querySelector('[part="base"]');
+        const rendered = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+        const marks = (el) => ({
+            size: control(el).classList.contains('button--inherit-size'),
+            appearance: control(el).classList.contains('button--inherit-appearance'),
+        });
+        // What a container says to the controls inside of it: small, and plain.
+        const context = `
+            --_el-context-size-height: 30px; --_el-context-size-padding-block: 2px;
+            --_el-context-size-padding-inline: 6px; --_el-context-size-font-size: 12px;
+            --_el-context-appearance-plain: ;
+            --el-color-fg: rgb(10, 10, 10); --el-color-bg-muted: rgb(230, 230, 230);
+        `;
+        const TRANSPARENT = 'rgba(0, 0, 0, 0)';
+
+        it('takes them while the page has given it none', async () => {
+            const wrapper = await fixture(`<div style="${context}"><el-button>Save</el-button></div>`);
+            const el = wrapper.firstElementChild;
+            const style = getComputedStyle(control(el));
+
+            expect(marks(el)).toEqual({ size: true, appearance: true });
+            expect(sizeOf(control(el)).height).toBe(30);
+            expect([style.paddingTop, style.paddingLeft, style.fontSize]).toEqual(['2px', '6px', '12px']);
+            expect([style.backgroundColor, style.color]).toEqual([TRANSPARENT, 'rgb(10, 10, 10)']);
+            // Its own attributes say what they said before.
+            expect([el.getAttribute('size'), el.getAttribute('appearance')]).toEqual(['medium', 'filled']);
+        });
+
+        it('keeps what the page has given it, the defaults as well', async () => {
+            const wrapper = await fixture(`
+                <div style="${context} --el-control-height: 40px">
+                    <el-button size="medium" appearance="filled">Save</el-button>
+                    <el-button size="large">Save</el-button>
+                    <el-button appearance="outlined">Save</el-button>
+                </div>
+            `);
+            const [both, size, appearance] = wrapper.children;
+
+            expect(marks(both)).toEqual({ size: false, appearance: false });
+            expect(marks(size)).toEqual({ size: false, appearance: true });
+            expect(marks(appearance)).toEqual({ size: true, appearance: false });
+            expect(getComputedStyle(control(both)).backgroundColor).toBe('rgb(230, 230, 230)');
+            expect(getComputedStyle(control(both)).minHeight).toBe('40px');
+            expect(getComputedStyle(control(size)).minHeight).toBe('50px');
+            expect(getComputedStyle(control(size)).backgroundColor).toBe(TRANSPARENT);
+        });
+
+        it('keeps what a script has given it before it was connected', async () => {
+            const wrapper = await fixture(`<div style="${context} --el-control-height: 40px"></div>`);
+            const el = document.createElement('el-button');
+            el.textContent = 'Save';
+            el.size = 'medium';
+            wrapper.append(el);
+            await rendered();
+
+            expect(marks(el)).toEqual({ size: false, appearance: true });
+            expect(getComputedStyle(control(el)).minHeight).toBe('40px');
+        });
+
+        it('keeps what it is given later, from a script or as an attribute', async () => {
+            const wrapper = await fixture(
+                `<div style="${context}"><el-button>a</el-button><el-button>b</el-button></div>`,
+            );
+            const [byProperty, byAttribute] = wrapper.children;
+
+            byProperty.appearance = 'outlined';
+            byAttribute.setAttribute('size', 'medium');
+            await rendered();
+            expect(marks(byProperty)).toEqual({ size: true, appearance: false });
+            expect(marks(byAttribute)).toEqual({ size: false, appearance: true });
+
+            // And when it goes back to the default.
+            byProperty.appearance = 'filled';
+            await rendered();
+            expect(marks(byProperty)).toEqual({ size: true, appearance: false });
+            expect(getComputedStyle(control(byProperty)).backgroundColor).toBe('rgb(230, 230, 230)');
+        });
+
+        it('is what it is without a container: the marks change nothing there', async () => {
+            const wrapper = await fixture(`
+                <div style="--el-color-fg: rgb(10, 10, 10); --el-color-bg-muted: rgb(230, 230, 230); --el-control-height: 40px; --el-space-2: 8px; --el-space-4: 16px">
+                    <el-button>Save</el-button>
+                    <el-button size="medium" appearance="filled">Save</el-button>
+                </div>
+            `);
+            const [marked, own] = wrapper.children;
+            const look = (el) => {
+                const { backgroundColor, borderTopColor, color, minHeight, paddingTop, paddingLeft, fontSize } =
+                    getComputedStyle(control(el));
+                return [
+                    backgroundColor,
+                    borderTopColor,
+                    color,
+                    minHeight,
+                    paddingTop,
+                    paddingLeft,
+                    fontSize,
+                    sizeOf(control(el)),
+                ];
+            };
+
+            expect(marks(marked)).toEqual({ size: true, appearance: true });
+            expect(look(marked)).toEqual(look(own));
+            expect(look(marked).slice(0, 4)).toEqual([
+                'rgb(230, 230, 230)',
+                'rgba(0, 0, 0, 0)',
+                'rgb(10, 10, 10)',
+                '40px',
+            ]);
+
+            // One at a time: forcing a state on the second takes it from the first.
+            await forcePseudoClasses(control(own), ['hover']);
+            const ownHover = getComputedStyle(control(own)).filter;
+            await forcePseudoClasses(control(marked), ['hover']);
+            expect(getComputedStyle(control(marked)).filter).toBe(ownHover);
+            expect(getComputedStyle(control(marked)).backgroundColor).toBe('rgb(230, 230, 230)');
+        });
+
+        it('marks the control in the markup a server renders, by the attributes of the page', () => {
+            // A server does not run the lifecycle: the element never writes its defaults there.
+            const source = document.createElement('el-button');
+            Object.assign(source, source.properties());
+            expect(source.template().toString()).toMatch(/button--inherit-size button--inherit-appearance/);
+
+            source.setAttribute('size', 'medium');
+            expect(source.template().toString()).not.toMatch(/button--inherit-size/);
+            expect(source.template().toString()).toMatch(/button--inherit-appearance/);
+        });
+    });
+
     describe('on a touch screen', () => {
         useTouchScreen();
 

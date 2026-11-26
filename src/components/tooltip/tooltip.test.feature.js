@@ -7,6 +7,7 @@ import {
     aTimeout,
     oneEvent,
     accessibleDescription,
+    accessibleName,
     accessibleRole,
     useForcedColors,
 } from '../../test-helpers.js';
@@ -246,6 +247,121 @@ describe('Feature | Tooltip', () => {
             await untilShown(el);
             expect(late.getAttribute('aria-describedby')).toBe(el.id);
             expect(centreX(el)).toBeCloseTo(centreX(late), 0);
+        });
+    });
+
+    describe('an anchor that is given as an element', () => {
+        // The tooltip is in the shadow root of another element, where the id of the anchor is not known.
+        const acrossTrees = async (attrs = 'show-delay="0"') => {
+            await userEvent.hover(away);
+            const wrapper = await fixture(`
+                <div style="position: fixed; top: 300px; left: 150px">
+                    <button class="before" style="position: fixed; top: 0; left: 40px">Before</button>
+                    <button class="anchor" aria-label="Reload" style="width: 100px; height: 30px">R</button>
+                    <div class="host"></div>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            const root = wrapper.querySelector('.host').attachShadow({ mode: 'open' });
+            root.innerHTML = `<el-tooltip ${attrs}>Reload</el-tooltip>`;
+            const el = root.querySelector('el-tooltip');
+            await settled();
+            return { el, anchor: wrapper.querySelector('.anchor'), before: wrapper.querySelector('.before') };
+        };
+
+        it('opens from that element, with the pointer and with the focus of the keyboard', async () => {
+            const { el, anchor, before } = await acrossTrees();
+            expect(el.anchor).toBeNull();
+
+            el.anchor = anchor;
+            expect(el.anchor).toBe(anchor);
+
+            await userEvent.hover(anchor);
+            await untilShown(el);
+            // Above the anchor, in the middle of it.
+            expect(Math.round(centreX(el))).toBe(Math.round(centreX(anchor)));
+            expect(rect(el).bottom).toBeLessThanOrEqual(rect(anchor).top);
+
+            await userEvent.hover(away);
+            await untilHidden(el);
+
+            before.focus();
+            await userEvent.tab();
+            await untilShown(el);
+        });
+
+        it('comes before the id in for, and gives way to it again when it is taken back', async () => {
+            const { el, anchor, wrapper } = await tooltipFixture();
+            const other = document.createElement('button');
+            other.textContent = 'Other';
+            wrapper.append(other);
+
+            el.anchor = other;
+            expect(anchor.hasAttribute('aria-describedby')).toBe(false);
+            expect(other.getAttribute('aria-describedby')).toBe(el.id);
+
+            el.anchor = null;
+            expect(other.hasAttribute('aria-describedby')).toBe(false);
+            expect(anchor.getAttribute('aria-describedby')).toBe(el.id);
+        });
+
+        it('closes when the anchor changes', async () => {
+            const { el, anchor } = await acrossTrees();
+            el.anchor = anchor;
+            el.show();
+            await untilShown(el);
+
+            el.anchor = null;
+            await untilHidden(el);
+            expect(el.open).toBe(false);
+        });
+    });
+
+    describe('a tooltip that shows the name of its anchor', () => {
+        it('does not describe the anchor, and is hidden from assistive technology', async () => {
+            const { el, anchor } = await tooltipFixture({
+                attrs: 'show-delay="0" type="label"',
+                text: 'Reload',
+                anchor: (id) => `<button id="${id}" aria-label="Reload" style="width: 100px; height: 30px">R</button>`,
+            });
+
+            expect(anchor.hasAttribute('aria-describedby')).toBe(false);
+            expect(await accessibleName(anchor)).toBe('Reload');
+            expect(await accessibleDescription(anchor)).toBe('');
+            expect(el.getAttribute('aria-hidden')).toBe('true');
+
+            // It opens as every tooltip does.
+            await userEvent.hover(anchor);
+            await untilShown(el);
+            expect(el.shadowRoot.querySelector('[part="body"]').getBoundingClientRect().width).toBeGreaterThan(0);
+        });
+
+        it('describes the anchor again when the type goes back to a description', async () => {
+            const { el, anchor } = await tooltipFixture({ attrs: 'show-delay="0" type="label"' });
+            expect(anchor.hasAttribute('aria-describedby')).toBe(false);
+
+            el.type = 'description';
+            await settled();
+            expect(anchor.getAttribute('aria-describedby')).toBe(el.id);
+            expect(el.hasAttribute('aria-hidden')).toBe(false);
+
+            el.type = 'label';
+            await settled();
+            expect(anchor.hasAttribute('aria-describedby')).toBe(false);
+            expect(el.getAttribute('aria-hidden')).toBe('true');
+        });
+
+        it('has no detectable a11y violations while it is open', async () => {
+            const { el, anchor, wrapper } = await tooltipFixture({
+                attrs: 'show-delay="0" type="label"',
+                text: 'Reload',
+                anchor: (id) => `<button id="${id}" aria-label="Reload" style="width: 100px; height: 30px">R</button>`,
+            });
+            await userEvent.hover(anchor);
+            await untilShown(el);
+
+            const results = await axe.run(wrapper);
+            expect(results.violations.map((violation) => violation.id)).toEqual([]);
         });
     });
 

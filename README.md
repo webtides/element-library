@@ -113,6 +113,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | tag-field            | A list of entries the user writes, as tags under one name                       | `0.1.0` |
 | textarea-field       |                                                                                 | `0.1.0` |
 | toast                | The region where toasts appear: a stack of notifications at an edge             | `0.1.0` |
+| toolbar              | The controls over a list or a view, with one size, one look and the arrow keys  | `0.1.0` |
 | tooltip              | A short text that explains its anchor, for the pointer and the keyboard         | `0.1.0` |
 | transition-classes   | An element that applies classes for various stages of a transition              | `0.1.0` |
 

@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `anchor`: the anchor as an element, for one that an id cannot name: an element in another tree than the tooltip, the light DOM of a component whose shadow root the tooltip is in. A property only, and it comes before `for`. ([#194](https://github.com/webtides/element-library/issues/194))
+- `type` (`'description'` by default, or `'label'`): a tooltip of the type `label` shows the name its anchor already has, of a button with an icon alone for example. It does not describe the anchor (`aria-describedby` is not written) and is hidden from assistive technology, which would read the name twice. ([#194](https://github.com/webtides/element-library/issues/194))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

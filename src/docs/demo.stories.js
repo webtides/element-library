@@ -16,8 +16,9 @@ export default {
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
                     'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
                     'tabs, a token-catalogue slider of cards, a list of the kit to browse (cards with an avatar, a ' +
-                    'badge and a tag, filters as removable tags with a popover to bring one back, a toggle button ' +
-                    'that shows what is new only, a button group that sorts, a progress ring for the share that is shown, a progress bar for the place in the ' +
+                    'badge and a tag, filters as removable tags with a popover to bring one back, a toolbar over ' +
+                    'the list (a toggle button that shows what is new only, a segmented field that sorts, a ' +
+                    'button group that goes a page back and on, and a reload button with an icon alone), a progress ring for the share that is shown, a progress bar for the place in the ' +
                     'list, a pagination, skeletons and a spinner while it loads, an empty state, and a drawer ' +
                     'with the details: a breadcrumb, a divider and a description list with a copy button for the ' +
                     'import path), a list of ' +
@@ -267,6 +268,12 @@ const kit = [
     { tag: 'el-dropdown', category: 'Navigation', blurb: 'A menu behind a trigger.' },
     { tag: 'el-pagination', category: 'Navigation', blurb: 'The way through a list in pages.' },
     { tag: 'el-breadcrumb', category: 'Navigation', blurb: 'The trail from the start page to this one.', fresh: true },
+    {
+        tag: 'el-toolbar',
+        category: 'Navigation',
+        blurb: 'The controls over a list, with one size and the arrow keys.',
+        fresh: true,
+    },
     { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
     { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.' },
     { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },
@@ -367,6 +374,12 @@ class DemoKitBrowser extends TemplateElement {
                 'pagination-change': (event) => {
                     this.page = event.detail.page;
                 },
+                // The order of the list is a field of the toolbar, and reports its value as every field.
+                'input-change': (event) => {
+                    if (!event.target.matches('[data-sort]')) return;
+                    this.sort = event.detail;
+                    this.page = 1;
+                },
                 // The toggle button says what it is now. The list shows what came last only, or all of it.
                 'button-toggle': (event) => {
                     if (!event.target.matches('[data-fresh]')) return;
@@ -389,10 +402,10 @@ class DemoKitBrowser extends TemplateElement {
                 },
             },
             '[data-reload]': { click: () => this._reload() },
-            '[data-sort]': {
+            // The two buttons of the toolbar that go a page back and a page on.
+            '[data-step]': {
                 click: (event) => {
-                    this.sort = event.currentTarget.dataset.sort;
-                    this.page = 1;
+                    this.page += Number(event.currentTarget.dataset.step);
                 },
             },
             // An entry of the breadcrumb in the drawer leads back into the list: to the whole kit, or
@@ -487,19 +500,6 @@ class DemoKitBrowser extends TemplateElement {
         const hidden = categories.filter((name) => !this.shown.includes(name));
         const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
         const selected = this.selected;
-        // The order that is chosen is the filled button of the group, and the one that is pressed.
-        const sortButton = (sort, text) => html`
-            <el-button
-                size="small"
-                variant="${this.sort === sort ? 'brand' : 'neutral'}"
-                appearance="${this.sort === sort ? 'filled' : 'outlined'}"
-                aria-pressed="${this.sort === sort ? 'true' : 'false'}"
-                data-sort="${sort}"
-            >
-                ${text}
-            </el-button>
-        `;
-
         return html`
             <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
                 <div class="flex items-center gap-3">
@@ -512,31 +512,30 @@ class DemoKitBrowser extends TemplateElement {
                         style="--el-progress-ring-size:1.75rem;--el-progress-ring-track-width:0.25rem"
                     ></el-progress-ring>
                 </div>
-                <div class="flex items-center gap-3">
-                    <el-button
-                        size="small"
-                        appearance="outlined"
-                        toggle="true"
-                        pressed="${this.freshOnly ? 'true' : 'false'}"
-                        data-fresh
-                    >
+                <!-- The controls of the list: a toolbar gives them one size and one appearance, and
+                     the arrow keys. The two buttons with an icon alone show their names as tooltips. -->
+                <el-toolbar label="The list of the kit" size="small" appearance="outlined">
+                    <el-button toggle="true" pressed="${this.freshOnly ? 'true' : 'false'}" data-fresh>
                         New only
                     </el-button>
-                    <el-button-group label="Order of the list">
-                        ${sortButton('category', 'By category')} ${sortButton('name', 'A to Z')}
-                    </el-button-group>
+                    <el-segmented-field
+                        name="sort"
+                        label="Order of the list"
+                        label-screen-reader-only="true"
+                        value="${this.sort}"
+                        data-sort
+                        .options="${[
+                            { value: 'category', label: 'By category' },
+                            { value: 'name', label: 'A to Z' },
+                        ]}"
+                    ></el-segmented-field>
                     <el-divider orientation="vertical"></el-divider>
-                    <el-button
-                        id="demo-kit-reload"
-                        appearance="outlined"
-                        circle="true"
-                        aria-label="Reload the list"
-                        data-reload
-                    >
-                        ↻
-                    </el-button>
-                </div>
-                <el-tooltip for="demo-kit-reload" placement="left">Asks the server for the list again</el-tooltip>
+                    <el-button-group slot="end" label="Pages of the list">
+                        <el-button aria-label="Page before" disabled="${this.page <= 1}" data-step="-1">‹</el-button>
+                        <el-button aria-label="Page after" disabled="${this.page >= pages}" data-step="1">›</el-button>
+                    </el-button-group>
+                    <el-button slot="end" circle="true" aria-label="Reload the list" data-reload>↻</el-button>
+                </el-toolbar>
             </div>
             <p class="opacity-70 mb-4 text-sm">
                 A part of what is in the box. Hide a category, or look at the details.

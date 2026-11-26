@@ -55,6 +55,9 @@ const SUBMITTER_ATTRIBUTES = ['form', 'formaction', 'formenctype', 'formmethod',
  * what they do on a native button. A `click` listener of the page that calls `preventDefault()`
  * keeps the button from submitting or resetting.
  *
+ * In a container that gives its controls a size and an appearance, an `el-toolbar`, the button
+ * takes them from it, while the page has not set `size` or `appearance` on the button itself.
+ *
  * With `toggle` the button stays pressed: a click flips `pressed`, the control says so to assistive
  * technology (`aria-pressed`), and the button shows it. A `click` listener of the page that calls
  * `preventDefault()` keeps the button from flipping, as it keeps it from submitting.
@@ -111,7 +114,14 @@ export default class Button extends TemplateElement {
     static formAssociated = true;
 
     static get observedAttributes() {
-        return [...ARIA_ATTRIBUTES, ...Object.keys(ARIA_RELATIONS), ...SUBMITTER_ATTRIBUTES, 'disabled'];
+        return [
+            ...ARIA_ATTRIBUTES,
+            ...Object.keys(ARIA_RELATIONS),
+            ...SUBMITTER_ATTRIBUTES,
+            'disabled',
+            'size',
+            'appearance',
+        ];
     }
 
     /**
@@ -127,6 +137,19 @@ export default class Button extends TemplateElement {
      * @type {Node | undefined}
      */
     _keydownRoot = undefined;
+
+    /**
+     * Which of `size` and `appearance` the page has set on the button itself, see `_isOwn()`.
+     * @private
+     * @type {Set<string> | undefined}
+     */
+    _ownLook = undefined;
+
+    /**
+     * Whether the button is writing a property to its attribute right now, see `reflectProperty()`.
+     * @private
+     */
+    _reflecting = false;
 
     constructor() {
         super({
@@ -174,6 +197,34 @@ export default class Button extends TemplateElement {
         };
     }
 
+    connectedCallback() {
+        // Before element-js writes the defaults onto the element: after that, every button has a
+        // `size` and an `appearance` attribute, and nothing says who wrote them. A framework may
+        // have set them as properties before the element was connected.
+        this._ownLook ??= new Set(
+            ['size', 'appearance'].filter((name) => this.hasAttribute(name) || Object.hasOwn(this, name)),
+        );
+        super.connectedCallback();
+    }
+
+    /**
+     * Whether the page has given the button a `size` or an `appearance` of its own. A button
+     * without one takes it from a container that gives one to its controls, a toolbar. The
+     * template marks the control with the answer, and the stylesheet reads the mark.
+     *
+     * On the server no attribute has been written by the element: the ones that are there are
+     * the ones of the page.
+     * @private
+     * @param {'size' | 'appearance'} name
+     * @returns {boolean}
+     */
+    _isOwn(name) {
+        if (!this._ownLook) return !!this.hasAttribute?.(name);
+        // A value that is not the default was set by someone: the watcher has not run yet when the
+        // button renders with a value it has just got from a script.
+        return this._ownLook.has(name) || this[name] !== this.properties()[name];
+    }
+
     /** Whether the button renders as a link rather than a native button. */
     get isLink() {
         return !!this.href;
@@ -191,6 +242,10 @@ export default class Button extends TemplateElement {
         return {
             // A button that becomes a toggle gets the attribute of its state.
             toggle: () => this.reflectProperty({ property: 'pressed', newValue: this.pressed }),
+            // A size or an appearance that is set later, as an attribute or from a script, is the
+            // button's own from then on.
+            size: () => this._ownLook?.add('size'),
+            appearance: () => this._ownLook?.add('appearance'),
         };
     }
 
@@ -208,6 +263,16 @@ export default class Button extends TemplateElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'disabled') {
             if (newValue === 'false' || newValue === '') this.removeAttribute('disabled');
+            return;
+        }
+        if (name === 'size' || name === 'appearance') {
+            // The page has written the attribute, after the button was connected: the size or the
+            // appearance is the button's own from now on, also when it is the default. The button
+            // writes the two itself as well, which says nothing.
+            if (this._ownLook && !this._reflecting && newValue !== null && !this._ownLook.has(name)) {
+                this._ownLook.add(name);
+                if (this.$refs?.control) this.requestUpdate();
+            }
             return;
         }
         if (oldValue !== newValue && this.$refs?.control) this.requestUpdate();
@@ -232,7 +297,13 @@ export default class Button extends TemplateElement {
             return;
         }
         if (options.property !== 'disabled') {
-            super.reflectProperty(options);
+            // `attributeChangedCallback()` runs before `setAttribute()` returns.
+            this._reflecting = true;
+            try {
+                super.reflectProperty(options);
+            } finally {
+                this._reflecting = false;
+            }
             return;
         }
         if (!options.newValue) this.removeAttribute('disabled');
@@ -499,6 +570,8 @@ export default class Button extends TemplateElement {
             'button--circle': !!this.circle,
             'button--loading': !!this.loading,
             'button--caret': !!this.caret,
+            'button--inherit-size': !this._isOwn('size'),
+            'button--inherit-appearance': !this._isOwn('appearance'),
         };
         const disabled = this._isDisabled();
 

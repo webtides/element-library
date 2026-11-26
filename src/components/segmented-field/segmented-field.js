@@ -10,6 +10,9 @@ import style from './segmented-field.style.js';
  * reset and `required` are native, and the label, the help message and the error message are the
  * ones of every field.
  *
+ * In a container that gives its controls a size, an `el-toolbar`, the field takes it from there,
+ * while the page has not set `size` on the field itself.
+ *
  * @element el-segmented-field
  *
  * @fires {CustomEvent<string>} input-change - Fired when the chosen option changes. `detail` is
@@ -37,11 +40,94 @@ export default class SegmentedField extends RadioField {
         });
     }
 
+    /**
+     * Whether the page has given the field a size of its own, see `_hasOwnSize()`.
+     * @private
+     * @type {boolean | undefined}
+     */
+    _ownSize = undefined;
+
     properties() {
         return {
             ...super.properties(),
             size: 'medium',
         };
+    }
+
+    static observedAttributes = ['size'];
+
+    /**
+     * Whether the field is writing a property to its attribute right now, see `reflectProperty()`.
+     * @private
+     */
+    _reflecting = false;
+
+    connectedCallback() {
+        // Before element-js writes the default onto the element: after that, every field has a
+        // `size` attribute, and nothing says who wrote it.
+        this._ownSize ??= this.hasAttribute('size') || Object.hasOwn(this, 'size');
+        super.connectedCallback();
+    }
+
+    /**
+     * The page has written the `size` attribute, after the field was connected: the size is the
+     * field's own from now on, also when it is the default. The field writes the attribute itself
+     * as well, which says nothing.
+     */
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name !== 'size' || this._ownSize !== false || this._reflecting || newValue === null) return;
+        this._ownSize = true;
+        this.requestUpdate();
+    }
+
+    reflectProperty(options) {
+        // `attributeChangedCallback()` runs before `setAttribute()` returns.
+        this._reflecting = true;
+        try {
+            super.reflectProperty(options);
+        } finally {
+            this._reflecting = false;
+        }
+    }
+
+    watch() {
+        return {
+            ...super.watch(),
+            // A size that is set later, as an attribute or from a script, is the field's own.
+            size: () => {
+                this._ownSize = true;
+            },
+        };
+    }
+
+    /**
+     * Whether the page has given the field a size of its own. A field without one takes the size
+     * of a container that gives one to its controls, a toolbar. The template marks the row with
+     * the answer, and the stylesheet reads the mark. On the server no attribute has been written
+     * by the element: one that is there is the one of the page.
+     * @private
+     * @returns {boolean}
+     */
+    _hasOwnSize() {
+        if (this._ownSize === undefined) return !!this.hasAttribute?.('size');
+        // A size that is not the default was set by someone: the watcher has not run yet when the
+        // field renders with a size it has just got from a script.
+        return this._ownSize || this.size !== 'medium';
+    }
+
+    template() {
+        return html`
+            <fieldset
+                class="field ${this.classes().field}"
+                aria-describedby="${this._describedBy()}"
+                aria-errormessage="${this._idOf('error-message')}"
+                aria-invalid="${this.valid ? 'false' : 'true'}"
+            >
+                ${this.legendTemplate()} ${this.helpTemplate()}
+                <div class="options ${this._hasOwnSize() ? '' : 'options--inherit-size'}">${this.fieldTemplate()}</div>
+                ${this.errorTemplate()}
+            </fieldset>
+        `;
     }
 
     /** @private */

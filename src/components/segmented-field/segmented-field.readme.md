@@ -99,6 +99,24 @@ An option with `icon` shows that icon in the place of its label. `icon` is the a
 
 The icon has the colour of the text (`currentColor`) and is 1.25em wide and high. Every option needs a `label`, with an icon as well.
 
+## In a toolbar
+
+In an [`el-toolbar`](../toolbar/toolbar.readme.md) the field takes the size of the toolbar, while the page has not set `size` on the field itself. Give it `label-screen-reader-only="true"`: the label stays the name of the group and is not shown.
+
+```html
+<el-toolbar label="Tasks" size="small">
+    <el-segmented-field
+        name="view"
+        label="View"
+        label-screen-reader-only="true"
+        value="List"
+        options='["List","Board"]'
+    ></el-segmented-field>
+</el-toolbar>
+```
+
+The arrow keys of a toolbar move the focus from control to control, and the options of the field are controls of the toolbar. So there the left and right arrow keys go through the options without choosing: Space chooses the option with the focus, and the up and down arrow keys move the choice.
+
 ## Disabled
 
 `disabled="true"` disables the whole field: nothing can be chosen, and the form leaves it out. An option with `disabled: true` cannot be chosen, and the arrow keys skip it. A disabled option is faded.

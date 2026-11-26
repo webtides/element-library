@@ -46,3 +46,44 @@ export default function sizeStyle(host = ':host') {
         }
     `;
 }
+
+/**
+ * The size a container gives to the controls inside of it: a toolbar with `size="small"` has small
+ * controls. The container declares `size` as a reflected property and composes this module; it
+ * sets properties on the host that are inherited, at any depth and into shadow roots:
+ *
+ * - `--_el-context-size-height`, `--_el-context-size-padding-block`,
+ *   `--_el-context-size-padding-inline`, `--_el-context-size-font-size`
+ *
+ * They are what `sizeStyle()` resolves a size to, under other names: a control declares the
+ * `--_el-size-` properties on its own host, so an inherited value of the same name would never
+ * reach it. A control that takes its size from a container reads the context first and its own
+ * size after it, on the element that it paints:
+ *
+ *     min-height: var(--_el-context-size-height, var(--_el-size-height));
+ *
+ * It does so only while the page has not given it a size of its own. The stylesheet cannot ask
+ * that: element-js writes the default onto the element. So the control marks the element it paints
+ * from its template (`button--inherit-size` of `el-button`).
+ *
+ * `medium` sets nothing: it is the size a control has anyway.
+ * @param {string} [host] - `':host'` (the default), or the tag of a component without a shadow root.
+ * @returns {string}
+ */
+export function sizeContextStyle(host = ':host') {
+    return css`
+        ${hostSelector(host, "[size='small']")} {
+            --_el-context-size-height: calc(var(--el-control-height, 2.5rem) * 0.8);
+            --_el-context-size-padding-block: var(--el-space-1, 0.25em);
+            --_el-context-size-padding-inline: var(--el-space-3, 0.75em);
+            --_el-context-size-font-size: var(--el-font-size-sm, 0.875rem);
+        }
+
+        ${hostSelector(host, "[size='large']")} {
+            --_el-context-size-height: calc(var(--el-control-height, 2.5rem) * 1.25);
+            --_el-context-size-padding-block: var(--el-space-3, 0.75em);
+            --_el-context-size-padding-inline: var(--el-space-5, 1.5em);
+            --_el-context-size-font-size: calc(var(--el-font-size-md, 1rem) * 1.125);
+        }
+    `;
+}

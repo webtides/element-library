@@ -364,6 +364,45 @@ describe('Feature | SegmentedField', () => {
         });
     });
 
+    describe('in a container that gives its controls a size', () => {
+        // What a toolbar with size="small" says to the controls inside of it.
+        const context = `${theme}
+            --_el-context-size-height: 30px; --_el-context-size-padding-block: 2px;
+            --_el-context-size-padding-inline: 6px; --_el-context-size-font-size: 12px;`;
+        const row = (el) => el.querySelector('.options');
+
+        it('takes the size while the page has given it none', async () => {
+            const el = await field('value="week"', days, context);
+            const style = getComputedStyle(segments(el)[0]);
+
+            expect(row(el).classList.contains('options--inherit-size')).toBe(true);
+            expect(sizeOf(segments(el)[0]).height).toBe(30);
+            expect([style.paddingTop, style.paddingLeft, style.fontSize]).toEqual(['2px', '6px', '12px']);
+            expect(el.getAttribute('size')).toBe('medium');
+        });
+
+        it('keeps a size of its own, the medium one as well, and one it gets later', async () => {
+            const medium = await field('value="week" size="medium"', days, context);
+            const later = await field('value="week"', days, context);
+
+            expect(row(medium).classList.contains('options--inherit-size')).toBe(false);
+            expect(sizeOf(segments(medium)[0]).height).toBe(42);
+
+            later.size = 'small';
+            await rendered();
+            expect(row(later).classList.contains('options--inherit-size')).toBe(false);
+            expect(sizeOf(segments(later)[0]).height).toBe(32);
+        });
+
+        it('has its own size without a container: the mark changes nothing there', async () => {
+            const marked = await field('value="week"');
+            const own = await field('value="week" size="medium"');
+
+            expect(row(marked).classList.contains('options--inherit-size')).toBe(true);
+            expect(sizeOf(segments(marked)[0])).toEqual(sizeOf(segments(own)[0]));
+        });
+    });
+
     describe('disabled', () => {
         it('disables one option, which the arrow keys skip', async () => {
             const el = await field('value="day"', [

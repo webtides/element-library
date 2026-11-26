@@ -44,6 +44,8 @@ import '@webtides/element-library/tooltip/define';
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `for` | `string` | `''` | The id of the anchor, in the document or the shadow root the tooltip is in. |
+| `anchor` | `Element \| null` | `null` | The anchor as an element, for one that an id cannot name. A property only; it comes before `for`. |
+| `type` | `'description' \| 'label'` | `'description'` | What the tooltip is to its anchor: its description, or the name the anchor already has, for the eye. See [A tooltip that shows a name](#a-tooltip-that-shows-a-name). |
 | `open` | `boolean` | `false` | Whether the tooltip is shown. Reflected to the `open` attribute. |
 | `placement` | `string` | `'top'` | `top`, `bottom`, `left` or `right`, each also with `-start` or `-end`. |
 | `distance` | `number` | `8` | The gap between the anchor and the tooltip, or the tip of its arrow, in pixels. |
@@ -138,10 +140,33 @@ Any element can be the anchor. One that takes the focus (a button, a link, a fie
 
 Without an anchor in the page the tooltip does not open.
 
+#### An anchor in another tree
+
+An id is known in the document or the shadow root it is in, and nowhere else. A tooltip in the shadow root of a component cannot name an element of the page by `for`. Such a tooltip gets its anchor as an element:
+
+```js
+tooltip.anchor = button;
+```
+
+`anchor` is a property only. While it is set, `for` is not looked at; `anchor = null` gives the anchor back to `for`. The tooltip closes when its anchor changes.
+
+## A tooltip that shows a name
+
+A button with an icon alone has its name in `aria-label`, where the eye does not find it. A tooltip can show that name. It is no description then: a screen reader would read the name, and the same text again.
+
+```html
+<el-button id="archive" circle="true" aria-label="Archive">…</el-button>
+<el-tooltip for="archive" type="label">Archive</el-tooltip>
+```
+
+With `type="label"` the tooltip does not write `aria-describedby` on its anchor and is hidden from assistive technology (`aria-hidden`). The anchor has to have the name itself. It opens, closes and is placed as every tooltip.
+
+An [`el-toolbar`](../toolbar/toolbar.readme.md) makes these tooltips for its buttons itself.
+
 ## Accessibility
 
 - The tooltip adds its id to the `aria-describedby` of its anchor and keeps what is there. A screen reader reads the text of the tooltip after the name of the anchor, also while the tooltip is closed. A tooltip without an id gets one (`el-tooltip-1`).
-- The tooltip is a description, not a name. A button that shows only an icon needs `aria-label` as well.
+- The tooltip is a description, not a name. A button that shows only an icon needs `aria-label` as well. To show that name to the eye, see [A tooltip that shows a name](#a-tooltip-that-shows-a-name).
 - An `el-button` as the anchor passes the description on to the control inside it.
 - The element has the role `tooltip`.
 - Put text into a tooltip, no links and no controls: the focus does not go into it, and it closes when the focus leaves the anchor. Content to interact with belongs into an `el-popover`.

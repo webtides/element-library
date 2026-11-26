@@ -128,6 +128,26 @@ The three properties are independent of each other, and every combination works.
 
 The `hidden` attribute hides the button.
 
+## In a toolbar
+
+An [`el-toolbar`](../toolbar/toolbar.readme.md) gives its controls one size and one appearance. A button takes them from the toolbar while the page has not set `size` or `appearance` on the button itself:
+
+```html
+<el-toolbar label="Message" size="small" appearance="outlined">
+    <el-button>Reply</el-button>
+    <!-- small, outlined -->
+    <el-button size="large">Archive</el-button>
+    <!-- large, outlined -->
+    <el-button variant="brand" appearance="filled">Send</el-button>
+    <!-- small, filled -->
+</el-toolbar>
+```
+
+- A button that names its own keeps it, also when that is the default: `appearance="filled"`, `size="medium"`. It counts as named when the page wrote the attribute, when a script set the property before the button was connected, or when either changes later.
+- The toolbar does not write to the button. It says its size and its appearance in CSS properties that are inherited, and the button reads them in its stylesheet. The `size` and `appearance` attributes of the button keep their own values, `medium` and `filled` for a button that names none.
+- It works at any depth: for a button in an `el-button-group` of the toolbar, and for the anchor of an `el-popover`.
+- Outside of a toolbar nothing changes.
+
 ## A toggle button
 
 With `toggle` the button stays pressed: "Bold" in the toolbar of an editor, "Mute", a filter above a list, the star of a favourite.

@@ -23,8 +23,14 @@ const style = css`
         justify-content: center;
         gap: var(--el-space-2, 0.5em);
         width: 100%;
-        min-height: var(--_el-size-height);
-        padding: var(--_el-size-padding-block) var(--_el-size-padding-inline);
+        /* The size of the button: its own, from the size module. A button in a toolbar reads the
+           size of the toolbar first, see "In a container" below. */
+        --_el-button-height: var(--_el-size-height);
+        --_el-button-padding-block: var(--_el-size-padding-block);
+        --_el-button-padding-inline: var(--_el-size-padding-inline);
+        --_el-button-font-size: var(--_el-size-font-size);
+        min-height: var(--_el-button-height);
+        padding: var(--_el-button-padding-block) var(--_el-button-padding-inline);
         border: var(--el-border-width, 1px) solid transparent;
         /* The radius of the shape on all four corners. A row of joined buttons (el-button-group)
            takes it away from the corners that face a neighbour, with --_el-group-radius-start
@@ -35,7 +41,7 @@ const style = css`
         border-start-end-radius: var(--_el-group-radius-end, var(--_el-button-radius));
         border-end-end-radius: var(--_el-group-radius-end, var(--_el-button-radius));
         font-family: var(--el-font-family, inherit);
-        font-size: var(--_el-size-font-size);
+        font-size: var(--_el-button-font-size);
         font-weight: 600;
         line-height: var(--el-line-height, 1.5);
         text-align: center;
@@ -180,8 +186,8 @@ const style = css`
 
     .button--circle {
         --_el-button-radius: 50%;
-        width: var(--_el-size-height);
-        height: var(--_el-size-height);
+        width: var(--_el-button-height);
+        height: var(--_el-button-height);
         min-height: 0;
         padding: 0;
         aspect-ratio: 1;
@@ -199,6 +205,97 @@ const style = css`
         border-inline-start-color: var(--_el-group-divider, var(--_el-variant-fill-border));
     }
 
+    /* ── In a container ───────────────────────────────────────────────────── */
+
+    /* A container that gives its controls one size and one appearance, a toolbar, says so in
+       properties that are inherited (see sizeContextStyle() and appearanceContextStyle()). A
+       button reads them while the page has not set the attribute on the button itself: the
+       template marks the control then. Outside of such a container the properties are not set,
+       and every value below falls back to the one the button has without them. */
+
+    .button--inherit-size {
+        --_el-button-height: var(--_el-context-size-height, var(--_el-size-height));
+        --_el-button-padding-block: var(--_el-context-size-padding-block, var(--_el-size-padding-block));
+        --_el-button-padding-inline: var(--_el-context-size-padding-inline, var(--_el-size-padding-inline));
+        --_el-button-font-size: var(--_el-context-size-font-size, var(--_el-size-font-size));
+    }
+
+    /* The appearance of the container is a switch that is set or not. In front of a value it gives
+       a property that is valid only where the switch is set. */
+    .button--inherit-appearance {
+        --_el-button-if-plain: var(--_el-context-appearance-plain) transparent;
+        --_el-button-if-outlined: var(--_el-context-appearance-outlined) transparent;
+        --_el-button-if-outlined-border: var(--_el-context-appearance-outlined) var(--_el-variant-border);
+        --_el-button-if-plain-text: var(--_el-context-appearance-plain) var(--_el-variant-text);
+        --_el-button-if-outlined-text: var(--_el-context-appearance-outlined) var(--_el-variant-text);
+        --_el-button-if-plain-none: var(--_el-context-appearance-plain) none;
+        --_el-button-if-outlined-none: var(--_el-context-appearance-outlined) none;
+    }
+
+    /* The three colours of the appearance module, and the line to a neighbour in a group. The
+       rules weigh as much as the ones for a filled button and come after them. A button whose
+       appearance is its own has no mark, and keeps the rules of its attribute. */
+    :host .button--inherit-appearance {
+        background: var(--_el-button-if-plain, var(--_el-button-if-outlined, var(--_el-variant-fill)));
+        border-color: var(--_el-button-if-plain, var(--_el-button-if-outlined-border, var(--_el-variant-fill-border)));
+        border-inline-start-color: var(
+            --_el-button-if-plain,
+            var(--_el-button-if-outlined-border, var(--_el-group-divider, var(--_el-variant-fill-border)))
+        );
+        color: var(--_el-button-if-plain-text, var(--_el-button-if-outlined-text, var(--_el-variant-on-fill)));
+    }
+
+    /* Under the pointer and pressed down: a tint of the text colour where the button has no fill,
+       as an outlined button has. A plain button of a toolbar gets it as well: it is an icon as a
+       rule, and an icon has nothing to underline. */
+    @media (hover: hover) {
+        :host .button--inherit-appearance:hover {
+            --_el-button-if-plain-tint: var(--_el-context-appearance-plain)
+                color-mix(in srgb, currentColor 12%, transparent);
+            --_el-button-if-outlined-tint: var(--_el-context-appearance-outlined)
+                color-mix(in srgb, currentColor 12%, transparent);
+            background: var(--_el-button-if-plain-tint, var(--_el-button-if-outlined-tint, var(--_el-variant-fill)));
+            filter: var(--_el-button-if-plain-none, var(--_el-button-if-outlined-none, brightness(0.95)));
+        }
+    }
+
+    :host .button--inherit-appearance:active {
+        --_el-button-if-plain-tint: var(--_el-context-appearance-plain)
+            color-mix(in srgb, currentColor 24%, transparent);
+        --_el-button-if-outlined-tint: var(--_el-context-appearance-outlined)
+            color-mix(in srgb, currentColor 24%, transparent);
+        background: var(--_el-button-if-plain-tint, var(--_el-button-if-outlined-tint, var(--_el-variant-fill)));
+        filter: var(--_el-button-if-plain-none, var(--_el-button-if-outlined-none, brightness(0.88)));
+    }
+
+    /* A pressed toggle button: the tint of a button without a fill, one step more than under the
+       pointer. */
+    :host .button--inherit-appearance[aria-pressed='true'] {
+        --_el-button-if-plain-tint: var(--_el-context-appearance-plain)
+            color-mix(in srgb, currentColor 16%, transparent);
+        --_el-button-if-outlined-tint: var(--_el-context-appearance-outlined)
+            color-mix(in srgb, currentColor 16%, transparent);
+        background: var(--_el-button-if-plain-tint, var(--_el-button-if-outlined-tint, var(--_el-variant-fill)));
+    }
+
+    @media (hover: hover) {
+        :host .button--inherit-appearance[aria-pressed='true']:hover {
+            --_el-button-if-plain-tint: var(--_el-context-appearance-plain)
+                color-mix(in srgb, currentColor 20%, transparent);
+            --_el-button-if-outlined-tint: var(--_el-context-appearance-outlined)
+                color-mix(in srgb, currentColor 20%, transparent);
+            background: var(--_el-button-if-plain-tint, var(--_el-button-if-outlined-tint, var(--_el-variant-fill)));
+        }
+    }
+
+    :host .button--inherit-appearance[aria-pressed='true']:active {
+        --_el-button-if-plain-tint: var(--_el-context-appearance-plain)
+            color-mix(in srgb, currentColor 28%, transparent);
+        --_el-button-if-outlined-tint: var(--_el-context-appearance-outlined)
+            color-mix(in srgb, currentColor 28%, transparent);
+        background: var(--_el-button-if-plain-tint, var(--_el-button-if-outlined-tint, var(--_el-variant-fill)));
+    }
+
     /* ── Touch screens ────────────────────────────────────────────────────── */
 
     /* On a coarse pointer no size or shape falls below --el-touch-target in either direction.
@@ -206,7 +303,7 @@ const style = css`
     @media (any-pointer: coarse) {
         .button {
             min-width: var(--el-touch-target, auto);
-            min-height: max(var(--_el-size-height), var(--el-touch-target, 0px));
+            min-height: max(var(--_el-button-height), var(--el-touch-target, 0px));
         }
 
         /* A circle has a fixed width and height. The minimum wins over both, so it stays round. */

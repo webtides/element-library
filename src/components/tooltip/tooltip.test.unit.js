@@ -20,7 +20,9 @@ describe('Unit | Tooltip', () => {
             hideDelay: 0,
             arrow: false,
             disabled: false,
+            type: 'description',
         });
+        expect(el.anchor).toBeNull();
     });
 
     it('exposes the event-name constants', async () => {
