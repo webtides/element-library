@@ -8,9 +8,14 @@ describe('Unit | AppFrame', () => {
         const el = new AppFrame();
     });
 
-    it('has an English skip link and is wide from 48rem by default', async () => {
+    it('has an English skip link, is wide from 48rem and has every region at every width by default', async () => {
         const el = new AppFrame();
-        expect(el.properties()).toEqual({ skipLabel: 'Skip to content', wideFrom: '48rem' });
+        expect(el.properties()).toEqual({
+            skipLabel: 'Skip to content',
+            wideFrom: '48rem',
+            narrowOnly: '',
+            wideOnly: '',
+        });
     });
 
     it('knows its default among the steps of its stylesheet', async () => {

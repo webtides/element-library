@@ -42,6 +42,8 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | --- | --- | --- | --- |
 | `skip-label` | `string` | `'Skip to content'` | The text of the link that skips to the content. |
 | `wide-from` | `'30rem' \| '40rem' \| '48rem' \| '64rem' \| '80rem'` | `'48rem'` | The width of the frame from which the navigation and the aside are columns beside the content. Another value is the default. |
+| `narrow-only` | `string` | `''` | The regions that are there only where the frame is narrow: `header`, `navigation`, `aside`, `footer`, with a space between them. |
+| `wide-only` | `string` | `''` | The regions that are there only where the frame is wide, named the same way. |
 
 #### Read-only properties
 
@@ -137,6 +139,23 @@ Where the frame is narrow, the navigation, the content and the aside are below e
 - The width is one of five steps: `30rem`, `40rem`, `48rem` (the default), `64rem` or `80rem`. A stylesheet cannot read the width of a query from a custom property, so the frame has a query for each step, and another value is the default.
 - The width is the one of the frame itself, not of the window. A frame in a box of the page is narrow in a narrow box.
 - The stylesheet alone decides. A server does not know the width, and the frame has the right layout before the script has run. `wide` reads what the stylesheet has decided.
+
+## Regions for one width
+
+A phone has its destinations in a bar at the lower edge, a desktop in a column at the side. `narrow-only` and `wide-only` name the regions that are there at one width only:
+
+```html
+<el-app-frame narrow-only="footer" wide-only="navigation aside">
+    <nav slot="navigation" aria-label="Lists">…</nav>
+    <main id="main">…</main>
+    <aside slot="aside">…</aside>
+    <el-nav slot="footer" label="Main">…</el-nav>
+</el-app-frame>
+```
+
+- The names are `header`, `navigation`, `aside` and `footer`, with a space between them.
+- The stylesheet leaves a region out: no script, and no room, no line and no landmark where the region is not there.
+- The frame keeps the edge of the screen clear that the region kept clear.
 
 ## The link that skips to the content
 

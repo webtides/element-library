@@ -175,6 +175,23 @@ const style = css`
         border-block-start: ${line};
     }
 
+    /* A region the page has only where the frame is wide is not there while it is narrow. The
+       frame keeps the edge of a header or a footer that is not there clear itself. */
+    .frame[data-wide-only~='header'] .header,
+    .frame[data-wide-only~='navigation'] .navigation,
+    .frame[data-wide-only~='aside'] .aside,
+    .frame[data-wide-only~='footer'] .footer {
+        display: none;
+    }
+
+    .frame[data-wide-only~='header'] {
+        padding-block-start: var(--_el-app-frame-top);
+    }
+
+    .frame[data-wide-only~='footer'] {
+        padding-block-end: var(--_el-app-frame-bottom);
+    }
+
     /* A region that scrolls takes the focus of the keyboard where nothing in it does. The ring is
        inside: around the region there is the edge of the screen. */
     .body:focus-visible,
@@ -264,6 +281,47 @@ const wideStyle = (step) => {
             ${frame}.frame--aside .content {
                 padding-inline-end: 0;
             }
+
+            /* The regions the page has only where the frame is wide are there now, and the ones
+               it has only where the frame is narrow are not. What was beside or above them keeps
+               that edge of the screen clear. */
+            ${frame}[data-wide-only~='header'] .header,
+            ${frame}[data-wide-only~='navigation'] .navigation,
+            ${frame}[data-wide-only~='aside'] .aside,
+            ${frame}[data-wide-only~='footer'] .footer {
+                display: block;
+            }
+
+            ${frame}[data-wide-only~='header'].frame--header {
+                padding-block-start: 0;
+            }
+
+            ${frame}[data-wide-only~='footer'].frame--footer {
+                padding-block-end: 0;
+            }
+
+            ${frame}[data-narrow-only~='header'] .header,
+            ${frame}[data-narrow-only~='navigation'] .navigation,
+            ${frame}[data-narrow-only~='aside'] .aside,
+            ${frame}[data-narrow-only~='footer'] .footer {
+                display: none;
+            }
+
+            ${frame}[data-narrow-only~='header'] {
+                padding-block-start: var(--_el-app-frame-top);
+            }
+
+            ${frame}[data-narrow-only~='footer'] {
+                padding-block-end: var(--_el-app-frame-bottom);
+            }
+
+            ${frame}[data-narrow-only~='navigation'] .content {
+                padding-inline-start: var(--_el-app-frame-start);
+            }
+
+            ${frame}[data-narrow-only~='aside'] .content {
+                padding-inline-end: var(--_el-app-frame-end);
+            }
         }
     `;
 };
@@ -283,11 +341,14 @@ const printStyle = css`
             block-size: auto;
         }
 
+        .frame[data-wide-from] .body {
+            display: block;
+        }
+
         .frame[data-wide-from] .body,
         .frame[data-wide-from] .navigation,
         .frame[data-wide-from] .content,
         .frame[data-wide-from] .aside {
-            display: block;
             inline-size: auto;
             overflow: visible;
         }

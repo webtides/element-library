@@ -29,6 +29,8 @@ import './src/components/input-field/input-field.define.js';
 import './src/components/lazy-src/lazy-src.define.js';
 import './src/components/list/list.define.js';
 import './src/components/list-item/list-item.define.js';
+import './src/components/nav/nav.define.js';
+import './src/components/nav-item/nav-item.define.js';
 import './src/components/notification/notification.define.js';
 import './src/components/otp-field/otp-field.define.js';
 import './src/components/pagination/pagination.define.js';

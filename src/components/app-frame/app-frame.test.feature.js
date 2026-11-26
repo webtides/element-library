@@ -274,6 +274,58 @@ describe('Feature | AppFrame', () => {
         });
     });
 
+    describe('regions for one width only', () => {
+        it('has a region that is for the wide frame only where it is wide', async () => {
+            const narrow = await frame(regions(), { width: 400, attributes: 'wide-only="navigation aside"' });
+            const wide = await frame(regions(), { attributes: 'wide-only="navigation aside"' });
+
+            // Narrow: the content alone between the header and the footer.
+            expect(box(narrow, 'navigation').slice(2)).toEqual([0, 0]);
+            expect(box(narrow, 'aside').slice(2)).toEqual([0, 0]);
+            expect(box(narrow, 'body')).toEqual([0, 51, 400, 518]);
+            // Wide: as without the attribute.
+            expect(box(wide, 'navigation')).toEqual([0, 51, 257, 518]);
+            expect(box(wide, 'aside')).toEqual([679, 51, 321, 518]);
+        });
+
+        it('has a region that is for the narrow frame only where it is narrow', async () => {
+            const narrow = await frame(regions(), { width: 400, attributes: 'narrow-only="footer"' });
+            const wide = await frame(regions(), { attributes: 'narrow-only="footer"' });
+
+            expect(box(narrow, 'footer')).toEqual([0, 569, 400, 31]);
+            // Wide: no footer, and the columns reach the lower edge.
+            expect(box(wide, 'footer').slice(2)).toEqual([0, 0]);
+            expect(box(wide, 'content')).toEqual([257, 51, 422, 549]);
+        });
+
+        it('takes every region by its name, and nothing else', async () => {
+            const el = await frame(regions(), { attributes: 'narrow-only="header footer content base x"' });
+
+            expect(part(el, 'base').dataset.narrowOnly).toBe('header footer');
+            expect(box(el, 'header').slice(2)).toEqual([0, 0]);
+            expect(box(el, 'footer').slice(2)).toEqual([0, 0]);
+            expect(box(el, 'content')).toEqual([257, 0, 422, 600]);
+        });
+
+        it('follows a change of the attribute and of the width', async () => {
+            const el = await frame(regions(), { width: 400 });
+            expect(box(el, 'aside')[2]).toBe(400);
+
+            el.wideOnly = 'aside';
+            await rendered();
+            expect(box(el, 'aside').slice(2)).toEqual([0, 0]);
+
+            el.parentElement.style.width = '1000px';
+            await nextFrame();
+            expect(box(el, 'aside')).toEqual([679, 51, 321, 518]);
+        });
+
+        it('prints a region that is not there as little as it shows it', async () => {
+            const el = await frame(regions(), { attributes: 'narrow-only="footer"' });
+            expect(getComputedStyle(part(el, 'footer')).display).toBe('none');
+        });
+    });
+
     describe('the viewport', () => {
         it('fills what the browser shows, whatever margin the body has', async () => {
             document.body.style.margin = '8px';
@@ -684,6 +736,27 @@ describe('Feature | AppFrame', () => {
 
             expect(paddings(el, 'base')).toEqual([47, 0, 34, 0]);
             expect(box(el, 'content')).toEqual([0, 47, 1000, 519]);
+        });
+
+        it('keeps the edge of a header or a footer clear itself where the page has left it out', async () => {
+            const wide = await frame(regions(), { attributes: 'narrow-only="header footer"' });
+            const narrow = await frame(regions(), { width: 400, attributes: 'wide-only="header footer"' });
+
+            expect(paddings(wide, 'base')).toEqual([47, 0, 34, 0]);
+            expect(paddings(narrow, 'base')).toEqual([47, 0, 34, 0]);
+            // And not where the region is there.
+            expect(paddings(await frame(regions(), { attributes: 'wide-only="header footer"' }), 'base')).toEqual([
+                0, 0, 0, 0,
+            ]);
+            expect(
+                paddings(await frame(regions(), { width: 400, attributes: 'narrow-only="header footer"' }), 'base'),
+            ).toEqual([0, 0, 0, 0]);
+        });
+
+        it('keeps the content clear of the side of a column the page has left out', async () => {
+            const el = await frame(regions(), { attributes: 'narrow-only="navigation aside"' });
+
+            expect(paddings(el, 'content')).toEqual([0, 20, 0, 10]);
         });
 
         it('puts the skip link below the notch', async () => {

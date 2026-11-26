@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: a region that scrolls and has nothing in it that takes the focus is a stop of the Tab key itself, so the keyboard can scroll it in every browser.
 - Added: on paper the frame is as long as its content, which prints whole.
 - Added: lines between the regions from `--el-color-border` and `--el-border-width`. They are borders, which stay where the user forces colours, and they are there without a theme then. Without a theme the frame paints nothing.
+- Added: `narrow-only` and `wide-only` name the regions that are there at one width only (`header`, `navigation`, `aside`, `footer`, with a space between them): a bar of destinations in the footer of a phone, for example (`narrow-only="footer"`), or an aside for a desktop (`wide-only="aside"`). The stylesheet leaves a region out, without a script, and the frame keeps the edge of the screen clear that the region kept clear. ([#179](https://github.com/webtides/element-library/issues/179))
 
 ### button
 
@@ -59,6 +60,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 ### list-item
 
 - Added: `el-list-item`, a new component: one row of an `el-list`, an item of its list (`role="listitem"`). It has a start (`start` slot), a title (default slot), a line under it (`description`), an end (`end`) and a control of its own (`action`). With `href` the row is a link as a whole: the title is a native link (`target` is passed on, `rel` is written with it), and its target is the whole row. A control in `action` lies on top of the link and stays a target of its own. On a touch screen a row that is a link is at least `--el-touch-target` high. `current` marks the current or the chosen row: `aria-current` (`"page"` on the link, `"true"` on a row without one), a tint, a bar at the start in the accent colour and a heavier title. The bar is a border, so it stays where the user forces colours. `mark` draws a dot in the padding at the start of the row, which does not move the texts. Its text is read in front of the title and is part of the name of the link (`mark="Unread"`). A long title breaks into more lines, inside of a word where it has to, so a text a user typed cannot widen the page. `truncate` cuts the title and the line under it after one line. The row runs no script: its link works before the element takes over, and without JavaScript in server-rendered markup. ([#192](https://github.com/webtides/element-library/issues/192))
+
+### nav
+
+- Added: `el-nav`, a new component: the destinations of an application as a bar for the lower edge of a phone. A navigation landmark (`<nav>`, named by `label`) with a list of `el-nav-item` links. ([#179](https://github.com/webtides/element-library/issues/179))
+- Added: three to five destinations share the width in equal parts, however long their texts are. The bar is as high as an `el-app-bar`, and keeps that height: a text that does not fit is cut.
+- Added: in the footer of an `el-app-frame` the surface of the bar reaches the lower edge of the screen and its sides, and the destinations stay above the home indicator of a phone. The line to the content is the one of the region there. Alone, the bar keeps its destinations clear of the home indicator and of the sides itself (`env(safe-area-inset-*)`).
+- Added: a surface from `--el-color-bg` and a line to the content from `--el-color-border` and `--el-border-width`. The line is a border, which stays where the user forces colours and is there without a theme then.
+
+### nav-item
+
+- Added: `el-nav-item`, a new component: one destination of an `el-nav`. A link with an icon (slot `icon`) and a short text under it, as an entry of a list. `href`, `target` and `rel` are the ones of the link. ([#179](https://github.com/webtides/element-library/issues/179))
+- Added: `current` marks the destination of the current view: the link gets `aria-current="page"`, the colour of the text instead of the muted one, a heavier text and a shape behind its icon. The shape has a border, so it stays where the user forces colours, and the weight marks the destination without a theme.
+- Added: the text is one line: what does not fit is cut with an ellipsis, and the whole text stays in the page for assistive technology.
+- Added: the `badge` slot takes a count or a dot, an `el-badge` as a rule, on the corner of the icon. It is part of the link and comes after the text, so a screen reader reads it with the name of the destination.
+- Added: on a touch screen the link is at least `--el-touch-target` wide and high.
 
 ### scroll-to-top
 

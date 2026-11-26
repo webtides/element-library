@@ -3,6 +3,9 @@ import { containsFocusable } from '../../utils/focus.js';
 import { hasSlotted } from '../../utils/slots.js';
 import style, { DEFAULT_STEP, STEPS } from './app-frame.style.js';
 
+/** The regions the page can leave out by the width of the frame. */
+const REGIONS = ['header', 'navigation', 'aside', 'footer'];
+
 /**
  * The frame of an application: it fills what the browser shows and lays out five regions, a
  * header, a footer, a navigation at the start side, an aside at the end side, and the content.
@@ -47,6 +50,11 @@ import style, { DEFAULT_STEP, STEPS } from './app-frame.style.js';
  * @property {'30rem'|'40rem'|'48rem'|'64rem'|'80rem'} wideFrom - The width of the frame from
  *   which the navigation and the aside are columns beside the content. One of the steps the
  *   stylesheet knows, another value is the default. Default `'48rem'`.
+ * @property {string} narrowOnly - The regions that are there only where the frame is narrow, as
+ *   their names with a space between them: `header`, `navigation`, `aside`, `footer`. A bar of
+ *   destinations in the footer of a phone, for example (`narrow-only="footer"`). Default `''`.
+ * @property {string} wideOnly - The regions that are there only where the frame is wide, named
+ *   the same way. Default `''`.
  */
 export default class AppFrame extends TemplateElement {
     /**
@@ -73,6 +81,8 @@ export default class AppFrame extends TemplateElement {
         return {
             skipLabel: 'Skip to content',
             wideFrom: DEFAULT_STEP,
+            narrowOnly: '',
+            wideOnly: '',
         };
     }
 
@@ -215,6 +225,12 @@ export default class AppFrame extends TemplateElement {
         // The stylesheet reads the step from the frame, not from the host: a value it does not
         // know is the default here, and a server writes it as the browser does.
         const step = STEPS.includes(this.wideFrom) ? this.wideFrom : DEFAULT_STEP;
+        // The names of regions, and nothing else: the stylesheet matches them as words.
+        const regions = (names) =>
+            String(names ?? '')
+                .split(/\s+/)
+                .filter((name) => REGIONS.includes(name))
+                .join(' ');
 
         return html`
             <a part="skip-link" class="skip" href="#${id || ''}">${this.skipLabel}</a>
@@ -227,6 +243,8 @@ export default class AppFrame extends TemplateElement {
                     hasSlotted(this, 'aside') ? 'frame--aside' : ''
                 }"
                 data-wide-from="${step}"
+                data-narrow-only="${regions(this.narrowOnly)}"
+                data-wide-only="${regions(this.wideOnly)}"
             >
                 <div part="header" class="header" ?hidden="${!hasSlotted(this, 'header')}">
                     <slot name="header"></slot>

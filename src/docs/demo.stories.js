@@ -286,6 +286,12 @@ const kit = [
         blurb: 'The bar at the top of a view: a title, a way back, a few actions.',
         fresh: true,
     },
+    {
+        tag: 'el-nav',
+        category: 'Navigation',
+        blurb: 'The destinations of an application, at the lower edge of a phone.',
+        fresh: true,
+    },
     { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
     { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.' },
     { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },
