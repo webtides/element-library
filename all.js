@@ -57,3 +57,5 @@ import './src/components/toast/toast.define.js';
 import './src/components/toolbar/toolbar.define.js';
 import './src/components/tooltip/tooltip.define.js';
 import './src/components/transition-classes/transition-classes.define.js';
+import './src/components/tree/tree.define.js';
+import './src/components/tree-item/tree-item.define.js';

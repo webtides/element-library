@@ -15,7 +15,7 @@ export default {
                     'A single, somewhat realistic page — a design system built with the library itself — that wires up ' +
                     'every component in the library the way they tend to be used together: a sticky header with a ' +
                     'dropdown resources menu, a hero carousel of palette swatches with a walkthrough dialog, token ' +
-                    'tabs, a token-catalogue slider of cards, a list of the kit to browse (cards with an avatar, a ' +
+                    'tabs beside a tree of the sections of the page, a token-catalogue slider of cards, a list of the kit to browse (cards with an avatar, a ' +
                     'badge and a tag, filters as removable tags with a popover to bring one back, a toolbar over ' +
                     'the list (a toggle button that shows what is new only, a segmented field that sorts, a ' +
                     'button group that goes a page back and on, and a reload button with an icon alone), a progress ring for the share that is shown, a progress bar for the place in the ' +
@@ -272,6 +272,12 @@ const kit = [
         tag: 'el-toolbar',
         category: 'Navigation',
         blurb: 'The controls over a list, with one size and the arrow keys.',
+        fresh: true,
+    },
+    {
+        tag: 'el-tree',
+        category: 'Navigation',
+        blurb: 'Entries that open and close, with the keys of a tree.',
         fresh: true,
     },
     { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
@@ -801,42 +807,71 @@ export const Page = {
                 <!-- ───────── Token tabs ───────── -->
                 <section id="features" class="py-12">
                     <h2 class="text-2xl font-bold mb-6">What's in the system</h2>
-                    <el-tab-group selected="tokens" link-selector="el-tab-link" panel-selector="el-tab-panel">
-                        <div>
-                            <el-tab-link for="tokens" active>Tokens</el-tab-link>
-                            <el-tab-link for="components">Components</el-tab-link>
-                            <el-tab-link for="patterns">Patterns</el-tab-link>
-                        </div>
+                    <div class="grid gap-8 md:grid-cols-[minmax(0,1fr)_17rem] items-start">
+                        <el-tab-group selected="tokens" link-selector="el-tab-link" panel-selector="el-tab-panel">
+                            <div>
+                                <el-tab-link for="tokens" active>Tokens</el-tab-link>
+                                <el-tab-link for="components">Components</el-tab-link>
+                                <el-tab-link for="patterns">Patterns</el-tab-link>
+                            </div>
 
-                        <el-tab-panel name="tokens" active>
-                            <div class="flex items-start gap-3 pt-4">
-                                ${icon('icon-palette')}
-                                <p class="opacity-80">
-                                    Color, type, space, radius, elevation and motion as CSS custom properties. Flip the
-                                    <strong>Theme</strong> and <strong>Color scheme</strong> switches above to watch
-                                    them cascade.
-                                </p>
-                            </div>
-                        </el-tab-panel>
-                        <el-tab-panel name="components">
-                            <div class="flex items-start gap-3 pt-4">
-                                ${icon('icon-grid')}
-                                <p class="opacity-80">
-                                    Every token resolves into real, accessible components — buttons, inputs, tabs,
-                                    accordions — that look right in any theme out of the box.
-                                </p>
-                            </div>
-                        </el-tab-panel>
-                        <el-tab-panel name="patterns">
-                            <div class="flex items-start gap-3 pt-4">
-                                ${icon('icon-layers')}
-                                <p class="opacity-80">
-                                    Larger compositions — forms, navigation, galleries — documented as patterns so teams
-                                    assemble pages instead of reinventing them.
-                                </p>
-                            </div>
-                        </el-tab-panel>
-                    </el-tab-group>
+                            <el-tab-panel name="tokens" active>
+                                <div class="flex items-start gap-3 pt-4">
+                                    ${icon('icon-palette')}
+                                    <p class="opacity-80">
+                                        Color, type, space, radius, elevation and motion as CSS custom properties. Flip
+                                        the
+                                        <strong>Theme</strong> and <strong>Color scheme</strong> switches above to watch
+                                        them cascade.
+                                    </p>
+                                </div>
+                            </el-tab-panel>
+                            <el-tab-panel name="components">
+                                <div class="flex items-start gap-3 pt-4">
+                                    ${icon('icon-grid')}
+                                    <p class="opacity-80">
+                                        Every token resolves into real, accessible components — buttons, inputs, tabs,
+                                        accordions — that look right in any theme out of the box.
+                                    </p>
+                                </div>
+                            </el-tab-panel>
+                            <el-tab-panel name="patterns">
+                                <div class="flex items-start gap-3 pt-4">
+                                    ${icon('icon-layers')}
+                                    <p class="opacity-80">
+                                        Larger compositions — forms, navigation, galleries — documented as patterns so
+                                        teams assemble pages instead of reinventing them.
+                                    </p>
+                                </div>
+                            </el-tab-panel>
+                        </el-tab-group>
+
+                        <!-- The way through this page as a tree: every entry is a link to its section, a
+                         branch opens and closes, and the arrow keys go through the entries. -->
+                        <nav aria-label="On this page">
+                            <el-card>
+                                <h3 slot="header" class="font-semibold">On this page</h3>
+                                <el-tree style="margin-inline:calc(-1 * var(--el-space-2, 0.5rem))">
+                                    <el-tree-item label="Tokens" href="#features" current="true" open="true">
+                                        <el-tree-item label="The token catalogue" href="#catalogue">
+                                            <span slot="end">6</span>
+                                        </el-tree-item>
+                                    </el-tree-item>
+                                    <el-tree-item label="Components" href="#kit" open="true">
+                                        <span slot="end">${kit.length}</span>
+                                        <el-tree-item label="Lately in the kit" href="#latest"></el-tree-item>
+                                        <el-tree-item label="Patterns in production" href="#gallery"></el-tree-item>
+                                    </el-tree-item>
+                                    <el-tree-item label="Get the kit">
+                                        <el-tree-item label="Request the kit" href="#start"></el-tree-item>
+                                        <el-tree-item label="Frequently asked" href="#faq">
+                                            <span slot="end">3</span>
+                                        </el-tree-item>
+                                    </el-tree-item>
+                                </el-tree>
+                            </el-card>
+                        </nav>
+                    </div>
                 </section>
 
                 <!-- ───────── Token catalogue (slider) ───────── -->

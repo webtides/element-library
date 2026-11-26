@@ -116,6 +116,8 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | toolbar              | The controls over a list or a view, with one size, one look and the arrow keys  | `0.1.0` |
 | tooltip              | A short text that explains its anchor, for the pointer and the keyboard         | `0.1.0` |
 | transition-classes   | An element that applies classes for various stages of a transition              | `0.1.0` |
+| tree                 | Entries that open and close: nested lists of links with the keys of a tree      | `0.1.0` |
+| tree-item            | One entry of a tree: an icon, its name, a count, a link, and the entries below  | `0.1.0` |
 
 <!-- Please move these up once they are implemented
 | modal-element        |                                                 | TBD  |

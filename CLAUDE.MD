@@ -115,6 +115,8 @@ element-library/
 - **toolbar**: Row of controls over a list or a view: `role="toolbar"`, one size and one appearance for its controls (inherited CSS properties), the arrow keys between them, a group at the end, tooltips for the buttons with an icon alone
 - **tooltip**: Text that explains its anchor, on hover and keyboard focus (the element is a native popover, placed with Floating UI)
 - **transition-classes**: CSS transition helper
+- **tree**: Entries that open and close: nested lists of links (`role="list"`, no `role="tree"`) with a button per branch, and the arrow keys of the tree view pattern from the script
+- **tree-item**: One entry of a tree and the entries below it: an icon, its name, a count; a link with `href`; `open` as an attribute the stylesheet reads
 
 ### Planned Components
 
