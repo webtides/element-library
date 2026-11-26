@@ -19,9 +19,11 @@ export default {
                     'badge and a tag, filters as removable tags with a popover to bring one back, a button group ' +
                     'that sorts, a progress ring for the share that is shown, a progress bar for the place in the ' +
                     'list, a pagination, skeletons and a spinner while it loads, an empty state, and a drawer ' +
-                    'with the details: a breadcrumb, a divider and a copy button for the import path), a list of ' +
+                    'with the details: a breadcrumb, a divider and a description list with a copy button for the ' +
+                    'import path), a list of ' +
                     'what the last releases brought (rows that are links as a whole, with an icon at the start, ' +
-                    'a mark on the newest, a version at the end and a copy button as a control of its own), a ' +
+                    'a mark on the newest, a version at the end and a copy button as a control of its own) and ' +
+                    'the package in a description list on a card, a ' +
                     'lazy-loaded pattern gallery, a request-access form built from ' +
                     'the field components (a submit with a field missing shows the messages of the fields, a ' +
                     'complete one floats a success toast, and "Start over" resets the form; the role has ' +
@@ -169,6 +171,27 @@ const latestList = html`
                 ></el-copy-button>
             </el-list-item>
         </el-list>
+
+        <!-- The package in a few values: names beside their values here, one above the other in the
+             drawer of the kit, which is narrow. -->
+        <el-card class="block mt-6">
+            <h3 slot="header" class="font-semibold">The package</h3>
+            <el-description-list>
+                <dt>Name</dt>
+                <dd><code>@webtides/element-library</code></dd>
+                <dt>Licence</dt>
+                <dd>MIT</dd>
+                <dt>Needs</dt>
+                <dd>Node 20.19 or later</dd>
+                <dt>Themes</dt>
+                <dd>Default, high contrast and sketchy</dd>
+                <dd data-action>
+                    <el-button size="small" appearance="plain" href="#faq" aria-label="Read how theming works">
+                        Read more
+                    </el-button>
+                </dd>
+            </el-description-list>
+        </el-card>
     </section>
 `;
 
@@ -246,6 +269,12 @@ const kit = [
         tag: 'el-list',
         category: 'Surfaces',
         blurb: 'Rows with a start, a title, a line under it and an end.',
+        fresh: true,
+    },
+    {
+        tag: 'el-description-list',
+        category: 'Surfaces',
+        blurb: 'Values under their names, stacked or side by side.',
         fresh: true,
     },
 ];
@@ -548,26 +577,23 @@ class DemoKitBrowser extends TemplateElement {
                               </el-breadcrumb>
                               <p class="opacity-80">${selected.blurb}</p>
                               <el-divider class="my-4"></el-divider>
-                              <dl class="grid gap-3 text-sm">
-                                  <div>
-                                      <dt class="font-semibold mb-1">Category</dt>
-                                      <dd><el-tag size="small">${selected.category}</el-tag></dd>
-                                  </div>
-                                  <div>
-                                      <dt class="font-semibold mb-1">Import</dt>
-                                      <dd class="flex items-center gap-2">
-                                          <code id="demo-kit-import" style="overflow-wrap:anywhere"
-                                              >@webtides/element-library/${selected.tag.slice(3)}/define</code
-                                          >
-                                          <el-copy-button
-                                              from="demo-kit-import"
-                                              size="small"
-                                              label="Copy the import path"
-                                              style="flex:none"
-                                          ></el-copy-button>
-                                      </dd>
-                                  </div>
-                              </dl>
+                              <el-description-list class="text-sm">
+                                  <dt>Category</dt>
+                                  <dd><el-tag size="small">${selected.category}</el-tag></dd>
+                                  <dt>Import</dt>
+                                  <dd>
+                                      <code id="demo-kit-import"
+                                          >@webtides/element-library/${selected.tag.slice(3)}/define</code
+                                      >
+                                  </dd>
+                                  <dd data-action>
+                                      <el-copy-button
+                                          from="demo-kit-import"
+                                          size="small"
+                                          label="Copy the import path"
+                                      ></el-copy-button>
+                                  </dd>
+                              </el-description-list>
                           `
                         : ''
                 }

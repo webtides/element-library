@@ -73,6 +73,7 @@ element-library/
 - **combobox-field**: Text with suggestions the browser offers while the user types: an input field with a native `<datalist>` from `options` (free text, not a choice)
 - **copy-button**: Button that copies a text to the clipboard and says whether that worked
 - **date-field**: Date, time or both in the control of the browser (extends the input field): `type` `date`, `time`, `datetime-local`, `month` or `week`, with `min`, `max` and `step`
+- **description-list**: Rows of a name and its value: a native `<dl>` in the shadow root, with the `<dt>` and `<dd>` of the page slotted into it; stacked below 30rem of its own width, side by side from there
 - **dialog**: Modal dialog built on the native `<dialog>` element
 - **divider**: Line between two groups of content, horizontal or vertical
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)

@@ -15,6 +15,7 @@ import './src/components/color-field/color-field.define.js';
 import './src/components/combobox-field/combobox-field.define.js';
 import './src/components/copy-button/copy-button.define.js';
 import './src/components/date-field/date-field.define.js';
+import './src/components/description-list/description-list.define.js';
 import './src/components/dialog/dialog.define.js';
 import './src/components/divider/divider.define.js';
 import './src/components/drawer/drawer.define.js';
