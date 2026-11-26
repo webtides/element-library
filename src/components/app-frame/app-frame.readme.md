@@ -154,7 +154,9 @@ With `viewport-fit=cover`, and as a web app on the home screen, the page reaches
 - A column keeps the side of the screen clear that it lies at, and the content the sides that have no column.
 - Without a header, or without a footer, the frame keeps that edge clear itself: the content does not scroll under the status bar.
 
-The room is padding of the regions, so a background on the element of the page ends where the padding starts. The surface of a region is its part:
+An [`el-app-bar`](../app-bar/app-bar.readme.md) in the header draws its own surface into that room: the region tells the components in it how far its surface reaches.
+
+For other content the room is padding of the regions, so a background on the element of the page ends where the padding starts. The surface of a region is its part:
 
 ```css
 el-app-frame::part(header) {

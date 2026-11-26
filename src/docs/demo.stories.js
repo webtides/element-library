@@ -280,6 +280,12 @@ const kit = [
         blurb: 'Entries that open and close, with the keys of a tree.',
         fresh: true,
     },
+    {
+        tag: 'el-app-bar',
+        category: 'Navigation',
+        blurb: 'The bar at the top of a view: a title, a way back, a few actions.',
+        fresh: true,
+    },
     { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
     { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.' },
     { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },

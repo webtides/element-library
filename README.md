@@ -60,6 +60,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | accordion            | Single Accordion element                                                        | `0.1.0` |
 | accordion-group      | Accordion group to hold multiple elements                                       | `0.1.0` |
 | amount-field         | A simple element to create amount stepping input fields                         | `0.1.1` |
+| app-bar              | The bar at the top of a view: a title, a way back and a few actions             | `0.1.0` |
 | app-frame            | The frame of an application: five regions around its content, on any screen     | `0.1.0` |
 | avatar               | The picture of a person or a thing: an image, initials or an icon               | `0.1.0` |
 | badge                | A short label for a status or a count, with variants and appearances            | `0.1.0` |

@@ -59,6 +59,7 @@ element-library/
 - **accordion**: Single accordion element
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
+- **app-bar**: Bar at the top of a view: a start, a title that is cut with an ellipsis and can be the heading of the view (`heading-level`), and actions at its end; in the header of an `el-app-frame` its surface reaches under the status bar of a phone
 - **app-frame**: Frame of an application: it fills the viewport and lays out a header, a footer, a navigation, an aside and the content, which scrolls; the page writes the landmarks, the stylesheet decides narrow or wide by the width of the frame (a container query per step of `wide-from`), and the regions keep clear of the notch and the home indicator
 - **avatar**: Picture of a person or a thing: an image, initials or an icon
 - **badge**: Label for a status or a count
@@ -212,6 +213,7 @@ Rules:
 3. **Internal properties**: what a module sets on the host starts with `--_el-`. These are not tokens; themes set `--el-*` only.
 4. **Component styles are in no cascade layer**: element-js adopts the stylesheets of the page into every shadow root, where a component in a layer would lose against any rule of the page that is in none.
 5. **A container tells its controls in inherited properties, and never writes to them.** A control reads the context in its own stylesheet, on the element it paints, and falls back to its own value (`var(--_el-context-size-height, var(--_el-size-height))`): the look is the same before and after the script. It reads the context only while the page has given it no value of its own. A stylesheet cannot ask that, because element-js writes the defaults onto the element: the control remembers which attributes were there when it connected, before `super.connectedCallback()`, and marks the element it paints from its template (`button--inherit-size` of `el-button`). On the server no default has been written, so `hasAttribute()` is the answer there.
+6. **A region of `el-app-frame` tells the components in it how far its surface reaches** past its content, on each side (`--_el-context-inset-block-start`, `-block-end`, `-inline-start`, `-inline-end`: the room of the notch and the home indicator), and that it draws the line to the content itself (`--_el-context-line-block-end` in the header, `-block-start` in the footer). A component that is the surface of a region (`el-app-bar`) pulls its surface into that room with negative margins and pads its content by it, on an element inside of its shadow root: a reset of the page (`margin: 0` for everything) wins over a rule for the host. Only the header, the footer and the navigation have that room. The content and the aside say nothing, so a bar in a card there is not pulled out of it.
 
 ### Stylesheets for the Page
 

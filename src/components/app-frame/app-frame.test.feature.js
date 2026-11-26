@@ -711,6 +711,17 @@ describe('Feature | AppFrame', () => {
             expect(insets(el.querySelector('main'))).toEqual(['0px', '0px', '0px', '0px']);
             expect(insets(el.querySelector('aside'))).toEqual(['0px', '0px', '0px', '0px']);
         });
+
+        it('tells the components in the header and in the footer that it draws the line to the content', async () => {
+            const el = await frame(regions());
+            const line = (node, side) => getComputedStyle(node).getPropertyValue(`--_el-context-line-${side}`).trim();
+
+            expect(line(el.querySelector('header'), 'block-end')).toBe('0px');
+            expect(line(el.querySelector('footer'), 'block-start')).toBe('0px');
+            // Not in the content: a bar there has its own line.
+            expect(line(el.querySelector('main'), 'block-end')).toBe('');
+            expect(line(el.querySelector('main'), 'block-start')).toBe('');
+        });
     });
 
     describe('on paper', () => {

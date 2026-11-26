@@ -1,6 +1,7 @@
 import { html } from '@webtides/element-js';
 import readme from './app-frame.readme.md?raw';
 import { define } from './app-frame.js';
+import { define as defineAppBar } from '../app-bar/app-bar.js';
 import { define as defineBadge } from '../badge/badge.js';
 import { define as defineButton } from '../button/button.js';
 import { define as defineDescriptionList } from '../description-list/description-list.js';
@@ -10,6 +11,7 @@ import { define as defineListItem } from '../list-item/list-item.js';
 import { define as defineScrollToTop } from '../scroll-to-top/scroll-to-top.js';
 import { toast } from '../toast/toast.js';
 define();
+defineAppBar();
 defineBadge();
 defineButton();
 defineDescriptionList();
@@ -84,15 +86,17 @@ const tasks = [
  */
 const application = ({ wideFrom, skipLabel, style = '' }) => html`
     <el-app-frame wide-from="${wideFrom}" skip-label="${skipLabel}" style="${style}">
-        <header slot="header" style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 1rem">
-            <strong style="font-size:1.125rem">Tasks</strong>
-            <el-button
-                style="margin-inline-start:auto"
-                size="small"
-                variant="brand"
-                @click="${(event) => event.currentTarget.getRootNode().querySelector('el-dialog')?.show()}"
-                >New task</el-button
-            >
+        <header slot="header">
+            <el-app-bar heading-level="1">
+                Tasks
+                <el-button
+                    slot="end"
+                    variant="brand"
+                    appearance="filled"
+                    @click="${(event) => event.currentTarget.closest('el-app-frame').querySelector('el-dialog')?.show()}"
+                    >New task</el-button
+                >
+            </el-app-bar>
         </header>
 
         <nav slot="navigation" aria-label="Lists" style="padding:0.5rem">
@@ -111,7 +115,7 @@ const application = ({ wideFrom, skipLabel, style = '' }) => html`
         </nav>
 
         <main id="tasks" style="padding:1rem">
-            <h1 style="margin:0 0 1rem;font-size:1.5rem;font-weight:700">Inbox</h1>
+            <h2 style="margin:0 0 1rem;font-size:1.5rem;font-weight:700">Inbox</h2>
             <el-list label="Tasks in the inbox" appearance="outlined">
                 ${tasks.map(
                     ([title, due], index) => html`

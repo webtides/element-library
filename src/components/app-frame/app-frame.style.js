@@ -133,6 +133,8 @@ const style = css`
         --_el-context-inset-block-end: 0px;
         --_el-context-inset-inline-start: var(--_el-app-frame-start);
         --_el-context-inset-inline-end: var(--_el-app-frame-end);
+        /* The line to the content is drawn here: a bar in the region leaves its own out. */
+        --_el-context-line-block-end: 0px;
 
         grid-area: header;
         padding-block-start: var(--_el-app-frame-top);
@@ -145,6 +147,7 @@ const style = css`
         --_el-context-inset-block-end: var(--_el-app-frame-bottom);
         --_el-context-inset-inline-start: var(--_el-app-frame-start);
         --_el-context-inset-inline-end: var(--_el-app-frame-end);
+        --_el-context-line-block-start: 0px;
 
         grid-area: footer;
         padding-block-end: var(--_el-app-frame-bottom);
