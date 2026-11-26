@@ -19,3 +19,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The text is one line: what does not fit is cut with an ellipsis, and the whole text stays in the page for assistive technology.
 - The `badge` slot takes a count or a dot, an `el-badge` as a rule, on the corner of the icon. It is part of the link and comes after the text, so a screen reader reads it with the name of the destination.
 - On a touch screen the link is at least `--el-touch-target` wide and high.
+- In an `el-nav` that shows icons alone (`labels="false"`) the text of the destination is off the screen and stays the name of its link. In a rail a destination is as high as it is, and in a bar a share of the width: the `el-nav` says which in CSS properties that are inherited. ([#181](https://github.com/webtides/element-library/issues/181))

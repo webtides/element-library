@@ -5,7 +5,9 @@ const css = String.raw;
 const style = css`
     :host {
         display: block;
-        /* A destination is as wide as its part of the bar, whatever its text needs. */
+        /* In a bar a destination is as wide as its part of the bar, whatever its text needs. In a
+           rail it is as high as it is. The el-nav says which, in a property that is inherited. */
+        flex: var(--_el-nav-item-flex, 1 1 0);
         min-inline-size: 0;
     }
 
@@ -63,10 +65,16 @@ const style = css`
         display: inline-flex;
     }
 
-    /* One line. What does not fit is cut, and the bar keeps its height. */
+    /* One line. What does not fit is cut, and the bar keeps its height.
+       Where the el-nav shows icons alone, the text is off the screen and stays the name of the
+       link: the el-nav says so in properties that are inherited. */
     .label {
+        position: var(--_el-nav-label-position, static);
+        inline-size: var(--_el-nav-label-size, auto);
+        block-size: var(--_el-nav-label-size, auto);
         max-inline-size: 100%;
         overflow: hidden;
+        clip-path: var(--_el-nav-label-clip, none);
         text-overflow: ellipsis;
         white-space: nowrap;
     }

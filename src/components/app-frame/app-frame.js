@@ -74,6 +74,10 @@ const TOGGLE = '[data-navigation-toggle]';
  *   destinations in the footer of a phone, for example (`narrow-only="footer"`). Default `''`.
  * @property {string} wideOnly - The regions that are there only where the frame is wide, named
  *   the same way. Default `''`.
+ * @property {'drawer'|'bar'} narrowNavigation - What the navigation is where the frame is narrow.
+ *   `drawer`: it does not show, and opens as a drawer. `bar`: its region lies at the lower edge,
+ *   for an `el-nav` whose destinations are a bar there and a rail in the column of the wide
+ *   frame. Default `'drawer'`.
  * @property {boolean} navigationOpen - Whether the drawer of the navigation is open. It is one
  *   only where the frame is narrow: elsewhere the property is `false`. Reflected to the
  *   `navigation-open` attribute.
@@ -118,6 +122,7 @@ export default class AppFrame extends TemplateElement {
             wideFrom: DEFAULT_STEP,
             narrowOnly: '',
             wideOnly: '',
+            narrowNavigation: 'drawer',
             navigationOpen: false,
             navigationLabel: 'Navigation',
             closeLabel: 'Close',
@@ -145,6 +150,8 @@ export default class AppFrame extends TemplateElement {
 
     watch() {
         return {
+            narrowNavigation: () => this._syncView(),
+            wideOnly: () => this._syncView(),
             navigationOpen: () => {
                 // There is a drawer to open only where the frame is narrow.
                 if (this.navigationOpen && !this._inDrawer) {
@@ -252,7 +259,10 @@ export default class AppFrame extends TemplateElement {
         if (!this.$refs.base) return;
 
         const inDrawer =
-            !this.wide && hasSlotted(this, 'navigation') && !this._regionsOf(this.wideOnly).includes('navigation');
+            !this.wide &&
+            this.narrowNavigation !== 'bar' &&
+            hasSlotted(this, 'navigation') &&
+            !this._regionsOf(this.wideOnly).includes('navigation');
         if (inDrawer === this._inDrawer) return;
 
         this._inDrawer = inDrawer;
@@ -435,6 +445,7 @@ export default class AppFrame extends TemplateElement {
                 data-wide-from="${step}"
                 data-narrow-only="${this._regionsOf(this.narrowOnly).join(' ')}"
                 data-wide-only="${this._regionsOf(this.wideOnly).join(' ')}"
+                data-narrow-navigation="${this.narrowNavigation === 'bar' ? 'bar' : 'drawer'}"
             >
                 <div part="header" class="header" ?hidden="${!hasSlotted(this, 'header')}">
                     <slot name="header"></slot>

@@ -60,7 +60,7 @@ element-library/
 - **accordion-group**: Accordion group container
 - **amount-field**: Amount stepping input field
 - **app-bar**: Bar at the top of a view: a start, a title that is cut with an ellipsis and can be the heading of the view (`heading-level`), and actions at its end; in the header of an `el-app-frame` its surface reaches under the status bar of a phone
-- **app-frame**: Frame of an application: it fills the viewport and lays out a header, a footer, a navigation, an aside and the content, which scrolls; the page writes the landmarks, the stylesheet decides narrow or wide by the width of the frame (a container query per step of `wide-from`), and the regions keep clear of the notch and the home indicator; `narrow-only` and `wide-only` name the regions that are there at one width only; where the frame is narrow the navigation is in an `el-drawer` of the frame (one slot, rendered in the region or in the drawer), opened by any element with `data-navigation-toggle`
+- **app-frame**: Frame of an application: it fills the viewport and lays out a header, a footer, a navigation, an aside and the content, which scrolls; the page writes the landmarks, the stylesheet decides narrow or wide by the width of the frame (a container query per step of `wide-from`), and the regions keep clear of the notch and the home indicator; `narrow-only` and `wide-only` name the regions that are there at one width only; where the frame is narrow the navigation is in an `el-drawer` of the frame (one slot, rendered in the region or in the drawer), opened by any element with `data-navigation-toggle`; with `narrow-navigation="bar"` the navigation lies at the lower edge instead, for an `el-nav`
 - **avatar**: Picture of a person or a thing: an image, initials or an icon
 - **badge**: Label for a status or a count
 - **breadcrumb**: Trail from the start page to the current page: a `nav` landmark with a list of `el-breadcrumb-item`
@@ -87,7 +87,7 @@ element-library/
 - **lazy-src**: Lazy loading wrapper
 - **list**: List of rows: `role="list"`, one density, a line between two rows, and one line where the texts of all rows begin (subgrid)
 - **list-item**: One row of a list: a start, a title, a line under it, an end and a control of its own; a link as a whole with `href`
-- **nav**: Destinations of an application as a bar for the lower edge of a phone: a `nav` landmark with a list of `el-nav-item`, three to five in equal parts; in the footer of an `el-app-frame` its surface reaches the lower edge of the screen
+- **nav**: Destinations of an application: a `nav` landmark with a list of `el-nav-item`, as a bar for the lower edge of a phone (three to five in equal parts) or as a rail for the side of a wider screen (a group at its top and one at its lower end, icons alone with tooltips); `layout="auto"` is a bar, and a rail in the column of an `el-app-frame`, which says so in an inherited property
 - **nav-item**: One destination of a nav: a link with an icon, a short text under it and a count or a dot; the current one is marked by its weight and a shape behind its icon
 - **scroll-to**: Scroll to target element
 - **notification**: Alert with variants, auto-dismiss and a live region, inline or as a toast

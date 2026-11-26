@@ -15,6 +15,7 @@ import { define } from './nav.js';
 import { define as defineNavItem } from '../nav-item/nav-item.js';
 import { define as defineAppFrame } from '../app-frame/app-frame.js';
 import { define as defineBadge } from '../badge/badge.js';
+import { forcePseudoClasses } from '../../test-helpers.js';
 define();
 defineNavItem();
 defineAppFrame();
@@ -46,9 +47,12 @@ const four = `
     ${destination('Done')}
 `;
 
-const nav = async (content, { attributes = 'label="Main"', width = 400, style = theme, dir = 'ltr' } = {}) => {
+const nav = async (
+    content,
+    { attributes = 'label="Main"', width = 400, height = 0, style = theme, dir = 'ltr' } = {},
+) => {
     const wrapper = await fixture(`
-        <div dir="${dir}" style="${style} width: ${width}px;">
+        <div dir="${dir}" style="${style} width: ${width}px; ${height ? `height: ${height}px;` : ''}">
             <button class="before" type="button">Before</button>
             <el-nav ${attributes}>${content}</el-nav>
         </div>
@@ -237,6 +241,274 @@ describe('Feature | Nav', () => {
         });
     });
 
+    describe('the rail', () => {
+        const rail = (content = four, options = {}) =>
+            nav(content, { attributes: 'label="Main" layout="rail"', height: 400, ...options });
+        const settings = `
+            <el-nav-item slot="end" id="settings" href="#settings">${icon}Settings</el-nav-item>
+            <el-nav-item slot="end" id="account" href="#account">${icon}Account</el-nav-item>
+        `;
+
+        it('has its destinations below each other, in a column of 5rem with a line to the content', async () => {
+            const el = await rail();
+            const { borderRightWidth, borderTopWidth } = getComputedStyle(part(el, 'base'));
+
+            // As high as its place, and 80px with the line of 1px.
+            expect(box(el.parentElement, part(el, 'base')).slice(2)).toEqual([81, 400]);
+            expect([borderRightWidth, borderTopWidth]).toEqual(['1px', '0px']);
+            expect([...el.querySelectorAll('el-nav-item')].map((item) => box(el, item))).toEqual([
+                [0, 0, 80, 56],
+                [0, 56, 80, 56],
+                [0, 112, 80, 56],
+                [0, 168, 80, 56],
+            ]);
+        });
+
+        it('is as wide as the page says', async () => {
+            const el = await rail(four, { style: `${theme} --el-nav-rail-size: 100px;` });
+            expect(box(el.parentElement, part(el, 'base'))[2]).toBe(101);
+        });
+
+        it('has a group at its top and a group at its lower end', async () => {
+            const el = await rail(`${four}${settings}`);
+
+            expect(await accessibleRole(part(el, 'end'))).toBe('list');
+            expect(box(el, el.querySelector('#inbox'))[1]).toBe(0);
+            // The last one ends where the rail ends.
+            const [, top, , height] = box(el, el.querySelector('#account'));
+            expect(top + height).toBe(400);
+            expect(box(el, el.querySelector('#settings'))[1]).toBe(400 - 2 * 56);
+        });
+
+        it('leaves the list of the lower end out while it is empty', async () => {
+            const el = await rail();
+            expect(part(el, 'end').hidden).toBe(true);
+
+            el.insertAdjacentHTML('beforeend', settings);
+            await rendered();
+            expect(part(el, 'end').hidden).toBe(false);
+        });
+
+        it('scrolls where it has more destinations than its height takes, and every one is reached', async () => {
+            const many = Array.from({ length: 12 }, (_, i) => destination(`Place${i}`)).join('');
+            const el = await rail(`${many}${settings}`);
+            const list = part(el, 'list');
+
+            expect(getComputedStyle(list).overflowY).toBe('auto');
+            expect(list.scrollHeight).toBeGreaterThan(list.clientHeight);
+            // The rail is as high as its place, and the group at the lower end stays in view.
+            expect(box(el.parentElement, part(el, 'base'))[3]).toBe(400);
+            const [, top, , height] = box(el, el.querySelector('#account'));
+            expect(top + height).toBe(400);
+
+            // The Tab key stops at every destination, and the one with the focus is in view.
+            el.parentElement.querySelector('.before').focus();
+            const stops = [];
+            for (let i = 0; i < 14; i++) {
+                await userEvent.keyboard('{Tab}');
+                stops.push(activeElement().getRootNode().host.id);
+            }
+            expect(stops).toEqual([...Array.from({ length: 12 }, (_, i) => `place${i}`), 'settings', 'account']);
+            el.querySelector('#place11').shadowRoot.querySelector('a').focus();
+            await nextFrame();
+            const last = el.querySelector('#place11').getBoundingClientRect();
+            const view = list.getBoundingClientRect();
+            expect(last.top).toBeGreaterThanOrEqual(view.top);
+            expect(last.bottom).toBeLessThanOrEqual(view.bottom);
+        });
+
+        it('has its line at the left in a right-to-left page', async () => {
+            const el = await rail(four, { dir: 'rtl' });
+            const { borderLeftWidth, borderRightWidth } = getComputedStyle(part(el, 'base'));
+
+            expect([borderLeftWidth, borderRightWidth]).toEqual(['1px', '0px']);
+        });
+
+        it('marks the current destination as in a bar', async () => {
+            const el = await rail();
+            const link = part(el.querySelector('#inbox'), 'link');
+
+            expect(link.getAttribute('aria-current')).toBe('page');
+            expect(getComputedStyle(link).fontWeight).toBe('600');
+            expect(getComputedStyle(part(el.querySelector('#inbox'), 'icon')).backgroundColor).toBe(
+                'rgb(230, 230, 230)',
+            );
+        });
+
+        it('passes axe', async () => {
+            const el = await rail(`${four}${settings}`);
+            const results = await axe.run(el.parentElement);
+            expect(results.violations).toEqual([]);
+        });
+    });
+
+    describe('the group at the lower end, in a bar', () => {
+        it('is left out: a bar has no room for it', async () => {
+            const el = await nav(
+                `${four}<el-nav-item slot="end" id="settings" href="#settings">${icon}Settings</el-nav-item>`,
+            );
+
+            expect(getComputedStyle(part(el, 'end')).display).toBe('none');
+            expect(el.querySelector('#settings').getBoundingClientRect().width).toBe(0);
+            expect(box(el, el.querySelector('#inbox'))[2]).toBe(100);
+        });
+    });
+
+    describe('destinations with an icon alone', () => {
+        const iconsOnly = (options = {}) =>
+            nav(four, { attributes: 'label="Main" layout="rail" labels="false"', height: 400, ...options });
+        const tooltips = (el) => [...el.shadowRoot.querySelectorAll('el-tooltip')];
+
+        it('keep their texts as the names of their links, off the screen', async () => {
+            const el = await iconsOnly();
+            const item = el.querySelector('#today');
+            const { width, height } = part(item, 'label').getBoundingClientRect();
+
+            expect([width, height]).toEqual([1, 1]);
+            expect(await accessibleName(part(item, 'link'))).toBe('Today');
+            // The destination is as high as with its text: the rail does not jump.
+            expect(box(el, item)).toEqual([0, 56, 80, 56]);
+        });
+
+        it('show their names as tooltips, for the keyboard and for the pointer', async () => {
+            const el = await iconsOnly();
+            const item = el.querySelector('#today');
+            const tooltip = tooltips(el)[1];
+
+            expect(tooltips(el).map((entry) => entry.textContent.trim())).toEqual([
+                'Inbox',
+                'Today',
+                'Upcoming',
+                'Done',
+            ]);
+            expect(tooltip.matches(':popover-open')).toBe(false);
+
+            part(item, 'link').focus();
+            await expect.poll(() => tooltip.matches(':popover-open')).toBe(true);
+            await rendered();
+            // Beside the rail, on the side of the content.
+            expect(el.getBoundingClientRect().width).toBe(81);
+            expect(tooltip.getBoundingClientRect().left).toBeGreaterThanOrEqual(el.getBoundingClientRect().right - 1);
+            // The name is on the link already: a screen reader does not read it twice.
+            expect(tooltip.getAttribute('aria-hidden')).toBe('true');
+            expect(part(item, 'link').hasAttribute('aria-describedby')).toBe(false);
+
+            part(item, 'link').blur();
+            await expect.poll(() => tooltip.matches(':popover-open')).toBe(false);
+
+            await userEvent.hover(item);
+            await expect.poll(() => tooltip.matches(':popover-open')).toBe(true);
+            await userEvent.unhover(item);
+        });
+
+        it('have no tooltips while their texts show, and take no room with them', async () => {
+            const withTexts = await nav(four, { attributes: 'label="Main" layout="rail"', height: 400 });
+            const without = await iconsOnly();
+
+            expect(tooltips(withTexts)).toEqual([]);
+            for (const tooltip of tooltips(without)) {
+                expect(getComputedStyle(tooltip).display).toBe('none');
+            }
+
+            withTexts.labels = false;
+            await rendered();
+            expect(tooltips(withTexts).length).toBe(4);
+            expect(part(withTexts.querySelector('#today'), 'label').getBoundingClientRect().width).toBe(1);
+        });
+
+        it('follow a text that changes, and a destination that comes', async () => {
+            const el = await iconsOnly();
+
+            el.querySelector('#today').lastChild.textContent = 'Heute';
+            el.insertAdjacentHTML('beforeend', destination('More'));
+            await rendered();
+            await rendered();
+
+            expect(tooltips(el).map((entry) => entry.textContent.trim())).toEqual([
+                'Inbox',
+                'Heute',
+                'Upcoming',
+                'Done',
+                'More',
+            ]);
+        });
+
+        it('show the tooltips above a bar', async () => {
+            // With room above it: a tooltip without room goes to the other side.
+            const el = await nav(four, {
+                attributes: 'label="Main" layout="bar" labels="false"',
+                style: `${theme} padding-top: 200px;`,
+            });
+            const item = el.querySelector('#today');
+            const tooltip = tooltips(el)[1];
+
+            part(item, 'link').focus();
+            await expect.poll(() => tooltip.matches(':popover-open')).toBe(true);
+            await rendered();
+
+            expect(tooltip.getBoundingClientRect().bottom).toBeLessThanOrEqual(item.getBoundingClientRect().top + 1);
+        });
+
+        it('pass axe', async () => {
+            const el = await iconsOnly();
+            const results = await axe.run(el.parentElement);
+            expect(results.violations).toEqual([]);
+        });
+    });
+
+    describe('the layout by where the element is', () => {
+        const frameWith = async (slot, { width = 1000, attributes = '' } = {}) => {
+            const wrapper = await fixture(`
+                <div style="${theme} width: ${width}px;">
+                    <el-app-frame style="position: relative; height: 600px" ${attributes}>
+                        <main id="auto-main-${width}-${slot}"><p>Content</p></main>
+                        <el-nav slot="${slot}" label="Main">${four}</el-nav>
+                    </el-app-frame>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            await nextFrame();
+            await nextFrame();
+            return wrapper.querySelector('el-nav');
+        };
+        const tops = (el) => [...el.querySelectorAll('el-nav-item')].map((item) => Math.round(box(el, item)[1]));
+
+        it('is a bar alone, and in the footer of a frame', async () => {
+            const alone = await nav(four);
+            const inFooter = await frameWith('footer');
+
+            expect(tops(alone)).toEqual([1, 1, 1, 1]);
+            expect(tops(inFooter)).toEqual([0, 0, 0, 0]);
+        });
+
+        it('is a rail in the column at the side of a frame, as high as the column', async () => {
+            const el = await frameWith('navigation', { attributes: 'narrow-navigation="bar"' });
+            const frame = el.closest('el-app-frame');
+
+            expect(tops(el)).toEqual([0, 56, 112, 168]);
+            expect(box(frame, part(el, 'base'))).toEqual([0, 0, 80, 600]);
+            // The region draws the line, and is as wide as the rail.
+            expect(getComputedStyle(part(el, 'base')).borderRightWidth).toBe('0px');
+            expect(box(frame, frame.shadowRoot.querySelector('[part~="navigation"]'))).toEqual([0, 0, 81, 600]);
+        });
+
+        it('is the layout the page names, wherever it is', async () => {
+            const wrapper = await fixture(`
+                <div style="${theme} width: 1000px;">
+                    <el-app-frame style="position: relative; height: 600px">
+                        <main id="named-main"><p>Content</p></main>
+                        <el-nav slot="navigation" label="Main" layout="bar">${four}</el-nav>
+                    </el-app-frame>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            await rendered();
+
+            // In one row, under the line of the bar.
+            expect(tops(wrapper.querySelector('el-nav'))).toEqual([1, 1, 1, 1]);
+        });
+    });
+
     describe('the current destination', () => {
         it('is told apart by its weight and by a shape behind its icon, not by its colour alone', async () => {
             const el = await nav(four);
@@ -363,6 +635,37 @@ describe('Feature | Nav', () => {
             expect(box(el, part(el, 'list'))).toEqual([10, 1, 370, 56]);
             const { paddingLeft, paddingRight } = getComputedStyle(part(el, 'base'));
             expect([paddingLeft, paddingRight]).toEqual(['10px', '20px']);
+        });
+
+        it('keeps a rail clear of the top, the side and the lower edge of the screen alone', async () => {
+            const el = await nav(four, { attributes: 'label="Main" layout="rail"', height: 400 });
+            const { paddingTop, paddingRight, paddingBottom, paddingLeft } = getComputedStyle(part(el, 'base'));
+
+            expect([paddingTop, paddingRight, paddingBottom, paddingLeft]).toEqual(['47px', '0px', '34px', '10px']);
+            // The destinations are 5rem wide, and the room of the screen is on top.
+            expect(box(el.parentElement, part(el, 'base')).slice(2)).toEqual([10 + 80 + 1, 400]);
+            expect(box(el, el.querySelector('#inbox'))).toEqual([10, 47, 80, 56]);
+        });
+
+        it('reaches the side of the screen with the surface of a rail in a frame, and its destinations do not', async () => {
+            const wrapper = await fixture(`
+                <div style="${theme} width: 1000px;">
+                    <el-app-frame style="position: relative; height: 600px" narrow-navigation="bar">
+                        <header slot="header" style="display: block; height: 50px">Header</header>
+                        <main id="rail-safe"><p>Content</p></main>
+                        <el-nav slot="navigation" label="Main">${four}</el-nav>
+                    </el-app-frame>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            await rendered();
+            const el = wrapper.querySelector('el-nav');
+            const frame = wrapper.querySelector('el-app-frame');
+
+            // Below the header, which is 47px higher. From the left edge, and the frame keeps the
+            // lower edge clear itself, as there is no footer.
+            expect(box(frame, part(el, 'base'))).toEqual([0, 98, 90, 600 - 98 - 34]);
+            expect(box(frame, el.querySelector('#inbox'))).toEqual([10, 98, 80, 56]);
         });
 
         it('keeps the room once in a page that resets every margin and padding', async () => {

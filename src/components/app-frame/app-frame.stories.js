@@ -320,3 +320,42 @@ export const Widths = {
         </el-app-frame>
     `,
 };
+
+export const WrittenOnce = {
+    name: 'Destinations the page writes once',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'An `el-nav` in the `navigation` slot, and `narrow-navigation="bar"` on the frame. Where the frame is wide, the destinations are a rail in the column at its side. Where it is narrow, the navigation lies at the lower edge and they are a bar. Make the window narrower to see it change: the stylesheets decide, by the width of the frame.',
+            },
+        },
+    },
+    render: () => html`
+        <el-app-frame narrow-navigation="bar">
+            <header slot="header"><el-app-bar heading-level="1">Tasks</el-app-bar></header>
+            <el-nav slot="navigation" label="Main">
+                ${destinations.map(
+                    ({ name, current, icon: path }) => html`
+                        <el-nav-item href="#${name.toLowerCase()}" current="${current ? 'true' : 'false'}"
+                            >${icon(path)}${name}</el-nav-item
+                        >
+                    `,
+                )}
+            </el-nav>
+            <main id="once-main" style="padding:1rem">
+                <h2 style="margin:0 0 1rem;font-size:1.5rem;font-weight:700">Inbox</h2>
+                <el-list label="Tasks in the inbox" appearance="outlined">
+                    ${tasks.map(
+                        ([title, due]) => html`
+                            <el-list-item>
+                                ${title}
+                                <span slot="description">${due}</span>
+                            </el-list-item>
+                        `,
+                    )}
+                </el-list>
+            </main>
+        </el-app-frame>
+    `,
+};

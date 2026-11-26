@@ -1,6 +1,6 @@
 # Nav Item
 
-`nav-item` is one destination of an [`el-nav`](../nav/nav.readme.md): a link with an icon and a short text under it. The destination of the current view is marked.
+`nav-item` is one destination of an [`el-nav`](../nav/nav.readme.md): a link with an icon and a short text under it. The destination of the current view is marked. It is the same in a bar and in a rail.
 
 ## How to use
 
@@ -73,6 +73,8 @@ Reads `--el-color-fg-muted` for a destination and `--el-color-fg` for the curren
 ## The icon and the text
 
 The icon is a decoration: give it `aria-hidden="true"`. The text is the name of the destination, so keep it to a word or two. It is one line, and what does not fit is cut with an ellipsis. Assistive technology reads all of it.
+
+Where the `el-nav` shows icons alone (`labels="false"`), the text is off the screen. It stays the name of the link, and the `el-nav` shows it as a tooltip. Write the text in every case.
 
 ## The current destination
 

@@ -162,16 +162,57 @@ const style = css`
     }
 
     /* An el-button that opens the navigation is not there where there is nothing to open: no
-       navigation, or one for the wide frame only. It reads this in its own stylesheet. */
+       navigation, one for the wide frame only, or one that is a bar at the lower edge. It reads
+       this in its own stylesheet. */
     .frame:not(.frame--navigation),
-    .frame[data-wide-only~='navigation'] {
+    .frame[data-wide-only~='navigation'],
+    .frame[data-narrow-navigation='bar'] {
         --_el-context-navigation-toggle-display: none;
+    }
+
+    /*
+     * The navigation as a bar: its region lies at the lower edge, over the footer. It is a surface
+     * of the frame there, as the footer is: it reaches the sides of the screen, and the lower edge
+     * where no footer is below it, and what is in it stays clear of them.
+     */
+    .frame[data-narrow-navigation='bar'] {
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
+        grid-template-areas:
+            'header'
+            'body'
+            'navigation'
+            'footer';
+    }
+
+    .frame[data-narrow-navigation='bar'] .navigation {
+        --_el-context-inset-block-start: 0px;
+        --_el-context-inset-block-end: 0px;
+        --_el-context-inset-inline-start: var(--_el-app-frame-start);
+        --_el-context-inset-inline-end: var(--_el-app-frame-end);
+        --_el-context-line-block-start: 0px;
+
+        display: block;
+        grid-area: navigation;
+        padding-inline: var(--_el-app-frame-start) var(--_el-app-frame-end);
+        border-block-start: ${line};
+    }
+
+    .frame[data-narrow-navigation='bar'].frame--navigation:not(.frame--footer) {
+        padding-block-end: 0;
+    }
+
+    .frame[data-narrow-navigation='bar']:not(.frame--footer) .navigation {
+        --_el-context-inset-block-end: var(--_el-app-frame-bottom);
+
+        padding-block-end: var(--_el-app-frame-bottom);
     }
 
     /* The drawer of the navigation: as wide as the column is, and the navigation of the page
        brings its own padding. */
     .drawer {
         --el-drawer-size: var(--el-app-frame-navigation-size, 16rem);
+        /* An el-nav in the drawer has its destinations below each other. */
+        --_el-context-nav-rail: ;
     }
 
     .drawer::part(body) {
@@ -279,12 +320,40 @@ const wideStyle = (step) => {
             ${frame} .navigation {
                 ${noInsets}
                 --_el-context-inset-inline-start: var(--_el-app-frame-start);
+                /* The region draws the line to the content, and an el-nav in it is a rail. */
+                --_el-context-line-inline-end: 0px;
+                --_el-context-nav-rail: ;
+                --_el-context-line-block-start: initial;
 
                 display: block;
                 grid-area: navigation;
                 inline-size: var(--el-app-frame-navigation-size, 16rem);
-                padding-inline-start: var(--_el-app-frame-start);
+                padding-block-end: 0;
+                padding-inline: var(--_el-app-frame-start) 0;
+                border-block-start: 0;
                 border-inline-end: ${line};
+            }
+
+            /* The column of a navigation that is a bar where the frame is narrow is as wide as
+               what is in it: a rail. */
+            ${frame}[data-narrow-navigation='bar'] .navigation {
+                inline-size: var(--el-app-frame-navigation-size, auto);
+            }
+
+            ${frame}[data-narrow-navigation='bar'] {
+                grid-template-rows: auto minmax(0, 1fr) auto;
+            }
+
+            ${frame}[data-narrow-navigation='bar'].frame--navigation:not(.frame--footer) {
+                padding-block-end: var(--_el-app-frame-bottom);
+            }
+
+            /* The column does not reach the lower edge of the screen as the bar did: the frame
+               keeps that edge clear. */
+            ${frame}[data-narrow-navigation='bar']:not(.frame--footer) .navigation {
+                --_el-context-inset-block-end: 0px;
+
+                padding-block-end: 0;
             }
 
             ${frame} .aside {

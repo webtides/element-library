@@ -15,6 +15,7 @@ describe('Unit | AppFrame', () => {
             wideFrom: '48rem',
             narrowOnly: '',
             wideOnly: '',
+            narrowNavigation: 'drawer',
             navigationOpen: false,
             navigationLabel: 'Navigation',
             closeLabel: 'Close',

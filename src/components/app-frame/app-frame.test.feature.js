@@ -16,6 +16,8 @@ import { define } from './app-frame.js';
 import { define as defineButton } from '../button/button.js';
 import { define as defineDialog } from '../dialog/dialog.js';
 import { define as defineDrawer } from '../drawer/drawer.js';
+import { define as defineNav } from '../nav/nav.js';
+import { define as defineNavItem } from '../nav-item/nav-item.js';
 import { define as definePopover } from '../popover/popover.js';
 import { define as defineTooltip } from '../tooltip/tooltip.js';
 import { define as defineToast } from '../toast/toast.js';
@@ -25,6 +27,8 @@ define();
 defineButton();
 defineDialog();
 defineDrawer();
+defineNav();
+defineNavItem();
 definePopover();
 defineTooltip();
 defineToast();
@@ -591,6 +595,110 @@ describe('Feature | AppFrame', () => {
         });
     });
 
+    describe('destinations the page writes once', () => {
+        const icon = `<svg slot="icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /></svg>`;
+        const destinations = ['Inbox', 'Today', 'Upcoming', 'Done']
+            .map(
+                (name) =>
+                    `<el-nav-item id="${name.toLowerCase()}" href="#${name.toLowerCase()}">${icon}${name}</el-nav-item>`,
+            )
+            .join('');
+        const page = ({ footer = '' } = {}) => `
+            <header slot="header" style="display: block; height: 50px">
+                <el-button id="toggle" data-navigation-toggle aria-label="Menu">m</el-button>
+            </header>
+            <main id="content-${++ids}"><p>Content</p></main>
+            <el-nav slot="navigation" label="Main">${destinations}</el-nav>
+            ${footer}
+        `;
+        // A theme with the sizes of the destinations: a control of 40px and a space of 8px.
+        const sized = `${theme} --el-control-height: 40px; --el-space-1: 4px;`;
+        const once = (options = {}) =>
+            frame(page(options), { style: sized, attributes: 'narrow-navigation="bar"', ...options });
+        const tops = (el) =>
+            [...el.querySelectorAll('el-nav-item')].map((item) => Math.round(item.getBoundingClientRect().top));
+        const inOneRow = (el) => new Set(tops(el)).size === 1;
+
+        it('has them as a bar at the lower edge where the frame is narrow', async () => {
+            const el = await once({ width: 400 });
+
+            // The region lies at the lower edge, as wide as the frame, with its line to the content.
+            expect(box(el, 'navigation')).toEqual([0, 600 - 57, 400, 57]);
+            expect(box(el, 'body')).toEqual([0, 51, 400, 600 - 51 - 57]);
+            expect(inOneRow(el)).toBe(true);
+            // No drawer, and no button for one.
+            expect(el.shadowRoot.querySelector('el-drawer')).toBeNull();
+            expect(getComputedStyle(el.querySelector('#toggle')).display).toBe('none');
+            el.navigationOpen = true;
+            await rendered();
+            expect(el.navigationOpen).toBe(false);
+        });
+
+        it('has them as a rail in a column where the frame is wide', async () => {
+            const el = await once();
+
+            // As wide as the rail and its line, from the header to the lower edge.
+            expect(box(el, 'navigation')).toEqual([0, 51, 81, 549]);
+            expect(box(el, 'content')).toEqual([81, 51, 919, 549]);
+            expect(inOneRow(el)).toBe(false);
+            expect(tops(el)).toEqual(
+                [0, 56, 112, 168].map((top) => Math.round(el.getBoundingClientRect().top) + 51 + top),
+            );
+        });
+
+        it('keeps the element of the page, and follows the width of the frame', async () => {
+            const el = await once({ width: 400 });
+            const destinationsOfThePage = el.querySelector('el-nav');
+            expect(inOneRow(el)).toBe(true);
+
+            el.parentElement.style.width = '1000px';
+            await rendered();
+            expect(inOneRow(el)).toBe(false);
+            expect(box(el, 'navigation')).toEqual([0, 51, 81, 549]);
+
+            el.parentElement.style.width = '400px';
+            await rendered();
+            expect(inOneRow(el)).toBe(true);
+            expect(el.querySelector('el-nav')).toBe(destinationsOfThePage);
+            expect(destinationsOfThePage.parentElement).toBe(el);
+        });
+
+        it('lies over the footer where the page has both', async () => {
+            const el = await once({
+                width: 400,
+                footer: `<footer slot="footer" style="display: block; height: 30px">Footer</footer>`,
+            });
+
+            expect(box(el, 'footer')).toEqual([0, 569, 400, 31]);
+            expect(box(el, 'navigation')).toEqual([0, 569 - 57, 400, 57]);
+        });
+
+        it('takes a width for the column from the page', async () => {
+            const el = await once({ style: `${sized} --el-app-frame-navigation-size: 120px;` });
+            expect(box(el, 'navigation')).toEqual([0, 51, 121, 549]);
+        });
+
+        it('becomes a drawer again when the page says so', async () => {
+            const el = await once({ width: 400 });
+
+            el.narrowNavigation = 'drawer';
+            await expect.poll(() => !!el.shadowRoot.querySelector('el-drawer')).toBe(true);
+            await rendered();
+
+            expect(el.querySelector('el-nav').getBoundingClientRect().height).toBe(0);
+            expect(getComputedStyle(el.querySelector('#toggle')).display).toBe('inline-block');
+        });
+
+        it('passes axe at both widths', async () => {
+            for (const width of [400, 1000]) {
+                const el = await once({ width });
+                expect((await axe.run(el.parentElement)).violations).toEqual([]);
+                // One frame at a time: two would be two banners and two mains in one page.
+                el.parentElement.remove();
+            }
+        });
+    });
+
     describe('the button for the navigation', () => {
         const buttons = `
             <el-button id="library" data-navigation-toggle aria-label="Menu">m</el-button>
@@ -1119,6 +1227,31 @@ describe('Feature | AppFrame', () => {
             const el = await frame(regions(), { attributes: 'narrow-only="navigation aside"' });
 
             expect(paddings(el, 'content')).toEqual([0, 20, 0, 10]);
+        });
+
+        it('reaches the lower edge with the region of a navigation that is a bar, and what is in it does not', async () => {
+            const bar = `<el-nav slot="navigation" label="Main"><el-nav-item href="#a">A</el-nav-item><el-nav-item href="#b">B</el-nav-item></el-nav>`;
+            const alone = await frame(`<main id="bar-alone"><p>Content</p></main>${bar}`, {
+                width: 400,
+                attributes: 'narrow-navigation="bar"',
+                style: `${theme} --el-control-height: 40px;`,
+            });
+            const withFooter = await frame(
+                `<main id="bar-footer"><p>Content</p></main>${bar}<footer slot="footer" style="display: block; height: 30px">Footer</footer>`,
+                { width: 400, attributes: 'narrow-navigation="bar"', style: `${theme} --el-control-height: 40px;` },
+            );
+
+            // Alone at the lower edge: the home indicator and the sides are its room.
+            expect(paddings(alone, 'navigation')).toEqual([0, 20, 34, 10]);
+            expect(paddings(alone, 'base')).toEqual([47, 0, 0, 0]);
+            expect(box(alone, 'navigation')).toEqual([0, 600 - 34 - 57, 400, 57 + 34]);
+            const destinations = alone.querySelector('el-nav').shadowRoot.querySelector('[part~="list"]');
+            const origin = alone.getBoundingClientRect();
+            const list = destinations.getBoundingClientRect();
+            expect([list.left - origin.left, origin.bottom - list.bottom, list.width]).toEqual([10, 34, 370]);
+            // Over a footer, the footer has the lower edge.
+            expect(paddings(withFooter, 'navigation')).toEqual([0, 20, 0, 10]);
+            expect(paddings(withFooter, 'footer')).toEqual([0, 20, 34, 10]);
         });
 
         it('puts the skip link below the notch', async () => {

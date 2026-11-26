@@ -44,6 +44,7 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | `wide-from` | `'30rem' \| '40rem' \| '48rem' \| '64rem' \| '80rem'` | `'48rem'` | The width of the frame from which the navigation and the aside are columns beside the content. Another value is the default. |
 | `narrow-only` | `string` | `''` | The regions that are there only where the frame is narrow: `header`, `navigation`, `aside`, `footer`, with a space between them. |
 | `wide-only` | `string` | `''` | The regions that are there only where the frame is wide, named the same way. |
+| `narrow-navigation` | `'drawer' \| 'bar'` | `'drawer'` | What the navigation is where the frame is narrow: a drawer, or a region at the lower edge for an `el-nav`. |
 | `navigation-open` | `boolean` | `false` | Whether the drawer of the navigation is open. It is one only where the frame is narrow. Reflected to the `navigation-open` attribute. |
 | `navigation-label` | `string` | `'Navigation'` | The title of the drawer of the navigation, and its name for assistive technology. |
 | `close-label` | `string` | `'Close'` | The name of the close button of that drawer. |
@@ -178,6 +179,21 @@ Where the frame is narrow, the navigation does not show. It opens as a drawer fr
 - A navigation the page has for the wide frame only (`wide-only="navigation"`) has no drawer.
 
 Before the script has run, the stylesheet keeps the navigation from showing where the frame is narrow. The button is there and does nothing yet.
+
+## The navigation as a bar
+
+Some navigations are a few destinations, not a list of everything: the three to five places the user goes to all the time. On a phone they are a bar at the lower edge, on a wider screen a rail at the side. `narrow-navigation="bar"` is for those, with an [`el-nav`](../nav/nav.readme.md) in the `navigation` slot:
+
+```html
+<el-app-frame narrow-navigation="bar">
+    <main id="main">…</main>
+    <el-nav slot="navigation" label="Main">…</el-nav>
+</el-app-frame>
+```
+
+- Where the frame is narrow, the navigation lies at the lower edge, over the footer if there is one. There is no drawer, and a button for one is not there.
+- Where the frame is wide, the navigation is the column at the start side, as wide as what is in it.
+- The frame tells the `el-nav` which of the two it is, in a CSS property that is inherited: the destinations are a bar or a rail, and the page writes them once.
 
 ## Regions for one width
 

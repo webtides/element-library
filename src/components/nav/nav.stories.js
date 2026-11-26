@@ -50,13 +50,23 @@ export default {
     },
     args: {
         label: 'Main',
+        layout: 'bar',
+        labels: true,
+    },
+    argTypes: {
+        layout: { options: ['auto', 'bar', 'rail'], control: { type: 'inline-radio' } },
     },
 };
 
 export const Playground = {
-    render: ({ label }) =>
+    render: ({ label, layout, labels }) =>
         phone(html`
-            <el-nav label="${label}">
+            <el-nav
+                label="${label}"
+                layout="${layout}"
+                labels="${labels ? 'true' : 'false'}"
+                style="${layout === 'rail' ? 'height:24rem' : ''}"
+            >
                 <el-nav-item href="#inbox" current="true">${icon(icons.inbox)}Inbox</el-nav-item>
                 <el-nav-item href="#today">${icon(icons.today)}Today</el-nav-item>
                 <el-nav-item href="#upcoming">${icon(icons.upcoming)}Upcoming</el-nav-item>
@@ -124,4 +134,58 @@ export const FiveDestinations = {
                 <el-nav-item href="#more">${icon(icons.more)}More</el-nav-item>
             </el-nav>
         `),
+};
+
+const settings =
+    'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6M4 12h2M18 12h2M12 4v2M12 18v2M6.5 6.5l1.4 1.4M16.1 16.1l1.4 1.4M6.5 17.5l1.4-1.4M16.1 7.9l1.4-1.4';
+const account = 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M5 20a7 7 0 0 1 14 0';
+
+const railOf = (labels) => html`
+    <el-nav label="Main" layout="rail" labels="${labels ? 'true' : 'false'}">
+        <el-nav-item href="#inbox" current="true">${icon(icons.inbox)}Inbox</el-nav-item>
+        <el-nav-item href="#today">${icon(icons.today)}Today</el-nav-item>
+        <el-nav-item href="#upcoming">${icon(icons.upcoming)}Upcoming</el-nav-item>
+        <el-nav-item href="#done">${icon(icons.done)}Done</el-nav-item>
+        <el-nav-item slot="end" href="#settings">${icon(settings)}Settings</el-nav-item>
+        <el-nav-item slot="end" href="#account">${icon(account)}Account</el-nav-item>
+    </el-nav>
+`;
+
+export const Rail = {
+    name: 'A rail',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: '`layout="rail"`: the destinations below each other in a narrow column, with a group at its top and the `end` slot at its lower end. The rail is as high as its place, 26rem here.',
+            },
+        },
+    },
+    render: () => html`<div style="height:26rem;display:flex">${railOf(true)}</div>`,
+};
+
+export const IconsAlone = {
+    name: 'A rail of icons alone',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: '`labels="false"`: the texts are off the screen and stay the names of the links. They show as tooltips, for the pointer and for the focus of the keyboard.',
+            },
+        },
+    },
+    render: () => html`<div style="height:26rem;display:flex">${railOf(false)}</div>`,
+};
+
+export const ShortRail = {
+    name: 'More destinations than the height takes',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'The group at the top scrolls, and the one at the lower end stays in view. The Tab key reaches every destination.',
+            },
+        },
+    },
+    render: () => html`<div style="height:14rem;display:flex">${railOf(true)}</div>`,
 };

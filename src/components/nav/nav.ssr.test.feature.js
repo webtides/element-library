@@ -45,8 +45,22 @@ const serverNav = (attributes = { label: 'Main' }) =>
         'el-nav',
         navStyle,
         attributes,
-        { label: attributes.label ?? '' },
+        {
+            label: attributes.label ?? '',
+            ...(attributes.layout ? { layout: attributes.layout } : {}),
+            ...(attributes.labels ? { labels: attributes.labels !== 'false' } : {}),
+        },
         `${item('Inbox', true)}${item('Today')}${item('Upcoming')}${item('Done')}`,
+    );
+/** A frame with the destinations in its navigation, which are a bar where it is narrow. */
+const serverFrameOnce = (nav) =>
+    serverRender(
+        'el-app-frame',
+        frameStyle,
+        { 'narrow-navigation': 'bar' },
+        { narrowNavigation: 'bar' },
+        `<main id="main"><p>Content</p></main>${nav.replace('<el-nav ', '<el-nav slot="navigation" ')}`,
+        'position: relative; height: 600px',
     );
 const serverFrame = (nav) =>
     serverRender(
@@ -58,14 +72,15 @@ const serverFrame = (nav) =>
         'position: relative; height: 600px',
     );
 
-function mount(html) {
+function mount(html, { width = 400, height = 0 } = {}) {
     const wrapper = document.createElement('div');
     wrapper.style.cssText = `
         --el-border-width: 1px; --el-control-height: 40px;
         --el-space-1: 4px; --el-space-2: 8px; --el-space-3: 12px; --el-font-size-xs: 12px; --el-font-size-md: 16px;
         --el-color-bg: rgb(255, 255, 255); --el-color-fg: rgb(10, 10, 10); --el-color-fg-muted: rgb(90, 90, 90);
         --el-color-bg-muted: rgb(230, 230, 230); --el-color-border: rgb(150, 150, 150);
-        font: 16px/24px sans-serif; color: rgb(10, 10, 10); background: rgb(255, 255, 255); width: 400px;
+        font: 16px/24px sans-serif; color: rgb(10, 10, 10); background: rgb(255, 255, 255);
+        width: ${width}px; ${height ? `height: ${height}px;` : ''}
     `;
     document.body.append(wrapper);
     wrapper.setHTMLUnsafe(html);
@@ -140,8 +155,58 @@ describe('Feature | Nav | server-rendered', () => {
         expect(getComputedStyle(part(el, 'base')).borderTopWidth).toBe('0px');
     });
 
+    it('is a rail before any element is defined, where the page says so', () => {
+        const wrapper = mount(serverNav({ label: 'Main', layout: 'rail' }), { height: 400 });
+        const el = wrapper.querySelector('el-nav');
+
+        expect(customElements.get('el-nav')).toBeUndefined();
+        // Alone it keeps the top, the side and the lower edge of the screen clear itself.
+        expect(box(wrapper, part(el, 'base'))).toEqual([0, 0, 10 + 80 + 1, 400]);
+        expect([...el.querySelectorAll('el-nav-item')].map((entry) => box(wrapper, entry))).toEqual([
+            [10, 47, 80, 56],
+            [10, 103, 80, 56],
+            [10, 159, 80, 56],
+            [10, 215, 80, 56],
+        ]);
+        expect(getComputedStyle(part(el, 'base')).borderRightWidth).toBe('1px');
+    });
+
+    it('is a bar where a frame is narrow and a rail where it is wide, before any element is defined', () => {
+        const narrow = mount(serverFrameOnce(serverNav()));
+        const wide = mount(serverFrameOnce(serverNav()), { width: 1000 });
+        const tops = (wrapper) =>
+            [...wrapper.querySelectorAll('el-nav-item')].map((entry) => Math.round(box(wrapper, entry)[1]));
+
+        expect(customElements.get('el-app-frame')).toBeUndefined();
+        expect(customElements.get('el-nav')).toBeUndefined();
+        // Narrow: one row at the lower edge, above the home indicator.
+        expect(tops(narrow)).toEqual([510, 510, 510, 510]);
+        expect(box(narrow, part(narrow.querySelector('el-nav'), 'base'))).toEqual([0, 510, 400, 90]);
+        // Wide: below each other at the side, below the room of the status bar.
+        expect(tops(wide)).toEqual([47, 103, 159, 215]);
+        expect(box(wide, part(wide.querySelector('el-nav'), 'base'))).toEqual([0, 47, 90, 600 - 47 - 34]);
+    });
+
+    it('hides the texts of destinations with an icon alone, and has no tooltip, before the script', async () => {
+        const wrapper = mount(serverNav({ label: 'Main', layout: 'rail', labels: 'false' }), { height: 400 });
+        const el = wrapper.querySelector('el-nav');
+        const today = el.querySelector('#today');
+
+        expect(customElements.get('el-nav')).toBeUndefined();
+        expect(part(today, 'label').getBoundingClientRect().width).toBe(1);
+        expect(await accessibleName(part(today, 'link'))).toBe('Today');
+        expect(el.shadowRoot.querySelector('el-tooltip')).toBeNull();
+    });
+
     it('looks the same before and after the elements take over', async () => {
-        const wrappers = [mount(serverNav()), mount(serverFrame(serverNav()))];
+        const wrappers = [
+            mount(serverNav()),
+            mount(serverFrame(serverNav())),
+            mount(serverNav({ label: 'Main', layout: 'rail' }), { height: 400 }),
+            mount(serverNav({ label: 'Main', layout: 'rail', labels: 'false' }), { height: 400 }),
+            mount(serverFrameOnce(serverNav())),
+            mount(serverFrameOnce(serverNav()), { width: 1000 }),
+        ];
         const before = wrappers.map(look);
 
         define();
@@ -156,5 +221,9 @@ describe('Feature | Nav | server-rendered', () => {
         expect(wrappers.every((wrapper) => wrapper.querySelector('el-nav').matches(':state(connected)'))).toBe(true);
         expect(wrappers[0].querySelector('el-nav-item').matches(':state(connected)')).toBe(true);
         for (const after of seen) expect(after).toEqual(before);
+        // The script has brought the tooltips of the destinations with an icon alone, and no other.
+        const tooltipsOf = (wrapper) =>
+            wrapper.querySelector('el-nav').shadowRoot.querySelectorAll('el-tooltip').length;
+        expect(wrappers.map(tooltipsOf)).toEqual([0, 0, 0, 4, 0, 0]);
     });
 });

@@ -289,7 +289,7 @@ const kit = [
     {
         tag: 'el-nav',
         category: 'Navigation',
-        blurb: 'The destinations of an application, at the lower edge of a phone.',
+        blurb: 'The destinations of an application: a bar on a phone, a rail beside it.',
         fresh: true,
     },
     { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
