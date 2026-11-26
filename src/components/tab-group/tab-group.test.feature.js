@@ -210,6 +210,139 @@ describe('Feature | TabGroup', () => {
         expect(results.violations.map((violation) => violation.id)).toEqual([]);
     });
 
+    describe('with name and for set as properties', () => {
+        // A framework that creates the elements in the browser hands a value over as a property
+        // when the element has one: there is no `name` and no `for` attribute then.
+        const names = ['a', 'b', 'c'];
+        const build = (setKeys) => {
+            const group = document.createElement('el-tab-group');
+            const list = document.createElement('div');
+            group.append(list);
+            const links = names.map((name) => {
+                const tabLink = document.createElement('el-tab-link');
+                tabLink.textContent = name.toUpperCase();
+                list.append(tabLink);
+                return tabLink;
+            });
+            const panels = names.map((name) => {
+                const tabPanel = document.createElement('el-tab-panel');
+                tabPanel.textContent = `Panel ${name.toUpperCase()}`;
+                group.append(tabPanel);
+                return tabPanel;
+            });
+            setKeys?.(links, panels);
+            return { group, links, panels };
+        };
+        const setKeys = (links, panels) => {
+            links.forEach((tabLink, index) => (tabLink.for = names[index]));
+            panels.forEach((tabPanel, index) => (tabPanel.name = names[index]));
+        };
+        const shown = (panels) => panels.map((tabPanel) => tabPanel.style.display);
+        const marks = (links) => links.map((tabLink) => tabLink.getAttribute('aria-selected'));
+        const stops = (links) => links.map((tabLink) => tabLink.getAttribute('tabindex'));
+
+        it('selects, shows and hides as a group with the attributes', async () => {
+            const { group, links, panels } = build(setKeys);
+            document.body.append(group);
+            await nextFrame();
+            await nextFrame();
+
+            expect(links.some((tabLink) => tabLink.hasAttribute('for'))).toBe(false);
+            expect(panels.some((tabPanel) => tabPanel.hasAttribute('name'))).toBe(false);
+
+            // On start: the first panel.
+            expect(group.selected).toBe('a');
+            expect(shown(panels)).toEqual(['block', 'none', 'none']);
+            expect(marks(links)).toEqual(['true', 'false', 'false']);
+            expect(stops(links)).toEqual(['0', '-1', '-1']);
+            expect(links[0].matches(':state(active)')).toBe(true);
+            panels.forEach((tabPanel, index) => {
+                expect(tabPanel.getAttribute('aria-labelledby'), names[index]).toBe(links[index].id);
+            });
+
+            // Every tab, with a click on its link.
+            for (const index of [1, 2, 0]) {
+                links[index].click();
+                await nextFrame();
+
+                expect(group.selected, names[index]).toBe(names[index]);
+                expect(shown(panels), names[index]).toEqual(names.map((_, i) => (i === index ? 'block' : 'none')));
+                expect(marks(links), names[index]).toEqual(names.map((_, i) => (i === index ? 'true' : 'false')));
+                expect(stops(links), names[index]).toEqual(names.map((_, i) => (i === index ? '0' : '-1')));
+            }
+
+            // And from outside, and with the keyboard.
+            group.selectTab('c');
+            await nextFrame();
+            await nextFrame();
+            expect(shown(panels)).toEqual(['none', 'none', 'block']);
+            expect(marks(links)).toEqual(['false', 'false', 'true']);
+
+            links[2].focus();
+            press('ArrowLeft');
+            await nextFrame();
+            expect(group.selected).toBe('b');
+            expect(shown(panels)).toEqual(['none', 'block', 'none']);
+
+            const results = await axe.run(group);
+            expect(results.violations.map((violation) => violation.id)).toEqual([]);
+            group.remove();
+        });
+
+        it('takes the selection the group was given', async () => {
+            const { group, links, panels } = build(setKeys);
+            group.setAttribute('selected', 'b');
+            document.body.append(group);
+            await nextFrame();
+            await nextFrame();
+
+            expect(shown(panels)).toEqual(['none', 'block', 'none']);
+            expect(marks(links)).toEqual(['false', 'true', 'false']);
+            group.remove();
+        });
+
+        it('finds parts that got the properties while they were in the page, with the next selection', async () => {
+            const { group, links, panels } = build();
+            document.body.append(group);
+            await nextFrame();
+            await nextFrame();
+            setKeys(links, panels);
+
+            links[1].click();
+            await nextFrame();
+
+            expect(group.selected).toBe('b');
+            expect(shown(panels)).toEqual(['none', 'block', 'none']);
+            expect(marks(links)).toEqual(['false', 'true', 'false']);
+            group.remove();
+        });
+
+        it('takes a name that is a number as the text of the attribute', async () => {
+            // element-js parses the attribute `name="1"` to the number 1.
+            const el = await fixture(`
+                <el-tab-group selected="2">
+                    <div>
+                        <el-tab-link for="1">One</el-tab-link>
+                        <el-tab-link for="2">Two</el-tab-link>
+                    </div>
+                    <el-tab-panel name="1">Panel one</el-tab-panel>
+                    <el-tab-panel name="2">Panel two</el-tab-panel>
+                </el-tab-group>
+            `);
+            await nextFrame();
+
+            expect(panel(el, '2').style.display).toBe('block');
+            expect(link(el, '2').getAttribute('aria-selected')).toBe('true');
+
+            link(el, '1').click();
+            await nextFrame();
+
+            expect(panel(el, '1').style.display).toBe('block');
+            expect(panel(el, '2').style.display).toBe('none');
+            expect(link(el, '1').getAttribute('aria-selected')).toBe('true');
+        });
+    });
+
     describe('with parts that are not defined yet', () => {
         // With lazy definition the tag of the group can be defined before the tags of its links
         // and panels. A tag cannot be taken back, so every fixture gets link and panel tags of

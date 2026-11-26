@@ -17,6 +17,9 @@ let tabLinkIds = 0;
  * The links and panels need not be defined, or be there, when the group connects: it marks the
  * selection with attributes and styles, and takes in parts that are added later.
  *
+ * The group finds a panel by its `name` and a link by its `for`. It reads the property and falls
+ * back to the attribute, so it makes no difference which of the two a framework has set.
+ *
  * @element el-tab-group
  *
  * @slot - Default slot containing `<el-tab-link>` and `<el-tab-panel>` children.
@@ -93,9 +96,8 @@ export default class TabGroup extends StyledElement {
 
         // select first tab if none was selected declarative
         if (!this.selected && this.tabPanels.length > 0) {
-            const firstPanel = this.tabPanels[0];
-            // The attribute is there before the panel is defined, the property is not.
-            this.selectTab(firstPanel.getAttribute('name') ?? firstPanel.name);
+            const firstName = this._keyOf(this.tabPanels[0], 'name');
+            if (firstName !== null) this.selectTab(firstName);
         }
 
         this.updateSelection();
@@ -125,26 +127,45 @@ export default class TabGroup extends StyledElement {
         this.selected = name;
     }
 
+    /**
+     * What a link (`for`) or a panel (`name`) is found by, as a text: the property, and the
+     * attribute when the property has no value.
+     *
+     * A framework that creates the elements in the browser hands the value over as a property
+     * when the element has one, and then there is no attribute. An element whose tag is not
+     * defined yet has the attribute alone. Both sides of a comparison are texts: element-js
+     * parses the attribute `name="1"` to a number, and `getAttribute()` gives a text.
+     * @private
+     * @param {Element} element
+     * @param {'for' | 'name'} key
+     * @returns {string | null}
+     */
+    _keyOf(element, key) {
+        const value = element[key] ?? element.getAttribute(key);
+        return value === null || value === undefined ? null : String(value);
+    }
+
     /** @private */
     updateSelection() {
         const tabLinks = [...this.tabLinks];
+        const selected = this.selected === null || this.selected === undefined ? null : String(this.selected);
+        const isFor = (tabLink, name) => name !== null && this._keyOf(tabLink, 'for') === name;
         // The one link in the tab order: the selected one, or the first that can be used.
         const tabStop =
-            tabLinks.find((tabLink) => tabLink.getAttribute('for') === this.selected) ??
+            tabLinks.find((tabLink) => isFor(tabLink, selected)) ??
             tabLinks.find((tabLink) => !tabLink.hasAttribute('disabled'));
 
         for (const tabLink of tabLinks) {
-            const isSelected = tabLink.getAttribute('for') === this.selected;
             // An el-tab-link shows its `active` state from this attribute.
-            tabLink.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+            tabLink.setAttribute('aria-selected', isFor(tabLink, selected) ? 'true' : 'false');
             tabLink.setAttribute('tabindex', tabLink === tabStop ? '0' : '-1');
         }
 
         for (const tabPanel of this.tabPanels) {
-            const panelName = tabPanel.getAttribute('name');
-            tabPanel.style['display'] = panelName === this.selected ? 'block' : 'none';
+            const panelName = this._keyOf(tabPanel, 'name');
+            tabPanel.style['display'] = panelName !== null && panelName === selected ? 'block' : 'none';
 
-            const tabLink = tabLinks.find((link) => link.getAttribute('for') === panelName);
+            const tabLink = tabLinks.find((link) => isFor(link, panelName));
             if (tabLink) {
                 if (!tabLink.id) tabLink.id = `el-tab-link-${++tabLinkIds}`;
                 tabPanel.setAttribute('aria-labelledby', tabLink.id);

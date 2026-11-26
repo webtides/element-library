@@ -65,6 +65,20 @@ _None_
 | ----------- | -------------------------------------------------- |
 | _(default)_ | The `<el-tab-link>` and `<el-tab-panel>` children. |
 
+## How the group finds its parts
+
+A panel is found by its `name`, a link by its `for`. The group reads the property of the element and falls back to the attribute when the property has no value. So it makes no difference which of the two is set:
+
+- Markup written as HTML, and markup a server rendered, has the attributes.
+- A framework that creates the elements in the browser hands a value to a custom element as a property when the element has one (Svelte 5 does, for example after a hot reload of a component). Such a panel has no `name` attribute, and such a link no `for` attribute.
+- A link or a panel whose tag is not defined yet has the attribute alone.
+
+`el-tab-panel` and `el-tab-link` do not reflect the two properties: a selector like `el-tab-panel[name="general"]` finds a panel only where the attribute was written.
+
+The values are compared as texts. `name="1"` is the panel of `for="1"` and of `selected="1"`, although element-js reads such an attribute as a number.
+
+The group reads `name` and `for` when it starts, when a link or a panel is added or removed, and with every selection. A `name` or a `for` that changes while the selection stays is taken with the next of these, the same for a property and for an attribute.
+
 ## Lazy definition and parts that come later
 
 The group does not need its links and panels to be defined, or to be there, when it starts.
