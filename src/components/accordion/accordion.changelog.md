@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Changed
+
+- Where scripting is off, a server-rendered accordion without `open="true"` is closed and cannot be opened; it was open before, because nothing had collapsed it. The readme has a rule for a page that wants the content readable there (`@media (scripting: none)` and the `content` part). ([#187](https://github.com/webtides/element-library/issues/187))
+
+### Fixed
+
+- A closed accordion that was rendered on the server shows its header alone from the first paint. The markup of the server had the content as it is while open, the browser painted it, and the element took it away once it started: everything below the accordion jumped up with every page load, and where scripting is off the accordion was open. The stylesheet of the element now collapses the content unless the host has `open="true"`, which holds before the element starts. An accordion with `open="true"` is server-rendered open, with the line under its header and the turned chevron, and stays that way. ([#187](https://github.com/webtides/element-library/issues/187))
+- A closed accordion that is rendered in the browser starts closed. It was rendered open and collapsed with the transition, in front of the user and with the content below it moving. ([#187](https://github.com/webtides/element-library/issues/187))
+
 ## [0.3.0] - 2026-11-17
 
 ### Changed

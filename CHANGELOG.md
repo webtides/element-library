@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### accordion
+
+- Changed: where scripting is off, a server-rendered accordion without `open="true"` is closed and cannot be opened; it was open before, because nothing had collapsed it. The readme has a rule for a page that wants the content readable there (`@media (scripting: none)` and the `content` part). ([#187](https://github.com/webtides/element-library/issues/187))
+- Fixed: a closed accordion that was rendered on the server shows its header alone from the first paint. The markup of the server had the content as it is while open, the browser painted it, and the element took it away once it started: everything below the accordion jumped up with every page load, and where scripting is off the accordion was open. The stylesheet of the element now collapses the content unless the host has `open="true"`, which holds before the element starts. An accordion with `open="true"` is server-rendered open, with the line under its header and the turned chevron, and stays that way. ([#187](https://github.com/webtides/element-library/issues/187))
+- Fixed: a closed accordion that is rendered in the browser starts closed. It was rendered open and collapsed with the transition, in front of the user and with the content below it moving. ([#187](https://github.com/webtides/element-library/issues/187))
+
 ### tab-group
 
 - Fixed: a group finds its panels and links also when `name` and `for` were set as properties. It compared the `name` and the `for` attribute with `selected`, and a framework that creates the elements in the browser sets the property where the element has one (Svelte 5, for example after a hot reload of a component): such a panel had no attribute, the group matched none, hid every panel and took `aria-selected` from every link. The group reads the property now and falls back to the attribute, on start and with every selection. `el-tab-panel` and `el-tab-link` do not reflect the two properties. ([#196](https://github.com/webtides/element-library/issues/196))

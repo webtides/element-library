@@ -23,6 +23,13 @@ export default css`
         border-bottom: var(--el-border-width, 0) solid transparent;
     }
 
+    /* The open attribute of the host says the same as the state, and is there before the element starts: an
+       accordion that a server rendered open looks the same before and after. The two are rules of
+       their own, so a browser that does not know one of the selectors keeps the other. */
+    :host([open='true']) [part~='title'] {
+        border-bottom-color: var(--el-color-border, transparent);
+    }
+
     :host(:state(open)) [part~='title'] {
         border-bottom-color: var(--el-color-border, transparent);
     }
@@ -55,6 +62,10 @@ export default css`
         display: none;
     }
 
+    :host([open='true']) .icon {
+        transform: rotate(180deg);
+    }
+
     :host(:state(open)) .icon {
         transform: rotate(180deg);
     }
@@ -63,6 +74,14 @@ export default css`
         overflow: hidden;
         transition: height var(--el-duration-md, 0.3s) var(--el-ease, ease-out);
         height: auto;
+    }
+
+    /* Closed unless the host is open. The rule reads the attribute of the host, which is all there
+       is before the element starts: a closed accordion that a server rendered shows its header
+       alone from the first paint. Once the element runs, it sets the height on the content itself
+       for the transition, and that height wins over this rule. */
+    :host(:not([open='true'])) .content {
+        height: 0;
     }
 
     /* Padding lives on the inner wrapper so collapsing .content to height:0 clips it too. */

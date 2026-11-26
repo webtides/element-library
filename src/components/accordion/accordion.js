@@ -24,7 +24,9 @@ import Events from './accordion.events.js';
  *   `el-accordion:state(open)` from outside.
  *
  * @property {boolean} open - Controls whether the accordion is expanded (`true`) or collapsed
- *   (`false`). Reflected to the `open` attribute.
+ *   (`false`). Reflected to the `open` attribute. The stylesheet of the element reads that
+ *   attribute: an accordion without `open="true"` shows its header alone, before the element
+ *   starts as well.
  */
 export default class Accordion extends TemplateElement {
     constructor() {
@@ -32,8 +34,18 @@ export default class Accordion extends TemplateElement {
     }
 
     connected() {
-        if (!this.open) this.collapse();
-        if (this.open) this._internals.states.add('open');
+        if (this.open) {
+            this._internals.states.add('open');
+            return;
+        }
+
+        // A closed accordion has no height from its stylesheet, which reads the `open` attribute of
+        // the host: that holds before the element starts, in markup a server rendered as well. The
+        // same height on the content itself is where the first transition starts from. It changes
+        // nothing that is painted, so nothing below the accordion moves.
+        const content = this.$refs.content;
+        content.style.height = '0px';
+        content.setAttribute('data-collapsed', 'true');
     }
 
     properties() {
