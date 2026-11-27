@@ -371,6 +371,30 @@ describe('Feature | Menu', () => {
             expect(isShown(el)).toBe(false);
         });
 
+        it('closes alone with Escape in a dialog: the dialog stays open', async () => {
+            const wrapper = await fixture(`
+                <div style="${theme}">
+                    <dialog id="around">
+                        <el-menu><button slot="trigger" type="button">More</button>${three}</el-menu>
+                    </dialog>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            const dialog = wrapper.querySelector('#around');
+            dialog.showModal();
+            await rendered();
+            const el = wrapper.querySelector('el-menu');
+            await openWith(el);
+
+            await userEvent.keyboard('{Escape}');
+            await rendered();
+
+            expect(el.open).toBe(false);
+            expect(dialog.open).toBe(true);
+            expect(document.activeElement).toBe(triggerOf(el));
+            dialog.close();
+        });
+
         it('gives the focus back when a script closes it while an entry has the focus', async () => {
             const el = await menu();
             await openWith(el);
@@ -900,6 +924,347 @@ describe('Feature | Menu', () => {
 
             expect([one.open, two.open]).toEqual([false, true]);
             expect(triggerOf(one).getAttribute('aria-expanded')).toBe('false');
+        });
+    });
+
+    describe('one menu for many rows', () => {
+        // A list of rows, each with a button for its actions, and one menu after the list.
+        const rows = async ({ label = 'label="Actions"', trigger = '' } = {}) => {
+            const wrapper = await fixture(`
+                <div style="${theme} padding: 100px;">
+                    <ul id="list" style="list-style: none; margin: 0; padding: 0; width: 300px">
+                        ${[1, 2, 3]
+                            .map(
+                                (n) => `
+                            <li id="row${n}" tabindex="0" style="display: flex; gap: 8px; height: 40px">
+                                Row ${n}
+                                <button id="more${n}" type="button" aria-haspopup="menu" aria-label="Actions for row ${n}">…</button>
+                            </li>`,
+                            )
+                            .join('')}
+                    </ul>
+                    <el-menu ${label}>${trigger}${three}</el-menu>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            await rendered();
+            const find = (selector) => wrapper.querySelector(selector);
+            return { el: find('el-menu'), find };
+        };
+        const corner = (el) => {
+            const { left, top } = panelOf(el).getBoundingClientRect();
+            return [Math.round(left), Math.round(top)];
+        };
+
+        it('opens at a point of the viewport, with its corner there and the focus on its first entry', async () => {
+            const { el, find } = await rows();
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+
+            expect(el.open).toBe(true);
+            expect(isShown(el)).toBe(true);
+            expect(corner(el)).toEqual([150, 120]);
+            expect(focused()).toBe('edit');
+            expect(await accessibleRole(panelOf(el))).toBe('menu');
+        });
+
+        it('stays inside of the viewport at a point near its edge', async () => {
+            const { el, find } = await rows();
+
+            el.showAt({ x: innerWidth - 5, y: innerHeight - 5 }, find('#row1'));
+            await rendered();
+            const { left, top, right, bottom } = panelOf(el).getBoundingClientRect();
+
+            expect(left).toBeGreaterThanOrEqual(0);
+            expect(top).toBeGreaterThanOrEqual(0);
+            expect(right).toBeLessThanOrEqual(innerWidth);
+            expect(bottom).toBeLessThanOrEqual(innerHeight);
+        });
+
+        it('opens for a right click on a row, and stays open when the button is let go', async () => {
+            const { el, find } = await rows();
+            const row = find('#row2');
+            find('#list').addEventListener('contextmenu', (event) => {
+                event.preventDefault();
+                el.showAt({ x: event.clientX, y: event.clientY }, event.target.closest('li'));
+            });
+            const mouse = realPointer('mouse', { button: 'right' });
+            const { left, top } = row.getBoundingClientRect();
+
+            await mouse.down(left + 30, top + 10);
+            await mouse.up();
+            await rendered();
+
+            expect(el.open).toBe(true);
+            expect(el.opener).toBe(row);
+            expect(corner(el)).toEqual([Math.round(left + 30), Math.round(top + 10)]);
+        });
+
+        it('opens at a button of a row, placed as at its own button', async () => {
+            const { el, find } = await rows();
+            const button = find('#more2');
+
+            el.showAt(button);
+            await rendered();
+            const at = button.getBoundingClientRect();
+
+            expect(corner(el)).toEqual([Math.round(at.left), Math.round(at.bottom + 4)]);
+            expect(panelOf(el).dataset.placement).toBe('bottom-start');
+            expect(el.opener).toBe(button);
+            expect(focused()).toBe('edit');
+        });
+
+        it('follows the placement of the page at a button, and not at a point', async () => {
+            const { el, find } = await rows();
+            el.placement = 'bottom-end';
+            const button = find('#more1');
+
+            el.showAt(button);
+            await rendered();
+            expect(Math.round(panelOf(el).getBoundingClientRect().right)).toBe(
+                Math.round(button.getBoundingClientRect().right),
+            );
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            expect(corner(el)).toEqual([150, 120]);
+        });
+
+        it('tells the page which row it was opened for when an entry is chosen', async () => {
+            const { el, find } = await rows();
+            const chosen = [];
+            el.addEventListener('menu-select', (event) => chosen.push([event.detail.value, event.detail.opener.id]));
+
+            el.showAt({ x: 150, y: 120 }, find('#row3'));
+            await rendered();
+            await userEvent.keyboard('{End}{Enter}');
+            await rendered();
+            el.showAt(find('#more1'));
+            await rendered();
+            await userEvent.keyboard('{Enter}');
+            await rendered();
+
+            expect(chosen).toEqual([
+                ['delete', 'row3'],
+                ['edit', 'more1'],
+            ]);
+            expect(el.open).toBe(false);
+            expect(el.opener).toBeUndefined();
+        });
+
+        it('gives the focus back to the row or the button that opened it', async () => {
+            const { el, find } = await rows();
+
+            el.showAt({ x: 150, y: 120 }, find('#row2'));
+            await rendered();
+            await userEvent.keyboard('{Escape}');
+            await rendered();
+            expect(document.activeElement).toBe(find('#row2'));
+
+            el.showAt(find('#more3'));
+            await rendered();
+            await userEvent.keyboard('{Enter}');
+            await rendered();
+            expect(document.activeElement).toBe(find('#more3'));
+        });
+
+        it('has the keys of the menu, and an entry that is disabled cannot be chosen', async () => {
+            const { el, find } = await rows();
+            el.querySelector('#duplicate').disabled = true;
+            await rendered();
+            const chosen = selections(el);
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            await userEvent.keyboard('{ArrowDown}');
+            expect(focused()).toBe('duplicate');
+            await userEvent.keyboard('{Enter}');
+            expect(el.open).toBe(true);
+            await userEvent.keyboard('d');
+            expect(focused()).toBe('delete');
+            await userEvent.keyboard('{Tab}');
+            await rendered();
+
+            expect(chosen).toEqual([]);
+            expect(el.open).toBe(false);
+        });
+
+        it('moves to another row for a right click there while it is open', async () => {
+            const { el, find } = await rows();
+            find('#list').addEventListener('contextmenu', (event) => {
+                event.preventDefault();
+                el.showAt({ x: event.clientX, y: event.clientY }, event.target.closest('li'));
+            });
+            const mouse = realPointer('mouse', { button: 'right' });
+            const at = (id) => find(id).getBoundingClientRect();
+
+            await mouse.down(at('#row1').left + 30, at('#row1').top + 10);
+            await mouse.up();
+            await rendered();
+            expect(el.opener).toBe(find('#row1'));
+
+            // Beside the open menu, which lies over the start of the rows below.
+            await mouse.down(at('#row3').left + 250, at('#row3').top + 10);
+            await mouse.up();
+            await rendered();
+
+            expect(el.open).toBe(true);
+            expect(isShown(el)).toBe(true);
+            expect(el.opener).toBe(find('#row3'));
+            // In line with the pointer, and moved in from the edge of the viewport.
+            expect(corner(el)[1]).toBe(Math.round(at('#row3').top + 10));
+            expect(panelOf(el).getBoundingClientRect().right).toBeLessThanOrEqual(innerWidth);
+        });
+
+        it('opens for a long press of a finger, and stays open when the finger is lifted', async () => {
+            const { el, find } = await rows();
+            const row = find('#row2');
+            const { left, top } = row.getBoundingClientRect();
+            const finger = realPointer('touch');
+
+            // What a page does for a long press: the menu opens while the finger is down.
+            await finger.down(left + 30, top + 10);
+            el.showAt({ x: left + 30, y: top + 10 }, row);
+            await rendered();
+            await finger.up();
+            await rendered();
+
+            expect(el.open).toBe(true);
+            expect(isShown(el)).toBe(true);
+            expect(corner(el)).toEqual([Math.round(left + 30), Math.round(top + 10)]);
+        });
+
+        it('closes when a finger goes down beside it', async () => {
+            const { el, find } = await rows();
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            const finger = realPointer('touch');
+
+            await finger.down(20, 20);
+            await rendered();
+
+            expect(el.open).toBe(false);
+            await finger.up();
+        });
+
+        it('moves to another row without being closed by the page first', async () => {
+            const { el, find } = await rows();
+            const told = [];
+            el.addEventListener('menu-show', () => told.push(`show for ${el.opener.id}`));
+            el.addEventListener('menu-hide', () => told.push('hide'));
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            el.showAt({ x: 160, y: 170 }, find('#row2'));
+            await rendered();
+
+            expect(told).toEqual(['show for row1', 'hide', 'show for row2']);
+            expect(el.open).toBe(true);
+            expect(corner(el)).toEqual([160, 170]);
+            expect(focused()).toBe('edit');
+        });
+
+        it('tells a button of the page that says it opens a menu whether the menu is open', async () => {
+            const { el, find } = await rows();
+
+            el.showAt(find('#more1'));
+            await rendered();
+            expect(find('#more1').getAttribute('aria-expanded')).toBe('true');
+            expect(find('#more2').hasAttribute('aria-expanded')).toBe(false);
+
+            el.showAt(find('#more2'));
+            await rendered();
+            expect(find('#more1').getAttribute('aria-expanded')).toBe('false');
+            expect(find('#more2').getAttribute('aria-expanded')).toBe('true');
+
+            el.hide();
+            await rendered();
+            expect(find('#more2').getAttribute('aria-expanded')).toBe('false');
+        });
+
+        it('writes nothing onto a row: a row is no control', async () => {
+            const { el, find } = await rows();
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+
+            expect(find('#row1').hasAttribute('aria-expanded')).toBe(false);
+            expect(find('#row1').hasAttribute('aria-haspopup')).toBe(false);
+        });
+
+        it('has the name the page gives it, or the one of the button it is open for', async () => {
+            const named = await rows();
+            named.el.showAt(named.find('#more2'));
+            await rendered();
+            expect(await accessibleName(panelOf(named.el))).toBe('Actions');
+            named.el.hide();
+            await rendered();
+
+            const unnamed = await rows({ label: '' });
+            unnamed.el.showAt(unnamed.find('#more2'));
+            await rendered();
+            expect(await accessibleName(panelOf(unnamed.el))).toBe('Actions for row 2');
+        });
+
+        it('keeps its own button, which does not say that the menu is open while it is open elsewhere', async () => {
+            const { el, find } = await rows({ trigger: '<button slot="trigger" type="button">All rows</button>' });
+            const trigger = triggerOf(el);
+
+            el.showAt(find('#more1'));
+            await rendered();
+            expect(trigger.getAttribute('aria-expanded')).toBe('false');
+            await userEvent.keyboard('{Escape}');
+            await rendered();
+            expect(document.activeElement).toBe(find('#more1'));
+
+            await userEvent.click(trigger);
+            await rendered();
+            const at = trigger.getBoundingClientRect();
+            expect(trigger.getAttribute('aria-expanded')).toBe('true');
+            expect(el.opener).toBe(trigger);
+            expect(corner(el)).toEqual([Math.round(at.left), Math.round(at.bottom + 4)]);
+        });
+
+        it('closes with a click beside it, and for a row that cannot take the focus nothing goes wrong', async () => {
+            const { el, find } = await rows();
+            find('#row1').removeAttribute('tabindex');
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            await userEvent.click(el.parentElement, { position: { x: 5, y: 5 } });
+            await rendered();
+            expect(el.open).toBe(false);
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            await userEvent.keyboard('{Escape}');
+            await rendered();
+            expect(el.open).toBe(false);
+        });
+
+        it('opens at a point without anything it is opened for', async () => {
+            const { el } = await rows();
+            const chosen = [];
+            el.addEventListener('menu-select', (event) => chosen.push(event.detail.opener));
+
+            el.showAt({ x: 150, y: 120 });
+            await rendered();
+            await userEvent.keyboard('{Enter}');
+
+            expect(chosen).toEqual([undefined]);
+        });
+
+        it('passes axe while it is open at a point and at a button', async () => {
+            const { el, find } = await rows();
+
+            el.showAt({ x: 150, y: 120 }, find('#row1'));
+            await rendered();
+            expect((await axe.run(el.parentElement)).violations).toEqual([]);
+
+            el.showAt(find('#more2'));
+            await rendered();
+            expect((await axe.run(el.parentElement)).violations).toEqual([]);
         });
     });
 

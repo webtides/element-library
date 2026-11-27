@@ -98,6 +98,26 @@ describe('Feature | Menu | server-rendered', () => {
         wrapper.remove();
     });
 
+    it('takes no room at all without a button: a menu that is opened for the rows of a list', () => {
+        const wrapper = mount(
+            serverRender(
+                'el-menu',
+                menuStyle,
+                { label: 'Actions' },
+                { label: 'Actions' },
+                item('Edit') + item('Delete'),
+            ),
+        );
+        const el = wrapper.querySelector('el-menu');
+
+        expect(customElements.get('el-menu')).toBeUndefined();
+        expect(part(el, 'panel').getAttribute('aria-label')).toBe('Actions');
+        expect(box(part(el, 'panel')).slice(2)).toEqual([0, 0]);
+        expect(box(el).slice(2)).toEqual([0, 0]);
+        for (const entry of wrapper.querySelectorAll('el-menu-item')) expect(box(entry).slice(2)).toEqual([0, 0]);
+        wrapper.remove();
+    });
+
     it('has the roles, the links and the states of its entries in its markup', () => {
         const wrapper = mount(serverMenu());
         const el = wrapper.querySelector('el-menu');

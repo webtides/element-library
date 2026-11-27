@@ -170,10 +170,14 @@ export async function emulateSafeAreaInsets(insets) {
  * A mouse and a pen stay where a test leaves them, for the tests and the test files after it as
  * well: what comes to lie under the pointer is under `:hover`, where the page can hover. `leave()`
  * takes the pointer out of the page. Call it after every test that has moved one (`afterEach`).
+ *
+ * A mouse presses its left button, or the right one: `realPointer('mouse', { button: 'right' })`.
  * @param {'mouse' | 'pen' | 'touch'} [type] - Default `'mouse'`.
  * @returns {{ down: (x: number, y: number) => Promise<void>, move: (x: number, y: number) => Promise<void>, up: () => Promise<void>, leave: () => Promise<void> }}
+ * @param {object} [options]
+ * @param {'left'|'right'} [options.button] - The button of a mouse.
  */
-export function realPointer(type = 'mouse') {
+export function realPointer(type = 'mouse', { button = 'left' } = {}) {
     const session = cdp();
     // A test file runs in an iframe, and the protocol counts from the corner of the page around it.
     const inPage = (x, y) => {
@@ -188,7 +192,7 @@ export function realPointer(type = 'mouse') {
             type: event,
             ...inPage(at.x, at.y),
             button,
-            buttons: pressed ? 1 : 0,
+            buttons: pressed ? (button === 'right' ? 2 : 1) : 0,
             clickCount: event === 'mouseMoved' ? 0 : 1,
             pointerType: type,
         });
@@ -211,21 +215,21 @@ export function realPointer(type = 'mouse') {
             } else {
                 await mouse('mouseMoved', 'none');
                 pressed = true;
-                await mouse('mousePressed', 'left');
+                await mouse('mousePressed', button);
             }
             pressed = true;
         },
         async move(x, y) {
             at = { x, y };
             if (type === 'touch') await touch('touchMove');
-            else await mouse('mouseMoved', pressed ? 'left' : 'none');
+            else await mouse('mouseMoved', pressed ? button : 'none');
         },
         async up() {
             if (type === 'touch') {
                 await touch('touchEnd');
             } else {
                 pressed = false;
-                await mouse('mouseReleased', 'left');
+                await mouse('mouseReleased', button);
             }
             pressed = false;
         },

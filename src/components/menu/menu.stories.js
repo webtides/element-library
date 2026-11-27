@@ -236,3 +236,100 @@ export const RightToLeft = {
         </div>
     `,
 };
+
+/**
+ * A long press of a finger, for a browser that has no `contextmenu` event for it: the pointer of
+ * a touch that stays down for half a second without moving.
+ * @param {HTMLElement} target
+ * @param {(event: PointerEvent) => void} callback
+ */
+const onLongPress = (target, callback) => {
+    let timer;
+    let start;
+    const cancel = () => clearTimeout(timer);
+    target.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch') return;
+        start = event;
+        cancel();
+        timer = setTimeout(() => callback(start), 500);
+    });
+    target.addEventListener('pointermove', (event) => {
+        if (start && Math.hypot(event.clientX - start.clientX, event.clientY - start.clientY) > 10) cancel();
+    });
+    for (const type of ['pointerup', 'pointercancel', 'pointerleave']) target.addEventListener(type, cancel);
+};
+
+export const ManyRows = {
+    name: 'One menu for the rows of a list',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'One `el-menu` without a button of its own, after the list. A right click on a row, or a long press of a finger, opens it where the pointer is: `menu.showAt({ x, y }, row)`. The button at the end of a row opens the same menu at the button: `menu.showAt(button)`. Nothing is in the menu of the right click alone. What the menu was opened for is `detail.opener` of `menu-select`, and gets the focus back.',
+            },
+            story: { inline: false, height: '26rem' },
+        },
+    },
+    render: () => {
+        setTimeout(() => {
+            const list = document.querySelector('#rows-list');
+            const menu = document.querySelector('#rows-menu');
+            const out = document.querySelector('#rows-output');
+            if (!list || list.dataset.wired) return;
+            list.dataset.wired = 'true';
+
+            const row = (node) => node.closest('[data-row]');
+            list.addEventListener('contextmenu', (event) => {
+                if (!row(event.target)) return;
+                event.preventDefault();
+                menu.showAt({ x: event.clientX, y: event.clientY }, row(event.target));
+            });
+            onLongPress(list, (event) => {
+                if (row(event.target) && !menu.open)
+                    menu.showAt({ x: event.clientX, y: event.clientY }, row(event.target));
+            });
+            list.addEventListener('click', (event) => {
+                const button = event.target.closest('[aria-haspopup="menu"]');
+                if (button) menu.showAt(button);
+            });
+            menu.addEventListener('menu-select', (event) => {
+                const name = row(event.detail.opener).dataset.row;
+                out.textContent = `${event.detail.item.textContent.trim()}: ${name}`;
+            });
+        });
+
+        return html`
+            <div style="padding:1rem;max-width:30rem">
+                <ul id="rows-list" style="list-style:none;margin:0;padding:0">
+                    ${['Release notes', 'Questions about the invoice', 'Room for the workshop', 'Next sprint'].map(
+                        (name) => html`
+                            <li
+                                data-row="${name}"
+                                tabindex="0"
+                                style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0.25rem 0 0.25rem 0.5rem;border-bottom:1px solid var(--el-color-border, currentColor);-webkit-touch-callout:none;-webkit-user-select:none;user-select:none"
+                            >
+                                <span>${name}</span>
+                                <el-button
+                                    circle="true"
+                                    appearance="plain"
+                                    aria-haspopup="menu"
+                                    aria-label="Actions for ${name}"
+                                    >${icon(icons.more, '')}</el-button
+                                >
+                            </li>
+                        `,
+                    )}
+                </ul>
+                <el-menu id="rows-menu" label="Actions" placement="bottom-end">
+                    <el-menu-item value="read">Mark as read</el-menu-item>
+                    <el-menu-item value="rename">${icon(icons.edit)}Rename</el-menu-item>
+                    <el-menu-item value="move" disabled="true">Move</el-menu-item>
+                    <el-menu-group>
+                        <el-menu-item value="delete" variant="danger">${icon(icons.trash)}Delete</el-menu-item>
+                    </el-menu-group>
+                </el-menu>
+                <p id="rows-output" role="status" style="margin:1rem 0 0;font-size:0.875rem">Nothing chosen yet</p>
+            </div>
+        `;
+    },
+};

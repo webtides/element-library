@@ -49,17 +49,24 @@ document.querySelector('el-menu').addEventListener('menu-select', (event) => {
 
 #### Methods
 
-| Name       | Description                                                |
-| ---------- | ---------------------------------------------------------- |
-| `show()`   | Opens the menu, with the focus on its first entry.         |
-| `hide()`   | Closes the menu.                                           |
+| Name | Description |
+| --- | --- |
+| `show()` | Opens the menu, with the focus on its first entry. |
+| `hide()` | Closes the menu. |
 | `toggle()` | Opens the menu when it is closed, and closes it when open. |
+| `showAt(place, opener?)` | Opens the menu somewhere else than at its own button: at an element of the page, or at a point `{ x, y }` of the viewport. `opener` is what it is opened for. |
+
+#### Read-only properties
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `opener` | `Element \| undefined` | What the menu is open for: the row or the button of `showAt()`, or its own button. Nothing while it is closed. |
 
 #### Events
 
 | Name | Detail | Description |
 | --- | --- | --- |
-| `menu-select` | `{ item: HTMLElement, value: string }` | Fired when the user has chosen an entry: the `el-menu-item`, and its `value`. The menu closes after it. |
+| `menu-select` | `{ item: HTMLElement, value: string, opener: Element }` | Fired when the user has chosen an entry: the `el-menu-item`, its `value`, and what the menu was opened for. The menu closes after it. |
 | `menu-show` |  | Fired when the menu has opened. |
 | `menu-hide` |  | Fired when the menu has closed. |
 
@@ -68,7 +75,7 @@ document.querySelector('el-menu').addEventListener('menu-select', (event) => {
 | Name | Description |
 | --- | --- |
 | (default) | The entries: `el-menu-item` elements, in `el-menu-group` elements where they are divided into groups. An `el-divider` is a line between two of them. |
-| `trigger` | The button that opens the menu. |
+| `trigger` | The button that opens the menu. A menu that is opened with `showAt()` alone needs none. |
 
 #### CSS Parts
 
@@ -157,9 +164,91 @@ Entries that belong together go into an [`el-menu-group`](../menu-group/menu-gro
 - **At its button.** `placement` names the side, `bottom-start` by default: below the button and in line with the start of it, which is the right edge in a right-to-left page. Without room at that side the menu goes to the opposite one, and it is pushed back along the edge of the viewport where it would leave it. It follows the button when the page scrolls.
 - **As wide as its entries**, between `--el-menu-min-width` and `--el-menu-max-width`. A text that is longer wraps.
 - **A long menu scrolls** in what the browser shows.
-- **One at a time.** A menu that opens closes another one that is open, as every native popover does.
+- **One at a time.** A menu that opens closes another one that is open.
+- **A press beside it closes it**, when the pointer goes down. The panel is a popover the menu opens and closes itself (`popover="manual"`): one the platform closes would be gone when the finger of a long press is lifted.
 
 Its place comes from [Floating UI](https://floating-ui.com), which the element imports (`@floating-ui/dom`).
+
+## One menu for many rows
+
+A dense list has the same actions for every row: mark as read, rename, move, delete. One `el-menu` serves all of them. It has no button of its own, and the page opens it where it is needed with `showAt()`:
+
+```html
+<ul id="notes">
+    <li data-id="12" tabindex="0">
+        Release notes
+        <el-button circle="true" appearance="plain" aria-haspopup="menu" aria-label="Actions for Release notes">
+            <svg aria-hidden="true">…</svg>
+        </el-button>
+    </li>
+    …
+</ul>
+
+<el-menu id="actions" label="Actions">
+    <el-menu-item value="read">Mark as read</el-menu-item>
+    <el-menu-item value="rename">Rename</el-menu-item>
+    <el-menu-item value="delete" variant="danger">Delete</el-menu-item>
+</el-menu>
+```
+
+```js
+const list = document.querySelector('#notes');
+const menu = document.querySelector('#actions');
+
+// A right click on a row: the menu opens where the pointer is.
+list.addEventListener('contextmenu', (event) => {
+    const row = event.target.closest('li');
+    if (!row) return;
+    event.preventDefault();
+    menu.showAt({ x: event.clientX, y: event.clientY }, row);
+});
+
+// The button of a row: the same menu, at the button.
+list.addEventListener('click', (event) => {
+    const button = event.target.closest('[aria-haspopup="menu"]');
+    if (button) menu.showAt(button);
+});
+
+menu.addEventListener('menu-select', (event) => {
+    const row = event.detail.opener.closest('li');
+    act(event.detail.value, row.dataset.id);
+});
+```
+
+- **`showAt({ x, y }, opener)`** opens the menu at a point of the viewport, the `clientX` and `clientY` of an event. The corner of the menu is at the point, as the menu of the system is, and the menu stays inside of the viewport.
+- **`showAt(element)`** opens it at an element, placed as at its own button (`placement`, `distance`).
+- **The opener** is what the menu is opened for: the second argument, or the element it is placed at. It is `menu.opener` while the menu is open and `detail.opener` of `menu-select`, and it gets the focus back when the menu closes after a choice or `Escape`. A row that should get the focus back has to be able to take it (`tabindex`).
+- **An open menu moves** when `showAt()` is called again, for a right click on another row. It tells of both: `menu-hide` for the row it has left, `menu-show` for the one it is open for.
+- **The roles and the keys** are the ones of the menu: the focus is on the first entry, the arrow keys move through the entries, `Escape` closes.
+- **Nothing in the menu of the right click alone.** A right click and a long press are found by a user who knows them. The button of the row offers the same entries to everybody else, and to the keyboard.
+- **The button of a row** says that it opens a menu: write `aria-haspopup="menu"` onto it. The menu tells such a button whether it is open for it (`aria-expanded`), and takes its name while it has no `label` of its own. A row is no control, and nothing is written onto it.
+- **A menu with a button of its own** can be opened with `showAt()` as well. Its button does not say that the menu is open while it is open elsewhere.
+
+#### A long press
+
+A browser on Android fires `contextmenu` for a long press, and the listener above is all it takes. Safari on iOS does not: there the page finds the long press itself, a finger that stays down for half a second without moving, and calls `showAt()` while the finger is still down. The menu stays open when the finger is lifted.
+
+```js
+let timer;
+list.addEventListener('pointerdown', (event) => {
+    if (event.pointerType !== 'touch') return;
+    const row = event.target.closest('li');
+    timer = setTimeout(() => menu.showAt({ x: event.clientX, y: event.clientY }, row), 500);
+});
+for (const type of ['pointerup', 'pointercancel', 'pointermove']) {
+    list.addEventListener(type, () => clearTimeout(timer));
+}
+```
+
+A long press on a text selects it in Safari, and the selection takes the finger away from the page. Keep the text of a row from being selected for that:
+
+```css
+#notes li {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+```
 
 ## Not in this element
 
@@ -171,13 +260,13 @@ For a panel in the flow of the page there is [`el-dropdown`](../dropdown/dropdow
 
 ## Server-side rendering
 
-The menu and its entries render on a server with `@webtides/element-js-ssr-renderer`. Before the script has run the menu is its button: the panel is a popover that is closed, and takes no room. The roles of the menu and of its entries, the links and the entries that are disabled are in the markup. The script adds what the button says (`aria-haspopup`, `aria-expanded`), the opening and the keyboard. A button does nothing before that.
+The menu and its entries render on a server with `@webtides/element-js-ssr-renderer`. Before the script has run the menu is its button: the panel is a popover that is closed, and takes no room. A menu without a button, for the rows of a list, takes no room at all. The roles of the menu and of its entries, the links and the entries that are disabled are in the markup. The script adds what the button says (`aria-haspopup`, `aria-expanded`), the opening and the keyboard. A button does nothing before that.
 
 ## Accessibility
 
 - The panel has `role="menu"`, with the name of `label` or the one of its button. The entries have `role="menuitem"`, the groups `role="group"` with their heading as their name.
 - The button says that it opens a menu and whether the menu is open.
-- The focus is on an entry while the menu is open, and goes back to the button when the menu closes after a choice or `Escape`.
+- The focus is on an entry while the menu is open, and goes back to the button, or to what the menu was opened for, when the menu closes after a choice or `Escape`.
 - The entry that has the focus of the keyboard has a ring inside of it, which shows where the user forces colours.
 - On a touch screen every entry is at least `--el-touch-target` high.
 - Without a theme the menu has the colours of the system, and reads in a light and in a dark scheme.

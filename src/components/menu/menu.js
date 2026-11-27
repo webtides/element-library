@@ -5,6 +5,12 @@ import style from './menu.style.js';
 import Events from './menu.events.js';
 
 /**
+ * The menu that is open. One at a time: a menu that opens closes the one before it.
+ * @type {HTMLElement | undefined}
+ */
+let openMenu;
+
+/**
  * A menu button: a button that opens a list of actions. "Edit, Duplicate, Delete" for a row of a
  * table, the account in a header, "More" at the end of a toolbar. The button is what the page
  * puts into the `trigger` slot, the actions are `el-menu-item` elements.
@@ -15,18 +21,24 @@ import Events from './menu.events.js';
  * back to the button, the Tab key closes it and moves on.
  *
  * The panel is a native popover: it is in the top layer, so nothing clips it and it moves nothing
- * on the page, and a click beside it closes it. It is placed at the button, at the side that
- * `placement` names, on the other side without room there, and never outside of the viewport.
+ * on the page. It is placed at the button, at the side that `placement` names, on the other side
+ * without room there, and never outside of the viewport. A press beside it closes it.
  *
  * Choosing an entry closes the menu and fires `menu-select`.
+ *
+ * One menu can serve many things, the rows of a list: `showAt()` opens it at a point of the
+ * viewport, for a right click or a long press, or at an element of the page, a button of a row.
+ * What it was opened for is the `opener`, which gets the focus back and which `menu-select`
+ * names.
  *
  * @element el-menu
  *
  * @fires {CustomEvent} menu-show - Fired when the menu has opened.
  * @fires {CustomEvent} menu-hide - Fired when the menu has closed.
- * @fires {CustomEvent<{ item: HTMLElement, value: string }>} menu-select - Fired when the user has
- *   chosen an entry: the `el-menu-item` is in `detail.item`, its `value` in `detail.value`. The
- *   menu closes after it.
+ * @fires {CustomEvent<{ item: HTMLElement, value: string, opener: Element | undefined }>} menu-select -
+ *   Fired when the user has chosen an entry: the `el-menu-item` is in `detail.item`, its `value`
+ *   in `detail.value`, and what the menu was opened for in `detail.opener`. The menu closes after
+ *   it.
  *
  * @slot - The entries: `el-menu-item` elements, in `el-menu-group` elements where they are
  *   divided into groups. An `el-divider` is a line between two of them.
@@ -64,6 +76,59 @@ export default class Menu extends TemplateElement {
      */
     _restoreFocus = false;
 
+    /**
+     * Where the menu is placed while it is open somewhere else than at its own button: an element
+     * of the page, or a point of the viewport.
+     * @private
+     * @type {Element | { x: number, y: number } | undefined}
+     */
+    _place = undefined;
+
+    /**
+     * What the menu was opened for with `showAt()`.
+     * @private
+     * @type {Element | undefined}
+     */
+    _opener = undefined;
+
+    /**
+     * The button of the page that was told that the menu is open.
+     * @private
+     * @type {Element | undefined}
+     */
+    _expanded = undefined;
+
+    /**
+     * Where the menu opens next, and what for: what `showAt()` was given. It is taken when the
+     * menu opens, which is after the element has rendered.
+     * @private
+     * @type {{ place: Element | { x: number, y: number }, opener: Element | undefined } | undefined}
+     */
+    _next = undefined;
+
+    /**
+     * Whether the Tab key was pressed in the menu, and the focus is about to leave it.
+     * @private
+     */
+    _leaving = false;
+
+    /**
+     * A pointer that goes down beside the open menu closes it. The panel is a popover the menu
+     * opens and closes itself (`popover="manual"`): the platform would close one of its own
+     * (`auto`) when the pointer that opened it is let go, the finger after a long press.
+     * @private
+     * @param {PointerEvent} event
+     */
+    _onPressOutside = (event) => {
+        const path = event.composedPath();
+        if (path.includes(this.$refs.panel)) return;
+        // The button of the menu closes it with its click.
+        if (!this._place && path.includes(this._trigger())) return;
+
+        this._restoreFocus = false;
+        this.open = false;
+    };
+
     constructor() {
         super({ styles: [style], shadowRender: true, propertyOptions: { open: { reflect: true } } });
     }
@@ -86,6 +151,8 @@ export default class Menu extends TemplateElement {
 
     disconnected() {
         this._stopPositioning();
+        document.removeEventListener('pointerdown', this._onPressOutside, true);
+        if (openMenu === this) openMenu = undefined;
     }
 
     afterUpdate() {
@@ -110,10 +177,10 @@ export default class Menu extends TemplateElement {
                     this._openAtPointerDown = this.open;
                 },
                 click: (event) => {
-                    // The platform closes an open panel when the pointer is released beside it,
-                    // and the button is beside it. A click that found it closed would open it
-                    // again, so a click of a pointer goes by what was the case when the pointer
-                    // went down. A click of the keyboard has no pointer (`detail` is 0).
+                    // A press beside the open menu closes it, and where the menu is open for a
+                    // row, its own button is beside it. A click that found it closed would open
+                    // it again, so a click of a pointer goes by what was the case when the
+                    // pointer went down. A click of the keyboard has no pointer (`detail` is 0).
                     const byPointer = event.detail > 0 && this._openAtPointerDown !== undefined;
                     const wasOpen = byPointer ? this._openAtPointerDown : this.open;
                     this._openAtPointerDown = undefined;
@@ -124,16 +191,6 @@ export default class Menu extends TemplateElement {
                 slotchange: () => this._syncTrigger(),
             },
             "[part~='panel']": {
-                beforetoggle: (event) => {
-                    // Still open at this point, so the focus is where it was. Once the panel is
-                    // closed, an entry that had the focus has lost it to the page.
-                    if (event.newState === 'closed' && this._hasFocusInPanel()) this._restoreFocus = true;
-                },
-                toggle: (event) => {
-                    // The platform has closed the panel: a click beside it, Escape, or another
-                    // popover that opened.
-                    if (event.newState === 'closed' && this.open) this.open = false;
-                },
                 keydown: (event) => this._onKeyDown(event),
                 click: (event) => this._onClick(event),
                 focusout: (event) => this._onFocusOut(event),
@@ -150,11 +207,58 @@ export default class Menu extends TemplateElement {
     }
 
     /**
+     * Opens the menu somewhere else than at its own button: one menu for the rows of a list.
+     *
+     * At a point of the viewport, from a `contextmenu` event or a long press: the corner of the
+     * menu is at the point, and the menu stays inside of the viewport. Or at an element of the
+     * page, the button of a row: the menu is placed at it as at its own button.
+     *
+     * `opener` is what the menu is opened for. It gets the focus back when the menu closes, and
+     * `menu-select` names it (`detail.opener`). Without one it is the element the menu is placed
+     * at.
+     * @param {Element | { x: number, y: number }} place - The element, or the point in the
+     *   coordinates of the viewport (`clientX`, `clientY`).
+     * @param {Element} [opener] - The row or the button the menu is opened for.
+     * @returns {void}
+     */
+    showAt(place, opener) {
+        const next = { place, opener: opener ?? (place instanceof Element ? place : undefined) };
+        this._enterAt = 'first';
+
+        // Open already, for something else: the panel stays where the platform has it, in the
+        // top layer, and moves. The page is told of both, the row it has left and the row it is
+        // open for now.
+        if (this.open && this.$refs.panel?.matches(':popover-open')) {
+            this.dispatch(Events.HIDE);
+            this._place = next.place;
+            this._opener = next.opener;
+            this._syncTrigger();
+            this._startPositioning();
+            this._focusEntry();
+            this.dispatch(Events.SHOW);
+            return;
+        }
+
+        // The property tells of its change after the element has rendered: the place waits.
+        this._next = next;
+        this.open = true;
+    }
+
+    /**
      * Closes the menu.
      * @returns {void}
      */
     hide() {
         this.open = false;
+    }
+
+    /**
+     * What the menu is open for: the row or the button it was opened for with `showAt()`, or its
+     * own button. Nothing while it is closed.
+     * @returns {Element | undefined}
+     */
+    get opener() {
+        return this.open ? (this._opener ?? this._trigger()) : undefined;
     }
 
     /**
@@ -208,15 +312,27 @@ export default class Menu extends TemplateElement {
      */
     _syncTrigger() {
         const trigger = this._trigger();
-        if (!trigger) return;
-        if (trigger.getAttribute('aria-haspopup') !== 'menu') trigger.setAttribute('aria-haspopup', 'menu');
-        const expanded = this.open ? 'true' : 'false';
-        if (trigger.getAttribute('aria-expanded') !== expanded) trigger.setAttribute('aria-expanded', expanded);
+        // Open for something else, the menu is not the one of its own button for that time.
+        const own = this.open && !this._place;
+        if (trigger) {
+            if (trigger.getAttribute('aria-haspopup') !== 'menu') trigger.setAttribute('aria-haspopup', 'menu');
+            const expanded = own ? 'true' : 'false';
+            if (trigger.getAttribute('aria-expanded') !== expanded) trigger.setAttribute('aria-expanded', expanded);
+        }
 
-        // Without a name of its own the menu has the one of its button.
+        // A button of the page that opens the menu says that it does (`aria-haspopup`): the page
+        // writes that, the menu does not know its buttons. Such a button is told whether the
+        // menu is open. A row is no control, and has nothing to say.
+        const button = this.open && this._opener?.matches('[aria-haspopup]') ? this._opener : undefined;
+        if (this._expanded && this._expanded !== button) this._expanded.setAttribute('aria-expanded', 'false');
+        if (button) button.setAttribute('aria-expanded', 'true');
+        this._expanded = button;
+
+        // Without a name of its own the menu has the one of the button it is open for.
         const panel = this.$refs.panel;
         if (panel && 'ariaLabelledByElements' in panel) {
-            panel.ariaLabelledByElements = this.label ? null : [trigger];
+            const named = this._place ? button : trigger;
+            panel.ariaLabelledByElements = this.label || !named ? null : [named];
         }
     }
 
@@ -253,6 +369,21 @@ export default class Menu extends TemplateElement {
      */
     _onKeyDown(event) {
         if (event.altKey || event.ctrlKey || event.metaKey) return;
+        // The focus leaves the menu with this key, and may leave the page: the browser says
+        // where it goes only while it stays in the page.
+        if (event.key === 'Tab') {
+            this._leaving = true;
+            requestAnimationFrame(() => (this._leaving = false));
+            return;
+        }
+        // The key is the one of the menu: a dialog around it stays open.
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            event.stopPropagation();
+            this._restoreFocus = true;
+            this.open = false;
+            return;
+        }
 
         const items = this._items();
         const active = activeElement();
@@ -293,19 +424,23 @@ export default class Menu extends TemplateElement {
         if (!item || item.closest('el-menu') !== this || item.disabled) return;
 
         this._restoreFocus = true;
-        this.dispatch(Events.SELECT, { item, value: item.value });
+        this.dispatch(Events.SELECT, { item, value: item.value, opener: this.opener });
         this.open = false;
     }
 
     /**
-     * The focus has left the menu: with the Tab key, which closes it and moves on. The focus is
+     * The focus has left the menu with the Tab key, which closes it and moves on. The focus is
      * where the user has put it, and stays there.
+     *
+     * Only the key closes it this way. A pointer that goes down beside the menu closes it by
+     * itself, and the finger of a long press gives the focus to the row it is on when it is
+     * lifted: the menu it has just opened stays open.
      * @private
      * @param {FocusEvent} event
      */
     _onFocusOut(event) {
-        if (!this.open || !event.relatedTarget) return;
-        if (this.contains(event.relatedTarget) && event.relatedTarget.closest('el-menu-item')) return;
+        if (!this.open || !this._leaving) return;
+        if (event.relatedTarget?.closest('el-menu-item') && this.contains(event.relatedTarget)) return;
 
         this._restoreFocus = false;
         this.open = false;
@@ -326,8 +461,18 @@ export default class Menu extends TemplateElement {
         const panel = this.$refs.panel;
         if (!panel || !this.isConnected) return;
 
+        // What showAt() was given, or nothing: the menu of its own button.
+        this._place = this._next?.place;
+        this._opener = this._next?.opener;
+        this._next = undefined;
+
+        // One menu at a time.
+        if (openMenu && openMenu !== this) openMenu.open = false;
+        openMenu = this;
+
         this._restoreFocus = false;
         if (!panel.matches(':popover-open')) panel.showPopover();
+        document.addEventListener('pointerdown', this._onPressOutside, true);
         this._internals.states.add('open');
         this._syncTrigger();
         this._startPositioning();
@@ -344,12 +489,32 @@ export default class Menu extends TemplateElement {
         const restore = this._restoreFocus || this._hasFocusInPanel();
         this._restoreFocus = false;
 
+        // What the menu was open for gets the focus back: the row, the button, its own button.
+        const opener = this._opener ?? this._trigger();
+        this._place = undefined;
+        this._opener = undefined;
+
+        if (openMenu === this) openMenu = undefined;
+        document.removeEventListener('pointerdown', this._onPressOutside, true);
         this._stopPositioning();
         if (panel.matches(':popover-open')) panel.hidePopover();
         this._internals.states.delete('open');
         this._syncTrigger();
-        if (restore) this._trigger()?.focus();
+        if (restore) opener?.focus?.();
         this.dispatch(Events.HIDE);
+    }
+
+    /**
+     * What the panel is placed at: its own button, the element of `showAt()`, or its point. A
+     * point is an element for the placing that has no size and does not move.
+     * @private
+     * @returns {Element | { getBoundingClientRect: () => DOMRect }}
+     */
+    _anchor() {
+        const place = this._place;
+        if (!place) return this._trigger() ?? this;
+        if (place instanceof Element) return place;
+        return { getBoundingClientRect: () => new DOMRect(Number(place.x) || 0, Number(place.y) || 0, 0, 0) };
     }
 
     /**
@@ -359,7 +524,13 @@ export default class Menu extends TemplateElement {
      */
     _startPositioning() {
         this._stopPositioning();
-        this._stopAutoUpdate = followAnchor(this._trigger() ?? this, this.$refs.panel, () => this._position());
+        const anchor = this._anchor();
+        // A point does not move: the menu is placed at it once.
+        if (anchor instanceof Element) {
+            this._stopAutoUpdate = followAnchor(anchor, this.$refs.panel, () => this._position());
+        } else {
+            this._position();
+        }
     }
 
     /** @private */
@@ -373,9 +544,11 @@ export default class Menu extends TemplateElement {
         const panel = this.$refs.panel;
         if (!panel || !this.open) return;
 
-        await placeAtAnchor(this._trigger() ?? this, panel, {
-            placement: this.placement,
-            distance: this.distance,
+        const atPoint = this._place && !(this._place instanceof Element);
+        await placeAtAnchor(this._anchor(), panel, {
+            // At a point the corner of the menu is at the pointer, as the menu of the system is.
+            placement: atPoint ? 'bottom-start' : this.placement,
+            distance: atPoint ? 0 : this.distance,
         });
     }
 
@@ -383,7 +556,7 @@ export default class Menu extends TemplateElement {
         // A plain binding leaves the name out while there is none.
         return html`
             <slot part="trigger" name="trigger" ref="trigger" data-trigger></slot>
-            <div part="panel" ref="panel" class="panel" popover="auto" role="menu" aria-label="${this.label || null}">
+            <div part="panel" ref="panel" class="panel" popover="manual" role="menu" aria-label="${this.label || null}">
                 <slot></slot>
             </div>
         `;
