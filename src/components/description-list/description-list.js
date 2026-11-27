@@ -21,8 +21,13 @@ import style from './description-list.style.js';
  * @csspart base - The `<dl>`.
  *
  * @cssproperty --el-description-list-term-width - The width of the column of the names while
- *   names and values stand side by side. Unset, the column is as wide as the longest name, and
- *   40% of the list at most.
+ *   names and values stand side by side. The gap to the values comes after it. Unset, the column
+ *   is as wide as the longest name, and takes 40% of the list at most together with that gap.
+ * @cssproperty --el-description-list-padding-block - The room above and below a row. Unset, it is
+ *   `--el-space-3`, and `0.75rem` without a theme.
+ * @cssproperty --el-description-list-gap - The gap between a name and its value while they stand
+ *   side by side, and in front of an action. Unset, it is `--el-space-4`, and `1rem` without a
+ *   theme.
  */
 export default class DescriptionList extends TemplateElement {
     constructor() {

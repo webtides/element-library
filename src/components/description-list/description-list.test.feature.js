@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { accessibleName, accessibleRole, fixture, nextFrame, sizeOf, useForcedColors } from '../../test-helpers.js';
+import {
+    accessibleName,
+    accessibleRole,
+    fixture,
+    nextFrame,
+    sizeOf,
+    useForcedColors,
+    withAndWithoutPageReset,
+} from '../../test-helpers.js';
 import { define } from './description-list.js';
 import { define as defineButton } from '../button/button.js';
 define();
@@ -46,6 +54,33 @@ const rows = `
 const list = (content = rows, attributes = '') => `<el-description-list ${attributes}>${content}</el-description-list>`;
 const names = (el) => [...el.querySelectorAll('dt')];
 const values = (el) => [...el.querySelectorAll('dd:not([data-action])')];
+const round = (value) => Math.round(value * 10) / 10;
+// The box of a name or a value, counted from the corner of the list.
+const inList = (node, el) => {
+    const { left, top, width, height } = box(node);
+    return [round(left - box(el).left), round(top - box(el).top), width, height];
+};
+// The line above the row of a name, counted from the corner of the list. It is a box the name
+// generates, placed in the list and moved with translate.
+const lineOf = (name) => {
+    const style = getComputedStyle(name, '::before');
+    if (style.content === 'none') return null;
+    const moved = style.translate === 'none' ? 0 : parseFloat(style.translate.split(' ')[1] ?? '0');
+    return {
+        left: round(parseFloat(style.left)),
+        top: round(parseFloat(style.top) + moved),
+        width: round(parseFloat(style.width)),
+        height: round(parseFloat(style.height)),
+    };
+};
+// All of a list that the eye sees: its size, its names, values and actions, and its lines.
+const lookOf = (el) => ({
+    list: sizeOf(el),
+    names: names(el).map((node) => inList(node, el)),
+    cells: [...el.querySelectorAll('dt, dd')].map((node) => inList(node, el)),
+    inActions: [...el.querySelectorAll('[data-action] > *')].map((node) => inList(node, el)),
+    lines: names(el).map(lineOf),
+});
 
 describe('Feature | DescriptionList', () => {
     it('can connect without errors', async () => {
@@ -147,18 +182,22 @@ describe('Feature | DescriptionList', () => {
             const textWidth = Math.ceil(probe.getBoundingClientRect().width);
             probe.remove();
 
-            // The text of the longest name, and the gap to the values.
-            expect(Math.abs(box(longest).width - (textWidth + 16))).toBeLessThanOrEqual(1);
+            // The text of the longest name. The values begin after the gap, --el-space-4.
+            expect(Math.abs(box(longest).width - textWidth)).toBeLessThanOrEqual(1);
+            expect(round(box(values(el)[1]).left - box(longest).right)).toBe(16);
 
+            // The names and the gap after them take 40% of the list at most.
             const long = await placed(list(`<dt>${'A very long name of a value '.repeat(6)}</dt><dd>Value</dd>`), 600);
-            expect(box(names(long)[0]).width).toBe(240);
+            expect(box(names(long)[0]).width).toBe(240 - 16);
+            expect(box(values(long)[0]).left - box(long).left).toBe(240);
         });
 
         it('takes the width of the names from --el-description-list-term-width', async () => {
             const el = await placed(list(rows, 'style="--el-description-list-term-width: 200px"'), 600);
 
             expect(names(el).map((name) => box(name).width)).toEqual([200, 200, 200]);
-            expect(values(el).map((value) => box(value).left - box(el).left)).toEqual([200, 200, 200]);
+            // The gap to the values comes after the column of the names.
+            expect(values(el).map((value) => box(value).left - box(el).left)).toEqual([216, 216, 216]);
         });
 
         it('puts an action at the end of the row, in the middle of the first line of the value', async () => {
@@ -177,13 +216,19 @@ describe('Feature | DescriptionList', () => {
             const [first, second] = values(el);
 
             expect(box(action).right).toBe(600 + box(el).left);
-            // The row with the action is as high as the row without one.
+            // The row with the action is as high as the row without one: 12 + 24 + 12 each.
             expect(box(first).height).toBe(box(second).height);
-            expect(box(action).height).toBe(box(first).height);
+            expect(box(second).top - box(first).top).toBe(48);
+            expect(sizeOf(el).height).toBe(96);
+            // The action is as high as a line of the value, and on that line.
+            expect(box(action).height).toBe(24);
+            expect(box(action).top).toBe(box(first).top);
             // The button is higher than a line, and stands in the middle of the line of the value.
             expect(box(button).height).toBeGreaterThan(24);
-            const middleOfTheLine = box(first).top + 12 + 12;
+            const middleOfTheLine = box(first).top + 12;
             expect(Math.abs(box(button).top + box(button).height / 2 - middleOfTheLine)).toBeLessThanOrEqual(0.5);
+            // The gap to the value, --el-space-4, is in front of the button.
+            expect(round(box(button).left - box(first).right)).toBe(16);
         });
 
         it('gives every value of a name a row of its own', async () => {
@@ -191,7 +236,9 @@ describe('Feature | DescriptionList', () => {
             const [ada, grace] = values(el);
 
             expect(box(grace).left).toBe(box(ada).left);
-            expect(box(grace).top).toBe(box(ada).bottom);
+            // The room below one row and above the next.
+            expect(box(grace).top - box(ada).bottom).toBe(24);
+            expect(lineOf(names(el)[0])).toBeNull();
         });
     });
 
@@ -213,18 +260,36 @@ describe('Feature | DescriptionList', () => {
         it('gives a row --el-space-3 above and below', async () => {
             const wide = await placed(list(), 600);
             const narrow = await placed(list(), 300);
-            const padding = (node) => {
-                const { paddingTop, paddingBottom } = getComputedStyle(node);
-                return [paddingTop, paddingBottom];
-            };
 
-            expect(padding(names(wide)[0])).toEqual(['12px', '12px']);
-            expect(padding(values(wide)[0])).toEqual(['12px', '12px']);
-            expect(box(names(wide)[0]).height).toBe(48);
+            // Side by side: 12 above the first line of a row, and 12 below its last one.
+            expect(inList(names(wide)[0], wide)[1]).toBe(12);
+            expect(inList(values(wide)[0], wide)[1]).toBe(12);
+            expect(box(names(wide)[1]).top - box(values(wide)[0]).bottom).toBe(24);
+            // The second row has a value of two lines.
+            expect(box(names(wide)[2]).top - box(values(wide)[1]).bottom).toBe(24);
+            expect(box(wide).bottom - box(values(wide)[2]).bottom).toBe(12);
+            expect(sizeOf(wide).height).toBe(48 + 72 + 48);
+
             // A name above its value shares the room of the row with it.
-            expect(padding(names(narrow)[0])).toEqual(['12px', '0px']);
-            expect(padding(values(narrow)[0])).toEqual(['0px', '12px']);
-            expect(box(values(narrow)[0]).bottom - box(names(narrow)[0]).top).toBe(72);
+            expect(inList(names(narrow)[0], narrow)[1]).toBe(12);
+            expect(box(values(narrow)[0]).top).toBe(box(names(narrow)[0]).bottom);
+            expect(box(names(narrow)[1]).top - box(values(narrow)[0]).bottom).toBe(24);
+            expect(box(narrow).bottom - box(values(narrow)[2]).bottom).toBe(12);
+            expect(sizeOf(narrow).height).toBe(72 + 96 + 72);
+        });
+
+        it('takes that room from the list, not from the padding or the margin of a name or a value', async () => {
+            for (const width of [300, 600]) {
+                const el = await placed(list(), width);
+
+                for (const node of el.querySelectorAll('dt, dd')) {
+                    const { padding, margin, borderTopWidth } = getComputedStyle(node);
+                    expect([padding, margin, borderTopWidth], width).toEqual(['0px', '0px', '0px']);
+                }
+                // A name and a value are as high as their text.
+                expect(box(names(el)[0]).height, width).toBe(24);
+                expect(box(values(el)[1]).height, width).toBe(48);
+            }
         });
 
         it('draws a line above every row but the first, over the whole width of the list', async () => {
@@ -232,14 +297,19 @@ describe('Feature | DescriptionList', () => {
                 const el = await placed(list(), width);
                 const [first, second, third] = names(el);
 
-                expect(line(first).content, width).toBe('none');
+                expect(lineOf(first), width).toBeNull();
                 for (const name of [second, third]) {
-                    expect(line(name).height, width).toBe('1px');
                     expect(line(name).backgroundColor, width).toBe('rgb(200, 200, 200)');
-                    expect(line(name).width, width).toBe(`${width}px`);
-                    // At the upper edge of the row: the padding of the name above its text.
-                    expect(line(name).marginTop, width).toBe('-12px');
                     expect(line(name).position, width).toBe('absolute');
+                    // At the upper edge of the row: the room of the row above the text of the name.
+                    expect(lineOf(name), width).toEqual({
+                        left: 0,
+                        top: inList(name, el)[1] - 12,
+                        width,
+                        height: 1,
+                    });
+                    // Placed without a margin, which a reset of the page would take.
+                    expect(line(name).marginTop, width).toBe('0px');
                 }
             }
         });
@@ -248,7 +318,8 @@ describe('Feature | DescriptionList', () => {
             const el = await placed(list(), 600, '');
 
             expect(line(names(el)[1]).height).toBe('0px');
-            expect(getComputedStyle(names(el)[0]).paddingTop).toBe('12px');
+            expect(inList(names(el)[0], el)[1]).toBe(12);
+            expect(box(names(el)[1]).top - box(values(el)[0]).bottom).toBe(24);
             expect(getComputedStyle(names(el)[0]).fontSize).toBe('14px');
         });
 
@@ -262,30 +333,131 @@ describe('Feature | DescriptionList', () => {
             expect(getComputedStyle(names(el)[0]).lineHeight).toBe('24px');
         });
 
-        it('looks the same on a page with a reset', async () => {
-            const look = (el) => ({
-                names: names(el).map((name) => [box(name), line(name).height, line(name).backgroundColor]),
-                values: [...el.querySelectorAll('dd')].map(box),
-            });
-            const before = {};
-            for (const width of [300, 600]) before[width] = look(await placed(list(), width));
+        it('takes the room of a row from --el-description-list-padding-block', async () => {
+            for (const width of [300, 600]) {
+                const el = await placed(list(rows, 'style="--el-description-list-padding-block: 4px"'), width);
 
-            // What Tailwind CSS takes off every element, in no layer.
-            const reset = new CSSStyleSheet();
-            reset.replaceSync(`
-                *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; }
-                dl, dd { margin: 0; }
-            `);
-            document.adoptedStyleSheets = [...document.adoptedStyleSheets, reset];
-            const after = {};
-            for (const width of [300, 600]) after[width] = look(await placed(list(), width));
-            document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== reset);
+                expect(inList(names(el)[0], el)[1], width).toBe(4);
+                expect(box(names(el)[1]).top - box(values(el)[0]).bottom, width).toBe(8);
+                expect(box(el).bottom - box(values(el)[2]).bottom, width).toBe(4);
+                expect(lineOf(names(el)[1]).top, width).toBe(inList(names(el)[1], el)[1] - 4);
+            }
+        });
 
-            const relative = (state) =>
-                JSON.parse(JSON.stringify(state), (key, value) =>
-                    key === 'top' || key === 'bottom' ? undefined : value,
+        it('takes the gap between a name and its value, and in front of an action, from --el-description-list-gap', async () => {
+            const wide = await placed(list(rows, 'style="--el-description-list-gap: 40px"'), 600);
+            const narrow = await placed(list(rows, 'style="--el-description-list-gap: 40px"'), 300);
+
+            expect(round(box(values(wide)[1]).left - box(names(wide)[1]).right)).toBe(40);
+            for (const el of [wide, narrow]) {
+                const action = el.querySelector('[data-action]');
+                expect(round(box(action.firstElementChild).left - box(values(el)[0]).right)).toBe(40);
+            }
+        });
+
+        it('has no height while nothing is in it', async () => {
+            for (const width of [300, 600]) {
+                const el = await placed(`<el-description-list></el-description-list>`, width);
+                expect(sizeOf(el).height, width).toBe(0);
+            }
+        });
+    });
+
+    describe('on a page with a reset', () => {
+        // The reset takes the margin, the padding and the border off every element and off what
+        // an element generates: of a name, of a value, and of the line a name draws.
+        const withoutAction = `
+            <dt>Plan</dt>
+            <dd>Team, 12 seats</dd>
+            <dt>Address of the invoice</dt>
+            <dd>12 Garden Road<br />1017 Amsterdam</dd>
+            <dt>Owners</dt>
+            <dd>Ada Lovelace</dd>
+            <dd>Grace Hopper</dd>
+        `;
+        const cases = [
+            ['narrow, with an action', rows, 300],
+            ['narrow, without an action', withoutAction, 300],
+            ['wide, with an action', rows, 600],
+            ['wide, without an action', withoutAction, 600],
+        ];
+
+        for (const [name, content, width] of cases) {
+            it(`has the same rows, gaps and lines as on a page without one: ${name}`, async () => {
+                const { plain, reset } = await withAndWithoutPageReset(async () =>
+                    lookOf(await placed(list(content), width)),
                 );
-            expect(relative(after)).toEqual(relative(before));
+
+                // The room of the rows and the lines are there, and they are the same.
+                expect(plain.names[0][1]).toBe(12);
+                expect(plain.lines[0]).toBeNull();
+                expect(plain.lines[1]).toEqual({ left: 0, top: plain.names[1][1] - 12, width, height: 1 });
+                expect(reset).toEqual(plain);
+            });
+        }
+
+        it('has the same action with a button in it', async () => {
+            for (const width of [300, 600]) {
+                const { plain, reset } = await withAndWithoutPageReset(async () =>
+                    lookOf(
+                        await placed(
+                            list(`
+                                <dt>Plan</dt>
+                                <dd>Team, 12 seats</dd>
+                                <dd data-action><el-button size="small" appearance="plain">Change</el-button></dd>
+                                <dt>Created</dt>
+                                <dd>12 March 2026</dd>
+                            `),
+                            width,
+                        ),
+                    ),
+                );
+
+                expect(reset, width).toEqual(plain);
+            }
+        });
+
+        it('lets a rule of the page for the look of a name or a value win', async () => {
+            const look = new CSSStyleSheet();
+            look.replaceSync(`
+                el-description-list.styled > dt { color: rgb(1, 2, 3); font-size: 20px; }
+                el-description-list.styled > dd { color: rgb(4, 5, 6); font-weight: 700; }
+            `);
+            document.adoptedStyleSheets = [...document.adoptedStyleSheets, look];
+            try {
+                const { plain, reset } = await withAndWithoutPageReset(async () => {
+                    const el = await placed(list(rows, 'class="styled"'), 600);
+                    const name = getComputedStyle(names(el)[0]);
+                    const value = getComputedStyle(values(el)[0]);
+                    return [name.color, name.fontSize, value.color, value.fontWeight];
+                });
+
+                expect(plain).toEqual(['rgb(1, 2, 3)', '20px', 'rgb(4, 5, 6)', '700']);
+                expect(reset).toEqual(plain);
+            } finally {
+                document.adoptedStyleSheets = document.adoptedStyleSheets.filter((sheet) => sheet !== look);
+            }
+        });
+
+        it('keeps the room of a row where the page lays a value out itself, and adds a padding of the page to it', async () => {
+            for (const width of [300, 600]) {
+                const el = await placed(
+                    list(`
+                        <dt>Tags</dt>
+                        <dd style="display: flex; gap: 8px"><span>One</span><span>Two</span></dd>
+                        <dt>Created</dt>
+                        <dd style="padding-block: 6px">12 March 2026</dd>
+                    `),
+                    width,
+                );
+                const [tags, created] = values(el);
+
+                expect(box(tags).height, width).toBe(24);
+                expect(box(names(el)[1]).top - box(tags).bottom, width).toBe(24);
+                // 12 of the list and 6 of the page, below the text of the last value.
+                expect(box(created).height, width).toBe(36);
+                expect(box(el).bottom - box(created).bottom, width).toBe(12);
+            }
         });
     });
 

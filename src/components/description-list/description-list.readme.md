@@ -62,7 +62,9 @@ _None._
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--el-description-list-term-width` | `fit-content(40%)` | The width of the column of the names while names and values stand side by side. Unset, the column is as wide as the longest name, and 40% of the list at most. |
+| `--el-description-list-term-width` | as wide as the longest name | The width of the column of the names while names and values stand side by side. The gap to the values comes after it. Unset, the column is as wide as the longest name, and takes 40% of the list at most together with that gap. |
+| `--el-description-list-padding-block` | `--el-space-3` | The room above and below a row. Without a theme it is `0.75rem`. |
+| `--el-description-list-gap` | `--el-space-4` | The gap between a name and its value while they stand side by side, and in front of an action. Without a theme it is `1rem`. |
 
 ## What the page writes
 
@@ -71,7 +73,8 @@ The element takes the place of the `<dl>`: the `<dl>` itself is inside of the el
 - A `<dt>` for the name, then a `<dd>` for the value. A row begins with its `<dt>`.
 - A name can have several values, a `<dd>` each. Each of them has a row of its own, without a line above it.
 - `<dt>` and `<dd>` are direct children of the element. A `<div>` around a name and its value, as a `<dl>` allows it, is not laid out: the list cannot reach into it.
-- The look of a name and of a value is given to the elements of the page (`::slotted`). A rule of the page for `dt` or `dd` wins over it, property by property. What a reset usually sets on them (the box model, the border, the margin) is not used by the list, so it looks the same with and without one.
+- The look of a name and of a value is given to the elements of the page (`::slotted`). A rule of the page for `dt` or `dd` wins over it, property by property: its colour, its size, its weight.
+- The list takes nothing from the margin, the padding or the border of a `<dt>` or a `<dd>`. See [a reset of the page](#a-reset-of-the-page).
 
 A tool that checks the markup of the page alone reports a `<dt>` that is not in a `<dl>`. In the tree the browser lays out and reads to assistive technology, it is.
 
@@ -80,9 +83,9 @@ A tool that checks the markup of the page alone reports a `<dt>` that is not in 
 The list measures its own width (a container query), not the one of the viewport. So it stacks in a narrow column of a wide page, a drawer for example.
 
 - **Below 30rem** a name stands above its value, in the smaller and quieter text of the theme. An action stands at the end of the row, on the line of the value.
-- **From 30rem** name and value stand side by side. The column of the names is as wide as the longest name, and 40% of the list at most; a longer name breaks. The values of all rows begin on one line, and the actions end on one.
+- **From 30rem** name and value stand side by side. The column of the names is as wide as the longest name, and with the gap after it 40% of the list at most; a longer name breaks. The values of all rows begin on one line, and the actions end on one.
 
-`--el-description-list-term-width` sets the width of the names, so that two lists on a page have their values on one line:
+`--el-description-list-term-width` sets the width of the names, so that two lists on a page have their values on one line. The values begin one gap (`--el-description-list-gap`) after it:
 
 ```css
 el-description-list {
@@ -113,6 +116,29 @@ On a touch screen an `el-button` is at least `--el-touch-target` high and wide. 
 ## Lines and spacing
 
 A row has `--el-space-3` above and below, and between names and values is `--el-space-4`. Above every row but the first is a line in `--el-color-border`, `--el-border-width` high, over the whole width of the list. Without a theme the list has no line; the spacing falls back to `0.75rem` and `1rem`.
+
+Two properties set the spacing for a list, or for the page:
+
+```css
+el-description-list {
+    --el-description-list-padding-block: 0.5rem;
+    --el-description-list-gap: 2rem;
+}
+```
+
+## A reset of the page
+
+A rule of the page for a `<dt>` or a `<dd>` wins over what the list says for them, and a reset has such a rule for every element, and for what an element generates: `*, ::before, ::after { margin: 0; padding: 0; border: 0 solid; }` in Tailwind CSS v4. The list looks the same on a page with that reset and on one without:
+
+- **The room of a row is the list's**: the gap between the rows of its grid, and its own padding above the first and below the last row. Where a name stands above its value, the value is moved up to its name with a position.
+- **The gap between a name and its value** is a column of the grid, and the one in front of an action an empty box the action begins with.
+- **The line between two rows** is a box with a height and a fill, placed with `translate`: no border, and no margin.
+
+A reset may take the margin, the padding and the border of every element and of every `::before` and `::after`. A padding or a margin the page gives a `<dt>` or a `<dd>` itself adds to the room of the row.
+
+What the list does set on the elements of the page, and what a rule of the page for the same property would change: their column (`grid-column`), the colour, the size and the line height of a name, how a long word breaks (`overflow-wrap`), the position of a value in a narrow list (`position`, `inset-block-start`), and for an action its layout (`display: flex`), its height and the `::before` in front of its content. The `::before` of a name is the line.
+
+A list with nothing in it has no height. One whose rows are all hidden keeps the room above its first and below its last row.
 
 A long value breaks, inside of a word where it has to (a token, an address): the list is never wider than its place.
 
