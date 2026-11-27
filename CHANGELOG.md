@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### checkbox-group-field
+
+- Added: an option can show something in front of its label: `color` is a colour that is drawn as a dot, `icon` the address of an SVG symbol, as an option of `el-segmented-field` has it. Things a user knows by their colour, tags or calendars, are found by it where they are chosen. Both are decorations, hidden from assistive technology: the label stays the name of the option. They are part of the option, so they work for options as an attribute and as a property, and are in server-rendered markup. The dot keeps its colour where the user forces colours. ([#198](https://github.com/webtides/element-library/issues/198))
+
 ### combobox-field
 
 - Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
@@ -57,6 +61,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. Its own button, the one that shows the password, stays beside the control. ([#168](https://github.com/webtides/element-library/issues/168))
 - Added: `maxlength` and `minlength` are passed on to the input, as in `el-input-field`: a password that is typed shorter than `minlength` makes the field invalid, with its `error-message`. ([#190](https://github.com/webtides/element-library/issues/190))
+
+### radio-field
+
+- Added: an option can show something in front of its label: `color` is a colour that is drawn as a dot, `icon` the address of an SVG symbol, as an option of `el-segmented-field` has it. Things a user knows by their colour, tags or calendars, are found by it where they are chosen. Both are decorations, hidden from assistive technology: the label stays the name of the option. They are part of the option, so they work for options as an attribute and as a property, and are in server-rendered markup. The dot keeps its colour where the user forces colours. ([#198](https://github.com/webtides/element-library/issues/198))
 
 ### textarea-field
 

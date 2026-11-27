@@ -1,6 +1,7 @@
 import { html, defineElement } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import { focusLeft } from '../../utils/focus.js';
+import { optionStartTemplate } from '../../utils/options.js';
 import style from './radio-field.style.js';
 
 /**
@@ -18,9 +19,12 @@ import style from './radio-field.style.js';
  *   because of it. Inherits `valid` and `invalid` from `FormField`.
  *
  * @property {string | null} value - The selected option's value.
- * @property {Array<string | { value: string, label?: string, disabled?: boolean }>} options -
+ * @property {Array<string | { value: string, label?: string, disabled?: boolean, color?: string, icon?: string }>} options -
  *   Options to render. Accepts plain strings (`['Yes', 'No']`) or option objects
- *   (`[{ value, label, disabled? }]`). Strings are used as both value and label.
+ *   (`[{ value, label, disabled? }]`). Strings are used as both value and label. An object can
+ *   name a `color`, which is drawn as a dot in front of the label, and an `icon`, the address of
+ *   an SVG symbol (`'#tag'`, `'/icons.svg#tag'`), which is drawn there as well. Both are
+ *   decorations: the label stays the name of the option.
  */
 export default class RadioField extends FormField {
     constructor(options) {
@@ -151,6 +155,7 @@ export default class RadioField extends FormField {
                         aria-describedby="${this._describedBy()}"
                     />
                     <span class="radio-indicator" aria-hidden="true"></span>
+                    ${optionStartTemplate(option)}
                     <span class="option-label">${label}</span>
                 </label>
             `;

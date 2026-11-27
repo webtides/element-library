@@ -1,6 +1,7 @@
 import { html, defineElement } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
 import { focusLeft } from '../../utils/focus.js';
+import { optionStartTemplate } from '../../utils/options.js';
 import style from './checkbox-group-field.style.js';
 
 /**
@@ -29,9 +30,12 @@ const REQUIRED_MESSAGE = 'Select at least one option.';
  *
  * @property {string[]} value - The values of the checked options, in the order of the options. As
  *   an attribute it is JSON: `value='["news", "offers"]'`.
- * @property {Array<string | { value: string, label?: string, disabled?: boolean }>} options -
+ * @property {Array<string | { value: string, label?: string, disabled?: boolean, color?: string, icon?: string }>} options -
  *   Options to render. Accepts plain strings (`['News', 'Offers']`) or option objects
- *   (`[{ value, label, disabled? }]`). Strings are used as both value and label.
+ *   (`[{ value, label, disabled? }]`). Strings are used as both value and label. An object can
+ *   name a `color`, which is drawn as a dot in front of the label, and an `icon`, the address of
+ *   an SVG symbol (`'#tag'`, `'/icons.svg#tag'`), which is drawn there as well. Both are
+ *   decorations: the label stays the name of the option.
  * @property {boolean} required - Whether at least one option has to be checked.
  */
 export default class CheckboxGroupField extends FormField {
@@ -205,6 +209,7 @@ export default class CheckboxGroupField extends FormField {
                         aria-describedby="${this._describedBy()}"
                     />
                     <span class="checkbox-indicator" aria-hidden="true"></span>
+                    ${optionStartTemplate(option)}
                     <span class="option-label">${label}</span>
                 </label>
             `;

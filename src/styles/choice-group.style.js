@@ -82,6 +82,32 @@ export default function choiceGroupStyle(host = ':host') {
             opacity: 0.5;
         }
 
+        /* What an option shows in front of its label: a colour, an icon. */
+        ${field} .option-start {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            gap: var(--el-space-1, 0.25em);
+        }
+
+        /* The colour an option names, as a dot. It is the colour of a thing of the page, a tag or
+           a calendar, and what a user finds the option by: it stays where the user forces
+           colours, as the colour of a picture does. */
+        ${field} .option-color {
+            inline-size: 0.75em;
+            block-size: 0.75em;
+            border-radius: 50%;
+            background: var(--_el-option-color);
+            forced-color-adjust: none;
+        }
+
+        /* An icon has the colour of the text, as the icon of a segment has. */
+        ${field} .option-icon {
+            inline-size: 1.25em;
+            block-size: 1.25em;
+            fill: currentColor;
+        }
+
         /* Touch screens: the label of an option is its hit area and at least --el-touch-target
            in both directions. Without the token the sizes stay as they are. */
         @media (any-pointer: coarse) {

@@ -36,6 +36,28 @@ field.options = [
 ];
 ```
 
+#### A colour or an icon in front of the label
+
+Tags with a colour, calendars, categories with an icon: things a user knows by their colour are found by it where they are chosen. An option can name a `color`, which is drawn as a dot in front of its label, and an `icon`, the address of an SVG symbol, which is drawn there as well:
+
+```html
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="icon-archive" viewBox="0 0 24 24">…</symbol>
+</svg>
+
+<el-radio-field
+    name="tags"
+    label="Calendar"
+    options='[{"value":"work","label":"Work","color":"#c81e1e"},{"value":"home","label":"Home","color":"#1e5fc8"},{"value":"archive","label":"Archive","icon":"#icon-archive"}]'
+></el-radio-field>
+```
+
+- **`color`** is any colour of CSS. The dot has it where the user forces colours as well: it is the colour of a thing of the page, as the colour of a picture is.
+- **`icon`** is the address of an SVG symbol: one of the page (`#icon-archive`) or of a file (`/icons.svg#archive`), as an option of [`el-segmented-field`](../segmented-field/segmented-field.readme.md) has it. The icon has the colour of the text and is 1.25em wide and high. An option with both shows the dot first.
+- **Both are decorations.** They are hidden from assistive technology, and the label stays the name of the option: say in the label what the colour says to the eye.
+- **As an attribute and as a property**, and in server-rendered markup: they are part of the option, as its label is.
+- An option that names neither has nothing in front of its label, and a click on the dot or on the icon checks the option, as a click on its label does.
+
 ## API
 
 #### Properties/Attributes
@@ -45,7 +67,7 @@ Inherits all of `form-field`'s properties (`name`, `value`, `required`, `disable
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `string \| null` | `null` | The selected option's value. |
-| `options` | `Array<string \| { value: string, label?: string, disabled?: boolean }>` | `[]` | Options to render. Strings are used as both value and label; objects allow a separate label/disabled. |
+| `options` | `Array<string \| { value: string, label?: string, disabled?: boolean, color?: string, icon?: string }>` | `[]` | Options to render. Strings are used as both value and label; objects allow a separate label/disabled, and a `color` or an `icon` in front of the label. |
 
 #### Events
 

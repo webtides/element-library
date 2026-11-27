@@ -104,3 +104,33 @@ export const WithObjectOptions = {
         ></el-radio-field>
     `,
 };
+
+export const ColourAndIcon = {
+    name: 'A colour or an icon in front of the label',
+    parameters: {
+        docs: {
+            description: {
+                story: 'An option can name a `color`, drawn as a dot in front of its label, and an `icon`, the address of an SVG symbol. Both are decorations: the label stays the name of the option.',
+            },
+        },
+    },
+    render: () => html`
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+            <symbol id="radio-field-icon-archive" viewBox="0 0 24 24">
+                <path d="M3 4h18v5H3zM5 9v11h14V9M9 13h6" fill="none" stroke="currentColor" stroke-width="2" />
+            </symbol>
+        </svg>
+        <el-radio-field
+            name="radio-field-decorated"
+            label="Calendar"
+            value="home"
+            .options="${[
+                { value: 'work', label: 'Work', color: '#c81e1e' },
+                { value: 'home', label: 'Home', color: '#1e5fc8' },
+                { value: 'travel', label: 'Travel', color: '#0b7a3e', icon: '#radio-field-icon-archive' },
+                { value: 'archive', label: 'Archive', icon: '#radio-field-icon-archive' },
+                { value: 'none', label: 'No tag' },
+            ]}"
+        ></el-radio-field>
+    `,
+};

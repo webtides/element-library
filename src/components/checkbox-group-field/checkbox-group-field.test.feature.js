@@ -11,6 +11,7 @@ import {
     nextFrame,
     oneEvent,
     sizeOf,
+    useForcedColors,
     useTouchScreen,
 } from '../../test-helpers.js';
 import { define } from './checkbox-group-field.js';
@@ -371,6 +372,155 @@ describe('Feature | CheckboxGroupField', () => {
             );
             await frames();
             expect(sizeOf(wrapper.querySelector('.option')).height).toBeLessThan(44);
+        });
+    });
+
+    describe('a colour or an icon in front of the label of an option', () => {
+        const SYMBOLS = `
+            <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+                <symbol id="checkbox-option-tag" viewBox="0 0 24 24"><path d="M4 4h8l8 8-8 8-8-8z" /></symbol>
+            </svg>
+        `;
+        const OPTIONS = [
+            { value: 'work', label: 'Work', color: 'rgb(200, 30, 30)' },
+            { value: 'home', label: 'Home', color: '#1e5fc8', icon: '#checkbox-option-tag' },
+            { value: 'later', label: 'Later', icon: '#checkbox-option-tag' },
+            { value: 'none', label: 'None' },
+            'Plain',
+        ];
+        const decorated = async (attributes = '') => {
+            const wrapper = await fixture(`
+                <div style="font: 16px/24px sans-serif">
+                    ${SYMBOLS}
+                    <el-checkbox-group-field name="checkbox-decorated" label="Tags" options='${JSON.stringify(OPTIONS)}' ${attributes}></el-checkbox-group-field>
+                </div>
+            `);
+            await nextFrame();
+            await nextFrame();
+            return wrapper.querySelector('el-checkbox-group-field');
+        };
+        const optionOf = (el, index) => el.querySelectorAll('.option')[index];
+        const box = (node) => node.getBoundingClientRect();
+
+        it('shows a dot in the colour an option names, between its box and its label', async () => {
+            const el = await decorated();
+            const option = optionOf(el, 0);
+            const dot = option.querySelector('.option-color');
+
+            expect(getComputedStyle(dot).backgroundColor).toBe('rgb(200, 30, 30)');
+            expect([box(dot).width, box(dot).height]).toEqual([12, 12]);
+            expect(getComputedStyle(dot).borderTopLeftRadius).toBe('50%');
+            expect(box(option.querySelector('.checkbox-indicator')).right).toBeLessThanOrEqual(box(dot).left);
+            expect(box(dot).right).toBeLessThanOrEqual(box(option.querySelector('.option-label')).left);
+            expect(getComputedStyle(optionOf(el, 1).querySelector('.option-color')).backgroundColor).toBe(
+                'rgb(30, 95, 200)',
+            );
+        });
+
+        it('shows an icon of the page there, in the colour of the text, and both where an option has both', async () => {
+            const el = await decorated();
+            const icon = optionOf(el, 2).querySelector('svg.option-icon');
+            const both = optionOf(el, 1);
+
+            expect(icon.querySelector('use').getAttribute('href')).toBe('#checkbox-option-tag');
+            expect([box(icon).width, box(icon).height]).toEqual([20, 20]);
+            expect(getComputedStyle(icon).fill).toBe(getComputedStyle(optionOf(el, 2)).color);
+            expect(box(icon).right).toBeLessThanOrEqual(box(optionOf(el, 2).querySelector('.option-label')).left);
+            // The colour first, then the icon.
+            expect(box(both.querySelector('.option-color')).right).toBeLessThanOrEqual(
+                box(both.querySelector('.option-icon')).left,
+            );
+        });
+
+        it('takes both for decorations: the name of an option stays its label', async () => {
+            const el = await decorated();
+
+            for (const [index, name] of ['Work', 'Home', 'Later', 'None', 'Plain'].entries()) {
+                expect(await accessibleName(optionOf(el, index).querySelector('input')), name).toBe(name);
+            }
+            for (const start of el.querySelectorAll('.option-start')) {
+                expect(start.getAttribute('aria-hidden')).toBe('true');
+            }
+        });
+
+        it('has nothing in front of the label of an option that names neither, as before', async () => {
+            const el = await decorated();
+
+            expect(el.querySelectorAll('.option-start').length).toBe(3);
+            for (const index of [3, 4]) {
+                expect([...optionOf(el, index).children].map((child) => child.className || child.localName)).toEqual([
+                    'input',
+                    'checkbox-indicator',
+                    'option-label',
+                ]);
+            }
+        });
+
+        it('takes the options as a property as well, and follows new ones', async () => {
+            const el = await fixture(
+                `<el-checkbox-group-field name="checkbox-property" label="Tags"></el-checkbox-group-field>`,
+            );
+            el.options = OPTIONS;
+            await nextFrame();
+            await nextFrame();
+            expect(getComputedStyle(optionOf(el, 0).querySelector('.option-color')).backgroundColor).toBe(
+                'rgb(200, 30, 30)',
+            );
+            expect(optionOf(el, 2).querySelector('use').getAttribute('href')).toBe('#checkbox-option-tag');
+
+            el.options = [{ value: 'work', label: 'Work', color: 'rgb(0, 120, 60)' }, 'Plain'];
+            await nextFrame();
+            await nextFrame();
+            expect(getComputedStyle(optionOf(el, 0).querySelector('.option-color')).backgroundColor).toBe(
+                'rgb(0, 120, 60)',
+            );
+            expect(el.querySelectorAll('.option-start').length).toBe(1);
+        });
+
+        it('has the colour and the icon in server-rendered markup', () => {
+            const source = document.createElement('el-checkbox-group-field');
+            Object.assign(source, source.properties(), { name: 'checkbox-ssr', label: 'Tags', options: OPTIONS });
+            const wrapper = document.createElement('div');
+            wrapper.setHTMLUnsafe(source.template().toString());
+            const starts = [...wrapper.querySelectorAll('.option')].map((option) =>
+                option.querySelector('.option-start'),
+            );
+
+            expect(starts.map((start) => !!start)).toEqual([true, true, true, false, false]);
+            expect(starts[0].querySelector('.option-color').getAttribute('style')).toContain('rgb(200, 30, 30)');
+            expect(starts[1].querySelector('.option-color').getAttribute('style')).toContain('#1e5fc8');
+            expect(starts[1].querySelector('use').getAttribute('href')).toBe('#checkbox-option-tag');
+            expect(starts[0].getAttribute('aria-hidden')).toBe('true');
+        });
+
+        it('checks an option for a click on its colour or on its icon, as for one on its label', async () => {
+            const el = await decorated();
+
+            await userEvent.click(optionOf(el, 0).querySelector('.option-color'));
+            expect(optionOf(el, 0).querySelector('input').checked).toBe(true);
+            await userEvent.click(optionOf(el, 2).querySelector('.option-icon'));
+            expect(optionOf(el, 2).querySelector('input').checked).toBe(true);
+        });
+
+        it('passes axe with options that have a colour, an icon or both', async () => {
+            const el = await decorated();
+
+            const results = await axe.run(el);
+
+            expect(results.violations).toEqual([]);
+        });
+
+        describe('where the user forces colours', () => {
+            useForcedColors();
+
+            it('keeps the colour of the dot: it is what the user finds the option by', async () => {
+                const el = await decorated();
+
+                expect(matchMedia('(forced-colors: active)').matches).toBe(true);
+                expect(getComputedStyle(optionOf(el, 0).querySelector('.option-color')).backgroundColor).toBe(
+                    'rgb(200, 30, 30)',
+                );
+            });
         });
     });
 

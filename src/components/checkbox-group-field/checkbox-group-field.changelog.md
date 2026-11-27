@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- An option can show something in front of its label: `color` is a colour that is drawn as a dot, `icon` the address of an SVG symbol, as an option of `el-segmented-field` has it. Things a user knows by their colour, tags or calendars, are found by it where they are chosen. Both are decorations, hidden from assistive technology: the label stays the name of the option. They are part of the option, so they work for options as an attribute and as a property, and are in server-rendered markup. The dot keeps its colour where the user forces colours. ([#198](https://github.com/webtides/element-library/issues/198))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added
