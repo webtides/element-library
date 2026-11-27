@@ -47,9 +47,12 @@ const style = css`
         --_el-group-overlap: initial;
     }
 
-    /* A line between two entries, which the page puts there. */
+    /* A line between two entries, which the page puts there. The menu names the room above and
+       below it, in a property that inherits, and the line takes that room in its own shadow root.
+       A margin of the slotted element would be gone on a page that takes the margin off every
+       element: a rule of the page wins over a ::slotted rule. */
     ::slotted(el-divider) {
-        margin-block: var(--el-space-1, 0.25rem);
+        --_el-context-divider-space: var(--el-space-1, 0.25rem);
     }
 `;
 

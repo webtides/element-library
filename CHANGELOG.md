@@ -33,6 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
 
+### divider
+
+- Added: a container can give its lines room: it names the room in a property that inherits (`--_el-context-divider-space`, internal), and the line has it in front of it and after it, above and below a horizontal line and at both sides of a vertical one. `el-menu` does so for a line between two entries. Outside of such a container a divider has no space around it, as before. ([#206](https://github.com/webtides/element-library/issues/206))
+
 ### file-field
 
 - Added: `drop-message`: an area to drop a file onto, around the control, with that text in it. The control took a drop on its small button, and nothing invited one. While a dragged file is over the area it looks different, and the host has the state `dragover`. A click on the area opens the dialog; the keyboard is on the control in it. ([#197](https://github.com/webtides/element-library/issues/197))
@@ -59,6 +63,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ### menu
 
+- Fixed: an `el-divider` between two entries has its room above and below on a page whose stylesheet takes the margin off every element (`* { margin: 0 }`, the reset of Tailwind CSS v4). The menu gave that room to the line as a margin (`::slotted`), and a rule of the page wins over such a rule: the line touched the entries. The menu names the room in a property that inherits now, and the line takes it in its own shadow root. ([#206](https://github.com/webtides/element-library/issues/206))
+- Changed: a page that gave the room back itself, with a margin for an `el-divider` in a menu, takes that rule out: the margin adds to the room now. ([#206](https://github.com/webtides/element-library/issues/206))
 - Changed: the panel is no part of a row of joined buttons: it stops the property that pulls a button over its neighbour there (`--_el-group-overlap`), as the ones for the corners and the line. ([#206](https://github.com/webtides/element-library/issues/206))
 - Fixed: an open menu keeps the keyboard wherever the focus is. `Escape` closes it and gives the focus back to what it was opened for, and the key does not reach the page behind; `ArrowDown` and `ArrowUp` bring the focus to its first and to its last entry; the Tab key closes it, and the focus moves on from where it is. The menu heard its keys on its panel alone: an open menu whose entries did not have the focus was left with no key, and `Escape` closed what was behind it. It hears them at the window now, for as long as it is open. ([#202](https://github.com/webtides/element-library/issues/202))
 - Fixed: a press on the heading of a group, on a line or on the padding of the panel leaves the focus on the entry that had it, and the arrow keys go on from there. The focus was nowhere in the page after such a press. Where no entry had the focus, the panel takes it itself: it has `tabindex="-1"`, and is no stop of the Tab key. ([#202](https://github.com/webtides/element-library/issues/202))

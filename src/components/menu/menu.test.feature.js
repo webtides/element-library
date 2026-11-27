@@ -12,6 +12,7 @@ import {
     realPointer,
     useForcedColors,
     useTouchScreen,
+    withAndWithoutPageReset,
 } from '../../test-helpers.js';
 import { activeElement } from '../../utils/focus.js';
 import { define } from './menu.js';
@@ -884,6 +885,31 @@ describe('Feature | Menu', () => {
             expect(left(edit, 'label')).toBe(12 + 16 + 8);
             expect(part(plain, 'icon').hidden).toBe(true);
             expect(left(plain, 'label')).toBe(12);
+        });
+
+        it('gives a line between two entries room above and below, with a reset of the page as without', async () => {
+            const { plain, reset } = await withAndWithoutPageReset(async () => {
+                const el = await menu(`
+                    <el-menu-item id="edit">Edit</el-menu-item>
+                    <el-divider></el-divider>
+                    <el-menu-item id="delete">Delete</el-menu-item>
+                `);
+                await openWith(el);
+                const box = (node) => node.getBoundingClientRect();
+                const line = box(part(el.querySelector('el-divider'), 'base'));
+                const measures = {
+                    above: Math.round(line.top - box(el.querySelector('#edit')).bottom),
+                    line: Math.round(line.height),
+                    below: Math.round(box(el.querySelector('#delete')).top - line.bottom),
+                    panel: Math.round(box(panelOf(el)).height),
+                };
+                el.parentElement.remove();
+                return measures;
+            });
+
+            // --el-space-1 above and below a line of --el-border-width.
+            expect(plain).toMatchObject({ above: 4, line: 1, below: 4 });
+            expect(reset).toEqual(plain);
         });
 
         it('divides its entries into groups, each a group with its heading as its name', async () => {

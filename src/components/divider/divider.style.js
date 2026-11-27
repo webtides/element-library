@@ -22,6 +22,10 @@ const style = css`
         width: auto;
         height: 0;
         margin: 0;
+        /* A container that gives its lines room, a menu, says how much in a property that
+           inherits: the room in front of the line and after it. It is a margin of the line in
+           here. Outside of such a container the property is not set, and the line has no room. */
+        margin-block: var(--_el-context-divider-space, 0px);
         border: none;
         border-block-start: var(--_el-divider-line);
         color: inherit;
@@ -42,6 +46,8 @@ const style = css`
     /* The line stretches to the height of the host, as a flex item does. */
     :host([orientation='vertical']) .divider {
         height: auto;
+        margin-block: 0;
+        margin-inline: var(--_el-context-divider-space, 0px);
         border-block-start: none;
         border-inline-start: var(--_el-divider-line);
     }

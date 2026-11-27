@@ -66,7 +66,7 @@ _None._
 
 ## Space around the line
 
-A divider has no space around it. Where it stands in a layout with a `gap`, the gap is the distance to the content on both sides. Anywhere else, set a margin on the element:
+A divider has no space around it. Where it stands in a layout with a `gap`, the gap is the distance to the content on both sides. In an [`el-menu`](../menu/menu.readme.md) the menu gives it room above and below. Anywhere else, set a margin on the element:
 
 ```css
 el-divider {

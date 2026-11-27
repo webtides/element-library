@@ -94,6 +94,40 @@ describe('Feature | Divider', () => {
         });
     });
 
+    describe('in a container that gives its lines room', () => {
+        // A menu does: it names the room in a property that inherits, and the line takes it.
+        it('has that room above and below the line', async () => {
+            const wrapper = await fixture(`
+                <div style="${place} --_el-context-divider-space: 8px">
+                    <div style="height: 10px"></div>
+                    <el-divider></el-divider>
+                    <div style="height: 10px"></div>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-divider');
+
+            // 10 + 8 + 1 + 8 + 10.
+            expect(sizeOf(wrapper)).toEqual({ width: 300, height: 37 });
+            expect(sizeOf(base(el))).toEqual({ width: 300, height: 1 });
+            // The element itself has no margin, which a reset of the page would take.
+            expect(getComputedStyle(el).margin).toBe('0px');
+        });
+
+        it('has it at both sides of a vertical line', async () => {
+            const row = await fixture(`
+                <div style="${place} display: flex; --_el-context-divider-space: 8px">
+                    <span>Cut</span>
+                    <el-divider orientation="vertical"></el-divider>
+                    <span>Paste</span>
+                </div>
+            `);
+            const el = row.querySelector('el-divider');
+
+            expect(sizeOf(el)).toEqual({ width: 17, height: 30 });
+            expect(sizeOf(base(el))).toEqual({ width: 1, height: 30 });
+        });
+    });
+
     describe('vertical', () => {
         it('is as high as the row it stands in, whatever the alignment of the row', async () => {
             const rows = await placed(`

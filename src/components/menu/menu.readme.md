@@ -152,7 +152,7 @@ Choosing is a click on an entry, with the pointer, `Enter` or `Space`. The menu 
 
 ## Groups
 
-Entries that belong together go into an [`el-menu-group`](../menu-group/menu-group.readme.md), which has a line over it and a heading where it has a `label`. An [`el-divider`](../divider/divider.readme.md) is a line alone.
+Entries that belong together go into an [`el-menu-group`](../menu-group/menu-group.readme.md), which has a line over it and a heading where it has a `label`. An [`el-divider`](../divider/divider.readme.md) is a line alone, with `--el-space-1` above and below it. That room is the menu's, not a margin of the element: a reset of the page that takes the margin off every element changes nothing.
 
 ```html
 <el-menu>
