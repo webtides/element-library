@@ -25,6 +25,13 @@ const TYPED_INTO = 'input, textarea, select, [contenteditable=""], [contentedita
 const KEYBOARD = 80;
 
 /**
+ * How long, in milliseconds, a scroll of the document is taken for the doing of something else
+ * than a tap on the status bar: after a finger has left the screen, a keyboard has come or gone,
+ * or the viewport has changed its size. A page that was dragged swings back for that long.
+ */
+const SETTLE = 700;
+
+/**
  * The frame of an application: it fills what the browser shows and lays out five regions, a
  * header, a footer, a navigation at the start side, an aside at the end side, and the content.
  * The header and the footer stay in view, and the content scrolls between them.
@@ -51,6 +58,10 @@ const KEYBOARD = 80;
  * above the keyboard, and where that part is: the header stays in view, and the field the user
  * types into does. That needs the script.
  *
+ * With `status-bar-tap` a tap on the status bar of an iPhone brings the content to its top, as it
+ * does in an application. iOS scrolls the document for that tap and never a region, so the frame
+ * keeps the document scrolled by one pixel there, and hears it go back.
+ *
  * @element el-app-frame
  *
  * @fires {CustomEvent<{ open: boolean }>} app-frame-navigation-toggle - Fired when the drawer of
@@ -61,6 +72,9 @@ const KEYBOARD = 80;
  * @fires {CustomEvent<{ region: 'navigation'|'aside', size: number }>} app-frame-resize-end -
  *   Fired once the user has set a width: when the pointer lets go of the edge, and with every
  *   key. The width to keep is in `detail.size`.
+ * @fires {CustomEvent} app-frame-status-bar-tap - Fired when the user has tapped the status bar of
+ *   an iPhone, with `status-bar-tap`. The frame scrolls its content to the top after it, unless a
+ *   listener calls `preventDefault()`: a view whose columns scroll brings those to their tops.
  *
  * @slot - The content of the view: the `main` of the page, with an id for the skip link.
  * @slot header - The region at the top, an app bar as a rule. Left out while it is empty.
@@ -133,6 +147,9 @@ const KEYBOARD = 80;
  *   is the width of the stylesheet (`--el-app-frame-aside-size`). Default `0`.
  * @property {string} asideLabel - The name of the aside for assistive technology, on the edge
  *   that sizes it. The edge of the navigation has `navigation-label`. Default `'Aside'`.
+ * @property {boolean} statusBarTap - Whether a tap on the status bar of an iPhone brings the
+ *   content to its top. The document of the page is one pixel higher than the viewport then, and
+ *   scrolled down by it. Default `false`.
  */
 export default class AppFrame extends TemplateElement {
     /**
@@ -175,7 +192,39 @@ export default class AppFrame extends TemplateElement {
      * page that the browser moves behind it.
      * @private
      */
-    _onViewport = () => this._syncViewport();
+    _onViewport = () => {
+        // Not the doing of a tap on the status bar, whatever the document does next.
+        this._quiet();
+        this._syncViewport();
+    };
+
+    /**
+     * What the frame keeps while it listens for a tap on the status bar: the element that makes
+     * the document one pixel higher than the viewport, how many fingers are on the screen, until
+     * when a scroll of the document is somebody else's, and the timer that scrolls it back.
+     * @private
+     * @type {{ sentinel: HTMLElement, touches: number, dragged: boolean, quietUntil: number, tappedAt: number, timer: number } | undefined}
+     */
+    _statusBar = undefined;
+
+    /** @private */
+    _onDocumentScroll = () => this._onStatusBarScroll();
+
+    /**
+     * A finger has come or gone. One that has dragged the document, from the header or the
+     * footer, leaves a page that swings back: for that moment a scroll is not a tap. One that has
+     * scrolled the content has moved no document, and a tap right after it counts.
+     * @private
+     * @param {TouchEvent} event
+     */
+    _onTouch = (event) => {
+        const state = this._statusBar;
+        if (!state) return;
+        state.touches = event.touches.length;
+        if (state.touches > 0 || !state.dragged) return;
+        state.dragged = false;
+        this._quiet();
+    };
 
     constructor() {
         super({
@@ -199,6 +248,7 @@ export default class AppFrame extends TemplateElement {
             navigationSize: 0,
             asideSize: 0,
             asideLabel: 'Aside',
+            statusBarTap: false,
         };
     }
 
@@ -217,12 +267,14 @@ export default class AppFrame extends TemplateElement {
         window.visualViewport?.addEventListener('resize', this._onViewport);
         window.visualViewport?.addEventListener('scroll', this._onViewport);
         this._syncViewport();
+        this._syncStatusBar();
     }
 
     disconnected() {
         this._resizeObserver?.disconnect();
         window.visualViewport?.removeEventListener('resize', this._onViewport);
         window.visualViewport?.removeEventListener('scroll', this._onViewport);
+        this._syncStatusBar();
     }
 
     afterUpdate() {
@@ -236,6 +288,7 @@ export default class AppFrame extends TemplateElement {
         return {
             narrowNavigation: () => this._syncView(),
             wideOnly: () => this._syncView(),
+            statusBarTap: () => this._syncStatusBar(),
             navigationOpen: () => {
                 // There is a drawer to open only where the frame is narrow.
                 if (this.navigationOpen && !this._inDrawer) {
@@ -417,6 +470,10 @@ export default class AppFrame extends TemplateElement {
             this._internals.states.delete('keyboard');
             this.style.removeProperty('--_el-app-frame-visible-start');
             this.style.removeProperty('--_el-app-frame-visible-size');
+            // The document is where the keyboard has left it: back by its pixel, for a tap on
+            // the status bar.
+            this._quiet();
+            this._arm();
             return;
         }
 
@@ -424,6 +481,153 @@ export default class AppFrame extends TemplateElement {
         this.style.setProperty('--_el-app-frame-visible-size', `${viewport.height}px`);
         this._internals.states.add('keyboard');
         this._showFocus();
+    }
+
+    /**
+     * Whether the frame listens for a tap on the status bar: the page asks for it, the frame
+     * fills the viewport, and the browser is one of iOS, which has that tap and nothing that
+     * tells of it. `-webkit-touch-callout` is a property only its WebKit knows.
+     * @private
+     * @returns {boolean}
+     */
+    _wantsStatusBarTap() {
+        const asked = this.statusBarTap === true || this.statusBarTap === 'true' || this.statusBarTap === '';
+        return (
+            asked &&
+            this.isConnected &&
+            getComputedStyle(this).position === 'fixed' &&
+            CSS.supports('-webkit-touch-callout', 'none') &&
+            CSS.supports('block-size', '100dvh')
+        );
+    }
+
+    /**
+     * Starts or stops listening for a tap on the status bar.
+     *
+     * iOS scrolls the document to its top for that tap, and a frame leaves the document nothing
+     * to scroll. So an element makes the document one pixel higher than what the browser shows,
+     * and the frame keeps the document scrolled down by that pixel. The frame is fixed to the
+     * viewport and does not move with it. A tap takes the document back to zero, which the frame
+     * hears.
+     * @private
+     */
+    _syncStatusBar() {
+        const wanted = this._wantsStatusBarTap();
+        if (wanted === !!this._statusBar) return;
+
+        if (!wanted) {
+            const { sentinel, timer } = this._statusBar;
+            this._statusBar = undefined;
+            clearTimeout(timer);
+            sentinel.remove();
+            window.removeEventListener('scroll', this._onDocumentScroll);
+            for (const type of ['touchstart', 'touchend', 'touchcancel']) {
+                window.removeEventListener(type, this._onTouch, true);
+            }
+            return;
+        }
+
+        // An element of its own tree, so its rule for paper needs no stylesheet of the page: on
+        // paper there is no viewport, and it would add a sheet.
+        const sentinel = document.createElement('div');
+        sentinel.setAttribute('data-el-app-frame-sentinel', '');
+        sentinel.setAttribute('aria-hidden', 'true');
+        sentinel.attachShadow({ mode: 'open' }).innerHTML = `<style>
+            :host {
+                position: absolute;
+                inset-block-start: 0;
+                inset-inline-start: 0;
+                inline-size: 1px;
+                block-size: calc(100dvh + 1px);
+                visibility: hidden;
+                pointer-events: none;
+            }
+            @media print {
+                :host {
+                    display: none;
+                }
+            }
+        </style>`;
+        document.body.append(sentinel);
+
+        this._statusBar = { sentinel, touches: 0, dragged: false, quietUntil: 0, tappedAt: 0, timer: 0 };
+        window.addEventListener('scroll', this._onDocumentScroll, { passive: true });
+        for (const type of ['touchstart', 'touchend', 'touchcancel']) {
+            window.addEventListener(type, this._onTouch, { capture: true, passive: true });
+        }
+        // The browser may put the scroll of a page back while it loads: not a tap either.
+        this._quiet();
+        this._arm();
+    }
+
+    /**
+     * From now on, for a moment, a scroll of the document is not the doing of a tap on the status
+     * bar: a finger drags the page, a keyboard moves it, the phone is turned.
+     * @private
+     */
+    _quiet() {
+        if (this._statusBar) this._statusBar.quietUntil = performance.now() + SETTLE;
+    }
+
+    /**
+     * Whether something else than a tap on the status bar is moving the document.
+     * @private
+     * @returns {boolean}
+     */
+    _isMoved() {
+        const { touches, quietUntil } = this._statusBar;
+        return touches > 0 || performance.now() < quietUntil || this._internals.states.has('keyboard');
+    }
+
+    /**
+     * Scrolls the document down by its one pixel, once nothing else moves it. Until then it looks
+     * again: a finger can stay on the screen for long.
+     * @private
+     */
+    _arm() {
+        const state = this._statusBar;
+        if (!state) return;
+        clearTimeout(state.timer);
+
+        if (this._isMoved()) {
+            const wait = Math.max(state.quietUntil - performance.now(), 0) + 50;
+            state.timer = setTimeout(() => this._arm(), wait);
+            return;
+        }
+        if (window.scrollY < 1) window.scrollTo(0, 1);
+    }
+
+    /**
+     * The document has scrolled. At zero, with nothing else that moves it, the user has tapped
+     * the status bar: the content goes to its top, as the document of a page would.
+     *
+     * A script of the page that scrolls the window to zero looks the same, and is taken the same:
+     * a router that sets the scroll back after a change of the view brings the content to its top.
+     * @private
+     */
+    _onStatusBarScroll() {
+        const state = this._statusBar;
+        if (!state) return;
+        // The document moves under a finger: a drag, and no tap when the finger has gone.
+        if (state.touches > 0) state.dragged = true;
+        if (window.scrollY >= 1) return;
+
+        const now = performance.now();
+        const tapped = !this._isMoved() && now - state.tappedAt > SETTLE;
+        if (tapped) {
+            state.tappedAt = now;
+            // Built by hand: dispatch() of element-js does not say whether a listener has
+            // prevented the default.
+            const event = new CustomEvent(Events.STATUS_BAR_TAP, { bubbles: true, composed: true, cancelable: true });
+            this.dispatchEvent(event);
+            if (!event.defaultPrevented) {
+                const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                this.scroller?.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
+            }
+        }
+        // Back by the pixel, for the next tap.
+        clearTimeout(state.timer);
+        state.timer = setTimeout(() => this._arm(), 50);
     }
 
     /**

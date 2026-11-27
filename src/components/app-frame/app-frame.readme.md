@@ -52,6 +52,7 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | `navigation-size` | `number` | `0` | The width of the navigation where the frame is wide, in pixels: the one the user has set, or the one the page has kept. `0` is the width of the stylesheet. |
 | `aside-size` | `number` | `0` | The width of the aside where the frame is wide, in pixels. `0` is the width of the stylesheet. |
 | `aside-label` | `string` | `'Aside'` | The name of the aside on the edge that sizes it. The edge of the navigation has `navigation-label`. |
+| `status-bar-tap` | `boolean` | `false` | Whether a tap on the status bar of an iPhone brings the content to its top. The document is one pixel higher than the viewport then, and scrolled down by it. |
 
 #### Read-only properties
 
@@ -71,6 +72,7 @@ _None._
 | `app-frame-navigation-toggle` | `{ open: boolean }` | Fired when the drawer of the navigation opens or closes. |
 | `app-frame-resize` | `{ region: 'navigation' \| 'aside', size: number }` | Fired with every change the user makes to the width of a column: while its edge is dragged, and with every key. |
 | `app-frame-resize-end` | `{ region: 'navigation' \| 'aside', size: number }` | Fired once the user has set a width: when the pointer lets go of the edge, and with every key. The width to keep. |
+| `app-frame-status-bar-tap` |  | Fired when the user has tapped the status bar of an iPhone, with `status-bar-tap`. The frame scrolls its content to the top after it, unless a listener calls `preventDefault()`. |
 
 #### Slots
 
@@ -150,7 +152,7 @@ The window does not scroll in a frame. What follows from it:
 - **[`el-scroll-to`](../scroll-to/scroll-to.readme.md)** brings its target into view as anywhere.
 - **[`el-sticky`](../sticky/sticky.readme.md)** follows the scroll of the window and has nothing to do in a frame: the header of the frame stays in view by itself.
 - **A phone does not take its address bar in**, because that follows the scroll of the document. The frame is as high as what shows beside the bar, in both of its states.
-- **A tap on the status bar of an iPhone does not bring the content to its top.** iOS scrolls the document for that tap, in Safari and in a `WKWebView`, and never a region of the page. The platform has no event for the tap. What a page can hear is the scroll of a document that was scrolled: a document that is one pixel higher than the viewport and scrolled down by it goes to zero with the tap, and the page sends the content to its top then (`frame.scroller.scrollTo({ top: 0 })`). The frame does not do that for you. Its document would scroll in every application, a finger that drags the header moves the document to zero as the tap does, and so does a router that sets the scroll back.
+- **A tap on the status bar of an iPhone does nothing**, because iOS scrolls the document for it and never a region. `status-bar-tap` makes it work: see [A tap on the status bar](#a-tap-on-the-status-bar).
 
 ## A view of columns
 
@@ -340,6 +342,28 @@ What the platform does not give:
 
 In a web view of an application of your own, let the view end at the keyboard (its lower edge at `keyboardLayoutGuide.topAnchor`). The layout gets less high with the keyboard, the browser moves nothing, and the frame keeps the field in view.
 
+## A tap on the status bar
+
+On an iPhone a tap on the status bar brings what scrolls back to its top. iOS does that for the document, in Safari and in a `WKWebView`, and never for a region of the page. It has no event for the tap either. In a frame the document has nothing to scroll, so the tap does nothing.
+
+`status-bar-tap` makes it work:
+
+```html
+<el-app-frame status-bar-tap="true">…</el-app-frame>
+```
+
+- **How.** The frame makes the document one pixel higher than what the browser shows, and keeps it scrolled down by that pixel. The tap takes the document back to zero. The frame hears that scroll, scrolls its content to the top (`scroller`), and scrolls the document down by its pixel again. The frame is fixed to the viewport and does not move by the pixel.
+- **`app-frame-status-bar-tap`** is fired first. A listener that calls `preventDefault()` keeps the frame from scrolling: a [view of columns](#a-view-of-columns) brings its own columns to their tops.
+- **What is not taken for a tap:** a finger that drags the document, from the header or the footer, and the page that swings back after it; a keyboard that comes or goes; a viewport that changes its size. For seven tenths of a second after one of these a tap is not heard. A finger that scrolls the content moves no document, and a tap right after it counts.
+- **What is taken for one:** a script that scrolls the window to zero. `window.scrollTo(0, 0)` of a router after a change of the view brings the content to its top, which is what it is there for.
+- **Only on iOS, and only for a frame that fills the viewport.** No other browser has that tap, and there the attribute does nothing.
+
+What it costs, and why it is not the default:
+
+- **The document scrolls, by one pixel.** `window.scrollY` is `1`, not `0`. A script of the page that reads it sees that.
+- **A finger that drags the header or the footer** pulls the page a little, as on any page whose document scrolls.
+- **While a dialog or a drawer is open** the page does not scroll, and the tap does nothing: the lock they put on the document holds the pixel too.
+
 ## Keyboard
 
 A region that scrolls and has nothing in it that takes the focus is a stop of the Tab key itself: a text without a link, for example. Without that stop the keyboard could not scroll it. Some browsers do this by themselves, and the frame does it for the others. The stop goes when the region gets a control, or no longer scrolls.
@@ -367,7 +391,7 @@ On paper the frame is as long as its content: it gives up its height and what sc
 
 ## Server-side rendering
 
-The frame renders on a server with `@webtides/element-js-ssr-renderer`. Its layout is its stylesheet: the regions, the width from which it is wide, and the room for the notch need no script, and nothing moves when the element takes over. The script adds the drawer of the navigation, the stops of the Tab key for regions without a control, what the skip link does beyond a link, and what the frame does for an on-screen keyboard.
+The frame renders on a server with `@webtides/element-js-ssr-renderer`. Its layout is its stylesheet: the regions, the width from which it is wide, and the room for the notch need no script, and nothing moves when the element takes over. The script adds the drawer of the navigation, the stops of the Tab key for regions without a control, what the skip link does beyond a link, and what the frame does for an on-screen keyboard and for a tap on the status bar.
 
 Without server rendering, the regions of the page are below each other until the element is defined.
 

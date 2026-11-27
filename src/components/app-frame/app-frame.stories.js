@@ -563,17 +563,17 @@ export const Columns = {
 };
 
 export const Keyboard = {
-    name: 'A field at the lower edge, on a phone',
+    name: 'On a phone: the status bar and the keyboard',
     parameters: {
         controls: { disable: true },
         docs: {
             description: {
-                story: 'Open this on a phone, scroll to the end and tap the field. The on-screen keyboard covers the lower part of the viewport, and the browser moves the page up behind it. The frame takes what shows: its header stays in view, the bar lies above the keyboard, and the field is in view between them.',
+                story: 'Open this on an iPhone. Scroll down and tap the status bar: the content goes back to its top (`status-bar-tap="true"`). Then scroll to the end and tap the field. The on-screen keyboard covers the lower part of the viewport, and the browser moves the page up behind it. The frame takes what shows: its header stays in view, the bar lies above the keyboard, and the field is in view between them.',
             },
         },
     },
     render: () => html`
-        <el-app-frame narrow-navigation="bar">
+        <el-app-frame narrow-navigation="bar" status-bar-tap="true">
             <header slot="header"><el-app-bar heading-level="1">Messages</el-app-bar></header>
             <el-nav slot="navigation" label="Main">
                 ${destinations.map(

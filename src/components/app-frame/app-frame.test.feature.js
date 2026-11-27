@@ -4,6 +4,8 @@ import axe from 'axe-core';
 import {
     accessibleName,
     accessibleRole,
+    aTimeout,
+    emulatePrint,
     fixture,
     nextFrame,
     oneEvent,
@@ -1499,6 +1501,270 @@ describe('Feature | AppFrame', () => {
                 // The status bar is still there.
                 expect(getComputedStyle(part(el, 'header')).paddingTop).toBe('47px');
             });
+        });
+    });
+
+    describe('a tap on the status bar of an iPhone', () => {
+        // iOS scrolls the document to its top for that tap, and tells nobody. A test has no status
+        // bar: it says that the browser is one of iOS, and scrolls the document as the tap does.
+        const supports = CSS.supports;
+        const onIos = () => {
+            CSS.supports = (...query) => query[0] === '-webkit-touch-callout' || supports.apply(CSS, query);
+        };
+        afterEach(() => {
+            CSS.supports = supports;
+            window.scrollTo(0, 0);
+        });
+
+        const SETTLE = 700;
+        const rows = (count) =>
+            Array.from({ length: count }, (_, i) => `<p style="margin: 0; height: 30px">Row ${i + 1}</p>`).join('');
+        const long = `
+            <header slot="header" style="display: block; height: 50px">Header</header>
+            <main id="tap-main">${rows(80)}</main>
+        `;
+        const sentinels = () => [...document.body.querySelectorAll(':scope > [data-el-app-frame-sentinel]')];
+        /** A frame that listens, after the moment in which a scroll of the document is not a tap. */
+        const listening = async (content = long, attributes = '') => {
+            onIos();
+            const el = await viewportFrame(content, { attributes: `status-bar-tap="true" ${attributes}` });
+            await aTimeout(SETTLE + 150);
+            return el;
+        };
+        const taps = (el) => {
+            const heard = [];
+            el.addEventListener('app-frame-status-bar-tap', (event) => heard.push(event));
+            return heard;
+        };
+        /** What the tap does to the document. */
+        const tap = async () => {
+            window.scrollTo(0, 0);
+            await rendered();
+        };
+        const touch = (type, count) => {
+            const event = new Event(type, { bubbles: true });
+            event.touches = { length: count };
+            window.dispatchEvent(event);
+        };
+
+        it('keeps the document scrolled by one pixel, which the frame does not move with', async () => {
+            const el = await listening();
+
+            expect(sentinels().length).toBe(1);
+            expect(document.documentElement.scrollHeight).toBe(document.documentElement.clientHeight + 1);
+            expect(window.scrollY).toBe(1);
+            // The frame is fixed to the viewport: it is where it was.
+            expect(el.getBoundingClientRect().top).toBe(0);
+            expect(el.getBoundingClientRect().height).toBe(document.documentElement.clientHeight);
+            expect(sentinels()[0].getAttribute('aria-hidden')).toBe('true');
+        });
+
+        it('brings the content to its top when the document goes back to zero, and is ready for the next tap', async () => {
+            const el = await listening();
+            const heard = taps(el);
+            el.scroller.scrollTop = 900;
+
+            await tap();
+            await expect.poll(() => el.scroller.scrollTop).toBe(0);
+
+            expect(heard.length).toBe(1);
+            expect([heard[0].bubbles, heard[0].composed, heard[0].cancelable]).toEqual([true, true, true]);
+            await expect.poll(() => window.scrollY).toBe(1);
+
+            // And a second time, once the first one has settled.
+            await aTimeout(SETTLE + 100);
+            el.scroller.scrollTop = 600;
+            await tap();
+            await expect.poll(() => el.scroller.scrollTop).toBe(0);
+            expect(heard.length).toBe(2);
+        });
+
+        it('scrolls what scrolls the content: the region of the content where the frame is wide', async () => {
+            onIos();
+            const wrapper = await fixture(`
+                <div style="${theme}">
+                    <el-app-frame status-bar-tap="true" wide-from="30rem" style="inline-size: 800px">
+                        <nav slot="navigation" aria-label="Main">${rows(80)}</nav>
+                        <main id="tap-wide">${rows(80)}</main>
+                    </el-app-frame>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            await aTimeout(SETTLE + 150);
+            const el = wrapper.querySelector('el-app-frame');
+            expect(el.wide).toBe(true);
+            part(el, 'content').scrollTop = 500;
+            part(el, 'navigation').scrollTop = 300;
+
+            await tap();
+            await expect.poll(() => part(el, 'content').scrollTop).toBe(0);
+
+            // The column at the side is not the content.
+            expect(part(el, 'navigation').scrollTop).toBe(300);
+        });
+
+        it('leaves the scroll to a listener that prevents the default: a view whose columns scroll', async () => {
+            const el = await listening();
+            el.addEventListener('app-frame-status-bar-tap', (event) => event.preventDefault());
+            el.scroller.scrollTop = 900;
+
+            await tap();
+            await aTimeout(300);
+
+            expect(el.scroller.scrollTop).toBe(900);
+            await expect.poll(() => window.scrollY).toBe(1);
+        });
+
+        it('takes a finger that drags the page for no tap, and is ready again when the finger has gone', async () => {
+            const el = await listening();
+            const heard = taps(el);
+            el.scroller.scrollTop = 900;
+
+            touch('touchstart', 1);
+            await tap();
+            expect(heard.length).toBe(0);
+            expect(el.scroller.scrollTop).toBe(900);
+
+            // Lifted: the page swings back for a moment, which is no tap either.
+            touch('touchend', 0);
+            await tap();
+            expect(heard.length).toBe(0);
+            await aTimeout(SETTLE + 200);
+            expect(window.scrollY).toBe(1);
+
+            await tap();
+            await expect.poll(() => el.scroller.scrollTop).toBe(0);
+            expect(heard.length).toBe(1);
+        });
+
+        it('hears a tap right after a finger has scrolled the content: that finger moved no document', async () => {
+            const el = await listening();
+            const heard = taps(el);
+
+            touch('touchstart', 1);
+            el.scroller.scrollTop = 900;
+            await rendered();
+            touch('touchend', 0);
+            await tap();
+            await expect.poll(() => el.scroller.scrollTop).toBe(0);
+
+            expect(heard.length).toBe(1);
+        });
+
+        it('takes a keyboard that moves the page for no tap', async () => {
+            const el = await listening(`
+                <main id="tap-keyboard">${rows(80)}<input id="tap-field" /></main>
+            `);
+            const heard = taps(el);
+            const viewport = window.visualViewport;
+            const layout = document.documentElement.clientHeight;
+            const say = (values) => {
+                for (const [name, value] of Object.entries(values)) {
+                    Object.defineProperty(viewport, name, { configurable: true, get: () => value });
+                }
+                viewport.dispatchEvent(new Event('resize'));
+            };
+            el.scroller.scrollTop = 900;
+
+            say({ height: layout - 300, offsetTop: 0 });
+            await tap();
+            expect(el.matches(':state(keyboard)')).toBe(true);
+            expect(heard.length).toBe(0);
+
+            // Gone again: the document is back by its pixel once that has settled.
+            delete viewport.height;
+            delete viewport.offsetTop;
+            viewport.dispatchEvent(new Event('resize'));
+            await tap();
+            expect(heard.length).toBe(0);
+            expect(el.scroller.scrollTop).toBe(900);
+            await aTimeout(SETTLE + 200);
+            expect(window.scrollY).toBe(1);
+        });
+
+        it('takes what the browser does to the scroll while the page starts for no tap', async () => {
+            onIos();
+            const el = await viewportFrame(long, { attributes: 'status-bar-tap="true"' });
+            const heard = taps(el);
+            el.scroller.scrollTop = 900;
+
+            await tap();
+
+            expect(heard.length).toBe(0);
+            expect(el.scroller.scrollTop).toBe(900);
+            await aTimeout(SETTLE + 200);
+            expect(window.scrollY).toBe(1);
+        });
+
+        it('does not listen unless the page asks for it', async () => {
+            onIos();
+            const el = await viewportFrame(long);
+            const heard = taps(el);
+            await aTimeout(100);
+
+            expect(sentinels().length).toBe(0);
+            expect(document.documentElement.scrollHeight).toBe(document.documentElement.clientHeight);
+            await tap();
+            expect(heard.length).toBe(0);
+        });
+
+        it('does not listen in a browser that has no such tap, and in a box of the page', async () => {
+            // Not one of iOS: nothing is said to CSS.supports().
+            const elsewhere = await viewportFrame(long, { attributes: 'status-bar-tap="true"' });
+            await aTimeout(100);
+            expect(sentinels().length).toBe(0);
+            elsewhere.remove();
+
+            onIos();
+            await frame(long, { attributes: 'status-bar-tap="true"', width: 400 });
+            await aTimeout(100);
+            expect(sentinels().length).toBe(0);
+        });
+
+        it('starts and stops with the attribute, and leaves nothing behind', async () => {
+            onIos();
+            const el = await viewportFrame(long);
+            expect(sentinels().length).toBe(0);
+
+            el.setAttribute('status-bar-tap', 'true');
+            await rendered();
+            expect(sentinels().length).toBe(1);
+
+            el.setAttribute('status-bar-tap', 'false');
+            await rendered();
+            expect(sentinels().length).toBe(0);
+            expect(window.scrollY).toBe(0);
+        });
+
+        it('leaves nothing behind when it leaves the page', async () => {
+            const el = await listening();
+            const heard = taps(el);
+
+            el.remove();
+            await rendered();
+
+            expect(sentinels().length).toBe(0);
+            expect(document.documentElement.scrollHeight).toBe(document.documentElement.clientHeight);
+            window.dispatchEvent(new Event('scroll'));
+            expect(heard.length).toBe(0);
+        });
+
+        it('passes axe', async () => {
+            const el = await listening();
+            const results = await axe.run(el.parentElement);
+            expect(results.violations).toEqual([]);
+        });
+
+        it('adds nothing to what is printed', async () => {
+            await listening();
+            expect(getComputedStyle(sentinels()[0]).display).toBe('block');
+
+            await emulatePrint(true);
+            try {
+                expect(getComputedStyle(sentinels()[0]).display).toBe('none');
+            } finally {
+                await emulatePrint(false);
+            }
         });
     });
 
