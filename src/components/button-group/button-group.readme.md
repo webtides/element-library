@@ -68,6 +68,8 @@ _None._ The group takes the radius and the border width from the tokens of the t
 
 The group does this with its stylesheet alone. It runs no script on its buttons and writes nothing onto them: a button that is added, moved or taken away is joined at once, and a server-rendered group does not change when the elements take over.
 
+It tells its buttons in properties that inherit, and a button joins itself: the group takes nothing from the margin, the padding or the border of the elements slotted into it. So a reset of the page that takes the margin off every element (`* { margin: 0 }`) changes nothing. The element of a button with a neighbour in front stands beside that neighbour; its control, which has the border, lies on the border of the neighbour.
+
 ## What the buttons bring
 
 `variant`, `appearance`, `size`, `pill` and `disabled` stay with every button. The group does not pass anything on. Give every button of a group the same `size`; a mix of appearances works, a mix of sizes does not line up.

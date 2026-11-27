@@ -35,6 +35,7 @@ const style = css`
         --_el-group-radius-start: initial;
         --_el-group-radius-end: initial;
         --_el-group-divider: initial;
+        --_el-group-overlap: initial;
     }
 `;
 

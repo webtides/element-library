@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Changed
+
+- A page that put the overlap back itself, with a negative margin for the buttons of a group, takes that rule out: the buttons would lie on each other by two borders. ([#206](https://github.com/webtides/element-library/issues/206))
+
+### Fixed
+
+- The buttons of a group lie on the border of their neighbour on a page whose stylesheet takes the margin off every element (`* { margin: 0 }`, the reset of Tailwind CSS v4). The group pulled a button over the border of the one in front of it with a negative margin of the button (`::slotted`), and a rule of the page wins over such a rule: two outlined buttons had two lines between them, and the group was wider by a border for every button after the first. The group names the width of the border in a property that inherits now (`--_el-group-overlap`), and the button pulls its control over it. ([#206](https://github.com/webtides/element-library/issues/206))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

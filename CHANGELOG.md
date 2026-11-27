@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### button
+
+- Changed: in an `el-button-group` the control of a button with a neighbour in front lies on the border of that neighbour by itself: it reads the width from the group (`--_el-group-overlap`, internal and inherited), where the group gave the element a negative margin before. The element of such a button stands beside its neighbour and is narrower than its control by that border. Outside of a group nothing changes. ([#206](https://github.com/webtides/element-library/issues/206))
+
+### button-group
+
+- Fixed: the buttons of a group lie on the border of their neighbour on a page whose stylesheet takes the margin off every element (`* { margin: 0 }`, the reset of Tailwind CSS v4). The group pulled a button over the border of the one in front of it with a negative margin of the button (`::slotted`), and a rule of the page wins over such a rule: two outlined buttons had two lines between them, and the group was wider by a border for every button after the first. The group names the width of the border in a property that inherits now (`--_el-group-overlap`), and the button pulls its control over it. ([#206](https://github.com/webtides/element-library/issues/206))
+- Changed: a page that put the overlap back itself, with a negative margin for the buttons of a group, takes that rule out: the buttons would lie on each other by two borders. ([#206](https://github.com/webtides/element-library/issues/206))
+
 ### checkbox-group-field
 
 - Added: an option can show something in front of its label: `color` is a colour that is drawn as a dot, `icon` the address of an SVG symbol, as an option of `el-segmented-field` has it. Things a user knows by their colour, tags or calendars, are found by it where they are chosen. Both are decorations, hidden from assistive technology: the label stays the name of the option. They are part of the option, so they work for options as an attribute and as a property, and are in server-rendered markup. The dot keeps its colour where the user forces colours. ([#198](https://github.com/webtides/element-library/issues/198))
@@ -50,6 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ### menu
 
+- Changed: the panel is no part of a row of joined buttons: it stops the property that pulls a button over its neighbour there (`--_el-group-overlap`), as the ones for the corners and the line. ([#206](https://github.com/webtides/element-library/issues/206))
 - Fixed: an open menu keeps the keyboard wherever the focus is. `Escape` closes it and gives the focus back to what it was opened for, and the key does not reach the page behind; `ArrowDown` and `ArrowUp` bring the focus to its first and to its last entry; the Tab key closes it, and the focus moves on from where it is. The menu heard its keys on its panel alone: an open menu whose entries did not have the focus was left with no key, and `Escape` closed what was behind it. It hears them at the window now, for as long as it is open. ([#202](https://github.com/webtides/element-library/issues/202))
 - Fixed: a press on the heading of a group, on a line or on the padding of the panel leaves the focus on the entry that had it, and the arrow keys go on from there. The focus was nowhere in the page after such a press. Where no entry had the focus, the panel takes it itself: it has `tabindex="-1"`, and is no stop of the Tab key. ([#202](https://github.com/webtides/element-library/issues/202))
 - Fixed: a menu that is open at a point closes when what it was opened for scrolls away under it: the page, or a region around the row, also one in a shadow root the row is slotted into (the content of an `el-app-frame`). The menu stayed where it was, over another row and with the actions of the first one. The focus goes back to what the menu was opened for without scrolling to it, so the scroll goes on. A scroll inside of a long menu, and one of a region that does not move the row, leave the menu open, and a menu at an element follows the element as before. ([#204](https://github.com/webtides/element-library/issues/204))
@@ -71,6 +81,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. Its own button, the one that shows the password, stays beside the control. ([#168](https://github.com/webtides/element-library/issues/168))
 - Added: `maxlength` and `minlength` are passed on to the input, as in `el-input-field`: a password that is typed shorter than `minlength` makes the field invalid, with its `error-message`. ([#190](https://github.com/webtides/element-library/issues/190))
+
+### popover
+
+- Changed: the panel is no part of a row of joined buttons: it stops the property that pulls a button over its neighbour there (`--_el-group-overlap`), as the ones for the corners and the line. ([#206](https://github.com/webtides/element-library/issues/206))
 
 ### radio-field
 

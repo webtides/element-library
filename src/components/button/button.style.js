@@ -29,7 +29,6 @@ const style = css`
         align-items: center;
         justify-content: center;
         gap: var(--el-space-2, 0.5em);
-        width: 100%;
         /* The size of the button: its own, from the size module. A button in a toolbar reads the
            size of the toolbar first, see "In a container" below. */
         --_el-button-height: var(--_el-size-height);
@@ -47,6 +46,12 @@ const style = css`
         border-end-start-radius: var(--_el-group-radius-start, var(--_el-button-radius));
         border-start-end-radius: var(--_el-group-radius-end, var(--_el-button-radius));
         border-end-end-radius: var(--_el-group-radius-end, var(--_el-button-radius));
+        /* And with a neighbour in front the control lies on the border of that neighbour: it is
+           pulled over the element by the width the group names (--_el-group-overlap), and is
+           wider than the element by as much, so it ends where the element ends. Outside of a
+           group the width is nothing. */
+        margin-inline-start: calc(-1 * var(--_el-group-overlap, 0px));
+        width: calc(100% + var(--_el-group-overlap, 0px));
         font-family: var(--el-font-family, inherit);
         font-size: var(--_el-button-font-size);
         font-weight: 600;

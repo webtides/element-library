@@ -19,11 +19,15 @@ const style = css`
     /* With a neighbour in front: square corners at the start, and the border at the start lies on
        the border at the end of that neighbour, so the two share one line. For a filled button
        that line is a quarter of its text colour on its fill, which shows between two fills of
-       one colour. currentColor is taken where the button paints the line, not here. */
+       one colour. currentColor is taken where the button paints the line, not here.
+
+       The group names the width of that border, and the button pulls its control over it. A
+       margin of the slotted element would do the same, and would be gone on a page that takes
+       the margin off every element: a rule of the page wins over a ::slotted rule. */
     ::slotted(:not(:first-child)) {
         --_el-group-radius-start: 0px;
         --_el-group-divider: color-mix(in srgb, currentColor 25%, transparent);
-        margin-inline-start: calc(-1 * var(--el-border-width, 1px));
+        --_el-group-overlap: var(--el-border-width, 1px);
     }
 
     /* With a neighbour behind: square corners at the end. */

@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vite-plus/test';
 import axe from 'axe-core';
-import { accessibleName, accessibleRole, fixture, nextFrame, sizeOf } from '../../test-helpers.js';
+import {
+    accessibleName,
+    accessibleRole,
+    fixture,
+    nextFrame,
+    sizeOf,
+    withAndWithoutPageReset,
+} from '../../test-helpers.js';
 import { define } from './button-group.js';
 import { define as defineButton } from '../button/button.js';
 import { define as definePopover } from '../popover/popover.js';
@@ -104,7 +111,8 @@ describe('Feature | ButtonGroup', () => {
     describe('the row', () => {
         it('lets the buttons touch: a button lies on the border of the one in front of it', async () => {
             const el = await groupOf(three);
-            const [left, centre, right] = [...el.children].map((button) => button.getBoundingClientRect());
+            // The control of a button, which has the border. Its element is beside its neighbour.
+            const [left, centre, right] = [...el.children].map((button) => control(button).getBoundingClientRect());
 
             expect(centre.left).toBe(left.right - 1);
             expect(right.left).toBe(centre.right - 1);
@@ -115,9 +123,43 @@ describe('Feature | ButtonGroup', () => {
 
         it('overlaps by the border width of the theme', async () => {
             const el = await groupOf(three, '--el-border-width: 3px;');
-            const [left, centre] = [...el.children].map((button) => button.getBoundingClientRect());
+            const [left, centre] = [...el.children].map((button) => control(button).getBoundingClientRect());
 
             expect(centre.left).toBe(left.right - 3);
+        });
+
+        it('is the same row on a page that takes the margin off every element', async () => {
+            const { plain, reset } = await withAndWithoutPageReset(async () => {
+                const el = await groupOf(`
+                    <el-button appearance="outlined">Day</el-button>
+                    <el-button appearance="outlined">Week</el-button>
+                    <el-button appearance="outlined">Month</el-button>
+                `);
+                const group = el.getBoundingClientRect();
+                const round = (value) => Math.round(value * 10) / 10;
+                const controls = [...el.children].map((button) => control(button).getBoundingClientRect());
+                return {
+                    width: round(group.width),
+                    lefts: controls.map((box) => round(box.left - group.left)),
+                    widths: controls.map((box) => round(box.width)),
+                    // How far a button lies on the one in front of it.
+                    overlaps: controls.slice(1).map((box, index) => round(controls[index].right - box.left)),
+                };
+            });
+
+            expect(plain.overlaps).toEqual([1, 1]);
+            expect(plain.width).toBe(Math.round((plain.widths[0] + plain.widths[1] + plain.widths[2] - 2) * 10) / 10);
+            expect(reset).toEqual(plain);
+        });
+
+        it('takes nothing from the margin of a button: the element of a button is beside its neighbour', async () => {
+            const el = await groupOf(three);
+            const [left, centre] = [...el.children];
+
+            expect(getComputedStyle(centre).marginLeft).toBe('0px');
+            expect(centre.getBoundingClientRect().left).toBe(left.getBoundingClientRect().right);
+            // The control ends where its element ends.
+            expect(control(centre).getBoundingClientRect().right).toBe(centre.getBoundingClientRect().right);
         });
 
         it('stands in a line of text, on the middle of it', async () => {
@@ -274,7 +316,7 @@ describe('Feature | ButtonGroup', () => {
             expect(corners(save)).toEqual([ROUND, '0px', '0px', ROUND]);
             expect(corners(anchor)).toEqual(['0px', ROUND, ROUND, '0px']);
             expect(borders(anchor)).toEqual({ left: 'color(srgb 1 1 1 / 0.25)', others: 'rgb(0, 0, 255)' });
-            expect(anchor.getBoundingClientRect().left).toBe(save.getBoundingClientRect().right - 1);
+            expect(control(anchor).getBoundingClientRect().left).toBe(control(save).getBoundingClientRect().right - 1);
         });
 
         it('is not joined in the panel of that popover, which is not part of the row', async () => {
@@ -283,6 +325,7 @@ describe('Feature | ButtonGroup', () => {
 
             expect(corners(inPanel)).toEqual([ROUND, ROUND, ROUND, ROUND]);
             expect(borders(inPanel)).toEqual({ left: 'rgb(0, 0, 255)', others: 'rgb(0, 0, 255)' });
+            expect(getComputedStyle(control(inPanel)).marginLeft).toBe('0px');
         });
     });
 
