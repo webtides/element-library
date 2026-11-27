@@ -15,6 +15,11 @@ const css = String.raw;
  * are different properties from the ones set here, so the order of the two stylesheets does not
  * decide anything.
  *
+ * A surface that reaches an edge of the screen keeps what is in it clear of the notch and the home
+ * indicator of a phone: the component says how much room each side needs
+ * (`--_el-modal-inset-block-start`, `-block-end`, `-inline-start`, `-inline-end`), and that room
+ * is the padding of the surface here.
+ *
  * The module takes no host: a dialog with slots needs a shadow root, and the host of one is
  * `:host`.
  * @returns {string}
@@ -30,7 +35,15 @@ export default function modalStyle() {
          * every visual token falls back to a null-ish value so an unthemed surface imposes nothing.
          */
         dialog {
-            padding: 0;
+            /* The surface keeps the room of the screen itself. What is in it and would ask the
+               screen when it is alone (an el-app-bar, an el-nav) has nothing to keep clear of. */
+            --_el-context-inset-block-start: 0px;
+            --_el-context-inset-block-end: 0px;
+            --_el-context-inset-inline-start: 0px;
+            --_el-context-inset-inline-end: 0px;
+
+            padding-block: var(--_el-modal-inset-block-start, 0px) var(--_el-modal-inset-block-end, 0px);
+            padding-inline: var(--_el-modal-inset-inline-start, 0px) var(--_el-modal-inset-inline-end, 0px);
             background: var(--el-color-bg, transparent);
             color: var(--el-color-fg, inherit);
             box-shadow: var(--el-shadow-lg, none);

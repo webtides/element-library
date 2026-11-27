@@ -359,7 +359,7 @@ A frame does not go into a region of another frame: both would fill the viewport
 
 ## The top layer
 
-`el-dialog`, `el-drawer`, `el-popover`, `el-tooltip` and `el-toast` are in the top layer of the browser. They show over the frame from any region, and nothing in the frame clips them. The lock a dialog puts on the scroll of the document does no harm: a frame leaves the document nothing to scroll, and a modal makes the frame inert.
+`el-dialog`, `el-drawer`, `el-popover`, `el-tooltip` and `el-toast` are in the top layer of the browser. They show over the frame from any region, and nothing in the frame clips them. A dialog, a drawer and a toast keep clear of the notch and the home indicator themselves, in a frame and without one. The lock a dialog puts on the scroll of the document does no harm: a frame leaves the document nothing to scroll, and a modal makes the frame inert.
 
 ## Print
 

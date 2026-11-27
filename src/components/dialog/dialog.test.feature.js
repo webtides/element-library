@@ -1,7 +1,15 @@
 import { describe, it, expect, afterEach } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { fixture, nextFrame, aTimeout, oneEvent, sizeOf, useTouchScreen } from '../../test-helpers.js';
+import {
+    fixture,
+    nextFrame,
+    aTimeout,
+    oneEvent,
+    sizeOf,
+    useSafeAreaInsets,
+    useTouchScreen,
+} from '../../test-helpers.js';
 import { define } from './dialog.js';
 import { define as defineButton } from '../button/button.js';
 import { define as defineDrawer } from '../drawer/drawer.js';
@@ -794,6 +802,66 @@ describe('Feature | Dialog', () => {
             expect(el.open).toBe(true);
             expect(log).toEqual([]);
             await el.hide();
+        });
+    });
+    describe('the room it keeps to the edges of the viewport', () => {
+        const long = (attrs = '') =>
+            fixture(`
+                <el-dialog label="Terms" style="--el-space-4: 16px" ${attrs}>
+                    ${Array.from({ length: 120 }, (_, i) => `<p>Line ${i + 1}</p>`).join('')}
+                    <button slot="footer" type="button">Agree</button>
+                </el-dialog>
+            `);
+        const box = (node) => {
+            const { left, top, right, bottom, width, height } = node.getBoundingClientRect();
+            return { left, top, right, bottom, width, height };
+        };
+
+        it('is never higher than what the browser shows, and its footer stays in view', async () => {
+            const el = await long();
+            await el.show();
+            const dialog = el.shadowRoot.querySelector('dialog');
+            const footer = el.shadowRoot.querySelector('[part~="footer"]');
+            const body = el.shadowRoot.querySelector('[part~="body"]');
+
+            expect(box(dialog)).toMatchObject({ top: 16, bottom: innerHeight - 16 });
+            expect(box(footer).bottom).toBeLessThanOrEqual(innerHeight - 16);
+            expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+            // The height that follows the address bar of a phone: the one of the viewport here.
+            expect(getComputedStyle(dialog).maxHeight).toBe(`${innerHeight - 32}px`);
+            await el.hide();
+        });
+
+        describe('on a phone with a notch and a home indicator', () => {
+            useSafeAreaInsets({ top: 47, right: 20, bottom: 34, left: 10 });
+
+            it('keeps out of the room the system takes at the edges of the screen', async () => {
+                const el = await long();
+                await el.show();
+                const dialog = el.shadowRoot.querySelector('dialog');
+
+                expect(box(dialog)).toMatchObject({
+                    top: 47 + 16,
+                    bottom: innerHeight - 34 - 16,
+                    left: 10 + 16,
+                    right: innerWidth - 20 - 16,
+                });
+                await el.hide();
+            });
+
+            it('is in the middle of what is left', async () => {
+                const el = await fixture(`
+                    <el-dialog label="Short" style="--el-space-4: 16px; --el-dialog-width: 200px">
+                        <p>Body</p>
+                    </el-dialog>
+                `);
+                await el.show();
+                const { left, right, top, bottom } = box(el.shadowRoot.querySelector('dialog'));
+
+                expect(Math.round(left - 10)).toBe(Math.round(innerWidth - 20 - right));
+                expect(Math.round(top - 47)).toBe(Math.round(innerHeight - 34 - bottom));
+                await el.hide();
+            });
         });
     });
 });

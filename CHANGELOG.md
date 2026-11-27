@@ -69,6 +69,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: `el-description-list`, a new component: rows of a name and its value, for a settings page or the page of an entry. The element is the native `<dl>` (it is inside of the shadow root), and the page writes the names as `<dt>` and the values as `<dd>` into it. Below 30rem of its own width a name stands above its value; from 30rem the two stand side by side, with the values of all rows on one line. The list measures itself (a container query), not the viewport. `--el-description-list-term-width` sets the width of the column of the names. Unset, it is as wide as the longest name, and 40% of the list at most. A `<dd data-action>` ends its row in an action, a link or a small button: at the end of the row, in the middle of the first line of the value. A row with a button is as high as a row without one. A row has `--el-space-3` above and below, and a line in `--el-color-border` above every row but the first, over the whole width. The line is not a border, so a reset of the page that takes the border off every element leaves it. Where the user forces colours it is drawn in the text colour of the system. A long value breaks, inside of a word where it has to: the list is never wider than its place. The list runs no script: a server-rendered list is laid out before the element takes over, and looks the same after. ([#195](https://github.com/webtides/element-library/issues/195))
 
+### dialog
+
+- Fixed: a dialog is never higher than what the browser shows. Its greatest height counted the address bar of a phone in (`100vh`), so the footer of a long dialog was below the edge while the bar was there. It follows the bar now (`100dvh`). ([#183](https://github.com/webtides/element-library/issues/183))
+- Fixed: on a phone whose page reaches under the notch and the home indicator (`viewport-fit=cover`), the dialog keeps out of the room the system takes at the edges of the screen, and is in the middle of what is left. Elsewhere nothing changes.
+
+### drawer
+
+- Fixed: on a phone whose page reaches under the notch and the home indicator (`viewport-fit=cover`), the header of a drawer was under the status bar and its footer under the home indicator. The surface still reaches the three edges it lies against, and its header, its body and its footer keep clear of that room now. The size the page gives is the one of what is in the drawer, and the room is on top. Elsewhere nothing changes. ([#183](https://github.com/webtides/element-library/issues/183))
+- Fixed: what is in a drawer and would keep the edges of the screen clear itself (an `el-app-bar`, an `el-nav`) is told that the surface does so, and adds no room of its own.
+
 ### list
 
 - Added: `el-list`, a new component: a list of rows, for messages, articles, files or the entries of a settings page. It is the list for assistive technology (`role="list"`, named by `label`), and every `el-list-item` slotted into it is an item of that list. The texts of all rows begin on one line, after the widest start of the list: the list has a column for the start and one for the rest, and a row takes them over (`subgrid`). A list without a start in any row has no first column. `density` (`'default'` or `'compact'`): `--el-space-3` or `--el-space-2` above and below the texts of a row. `appearance`: `'plain'` (the default) has no surface and reaches from edge to edge of its place; `'outlined'` and `'filled'` are the surfaces of `el-card`. Between two rows is a line in `--el-color-border`. Without a theme the list paints nothing. `--el-list-padding-inline` is the padding of a row at its start and its end, `--el-space-4` unset. With `0` a list in the body of an `el-card` has its rows on the line of the other content. The list runs no script: a server-rendered list is complete without JavaScript, and looks the same before and after the element takes over. ([#192](https://github.com/webtides/element-library/issues/192))
@@ -136,6 +146,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Fixed: a group finds its panels and links also when `name` and `for` were set as properties. It compared the `name` and the `for` attribute with `selected`, and a framework that creates the elements in the browser sets the property where the element has one (Svelte 5, for example after a hot reload of a component): such a panel had no attribute, the group matched none, hid every panel and took `aria-selected` from every link. The group reads the property now and falls back to the attribute, on start and with every selection. `el-tab-panel` and `el-tab-link` do not reflect the two properties. ([#196](https://github.com/webtides/element-library/issues/196))
 - Fixed: a `name` that is a number works: `selected="2"`, `for="2"` and `name="2"` belong together, also after a click on the link. element-js reads such an attribute as a number, and the group compared it with the text of the attribute; it compares texts now. ([#196](https://github.com/webtides/element-library/issues/196))
+
+### toast
+
+- Fixed: on a phone whose page reaches under the notch and the home indicator (`viewport-fit=cover`), a toast could lie under them. The distance of the stack from an edge (`--el-toast-inset`) is on top of the room the system takes there now, and the stack is no wider than what is between the two sides. Elsewhere nothing changes. ([#183](https://github.com/webtides/element-library/issues/183))
 
 ### toolbar
 

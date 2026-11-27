@@ -1,7 +1,15 @@
 import { describe, it, expect, afterEach } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { accessibleName, accessibleRole, fixture, nextFrame, oneEvent, sizeOf } from '../../test-helpers.js';
+import {
+    accessibleName,
+    accessibleRole,
+    fixture,
+    nextFrame,
+    oneEvent,
+    sizeOf,
+    useSafeAreaInsets,
+} from '../../test-helpers.js';
 import { define, toast } from './toast.js';
 define();
 
@@ -727,5 +735,50 @@ describe('Feature | Toast', () => {
         const results = await axe.run(document.body);
         expect(results.violations).toEqual([]);
         page.remove();
+    });
+    describe('on a phone with a notch and a home indicator', () => {
+        useSafeAreaInsets({ top: 47, right: 20, bottom: 34, left: 10 });
+
+        it('keeps its distance from the room the system takes at the edges of the screen', async () => {
+            const places = {
+                'top-start': { top: 47 + 16, left: 10 + 16 },
+                'top-end': { top: 47 + 16, right: 20 + 16 },
+                'bottom-start': { bottom: 34 + 16, left: 10 + 16 },
+                'bottom-end': { bottom: 34 + 16, right: 20 + 16 },
+            };
+
+            for (const [placement, place] of Object.entries(places)) {
+                const [el, entry] = await regionWith(`placement="${placement}"`, 'Saved.');
+                expect(rect(entry), placement).toMatchObject(place);
+                el.remove();
+            }
+        });
+
+        it('is in the middle of what is left with a placement in the middle', async () => {
+            const [, entry] = await regionWith('placement="bottom"', 'Saved.');
+
+            // 10px at the left and 20px at the right: the middle is 5px to the left.
+            expect(rect(entry)).toMatchObject({ bottom: 34 + 16, centre: -5 });
+        });
+
+        it('is no wider than the viewport between the two sides', async () => {
+            const [el] = await regionWith('placement="top-end"', 'A message that is long. '.repeat(30));
+
+            expect(el.getBoundingClientRect().width).toBeLessThanOrEqual(innerWidth - 10 - 20 - 32);
+            expect(rect(el)).toMatchObject({ right: 20 + 16 });
+            expect(rect(el).left).toBeGreaterThanOrEqual(10 + 16);
+        });
+
+        it('swaps the sides in a right-to-left page', async () => {
+            const wrapper = await fixture(
+                `<div dir="rtl" data-fixture><el-toast placement="top-end"></el-toast></div>`,
+            );
+            const el = wrapper.querySelector('el-toast');
+            const entry = el.toast('Saved.', { duration: Infinity });
+            await shown(entry);
+
+            // The end of the line is at the left, where the screen takes 10px.
+            expect(rect(entry)).toMatchObject({ top: 47 + 16, left: 10 + 16 });
+        });
     });
 });

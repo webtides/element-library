@@ -131,6 +131,11 @@ See the Storybook _Docs / Theming_ page for the full token reference.
 
 On a touch screen (`@media (any-pointer: coarse)`) the close button is at least `--el-touch-target` wide and high. Its icon keeps its size, and the header grows with the button. Without that token, and on a fine pointer, the sizes stay as they are.
 
+## On a phone
+
+- **The dialog is never higher than what the browser shows.** Its greatest height follows the address bar of a phone (`100dvh`): with the bar there, a dialog with a long body is shorter, its body scrolls, and its footer stays in view. It keeps `--el-space-4` to every edge.
+- **Where a page reaches under the notch and the home indicator** (`viewport-fit=cover` in its viewport, or a web app on the home screen), the dialog keeps out of the room the system takes at the edges of the screen, and is in the middle of what is left. Without it, and on a desktop, that room is nothing.
+
 ## Accessibility
 
 - Opening calls `showModal()`, so focus is trapped, the rest of the page is `inert`, and focus is restored to the previously focused element on close.

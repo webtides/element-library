@@ -80,9 +80,9 @@ _None of its own._ A toast fires the events of a notification (`notification-sho
 
 #### CSS Custom Properties
 
-| Name               | Description                                                                            |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| `--el-toast-inset` | The distance of the stack from the edges of the viewport. Unset, it is `--el-space-4`. |
+| Name | Description |
+| --- | --- |
+| `--el-toast-inset` | The distance of the stack from the edges of the viewport, on top of the room the system takes there on a phone. Unset, it is `--el-space-4`. |
 
 Reads the standard library design tokens `--el-space-4` and `--el-space-2` (the gap between two toasts). The look of a toast is the look of `el-notification`.
 
@@ -137,6 +137,8 @@ Start and end follow the reading direction: in a text that runs from right to le
 The first toast is at the edge, the next ones follow towards the middle of the viewport. The stack keeps a distance of `--el-toast-inset` from the edges and is never wider than the viewport between these distances: on a phone a toast is as wide as the screen allows and its text wraps.
 
 The region lets the pointer through: what is beside and between the toasts can be clicked.
+
+Where a page reaches under the notch and the home indicator of a phone (`viewport-fit=cover` in its viewport, or a web app on the home screen), the distance is on top of the room the system takes at that edge of the screen: a toast at the top is below the status bar, one at the bottom above the home indicator. Without it, and on a desktop, that room is nothing.
 
 ## More toasts than places
 

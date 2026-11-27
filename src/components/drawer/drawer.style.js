@@ -10,9 +10,27 @@ const border = 'var(--el-border-width, 0)';
  *
  * The first rule is the drawer at the end of the line, which is also what a placement that is none
  * of the four gets. The other placements change what differs.
+ *
+ * On a phone the system takes room at the edges of the screen, where the page reaches under them
+ * (viewport-fit=cover): the notch, the rounded corners, the home indicator. The surface of the
+ * drawer reaches the three edges it lies against, and its header, its body and its footer stay
+ * clear of that room: it is padding of the surface, which the modal module reads. The size the
+ * page gives a drawer is the one of what is in it, and the room is on top. Elsewhere the room is
+ * nothing.
  */
 const style = css`
     dialog {
+        /* The room of the system at the edges of the screen, by the direction of the text. */
+        --_el-drawer-screen-top: env(safe-area-inset-top, 0px);
+        --_el-drawer-screen-bottom: env(safe-area-inset-bottom, 0px);
+        --_el-drawer-screen-start: env(safe-area-inset-left, 0px);
+        --_el-drawer-screen-end: env(safe-area-inset-right, 0px);
+        /* The edges the drawer lies against: all but the one that faces the page. */
+        --_el-modal-inset-block-start: var(--_el-drawer-screen-top);
+        --_el-modal-inset-block-end: var(--_el-drawer-screen-bottom);
+        --_el-modal-inset-inline-start: 0px;
+        --_el-modal-inset-inline-end: var(--_el-drawer-screen-end);
+
         /* The direction the end of a line is in: 1 for the right, -1 for the left. */
         --_el-drawer-end: 1;
         /* How far the drawer is out of the viewport before it is shown. */
@@ -28,7 +46,9 @@ const style = css`
         margin: 0;
         max-inline-size: 100%;
         max-block-size: 100%;
-        inline-size: var(--el-drawer-size, 25rem);
+        inline-size: calc(
+            var(--el-drawer-size, 25rem) + var(--_el-modal-inset-inline-start) + var(--_el-modal-inset-inline-end)
+        );
         /* From edge to edge: the browser gives a dialog the height of its content. */
         block-size: auto;
 
@@ -46,9 +66,13 @@ const style = css`
        \`:dir(rtl)\` for an element inside the shadow root. */
     :host(:dir(rtl)) dialog {
         --_el-drawer-end: -1;
+        --_el-drawer-screen-start: env(safe-area-inset-right, 0px);
+        --_el-drawer-screen-end: env(safe-area-inset-left, 0px);
     }
 
     :host([placement='start']) dialog {
+        --_el-modal-inset-inline-start: var(--_el-drawer-screen-start);
+        --_el-modal-inset-inline-end: 0px;
         --_el-drawer-x: calc(-100% * var(--_el-drawer-end));
         inset-inline: 0 auto;
         border-inline-width: 0 ${border};
@@ -58,14 +82,22 @@ const style = css`
     /* Across the viewport, and as high as the content unless a size is given. */
     :host([placement='top']) dialog,
     :host([placement='bottom']) dialog {
+        --_el-modal-inset-inline-start: var(--_el-drawer-screen-start);
+        --_el-modal-inset-inline-end: var(--_el-drawer-screen-end);
+        /* The size of the page and the room of the system on top of it. Without a size the
+           property is not valid, and the drawer is as high as its content. */
+        --_el-drawer-block-size: calc(
+            var(--el-drawer-size) + var(--_el-modal-inset-block-start) + var(--_el-modal-inset-block-end)
+        );
         --_el-drawer-x: 0;
         inset-inline: 0;
         inline-size: auto;
-        block-size: var(--el-drawer-size, auto);
+        block-size: var(--_el-drawer-block-size, auto);
         border-inline-width: 0;
     }
 
     :host([placement='top']) dialog {
+        --_el-modal-inset-block-end: 0px;
         --_el-drawer-y: -100%;
         inset-block-end: auto;
         border-block-end-width: ${border};
@@ -73,6 +105,7 @@ const style = css`
     }
 
     :host([placement='bottom']) dialog {
+        --_el-modal-inset-block-start: 0px;
         --_el-drawer-y: 100%;
         inset-block-start: auto;
         border-block-start-width: ${border};

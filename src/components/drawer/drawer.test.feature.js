@@ -9,6 +9,7 @@ import {
     sizeOf,
     useTouchScreen,
     useReducedMotion,
+    useSafeAreaInsets,
     accessibleName,
     accessibleRole,
 } from '../../test-helpers.js';
@@ -878,5 +879,102 @@ describe('Feature | Drawer', () => {
         expect(dialog.matches(':modal')).toBe(true);
         expect(box(dialog)).toMatchObject({ left: 0, right: 200, top: 0, bottom: innerHeight });
         expect(getComputedStyle(el.shadowRoot.querySelector('[part~="footer"]')).display).toBe('flex');
+    });
+    describe('on a phone with a notch and a home indicator', () => {
+        useSafeAreaInsets({ top: 47, right: 20, bottom: 34, left: 10 });
+
+        const content = '<p>Content</p><button slot="footer" type="button">Apply</button>';
+        const paddings = (node) => {
+            const style = getComputedStyle(node);
+            return [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft].join(' ');
+        };
+
+        it('reaches the three edges it lies against with its surface, and what is in it does not', async () => {
+            const { el, dialog, part } = await drawerFixture({ content });
+            await el.show();
+
+            // The surface: from the top to the bottom, to the end of the line. The size the page
+            // gives is the one of what is in the drawer, and the room of the screen is on top.
+            expect(box(dialog)).toEqual({
+                left: innerWidth - 220,
+                top: 0,
+                right: innerWidth,
+                bottom: innerHeight,
+                width: 220,
+                height: innerHeight,
+            });
+            // The header starts below the status bar, the footer ends above the home indicator,
+            // and both keep the side of the screen clear.
+            expect(box(part('header'))).toMatchObject({ top: 47, left: innerWidth - 220, right: innerWidth - 20 });
+            expect(box(part('footer'))).toMatchObject({ bottom: innerHeight - 34, right: innerWidth - 20 });
+            expect(box(part('body')).width).toBe(200);
+        });
+
+        it('keeps the side it lies against clear, and not the one that faces the page', async () => {
+            const places = {
+                end: '47px 20px 34px 0px',
+                start: '47px 0px 34px 10px',
+                top: '47px 20px 0px 10px',
+                bottom: '0px 20px 34px 10px',
+            };
+            for (const [placement, expected] of Object.entries(places)) {
+                const { el, dialog } = await drawerFixture({ attrs: `placement="${placement}"`, content });
+                await el.show();
+                expect(paddings(dialog), placement).toBe(expected);
+                await el.hide();
+            }
+        });
+
+        it('is as wide and as high as the page says, with the room of the screen on top', async () => {
+            const start = await drawerFixture({ attrs: 'placement="start"', content });
+            await start.el.show();
+            expect(box(start.dialog)).toMatchObject({ left: 0, width: 210 });
+            expect(box(start.part('body'))).toMatchObject({ left: 10, width: 200 });
+            await start.el.hide();
+
+            const top = await drawerFixture({ attrs: 'placement="top"', content });
+            await top.el.show();
+            expect(box(top.dialog)).toMatchObject({ top: 0, height: 247, width: innerWidth });
+            await top.el.hide();
+
+            const bottom = await drawerFixture({ attrs: 'placement="bottom"', content });
+            await bottom.el.show();
+            expect(box(bottom.dialog)).toMatchObject({ bottom: innerHeight, height: 234 });
+        });
+
+        it('is as high as its content and the room of the screen without a size', async () => {
+            const { el, dialog, part } = await drawerFixture({ attrs: 'placement="bottom"', tokens: '', content });
+            await el.show();
+
+            const inside = ['header', 'body', 'footer'].reduce((sum, name) => sum + box(part(name)).height, 0);
+            expect(box(dialog).height).toBe(inside + 34);
+            expect(box(part('footer')).bottom).toBe(innerHeight - 34);
+        });
+
+        it('swaps the sides in a right-to-left page', async () => {
+            const { el, dialog } = await drawerFixture({ dir: 'rtl', content });
+            await el.show();
+
+            // The end of the line is at the left, where the screen takes 10px.
+            expect(paddings(dialog)).toBe('47px 0px 34px 10px');
+            expect(box(dialog)).toMatchObject({ left: 0, width: 210 });
+        });
+
+        it('tells what is in it that the surface keeps the room, so nothing asks the screen twice', async () => {
+            const { el, part } = await drawerFixture({ content });
+            await el.show();
+            const said = getComputedStyle(part('body'));
+
+            for (const side of ['block-start', 'block-end', 'inline-start', 'inline-end']) {
+                expect(said.getPropertyValue(`--_el-context-inset-${side}`).trim()).toBe('0px');
+            }
+        });
+
+        it('passes axe', async () => {
+            const { el, wrapper } = await drawerFixture({ content });
+            await el.show();
+            const results = await axe.run(wrapper);
+            expect(results.violations).toEqual([]);
+        });
     });
 });

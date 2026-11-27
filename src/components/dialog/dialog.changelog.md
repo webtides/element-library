@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Fixed
+
+- A dialog is never higher than what the browser shows. Its greatest height counted the address bar of a phone in (`100vh`), so the footer of a long dialog was below the edge while the bar was there. It follows the bar now (`100dvh`). ([#183](https://github.com/webtides/element-library/issues/183))
+- On a phone whose page reaches under the notch and the home indicator (`viewport-fit=cover`), the dialog keeps out of the room the system takes at the edges of the screen, and is in the middle of what is left. Elsewhere nothing changes.
+
 ## [0.3.0] - 2026-11-17
 
 ### Changed

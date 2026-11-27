@@ -134,13 +134,14 @@ On a touch screen (`@media (any-pointer: coarse)`) the close button is at least 
 
 The drawer is never wider or higher than the viewport. On a narrow screen a drawer at the start or the end covers the page, and the close button is the way back.
 
-A page that reaches under the notch and the home indicator of a phone (`viewport-fit=cover`) keeps the content of the drawer clear of them itself:
+## On a phone
 
-```css
-el-drawer::part(base) {
-    padding-block-end: env(safe-area-inset-bottom);
-}
-```
+Where a page reaches under the notch and the home indicator of a phone (`viewport-fit=cover` in its viewport, or a web app on the home screen), the system takes room at the edges of the screen. The surface of the drawer reaches the three edges it lies against, and its header, its body and its footer keep clear of that room: the header starts below the status bar, the footer ends above the home indicator.
+
+- The room is padding of the surface (`::part(base)`), on the edges the drawer lies against and not on the one that faces the page.
+- `--el-drawer-size` is the size of what is in the drawer. The room of the screen is on top of it.
+- What is in a drawer and keeps the edges of the screen clear when it is alone, an [`el-app-bar`](../app-bar/app-bar.readme.md) or an [`el-nav`](../nav/nav.readme.md), is told that the drawer does so, and adds no room of its own.
+- Without `viewport-fit=cover`, and on a desktop, the room is nothing and the drawer is as before.
 
 ## Opening and closing
 

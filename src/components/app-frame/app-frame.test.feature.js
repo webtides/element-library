@@ -1853,6 +1853,38 @@ describe('Feature | AppFrame', () => {
             return [paddingTop, paddingRight, paddingBottom, paddingLeft].map(parseFloat);
         };
 
+        it('keeps the navigation in its drawer clear of them once: the drawer does, and what is in it does not ask again', async () => {
+            const el = await viewportFrame(`
+                <header slot="header" style="display: block; height: 50px">
+                    <button id="menu" type="button" data-navigation-toggle>Menu</button>
+                </header>
+                <el-nav slot="navigation" label="Main" column="list">
+                    <el-nav-item id="first" href="#first">First</el-nav-item>
+                    <el-nav-item href="#second">Second</el-nav-item>
+                </el-nav>
+                <main id="drawer-safe"><p>Content</p></main>
+            `);
+            el.navigationOpen = true;
+            await rendered();
+            const drawer = el.shadowRoot.querySelector('el-drawer');
+            const dialog = drawer.shadowRoot.querySelector('dialog');
+            await expect.poll(() => dialog.classList.contains('showing')).toBe(true);
+            const nav = el.querySelector('el-nav').shadowRoot.querySelector('[part~="base"]');
+            const header = drawer.shadowRoot.querySelector('[part~="header"]');
+
+            // The surface of the drawer keeps the top, the lower edge and its side of the screen.
+            const { paddingTop, paddingBottom, paddingLeft, paddingRight } = getComputedStyle(dialog);
+            expect([paddingTop, paddingRight, paddingBottom, paddingLeft]).toEqual(['47px', '0px', '34px', '10px']);
+            expect(header.getBoundingClientRect().top).toBe(47);
+            // The el-nav in it is told so, and adds no room of its own.
+            const padding = getComputedStyle(nav);
+            expect([padding.paddingTop, padding.paddingBottom, padding.paddingLeft]).toEqual(['0px', '0px', '0px']);
+            expect(el.querySelector('#first').getBoundingClientRect().left).toBe(10 + 8);
+
+            el.navigationOpen = false;
+            await rendered();
+        });
+
         it('keeps what is in the header and in the footer clear of them, and their surfaces reach the edge', async () => {
             const el = await frame(regions(), { width: 400 });
 

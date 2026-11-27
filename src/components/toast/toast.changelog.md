@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Fixed
+
+- On a phone whose page reaches under the notch and the home indicator (`viewport-fit=cover`), a toast could lie under them. The distance of the stack from an edge (`--el-toast-inset`) is on top of the room the system takes there now, and the stack is no wider than what is between the two sides. Elsewhere nothing changes. ([#183](https://github.com/webtides/element-library/issues/183))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added
