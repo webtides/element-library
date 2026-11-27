@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Changed
 
 - In an `el-button-group` the control of a button with a neighbour in front lies on the border of that neighbour by itself: it reads the width from the group (`--_el-group-overlap`, internal and inherited), where the group gave the element a negative margin before. The element of such a button stands beside its neighbour and is narrower than its control by that border. Outside of a group nothing changes. ([#206](https://github.com/webtides/element-library/issues/206))

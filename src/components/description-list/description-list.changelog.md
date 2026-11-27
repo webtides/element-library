@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - `--el-description-list-padding-block` sets the room above and below a row, and `--el-description-list-gap` the gap between a name and its value and in front of an action. Unset, they are `--el-space-3` and `--el-space-4` as before. ([#208](https://github.com/webtides/element-library/issues/208))

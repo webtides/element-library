@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### app-frame
 
 - Fixed: the link that skips to the content lies in a landmark: a navigation (`<nav>`) of the frame, the part `skip-landmark`. A page whose shell is a frame was reported by axe on every view (`region: el-app-frame,.skip`): content outside of a landmark. axe lets a skip link stand alone, and knows one by its place in front of the first link of the page that leads elsewhere; the link of the frame is in a shadow root, and so is the first link of most views (an `el-nav-item`), so neither is in front of the other in the document. A link the page writes in front of the frame is reported for the same reason. The link stays the first stop of the Tab key, where the frame is narrow and where it is wide, does what it did, and has its text from `skip-label`. The landmark takes no room, and is in server-rendered markup. ([#209](https://github.com/webtides/element-library/issues/209))

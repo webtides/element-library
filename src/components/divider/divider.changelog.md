@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - A container can give its lines room: it names the room in a property that inherits (`--_el-context-divider-space`, internal), and the line has it in front of it and after it, above and below a horizontal line and at both sides of a vertical one. `el-menu` does so for a line between two entries. Outside of such a container a divider has no space around it, as before. ([#206](https://github.com/webtides/element-library/issues/206))

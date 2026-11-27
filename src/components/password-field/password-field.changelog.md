@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - Takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. Its own button, the one that shows the password, stays beside the control. ([#168](https://github.com/webtides/element-library/issues/168))

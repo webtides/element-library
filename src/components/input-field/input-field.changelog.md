@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - Content of the page at the start and at the end of the control: an element with `slot="start"` or `slot="end"` among the children of the field is taken into the control when the field renders. An icon, a unit, the start of an address, a button. It stands in a row with the input, whose text does not run under it, and follows the reading direction. The field moves the element of the page and does not copy it, and server-rendered markup has it in its place. ([#168](https://github.com/webtides/element-library/issues/168))

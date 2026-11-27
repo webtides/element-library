@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Changed
 
 - A page that gave the room back itself, with a margin for an `el-divider` in a menu, takes that rule out: the margin adds to the room now. ([#206](https://github.com/webtides/element-library/issues/206))

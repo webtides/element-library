@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - `drop-message`: an area to drop a file onto, around the control, with that text in it. The control took a drop on its small button, and nothing invited one. While a dragged file is over the area it looks different, and the host has the state `dragover`. A click on the area opens the dialog; the keyboard is on the control in it. ([#197](https://github.com/webtides/element-library/issues/197))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Changed
 
 - A page that put the overlap back itself, with a negative margin for the buttons of a group, takes that rule out: the buttons would lie on each other by two borders. ([#206](https://github.com/webtides/element-library/issues/206))

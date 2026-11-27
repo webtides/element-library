@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Changed
 
 - The panel is no part of a row of joined buttons: it stops the property that pulls a button over its neighbour there (`--_el-group-overlap`), as the ones for the corners and the line. ([#206](https://github.com/webtides/element-library/issues/206))

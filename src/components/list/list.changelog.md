@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - `--el-list-gap` sets the gap between the start, the texts, the end and the control of a row. The rows read it, so it can be set on the list or for the page. ([#206](https://github.com/webtides/element-library/issues/206))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - `skip-landmark-label` is the name of that landmark for assistive technology, `Skip link` by default. The page gives it a name in its language, and one no other navigation of the page has: two navigations of one name are one too many (`landmark-unique`). ([#209](https://github.com/webtides/element-library/issues/209))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - `type`: an entry that sets something instead of doing something. With `type="checkbox"` it is on or off (`role="menuitemcheckbox"`), with `type="radio"` it is one of several of which one is chosen (`role="menuitemradio"`). `checked` is its state, which it says (`aria-checked`), also while it is off and while it is disabled. A page could put a mark into the `icon` slot before, and a screen reader heard nothing of it: the role of an entry is inside of its shadow root. ([#205](https://github.com/webtides/element-library/issues/205))

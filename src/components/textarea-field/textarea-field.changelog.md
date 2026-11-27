@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.5.0] - 2026-11-27
+
 ### Added
 
 - `maxlength` and `minlength` are passed on to the native `<textarea>`, in server-rendered markup as well, and one that is not set is not rendered. The control takes no more characters than `maxlength` while the user types, and a typed text that is shorter than `minlength` makes the field invalid the way `required` does, with its `error-message`. Set on the element they did nothing before. ([#190](https://github.com/webtides/element-library/issues/190))
