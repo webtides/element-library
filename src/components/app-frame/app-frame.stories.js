@@ -459,6 +459,107 @@ export const Sidebar = {
     `,
 };
 
+const notes = [
+    ['Release notes', 'What changed in the last version, and what a user has to do'],
+    ['Questions about the invoice', 'The three open points, and who answers them'],
+    ['Room for the workshop', 'Twelve people, a projector, two days'],
+    ['Proposal of the design team', 'The new navigation, read and commented'],
+    ['Certificate of the staging server', 'Runs out at the end of the month'],
+    ['Next sprint', 'What is left over, and what comes first'],
+    ['New laptops', 'Four of them, with the larger screen'],
+    ['Feedback on the onboarding', 'What the last three who joined said'],
+    ['Dependencies', 'Which ones are behind, and which ones break'],
+    ['Old branches', 'Everything that was merged before the summer'],
+    ['How the deployment works', 'From the tag to the release, step by step'],
+    ['Contrast of the new theme', 'The muted text on the raised surface'],
+];
+
+export const Columns = {
+    name: 'A view of columns',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'A list and what is chosen in it, beside each other. Where the frame is wide, the view is as high as the region of the content, each column scrolls on its own, and the region does not scroll as well. Where the frame is narrow, the view is a page that scrolls as a whole. The frame does nothing for it: the view takes the height of the region (`block-size: 100%`) in a query of the page by the width of the frame.',
+            },
+        },
+    },
+    render: () => html`
+        <style>
+            .story-view {
+                box-sizing: border-box;
+            }
+
+            .story-view > * {
+                padding: 1rem;
+            }
+
+            /* The frame is a container, and 48rem is its wide-from. */
+            @container (min-width: 48rem) {
+                .story-view {
+                    display: flex;
+                    block-size: 100%;
+                }
+
+                .story-view > * {
+                    min-inline-size: 0;
+                    overflow-y: auto;
+                    overscroll-behavior: contain;
+                }
+
+                .story-view > section {
+                    flex: none;
+                    inline-size: 22rem;
+                    border-inline-end: 1px solid var(--el-color-border, currentColor);
+                }
+
+                .story-view > article {
+                    flex: 1 1 0;
+                }
+            }
+        </style>
+        <el-app-frame narrow-navigation="bar">
+            <header slot="header"><el-app-bar heading-level="1">Notes</el-app-bar></header>
+            <el-nav slot="navigation" label="Main">
+                ${destinations.map(
+                    ({ name, current, icon: path }) => html`
+                        <el-nav-item href="#${name.toLowerCase()}" current="${current ? 'true' : 'false'}"
+                            >${icon(path)}${name}</el-nav-item
+                        >
+                    `,
+                )}
+            </el-nav>
+            <main id="columns-main" class="story-view">
+                <section aria-label="Notes">
+                    <el-list label="Notes">
+                        ${notes.map(
+                            ([title, text], index) => html`
+                                <el-list-item href="#note-${index}">
+                                    ${title}
+                                    <span slot="description">${text}</span>
+                                </el-list-item>
+                            `,
+                        )}
+                    </el-list>
+                </section>
+                <article tabindex="0" aria-label="Release notes">
+                    <h2 style="margin:0 0 1rem;font-size:1.5rem;font-weight:700">Release notes</h2>
+                    ${Array.from(
+                        { length: 12 },
+                        (_, index) => html`
+                            <p style="margin:0 0 1rem;max-width:40rem">
+                                ${index + 1}. The list at the side scrolls on its own, and so does this note. The header
+                                stays, and the region of the content has nothing left to scroll: the view is as high as
+                                the region.
+                            </p>
+                        `,
+                    )}
+                </article>
+            </main>
+        </el-app-frame>
+    `,
+};
+
 const paragraphs = [
     'The frame of an application has five regions: a header, a footer, a navigation, an aside and the content. The page writes the element of every region, and the frame lays it out.',
     'A tool for a desktop has a narrow line of state at its lower edge. It says whether the connection is there, where the cursor is and whether the document is saved.',

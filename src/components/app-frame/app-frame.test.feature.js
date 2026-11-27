@@ -235,6 +235,153 @@ describe('Feature | AppFrame', () => {
         });
     });
 
+    describe('a view of columns', () => {
+        // What a page writes for a list and what is chosen in it, beside each other: its own
+        // layout, in a query by the width of the frame.
+        const rows = (count) =>
+            Array.from({ length: count }, (_, i) => `<p style="margin: 0; height: 30px">Row ${i + 1}</p>`).join('');
+        const view = (width, { extra = '', main = '' } = {}) =>
+            frame(
+                `
+                <style>
+                    .view { box-sizing: border-box; margin: 0; ${main} }
+                    @container (min-width: 48rem) {
+                        .view { display: flex; block-size: 100%; }
+                        .view > * { flex: 1 1 0; min-inline-size: 0; overflow-y: auto; }
+                    }
+                </style>
+                <header slot="header" style="display: block; height: 50px">Header</header>
+                <main id="view-${++ids}" class="view">
+                    <section class="list" aria-label="Notes" tabindex="0">${rows(40)}</section>
+                    <article class="detail" tabindex="0">${rows(60)}</article>
+                </main>
+                ${extra}
+            `,
+                { width },
+            );
+        const inside = (el, selector) => {
+            const origin = el.getBoundingClientRect();
+            const { left, top, width, height } = el.querySelector(selector).getBoundingClientRect();
+            return [left - origin.left, top - origin.top, width, height];
+        };
+
+        it('has columns as high as the region of the content, and each scrolls on its own', async () => {
+            const el = await view(1000);
+            const [list, detail] = [el.querySelector('.list'), el.querySelector('.detail')];
+
+            expect(box(el, 'content')).toEqual([0, 51, 1000, 549]);
+            expect(inside(el, '.list')).toEqual([0, 51, 500, 549]);
+            expect(inside(el, '.detail')).toEqual([500, 51, 500, 549]);
+            expect(list.scrollHeight).toBe(40 * 30);
+            expect(detail.scrollHeight).toBe(60 * 30);
+
+            detail.scrollTop = 700;
+            await nextFrame();
+            expect(detail.scrollTop).toBe(700);
+            expect(list.scrollTop).toBe(0);
+        });
+
+        it('does not scroll the region of the content as well', async () => {
+            const el = await view(1000);
+            const content = part(el, 'content');
+
+            expect(content.scrollHeight).toBe(content.clientHeight);
+            content.scrollTop = 100;
+            el.querySelector('.detail').scrollTop = 700;
+            await nextFrame();
+            expect(content.scrollTop).toBe(0);
+            expect(box(el, 'header')).toEqual([0, 0, 1000, 51]);
+            // The region is no stop of the Tab key: there is nothing for the keys to scroll.
+            expect(content.hasAttribute('tabindex')).toBe(false);
+        });
+
+        it('keeps the columns as high as the region with a padding of the page around them', async () => {
+            const el = await view(1000, { main: 'padding: 16px; gap: 16px;' });
+            const content = part(el, 'content');
+
+            expect(content.scrollHeight).toBe(content.clientHeight);
+            expect(inside(el, '.list')).toEqual([16, 67, 476, 517]);
+            expect(inside(el, '.detail')).toEqual([508, 67, 476, 517]);
+        });
+
+        it('has them beside a navigation and an aside, which scroll on their own as before', async () => {
+            const el = await view(1000, {
+                extra: `
+                    <nav slot="navigation" aria-label="Main">${rows(40)}</nav>
+                    <aside slot="aside" aria-label="Details">${rows(40)}</aside>
+                `,
+            });
+
+            // 256px and a line at the start, a line and 320px at the end.
+            expect(box(el, 'content')).toEqual([257, 51, 422, 549]);
+            expect(inside(el, '.list')).toEqual([257, 51, 211, 549]);
+            expect(part(el, 'content').scrollHeight).toBe(part(el, 'content').clientHeight);
+            expect(part(el, 'navigation').scrollHeight).toBeGreaterThan(part(el, 'navigation').clientHeight);
+        });
+
+        it('is a page that scrolls as a whole where the frame is narrow', async () => {
+            const el = await view(400);
+            const [list, detail] = [el.querySelector('.list'), el.querySelector('.detail')];
+
+            expect(el.wide).toBe(false);
+            // Below each other, each as high as what is in it.
+            expect(inside(el, '.list')).toEqual([0, 51, 400, 40 * 30]);
+            expect(inside(el, '.detail')).toEqual([0, 51 + 40 * 30, 400, 60 * 30]);
+            expect(list.scrollHeight).toBe(list.clientHeight);
+            expect(detail.scrollHeight).toBe(detail.clientHeight);
+            // One thing scrolls, and the header stays.
+            expect(el.scroller).toBe(part(el, 'body'));
+            expect(el.scroller.scrollHeight).toBe(100 * 30);
+            el.scroller.scrollTop = 1500;
+            await nextFrame();
+            expect(inside(el, '.detail')[1]).toBe(51 + 40 * 30 - 1500);
+            expect(box(el, 'header')).toEqual([0, 0, 400, 51]);
+        });
+
+        it('changes with the width of the frame, without a script of the page', async () => {
+            const el = await view(1000);
+            expect(inside(el, '.detail')[0]).toBe(500);
+
+            el.parentElement.style.width = '400px';
+            await rendered();
+            expect(inside(el, '.detail').slice(0, 2)).toEqual([0, 51 + 40 * 30]);
+            expect(el.scroller.scrollHeight).toBe(100 * 30);
+        });
+
+        it('leads the skip link to the columns, and the Tab key on into them', async () => {
+            const el = await view(1000);
+
+            el.parentElement.querySelector('.before').focus();
+            await userEvent.keyboard('{Tab}');
+            expect(activeElement()).toBe(part(el, 'skip-link'));
+            await userEvent.keyboard('{Enter}');
+            expect(activeElement()).toBe(part(el, 'content'));
+            await userEvent.keyboard('{Tab}');
+            expect(activeElement()).toBe(el.querySelector('.list'));
+            await userEvent.keyboard('{Tab}');
+            expect(activeElement()).toBe(el.querySelector('.detail'));
+        });
+
+        it('passes axe', async () => {
+            const el = await view(1000);
+            const results = await axe.run(el.parentElement);
+            expect(results.violations).toEqual([]);
+        });
+
+        describe('on paper', () => {
+            usePrint();
+
+            it('prints its columns whole: the height they filled is gone', async () => {
+                const el = await view(1000);
+                const [list, detail] = [el.querySelector('.list'), el.querySelector('.detail')];
+
+                expect(list.scrollHeight).toBe(list.clientHeight);
+                expect(detail.scrollHeight).toBe(detail.clientHeight);
+                expect(detail.getBoundingClientRect().height).toBe(60 * 30);
+            });
+        });
+    });
+
     describe('wide from a width', () => {
         const isWide = async (width, attributes) => (await frame(regions(), { width, attributes })).wide;
 

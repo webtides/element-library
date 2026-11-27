@@ -151,6 +151,51 @@ The window does not scroll in a frame. What follows from it:
 - **[`el-sticky`](../sticky/sticky.readme.md)** follows the scroll of the window and has nothing to do in a frame: the header of the frame stays in view by itself.
 - **A phone does not take its address bar in**, because that follows the scroll of the document. The frame is as high as what shows beside the bar, in both of its states.
 
+## A view of columns
+
+Some views are a list and what is chosen in it, beside each other: the notes and the open note. Where the frame is wide, each column scrolls on its own, and the view is as high as the region of the content. Where the frame is narrow, the view is a page like any other, which scrolls as a whole.
+
+The frame needs nothing for it. The region of the content has a height where the frame is wide, so the view takes that height and lets its columns scroll. The page writes that in a query by the width of the frame, which is a container for the queries of the page:
+
+```html
+<el-app-frame>
+    <main id="main" class="view">
+        <section aria-label="Notes">…</section>
+        <article>…</article>
+    </main>
+</el-app-frame>
+```
+
+```css
+.view {
+    box-sizing: border-box;
+}
+
+/* The width of wide-from. */
+@container (min-width: 48rem) {
+    .view {
+        display: flex;
+        block-size: 100%;
+    }
+
+    .view > * {
+        flex: 1 1 0;
+        min-inline-size: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+```
+
+- **The region of the content does not scroll as well.** The view is as high as the region, with its padding inside of that height (`box-sizing: border-box`). A margin of the view would be on top of it.
+- **Where the frame is narrow** the rules do not apply. The columns are below each other, or one of them is a view of its own on a phone, and the page scrolls between the header and the footer.
+- **The query is the page's**, with the width of `wide-from` written into it. The stylesheet decides: a server-rendered page is right before any script has run, and nothing is to be done when the window gets narrower.
+- **`scroller`** is the region of the content, which has nothing to scroll in such a view. A router that sets the scroll back after a change of the view asks the columns.
+- **The keyboard.** A column that scrolls and has no control in it needs `tabindex="0"`: without a stop of the Tab key the keys cannot scroll it in every browser. The frame does that for its own regions, not for an element of the page.
+- **On paper** the region has no height, so the columns are as high as what is in them, and print whole.
+
+The columns are the layout of the page. An edge the user drags between two of them is an [`el-splitter`](../splitter/splitter.readme.md).
+
 ## Narrow and wide
 
 From the width that `wide-from` names, the navigation and the aside are columns beside the content, and each of the three scrolls on its own. Where the frame is narrow, the content and the aside are below each other, in one column that scrolls between the header and the footer, and the navigation is a drawer.
