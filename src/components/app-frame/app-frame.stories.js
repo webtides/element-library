@@ -378,12 +378,21 @@ export const Workbench = {
         controls: { disable: true },
         docs: {
             description: {
-                story: 'An editor: the files in the navigation, the outline of the document in the aside, and an `el-status-bar` in the footer. The line of state is for a desktop (`wide-only="footer"`): where the frame is narrow it is not there, and the files open as a drawer.',
+                story: 'An editor: the files in the navigation, the outline of the document in the aside, and an `el-status-bar` in the footer. The user sets the width of both columns (`resizable="navigation aside"`): drag the line between a column and the text, or give it the focus with the Tab key and use the arrow keys, Home and End. The line of state is for a desktop (`wide-only="footer"`): where the frame is narrow it is not there, the files open as a drawer, and there is no edge to drag.',
             },
         },
     },
     render: () => html`
-        <el-app-frame wide-only="footer aside" navigation-label="Files">
+        <el-app-frame
+            wide-only="footer aside"
+            resizable="navigation aside"
+            navigation-label="Files"
+            aside-label="Outline"
+            @app-frame-resize-end="${(event) => {
+                const { region, size } = event.detail;
+                event.currentTarget.querySelector('[data-kept]').textContent = `${region} ${size}px`;
+            }}"
+        >
             <header slot="header">
                 <el-app-bar heading-level="1">
                     <el-button slot="start" data-navigation-toggle circle="true" aria-label="Files">${menu}</el-button>
@@ -427,6 +436,7 @@ export const Workbench = {
                     <span>Connected</span>
                     <span>Line 12, column 4</span>
                     <span role="status">Saved</span>
+                    <span slot="end" data-kept></span>
                     <span slot="end">Markdown</span>
                     <el-button slot="end">main</el-button>
                 </el-status-bar>

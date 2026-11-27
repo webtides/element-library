@@ -7,6 +7,7 @@ import {
     fixture,
     nextFrame,
     oneEvent,
+    realPointer,
     useForcedColors,
     usePrint,
     useSafeAreaInsets,
@@ -795,6 +796,365 @@ describe('Feature | AppFrame', () => {
         it('prints a region that is not there as little as it shows it', async () => {
             const el = await frame(regions(), { attributes: 'narrow-only="footer"' });
             expect(getComputedStyle(part(el, 'footer')).display).toBe('none');
+        });
+    });
+
+    describe('columns the user sizes', () => {
+        // A frame that is wide from 480px, in a box of 520px: both edges are in the viewport of the
+        // test. Columns of 150px, which can be between 100px and 220px wide.
+        const limits = (region) =>
+            `--el-app-frame-${region}-size: 150px; --el-app-frame-${region}-min-size: 100px; --el-app-frame-${region}-max-size: 220px;`;
+        const sized = (attributes = 'resizable="navigation aside"', options = {}) =>
+            frame(regions(), {
+                attributes: `wide-from="30rem" ${attributes}`,
+                width: 520,
+                style: `${theme} ${limits('navigation')} ${limits('aside')}`,
+                ...options,
+            });
+        const edge = (el, region) => el.shadowRoot.querySelector(`[part~="${region}-splitter"]`);
+        const separator = (el, region) => edge(el, region)?.shadowRoot.querySelector('[part~="base"]');
+        const widthOf = (el, region) => parseFloat(getComputedStyle(part(el, region)).width);
+        /** A point on an edge, 40px below its top. */
+        const grip = (el, region) => {
+            const { left, top } = edge(el, region).getBoundingClientRect();
+            return [left, top + 40];
+        };
+        /** What the frame tells of the widths, and what leaves it of the events of its edges. */
+        const told = (el) => {
+            const seen = [];
+            for (const name of ['app-frame-resize', 'app-frame-resize-end', 'splitter-resize', 'splitter-resize-end']) {
+                el.addEventListener(name, (event) =>
+                    seen.push([name, event.detail.region, event.detail.size ?? event.detail.value]),
+                );
+            }
+            return seen;
+        };
+
+        it('have an edge at the side that faces the content, a separator with the width and the name of the column', async () => {
+            const el = await sized();
+
+            // The edge lies on the line of its column, and takes the pointer 4px to each side.
+            expect(box(el, 'navigation')).toEqual([0, 51, 151, 518]);
+            expect(box(el, 'navigation-splitter')).toEqual([151, 51, 0, 518]);
+            expect(box(el, 'aside')).toEqual([369, 51, 151, 518]);
+            expect(box(el, 'aside-splitter')).toEqual([369, 51, 0, 518]);
+            const { left } = el.getBoundingClientRect();
+            expect(Math.round(separator(el, 'navigation').getBoundingClientRect().left - left)).toBe(147);
+            expect(separator(el, 'navigation').getBoundingClientRect().width).toBe(8);
+
+            for (const region of ['navigation', 'aside']) {
+                expect(await accessibleRole(separator(el, region))).toBe('separator');
+                expect(separator(el, region).getAttribute('aria-valuenow')).toBe('150');
+                expect(separator(el, region).getAttribute('aria-valuemin')).toBe('100');
+                expect(separator(el, region).getAttribute('aria-valuemax')).toBe('220');
+            }
+            expect(await accessibleName(separator(el, 'navigation'))).toBe('Navigation');
+            expect(await accessibleName(separator(el, 'aside'))).toBe('Aside');
+            // The line is the one of the column: the edge draws none of its own on it.
+            expect(getComputedStyle(edge(el, 'navigation').shadowRoot.querySelector('.line')).borderLeftWidth).toBe(
+                '0px',
+            );
+        });
+
+        it('name their edges as the page names the columns', async () => {
+            const el = await sized('resizable="navigation aside" navigation-label="Lists" aside-label="Details"');
+
+            expect(await accessibleName(separator(el, 'navigation'))).toBe('Lists');
+            expect(await accessibleName(separator(el, 'aside'))).toBe('Details');
+        });
+
+        it('have no edge unless the page asks for one, and none for a column that is not there', async () => {
+            const none = await sized('');
+            expect(none.shadowRoot.querySelectorAll('el-splitter').length).toBe(0);
+            none.parentElement.remove();
+
+            const one = await sized('resizable="aside header something"');
+            expect(edge(one, 'navigation')).toBeNull();
+            expect(edge(one, 'aside')).not.toBeNull();
+            expect(one.shadowRoot.querySelectorAll('el-splitter').length).toBe(1);
+            one.parentElement.remove();
+
+            const el = await frame(`<main id="content-${++ids}"><a href="#x">Link</a></main>`, {
+                attributes: 'wide-from="30rem" resizable="navigation aside"',
+                width: 520,
+            });
+            expect(el.shadowRoot.querySelectorAll('el-splitter').length).toBe(0);
+
+            // A column that comes later brings its edge.
+            el.insertAdjacentHTML('beforeend', '<aside slot="aside" aria-label="Details"><p>Aside</p></aside>');
+            await rendered();
+            await rendered();
+            expect(edge(el, 'aside')).not.toBeNull();
+            expect(getComputedStyle(edge(el, 'aside')).display).toBe('block');
+        });
+
+        it('get wider and narrower as the user drags the edge of the navigation', async () => {
+            const el = await sized();
+            const seen = told(el);
+            const pointer = realPointer();
+            const [x, y] = grip(el, 'navigation');
+
+            await pointer.down(x, y);
+            await pointer.move(x + 25, y);
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(175);
+            await pointer.move(x + 40, y);
+            await rendered();
+            await pointer.up();
+
+            expect(widthOf(el, 'navigation')).toBe(190);
+            expect(el.navigationSize).toBe(190);
+            expect(separator(el, 'navigation').getAttribute('aria-valuenow')).toBe('190');
+            // The content gives the room, the aside keeps its width.
+            expect(box(el, 'content')).toEqual([191, 51, 178, 518]);
+            expect(widthOf(el, 'aside')).toBe(150);
+            // The frame tells of it in its own words, and the events of the edge stay in it.
+            expect(seen).toEqual([
+                ['app-frame-resize', 'navigation', 175],
+                ['app-frame-resize', 'navigation', 190],
+                ['app-frame-resize-end', 'navigation', 190],
+            ]);
+        });
+
+        it('get wider as the user drags the edge of the aside to the start', async () => {
+            const el = await sized();
+            const seen = told(el);
+            const pointer = realPointer();
+            const [x, y] = grip(el, 'aside');
+
+            await pointer.down(x, y);
+            await pointer.move(x - 30, y);
+            await rendered();
+            await pointer.up();
+
+            expect(widthOf(el, 'aside')).toBe(180);
+            expect(el.asideSize).toBe(180);
+            expect(box(el, 'aside')).toEqual([339, 51, 181, 518]);
+            expect(seen).toEqual([
+                ['app-frame-resize', 'aside', 180],
+                ['app-frame-resize-end', 'aside', 180],
+            ]);
+        });
+
+        it('are dragged with a finger and with a pen as well', async () => {
+            const el = await sized();
+
+            for (const [type, to] of [
+                ['touch', 170],
+                ['pen', 200],
+            ]) {
+                const pointer = realPointer(type);
+                const [x, y] = grip(el, 'navigation');
+                await pointer.down(x, y);
+                await pointer.move(x + (to - widthOf(el, 'navigation')), y);
+                await rendered();
+                await pointer.up();
+                await rendered();
+
+                expect(widthOf(el, 'navigation')).toBe(to);
+                expect(el.navigationSize).toBe(to);
+            }
+        });
+
+        it('stop at the least and at the greatest width the page sets', async () => {
+            const el = await sized();
+            const pointer = realPointer();
+            const [x, y] = grip(el, 'navigation');
+
+            await pointer.down(x, y);
+            await pointer.move(x + 200, y);
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(220);
+            expect(el.navigationSize).toBe(220);
+
+            await pointer.move(x - 140, y);
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(100);
+            await pointer.up();
+            expect(el.navigationSize).toBe(100);
+        });
+
+        it('are moved with the keyboard: the arrow keys in steps, Home and End to the limits', async () => {
+            const el = await sized();
+            const seen = told(el);
+
+            separator(el, 'navigation').focus();
+            await userEvent.keyboard('{ArrowRight}');
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(166);
+            await userEvent.keyboard('{End}');
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(220);
+            await userEvent.keyboard('{Home}');
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(100);
+
+            // The edge of the aside is at its start: the arrow to the left makes the aside wider.
+            separator(el, 'aside').focus();
+            await userEvent.keyboard('{ArrowLeft}');
+            await rendered();
+            expect(widthOf(el, 'aside')).toBe(166);
+
+            expect(seen.filter(([name]) => name === 'app-frame-resize-end')).toEqual([
+                ['app-frame-resize-end', 'navigation', 166],
+                ['app-frame-resize-end', 'navigation', 220],
+                ['app-frame-resize-end', 'navigation', 100],
+                ['app-frame-resize-end', 'aside', 166],
+            ]);
+        });
+
+        it('have their edges as stops of the Tab key, in the order of the columns', async () => {
+            const el = await sized();
+            const stops = [];
+
+            el.parentElement.querySelector('.before').focus();
+            for (let stop = 0; stop < 5; stop++) {
+                await userEvent.tab();
+                const at = activeElement();
+                stops.push(at.id || at.getAttribute('aria-label') || at.getAttribute('part'));
+            }
+
+            expect(stops).toEqual(['skip-link', 'nav-link', 'Navigation', 'link', 'Aside']);
+        });
+
+        it('take the width the page gives them, and give the one of the stylesheet back', async () => {
+            const el = await sized('resizable="navigation aside" navigation-size="180"');
+            const seen = told(el);
+
+            expect(widthOf(el, 'navigation')).toBe(180);
+            expect(separator(el, 'navigation').getAttribute('aria-valuenow')).toBe('180');
+
+            el.asideSize = 120;
+            await rendered();
+            expect(widthOf(el, 'aside')).toBe(120);
+            expect(separator(el, 'aside').getAttribute('aria-valuenow')).toBe('120');
+
+            el.navigationSize = 0;
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(150);
+            expect(separator(el, 'navigation').getAttribute('aria-valuenow')).toBe('150');
+            // The page has set them: the frame tells of nothing.
+            expect(seen).toEqual([]);
+        });
+
+        it('keep between their limits with a width that is outside of them', async () => {
+            const el = await sized('resizable="navigation aside" navigation-size="900" aside-size="20"');
+
+            expect(widthOf(el, 'navigation')).toBe(220);
+            expect(separator(el, 'navigation').getAttribute('aria-valuenow')).toBe('220');
+            expect(widthOf(el, 'aside')).toBe(100);
+            expect(separator(el, 'aside').getAttribute('aria-valuenow')).toBe('100');
+        });
+
+        it('are between 10rem and two fifths of the frame without limits of the page', async () => {
+            const el = await frame(regions(), {
+                attributes: 'wide-from="30rem" resizable="navigation aside"',
+                width: 520,
+            });
+
+            // 16rem and 20rem would be more than two fifths of 520px.
+            expect(widthOf(el, 'navigation')).toBe(208);
+            expect(widthOf(el, 'aside')).toBe(208);
+            expect(separator(el, 'navigation').getAttribute('aria-valuemin')).toBe('160');
+            expect(separator(el, 'navigation').getAttribute('aria-valuemax')).toBe('208');
+
+            // A frame that gets wider lets them be wider.
+            el.parentElement.style.width = '1000px';
+            await rendered();
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(256);
+            expect(separator(el, 'navigation').getAttribute('aria-valuemax')).toBe('400');
+            expect(separator(el, 'navigation').getAttribute('aria-valuenow')).toBe('256');
+        });
+
+        it('keep their width without an edge too: the page sets it', async () => {
+            const el = await sized('navigation-size="130"');
+
+            expect(widthOf(el, 'navigation')).toBe(130);
+            expect(el.shadowRoot.querySelectorAll('el-splitter').length).toBe(0);
+        });
+
+        it('have no edge where the frame is narrow: the navigation is a drawer there', async () => {
+            const el = await sized('resizable="navigation aside" navigation-size="200"', { width: 400 });
+
+            expect(el.wide).toBe(false);
+            expect(edge(el, 'navigation')).toBeNull();
+            expect(getComputedStyle(edge(el, 'aside')).display).toBe('none');
+            // The width the user has set is the one of the column, not of the drawer.
+            el.navigationOpen = true;
+            await rendered();
+            await rendered();
+            const drawer = el.shadowRoot.querySelector('el-drawer');
+            expect(drawer.shadowRoot.querySelector('[part~="base"]').getBoundingClientRect().width).toBe(150);
+            el.navigationOpen = false;
+            await rendered();
+
+            // Wide again, the edges are back, with the width that was kept.
+            el.parentElement.style.width = '520px';
+            await rendered();
+            await rendered();
+            await rendered();
+            expect(getComputedStyle(edge(el, 'navigation')).display).toBe('block');
+            expect(getComputedStyle(edge(el, 'aside')).display).toBe('block');
+            expect(widthOf(el, 'navigation')).toBe(200);
+            expect(separator(el, 'navigation').getAttribute('aria-valuenow')).toBe('200');
+        });
+
+        it('have no edge for a column that is not there at this width', async () => {
+            const el = await sized('resizable="navigation aside" narrow-only="aside"');
+
+            expect(getComputedStyle(part(el, 'aside')).display).toBe('none');
+            expect(getComputedStyle(edge(el, 'aside')).display).toBe('none');
+            expect(getComputedStyle(edge(el, 'navigation')).display).toBe('block');
+        });
+
+        it('follow the reading direction', async () => {
+            const el = await sized('resizable="navigation aside"', { dir: 'rtl' });
+            const pointer = realPointer();
+
+            // The navigation is at the right, and its edge at its left side.
+            expect(box(el, 'navigation')).toEqual([369, 51, 151, 518]);
+            expect(box(el, 'navigation-splitter')).toEqual([369, 51, 0, 518]);
+            expect(box(el, 'aside-splitter')).toEqual([151, 51, 0, 518]);
+
+            const [x, y] = grip(el, 'navigation');
+            await pointer.down(x, y);
+            await pointer.move(x - 30, y);
+            await rendered();
+            await pointer.up();
+            expect(widthOf(el, 'navigation')).toBe(180);
+
+            await userEvent.keyboard('{ArrowLeft}');
+            await rendered();
+            expect(widthOf(el, 'navigation')).toBe(196);
+
+            separator(el, 'aside').focus();
+            await userEvent.keyboard('{ArrowRight}');
+            await rendered();
+            expect(widthOf(el, 'aside')).toBe(166);
+        });
+
+        it('pass axe with their edges', async () => {
+            const el = await sized();
+            const results = await axe.run(el.parentElement);
+            expect(results.violations).toEqual([]);
+        });
+    });
+
+    describe('columns the user sizes, on paper', () => {
+        usePrint();
+
+        it('have no edge and no limit', async () => {
+            const el = await frame(regions({ lines: 80 }), {
+                attributes: 'wide-from="30rem" resizable="navigation aside" navigation-size="180"',
+                width: 520,
+            });
+            await rendered();
+
+            for (const node of el.shadowRoot.querySelectorAll('el-splitter')) {
+                expect(getComputedStyle(node).display).toBe('none');
+            }
+            expect(getComputedStyle(part(el, 'navigation')).maxWidth).toBe('none');
         });
     });
 

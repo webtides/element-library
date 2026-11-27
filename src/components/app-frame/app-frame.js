@@ -1,5 +1,6 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import { define as defineDrawer } from '../drawer/drawer.js';
+import { define as defineSplitter } from '../splitter/splitter.js';
 import { containsFocusable } from '../../utils/focus.js';
 import { hasSlotted } from '../../utils/slots.js';
 import style, { DEFAULT_STEP, STEPS } from './app-frame.style.js';
@@ -7,6 +8,9 @@ import Events from './app-frame.events.js';
 
 /** The regions the page can leave out by the width of the frame. */
 const REGIONS = ['header', 'navigation', 'aside', 'footer'];
+
+/** The regions whose width the user can set by dragging their edge. */
+const RESIZABLE = ['navigation', 'aside'];
 
 /** What opens and closes the navigation where it is a drawer: any element with this attribute. */
 const TOGGLE = '[data-navigation-toggle]';
@@ -30,10 +34,20 @@ const TOGGLE = '[data-navigation-toggle]';
  * The width is the one of the frame, and the stylesheet alone decides: a server-rendered frame
  * has its layout before the script has run.
  *
+ * `resizable` names the columns whose width the user sets by dragging their edge, an
+ * `el-splitter` of the frame. `navigation-size` and `aside-size` are those widths: the frame tells
+ * of them, and the page keeps them and gives them back.
+ *
  * @element el-app-frame
  *
  * @fires {CustomEvent<{ open: boolean }>} app-frame-navigation-toggle - Fired when the drawer of
  *   the navigation opens or closes, with the new state in `detail.open`.
+ * @fires {CustomEvent<{ region: 'navigation'|'aside', size: number }>} app-frame-resize - Fired
+ *   with every change the user makes to the width of a column: while its edge is dragged, and
+ *   with every key. The new width in pixels is in `detail.size`.
+ * @fires {CustomEvent<{ region: 'navigation'|'aside', size: number }>} app-frame-resize-end -
+ *   Fired once the user has set a width: when the pointer lets go of the edge, and with every
+ *   key. The width to keep is in `detail.size`.
  *
  * @slot - The content of the view: the `main` of the page, with an id for the skip link.
  * @slot header - The region at the top, an app bar as a rule. Left out while it is empty.
@@ -55,12 +69,22 @@ const TOGGLE = '[data-navigation-toggle]';
  * @csspart drawer-title - The title of that drawer.
  * @csspart drawer-close-button - The close button of that drawer.
  * @csspart drawer-body - The body of that drawer: the navigation of the page is in it.
+ * @csspart navigation-splitter - The edge of the navigation the user drags, an `el-splitter`.
+ * @csspart aside-splitter - The edge of the aside the user drags, an `el-splitter`.
  *
  * @cssproperty --el-app-frame-navigation-size - The width of the navigation where the frame is
  *   wide, and of its drawer where it is narrow. Default `16rem`. `auto` is the width of what is
  *   in it.
  * @cssproperty --el-app-frame-aside-size - The width of the aside where the frame is wide.
  *   Default `20rem`.
+ * @cssproperty --el-app-frame-navigation-min-size - The least width of a navigation that is
+ *   resizable. Default `10rem`.
+ * @cssproperty --el-app-frame-navigation-max-size - The greatest width of a navigation that is
+ *   resizable. Default `min(30rem, 40cqi)`: two fifths of the width of the frame at most.
+ * @cssproperty --el-app-frame-aside-min-size - The least width of an aside that is resizable.
+ *   Default `10rem`.
+ * @cssproperty --el-app-frame-aside-max-size - The greatest width of an aside that is resizable.
+ *   Default `min(30rem, 40cqi)`.
  *
  * @cssstate navigation-open - Set while the drawer of the navigation is open.
  *
@@ -85,6 +109,15 @@ const TOGGLE = '[data-navigation-toggle]';
  *   for assistive technology. Default `'Navigation'`.
  * @property {string} closeLabel - The name of the close button of that drawer. Default
  *   `'Close'`.
+ * @property {string} resizable - The columns whose width the user sets by dragging their edge,
+ *   as their names with a space between them: `navigation`, `aside`. Default `''`.
+ * @property {number} navigationSize - The width of the navigation where the frame is wide, in
+ *   pixels: the one the user has set, or the one the page has kept. `0` is the width of the
+ *   stylesheet (`--el-app-frame-navigation-size`). Default `0`.
+ * @property {number} asideSize - The width of the aside where the frame is wide, in pixels. `0`
+ *   is the width of the stylesheet (`--el-app-frame-aside-size`). Default `0`.
+ * @property {string} asideLabel - The name of the aside for assistive technology, on the edge
+ *   that sizes it. The edge of the navigation has `navigation-label`. Default `'Aside'`.
  */
 export default class AppFrame extends TemplateElement {
     /**
@@ -108,6 +141,13 @@ export default class AppFrame extends TemplateElement {
      */
     _saidOpen = false;
 
+    /**
+     * Whether the script has started. The edges to drag are there from then on: they do nothing
+     * before, and a server leaves them out.
+     * @private
+     */
+    _started = false;
+
     constructor() {
         super({
             styles: [style],
@@ -126,6 +166,10 @@ export default class AppFrame extends TemplateElement {
             navigationOpen: false,
             navigationLabel: 'Navigation',
             closeLabel: 'Close',
+            resizable: '',
+            navigationSize: 0,
+            asideSize: 0,
+            asideLabel: 'Aside',
         };
     }
 
@@ -133,9 +177,12 @@ export default class AppFrame extends TemplateElement {
         this._resizeObserver = new ResizeObserver(() => {
             this._syncView();
             this._syncTabStops();
+            this._syncEdges();
         });
         this._observeSizes();
         this._syncView();
+        this._started = true;
+        if (this._resizable().length > 0) this.requestUpdate();
     }
 
     disconnected() {
@@ -146,6 +193,7 @@ export default class AppFrame extends TemplateElement {
         // A render can have brought or taken the drawer, and with it a region to watch.
         this._observeSizes();
         this._syncToggles();
+        this._syncEdges();
     }
 
     watch() {
@@ -199,6 +247,11 @@ export default class AppFrame extends TemplateElement {
                 },
                 'drawer-after-hide': (event) => event.stopPropagation(),
             },
+            // And so are the edges of the columns.
+            'el-splitter': {
+                'splitter-resize': (event) => this._onResize(event, Events.RESIZE),
+                'splitter-resize-end': (event) => this._onResize(event, Events.RESIZE_END),
+            },
         };
     }
 
@@ -246,6 +299,56 @@ export default class AppFrame extends TemplateElement {
         return String(names ?? '')
             .split(/\s+/)
             .filter((name) => REGIONS.includes(name));
+    }
+
+    /**
+     * The columns the page lets the user size.
+     * @private
+     * @returns {string[]}
+     */
+    _resizable() {
+        return this._regionsOf(this.resizable).filter((name) => RESIZABLE.includes(name));
+    }
+
+    /**
+     * An edge says the width of its column, and the least and the greatest one. The stylesheet
+     * has them, in any unit, and the edge needs pixels: they are read from the column as it is
+     * laid out. A limit that is no length there, a percentage, is none for the edge. The
+     * stylesheet keeps it all the same, and the width is read again after every change.
+     * @private
+     */
+    _syncEdges() {
+        for (const edge of this.shadowRoot?.querySelectorAll('el-splitter') ?? []) {
+            const region = this.shadowRoot.querySelector(`[part~='${edge.dataset.region}']`);
+            // A column that is not laid out, where the frame is narrow, has no width to say.
+            if (!region || !this.wide || getComputedStyle(region).display === 'none') continue;
+
+            const { inlineSize, minInlineSize, maxInlineSize } = getComputedStyle(region);
+            const pixels = (length, otherwise) => (length.endsWith('px') ? Math.round(parseFloat(length)) : otherwise);
+            const value = pixels(inlineSize, 0);
+            const min = pixels(minInlineSize, 0);
+            const max = pixels(maxInlineSize, Math.round(this.$refs.base.getBoundingClientRect().width));
+            if (edge.value !== value) edge.value = value;
+            if (edge.min !== min) edge.min = min;
+            if (edge.max !== max) edge.max = max;
+        }
+    }
+
+    /**
+     * The user has moved an edge: the column takes the width, and the frame tells of it in its
+     * own words.
+     * @private
+     * @param {CustomEvent<{ value: number }>} event
+     * @param {string} name - The event of the frame.
+     */
+    _onResize(event, name) {
+        event.stopPropagation();
+
+        const region = event.currentTarget.dataset.region;
+        const size = event.detail.value;
+        if (region === 'aside') this.asideSize = size;
+        else this.navigationSize = size;
+        this.dispatch(name, { region, size });
     }
 
     /**
@@ -426,11 +529,42 @@ export default class AppFrame extends TemplateElement {
         `;
     }
 
+    /**
+     * The edge of a column the user drags: an `el-splitter` at the side that faces the content.
+     * Only where the page asks for it, the column is there, and the script runs. Where the
+     * navigation is a drawer, it has no edge.
+     * @private
+     * @param {'navigation'|'aside'} region
+     */
+    edgeTemplate(region) {
+        if (!this._started || !this._resizable().includes(region) || !hasSlotted(this, region)) return '';
+        if (region === 'navigation' && this._inDrawer) return '';
+
+        return html`
+            <el-splitter
+                part="${region}-splitter"
+                class="edge edge--${region}"
+                data-region="${region}"
+                placement="${region === 'aside' ? 'start' : 'end'}"
+                label="${region === 'aside' ? this.asideLabel : this.navigationLabel}"
+            ></el-splitter>
+        `;
+    }
+
     template() {
         const id = this._content()?.id;
         // The stylesheet reads the step from the frame, not from the host: a value it does not
         // know is the default here, and a server writes it as the browser does.
         const step = STEPS.includes(this.wideFrom) ? this.wideFrom : DEFAULT_STEP;
+        // The widths the user has set, or the page has kept: the stylesheet reads them from the
+        // frame, so a server-rendered frame has them before the script has run.
+        const sizes = [
+            ['navigation', this.navigationSize],
+            ['aside', this.asideSize],
+        ]
+            .filter(([, size]) => Number(size) > 0)
+            .map(([region, size]) => `--_el-app-frame-${region}-size: ${Math.round(Number(size))}px;`)
+            .join(' ');
 
         return html`
             <a part="skip-link" class="skip" href="#${id || ''}">${this.skipLabel}</a>
@@ -446,13 +580,16 @@ export default class AppFrame extends TemplateElement {
                 data-narrow-only="${this._regionsOf(this.narrowOnly).join(' ')}"
                 data-wide-only="${this._regionsOf(this.wideOnly).join(' ')}"
                 data-narrow-navigation="${this.narrowNavigation === 'bar' ? 'bar' : 'drawer'}"
+                data-resizable="${this._resizable().join(' ')}"
+                style="${sizes || null}"
             >
                 <div part="header" class="header" ?hidden="${!hasSlotted(this, 'header')}">
                     <slot name="header"></slot>
                 </div>
-                ${this.navigationTemplate()}
+                ${this.navigationTemplate()} ${this.edgeTemplate('navigation')}
                 <div part="body" ref="body" class="body">
                     <div part="content" ref="content" class="content"><slot></slot></div>
+                    ${this.edgeTemplate('aside')}
                     <div part="aside" class="aside" ?hidden="${!hasSlotted(this, 'aside')}">
                         <slot name="aside"></slot>
                     </div>
@@ -466,8 +603,9 @@ export default class AppFrame extends TemplateElement {
 }
 
 export function define() {
-    // The drawer the navigation is in where the frame is narrow.
+    // The drawer the navigation is in where the frame is narrow, and the edges of its columns.
     defineDrawer();
+    defineSplitter();
     defineElement('el-app-frame', AppFrame);
 }
 

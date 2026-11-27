@@ -48,6 +48,10 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | `navigation-open` | `boolean` | `false` | Whether the drawer of the navigation is open. It is one only where the frame is narrow. Reflected to the `navigation-open` attribute. |
 | `navigation-label` | `string` | `'Navigation'` | The title of the drawer of the navigation, and its name for assistive technology. |
 | `close-label` | `string` | `'Close'` | The name of the close button of that drawer. |
+| `resizable` | `string` | `''` | The columns whose width the user sets by dragging their edge: `navigation`, `aside`, with a space between them. |
+| `navigation-size` | `number` | `0` | The width of the navigation where the frame is wide, in pixels: the one the user has set, or the one the page has kept. `0` is the width of the stylesheet. |
+| `aside-size` | `number` | `0` | The width of the aside where the frame is wide, in pixels. `0` is the width of the stylesheet. |
+| `aside-label` | `string` | `'Aside'` | The name of the aside on the edge that sizes it. The edge of the navigation has `navigation-label`. |
 
 #### Read-only properties
 
@@ -62,9 +66,11 @@ _None._
 
 #### Events
 
-| Name                          | Detail              | Description                                              |
-| ----------------------------- | ------------------- | -------------------------------------------------------- |
+| Name | Detail | Description |
+| --- | --- | --- |
 | `app-frame-navigation-toggle` | `{ open: boolean }` | Fired when the drawer of the navigation opens or closes. |
+| `app-frame-resize` | `{ region: 'navigation' \| 'aside', size: number }` | Fired with every change the user makes to the width of a column: while its edge is dragged, and with every key. |
+| `app-frame-resize-end` | `{ region: 'navigation' \| 'aside', size: number }` | Fired once the user has set a width: when the pointer lets go of the edge, and with every key. The width to keep. |
 
 #### Slots
 
@@ -93,6 +99,8 @@ _None._
 | `drawer-title`        | The title of that drawer.                                                              |
 | `drawer-close-button` | The close button of that drawer.                                                       |
 | `drawer-body`         | The body of that drawer: the navigation of the page is in it.                          |
+| `navigation-splitter` | The edge of the navigation the user drags, an `el-splitter`.                           |
+| `aside-splitter`      | The edge of the aside the user drags, an `el-splitter`.                                |
 
 #### CSS Custom Properties
 
@@ -100,6 +108,10 @@ _None._
 | --- | --- | --- |
 | `--el-app-frame-navigation-size` | `16rem` | The width of the navigation where the frame is wide, and of its drawer where it is narrow. `auto` is the width of what is in it. |
 | `--el-app-frame-aside-size` | `20rem` | The width of the aside where the frame is wide. |
+| `--el-app-frame-navigation-min-size` | `10rem` | The least width of a navigation that is resizable. |
+| `--el-app-frame-navigation-max-size` | `min(30rem, 40cqi)` | The greatest width of a navigation that is resizable: two fifths of the width of the frame at most. |
+| `--el-app-frame-aside-min-size` | `10rem` | The least width of an aside that is resizable. |
+| `--el-app-frame-aside-max-size` | `min(30rem, 40cqi)` | The greatest width of an aside that is resizable. |
 
 Reads `--el-color-bg` and `--el-color-fg` for its surface and its text, `--el-color-border` and `--el-border-width` for the lines between the regions, and `--el-space-2`, `--el-space-3`, `--el-radius-md`, `--el-font-size-sm`, `--el-focus-ring-width` and `--el-color-focus-ring` for the skip link.
 
@@ -211,6 +223,31 @@ A phone has its destinations in a bar at the lower edge, a desktop in a column a
 - The names are `header`, `navigation`, `aside` and `footer`, with a space between them.
 - The stylesheet leaves a region out: no script, and no room, no line and no landmark where the region is not there.
 - The frame keeps the edge of the screen clear that the region kept clear.
+
+## Columns the user sizes
+
+In a tool for a desktop the user sets how wide the navigation or the aside is. `resizable` names the columns that have an edge to drag:
+
+```html
+<el-app-frame resizable="navigation aside" navigation-size="320">
+    <nav slot="navigation" aria-label="Files">…</nav>
+    <main id="main">…</main>
+    <aside slot="aside" aria-label="Outline">…</aside>
+</el-app-frame>
+```
+
+- The edge is an [`el-splitter`](../splitter/splitter.readme.md) of the frame, at the side of the column that faces the content. It is dragged with a mouse, a finger or a pen, and it is a stop of the Tab key: the arrow keys move it in steps, `Home` and `End` take it to the limits. Its name is the one of the column: `navigation-label` and `aside-label`.
+- `navigation-size` and `aside-size` are the widths, in pixels. The frame sets them while the user drags, and tells of every one with `app-frame-resize` and of the one that stays with `app-frame-resize-end` (`detail.region`, `detail.size`).
+- The page keeps the width and gives it back in the attribute. A server-rendered frame has it before the script has run, and nothing jumps. `0`, or no attribute, is the width of the stylesheet (`--el-app-frame-navigation-size`, `--el-app-frame-aside-size`).
+- The least and the greatest width are in the stylesheet: `--el-app-frame-navigation-min-size` and `--el-app-frame-navigation-max-size`, and the same two for the aside. They are lengths in any unit. `cqi` is a share of the width of the frame: the default of the greatest width is `min(30rem, 40cqi)`, so the content keeps a part of a frame that gets narrower. The stylesheet holds a width that is kept between them. Write them as lengths and not as percentages: the edge says them to assistive technology in pixels, and cannot read a percentage.
+- A column does not close when its edge is dragged below the least width. It stops there.
+- Where the frame is narrow there is no edge: the navigation is a drawer, as wide as `--el-app-frame-navigation-size`, and the aside is below the content. The width the user has set is kept for the wide frame.
+
+```js
+frame.addEventListener('app-frame-resize-end', ({ detail }) => {
+    localStorage.setItem(`frame-${detail.region}`, detail.size);
+});
+```
 
 ## The link that skips to the content
 

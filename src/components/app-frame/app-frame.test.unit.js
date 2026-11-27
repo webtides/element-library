@@ -8,7 +8,7 @@ describe('Unit | AppFrame', () => {
         const el = new AppFrame();
     });
 
-    it('has an English skip link, is wide from 48rem and has every region at every width by default', async () => {
+    it('has English texts, is wide from 48rem, has every region at every width and no edge to drag by default', async () => {
         const el = new AppFrame();
         expect(el.properties()).toEqual({
             skipLabel: 'Skip to content',
@@ -19,6 +19,10 @@ describe('Unit | AppFrame', () => {
             navigationOpen: false,
             navigationLabel: 'Navigation',
             closeLabel: 'Close',
+            resizable: '',
+            navigationSize: 0,
+            asideSize: 0,
+            asideLabel: 'Aside',
         });
     });
 
@@ -27,9 +31,14 @@ describe('Unit | AppFrame', () => {
         expect(STEPS).toContain(DEFAULT_STEP);
     });
 
-    it('names its event, and defines the drawer the navigation is in where it is narrow', async () => {
-        expect(Events).toEqual({ NAVIGATION_TOGGLE: 'app-frame-navigation-toggle' });
+    it('names its events, and defines the drawer of its navigation and the edges of its columns', async () => {
+        expect(Events).toEqual({
+            NAVIGATION_TOGGLE: 'app-frame-navigation-toggle',
+            RESIZE: 'app-frame-resize',
+            RESIZE_END: 'app-frame-resize-end',
+        });
         expect(customElements.get('el-drawer')).toBeDefined();
+        expect(customElements.get('el-splitter')).toBeDefined();
     });
 
     it('is not wide and has nothing that scrolls before it has rendered', async () => {

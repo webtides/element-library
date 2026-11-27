@@ -155,6 +155,80 @@ export async function emulateSafeAreaInsets(insets) {
 }
 
 /**
+ * A real pointer, moved through the DevTools protocol: a mouse, a pen or a finger. The browser
+ * makes the pointer events of it, with the hit test, the capture and the default actions of a
+ * real one, which an event the page dispatches itself has not:
+ *
+ *     const finger = realPointer('touch');
+ *     await finger.down(100, 20);
+ *     await finger.move(140, 20);
+ *     await finger.up();
+ *
+ * The coordinates are the ones of the viewport of the test, as `getBoundingClientRect()` gives
+ * them. A point outside of the viewport is not reached. Chromium only.
+ * @param {'mouse' | 'pen' | 'touch'} [type] - Default `'mouse'`.
+ * @returns {{ down: (x: number, y: number) => Promise<void>, move: (x: number, y: number) => Promise<void>, up: () => Promise<void> }}
+ */
+export function realPointer(type = 'mouse') {
+    const session = cdp();
+    // A test file runs in an iframe, and the protocol counts from the corner of the page around it.
+    const inPage = (x, y) => {
+        const frame = window.frameElement?.getBoundingClientRect();
+        return { x: x + (frame?.left ?? 0), y: y + (frame?.top ?? 0) };
+    };
+    let at = { x: 0, y: 0 };
+    let pressed = false;
+
+    const mouse = (event, button) =>
+        session.send('Input.dispatchMouseEvent', {
+            type: event,
+            ...inPage(at.x, at.y),
+            button,
+            buttons: pressed ? 1 : 0,
+            clickCount: event === 'mouseMoved' ? 0 : 1,
+            pointerType: type,
+        });
+    // The browser hands a move of a finger to the page with the next frame, after the protocol has
+    // answered: the page has seen it two frames later.
+    const touch = async (event) => {
+        await session.send('Input.dispatchTouchEvent', {
+            type: event,
+            touchPoints: event === 'touchEnd' ? [] : [inPage(at.x, at.y)],
+        });
+        await nextFrame();
+        await nextFrame();
+    };
+
+    return {
+        async down(x, y) {
+            at = { x, y };
+            if (type === 'touch') {
+                await touch('touchStart');
+            } else {
+                await mouse('mouseMoved', 'none');
+                pressed = true;
+                await mouse('mousePressed', 'left');
+            }
+            pressed = true;
+        },
+        async move(x, y) {
+            at = { x, y };
+            if (type === 'touch') await touch('touchMove');
+            else await mouse('mouseMoved', pressed ? 'left' : 'none');
+        },
+        async up() {
+            if (type === 'touch') {
+                await touch('touchEnd');
+            } else {
+                pressed = false;
+                await mouse('mouseReleased', 'left');
+            }
+            pressed = false;
+        },
+    };
+}
+
+/**
  * Puts an element into the given states, as "Force element state" in the developer tools does:
  * `forcePseudoClasses(button, ['hover', 'active'])`. Chromium only. Use a fresh element per test:
  * after a state is taken back, `getComputedStyle()` can still report the forced style.

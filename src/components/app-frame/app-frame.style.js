@@ -225,6 +225,12 @@ const style = css`
         display: none;
     }
 
+    /* The edges the user drags are at the sides of columns: there are none where the frame is
+       narrow. An edge that has not rendered yet is not there either. */
+    .edge {
+        display: none;
+    }
+
     /* The one thing that scrolls: the content and the aside below each other. */
     .body {
         ${noInsets}
@@ -327,7 +333,7 @@ const wideStyle = (step) => {
 
                 display: block;
                 grid-area: navigation;
-                inline-size: var(--el-app-frame-navigation-size, 16rem);
+                inline-size: var(--_el-app-frame-navigation-size, var(--el-app-frame-navigation-size, 16rem));
                 padding-block-end: 0;
                 padding-inline: var(--_el-app-frame-start) 0;
                 border-block-start: 0;
@@ -337,7 +343,7 @@ const wideStyle = (step) => {
             /* The column of a navigation that is a bar where the frame is narrow is as wide as
                what is in it: a rail. */
             ${frame}[data-narrow-navigation='bar'] .navigation {
-                inline-size: var(--el-app-frame-navigation-size, auto);
+                inline-size: var(--_el-app-frame-navigation-size, var(--el-app-frame-navigation-size, auto));
             }
 
             ${frame}[data-narrow-navigation='bar'] {
@@ -358,10 +364,45 @@ const wideStyle = (step) => {
 
             ${frame} .aside {
                 grid-area: aside;
-                inline-size: var(--el-app-frame-aside-size, 20rem);
+                inline-size: var(--_el-app-frame-aside-size, var(--el-app-frame-aside-size, 20rem));
                 padding-inline-end: var(--_el-app-frame-end);
                 border-block-start: 0;
                 border-inline-start: ${line};
+            }
+
+            /*
+             * A column whose edge the user drags keeps between a least and a greatest width,
+             * whatever width is kept for it: the stylesheet holds the limits, before the script
+             * has run and when the frame gets narrower. The greatest one is a share of the frame
+             * by default, so the content keeps a part of it.
+             */
+            ${frame}[data-resizable~='navigation'] .navigation {
+                min-inline-size: var(--el-app-frame-navigation-min-size, 10rem);
+                max-inline-size: var(--el-app-frame-navigation-max-size, min(30rem, 40cqi));
+            }
+
+            ${frame}[data-resizable~='aside'] .aside {
+                min-inline-size: var(--el-app-frame-aside-min-size, 10rem);
+                max-inline-size: var(--el-app-frame-aside-max-size, min(30rem, 40cqi));
+            }
+
+            /* The edge lies on the line of its column, which the column draws: it is in the
+               place of the column in the grid, at the side that faces the content. */
+            ${frame} .edge:state(connected) {
+                --el-splitter-line-width: 0px;
+
+                display: block;
+                min-block-size: 0;
+            }
+
+            ${frame} .edge--navigation {
+                grid-area: navigation;
+                justify-self: end;
+            }
+
+            ${frame} .edge--aside {
+                grid-area: aside;
+                justify-self: start;
             }
 
             /* The content keeps the edge of the screen clear where no column is beside it. */
@@ -399,7 +440,9 @@ const wideStyle = (step) => {
 
             ${frame}[data-narrow-only~='header'] .header,
             ${frame}[data-narrow-only~='navigation'] .navigation,
+            ${frame}[data-narrow-only~='navigation'] .edge--navigation,
             ${frame}[data-narrow-only~='aside'] .aside,
+            ${frame}[data-narrow-only~='aside'] .edge--aside,
             ${frame}[data-narrow-only~='footer'] .footer {
                 display: none;
             }
@@ -448,6 +491,17 @@ const printStyle = css`
         .frame[data-wide-from] .aside {
             inline-size: auto;
             overflow: visible;
+        }
+
+        /* And a column has no limits of its width. */
+        .frame[data-wide-from][data-resizable] .navigation,
+        .frame[data-wide-from][data-resizable] .aside {
+            min-inline-size: 0;
+            max-inline-size: none;
+        }
+
+        .frame[data-wide-from] .edge:state(connected) {
+            display: none;
         }
 
         .skip {

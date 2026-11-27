@@ -293,6 +293,12 @@ const kit = [
         fresh: true,
     },
     {
+        tag: 'el-splitter',
+        category: 'Navigation',
+        blurb: 'The edge between two panes, which the user drags.',
+        fresh: true,
+    },
+    {
         tag: 'el-status-bar',
         category: 'Navigation',
         blurb: 'A narrow line of state at the lower edge of a tool.',

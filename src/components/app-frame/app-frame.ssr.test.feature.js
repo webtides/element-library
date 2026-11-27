@@ -33,6 +33,9 @@ function serverRender(attributes, children) {
     if (attributes['skip-label']) properties.skipLabel = attributes['skip-label'];
     if (attributes['wide-only']) properties.wideOnly = attributes['wide-only'];
     if (attributes['narrow-only']) properties.narrowOnly = attributes['narrow-only'];
+    if (attributes.resizable) properties.resizable = attributes.resizable;
+    if (attributes['navigation-size']) properties.navigationSize = Number(attributes['navigation-size']);
+    if (attributes['aside-size']) properties.asideSize = Number(attributes['aside-size']);
     Object.assign(source, source.properties(), properties);
     const template = source.template().toString();
 
@@ -150,12 +153,40 @@ describe('Feature | AppFrame | server-rendered', () => {
         expect(document.querySelector(link.getAttribute('href'))).toBe(el.querySelector('main'));
     });
 
+    it('has the widths the page has kept for its columns before the element is defined', () => {
+        const kept = { resizable: 'navigation aside', 'navigation-size': '300', 'aside-size': '180' };
+        const el = mount(serverRender(kept, allRegions), 1000);
+
+        expect(customElements.get('el-app-frame')).toBeUndefined();
+        expect(box(el, part(el, 'navigation'))).toEqual([0, 51, 301, 518]);
+        expect(box(el, part(el, 'content'))).toEqual([301, 51, 518, 518]);
+        expect(box(el, part(el, 'aside'))).toEqual([819, 51, 181, 518]);
+        // The edges to drag come with the script: a server writes none.
+        expect(el.shadowRoot.querySelector('el-splitter')).toBeNull();
+
+        // A width outside of the limits is held by the stylesheet: 10rem at least, and two fifths
+        // of the frame or 30rem at most.
+        const outside = mount(
+            serverRender({ resizable: 'navigation aside', 'navigation-size': '900', 'aside-size': '20' }, allRegions),
+            1000,
+        );
+        expect(box(outside, part(outside, 'navigation'))[2]).toBe(401);
+        expect(box(outside, part(outside, 'aside'))[2]).toBe(161);
+    });
+
     it('looks the same before and after the element takes over', async () => {
         const frames = [
             mount(serverRender({}, allRegions), 1000),
             mount(serverRender({}, allRegions), 400),
             mount(serverRender({ 'wide-from': '30rem' }, allRegions), 500),
             mount(serverRender({}, `<main id="alone"><p>Content</p></main>`), 1000),
+            mount(
+                serverRender(
+                    { resizable: 'navigation aside', 'navigation-size': '300', 'aside-size': '180' },
+                    allRegions,
+                ),
+                1000,
+            ),
         ];
         const before = frames.map(look);
 
@@ -169,9 +200,22 @@ describe('Feature | AppFrame | server-rendered', () => {
         expect(frames.every((el) => el.matches(':state(connected)'))).toBe(true);
         for (const after of seen) expect(after).toEqual(before);
         // The script reads what the stylesheet has decided.
-        expect(frames.map((el) => el.wide)).toEqual([true, false, true, true]);
+        expect(frames.map((el) => el.wide)).toEqual([true, false, true, true, true]);
         // And where the frame is narrow, the navigation is in a drawer now, which is closed.
-        expect(frames.map((el) => !!el.shadowRoot.querySelector('el-drawer'))).toEqual([false, true, false, false]);
+        expect(frames.map((el) => !!el.shadowRoot.querySelector('el-drawer'))).toEqual([
+            false,
+            true,
+            false,
+            false,
+            false,
+        ]);
         expect(frames[1].querySelector('nav').getBoundingClientRect().height).toBe(0);
+        // The columns with a kept width have their edges now, which say that width.
+        const edges = [...frames[4].shadowRoot.querySelectorAll('el-splitter')];
+        expect(edges.map((edge) => [edge.dataset.region, edge.value])).toEqual([
+            ['navigation', 300],
+            ['aside', 180],
+        ]);
+        expect(frames.slice(0, 4).every((el) => !el.shadowRoot.querySelector('el-splitter'))).toBe(true);
     });
 });
