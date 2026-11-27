@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-list`: a list of rows, for messages, articles, files or the entries of a settings page. It is the list for assistive technology (`role="list"`, named by `label`), and every `el-list-item` slotted into it is an item of that list. ([#192](https://github.com/webtides/element-library/issues/192))

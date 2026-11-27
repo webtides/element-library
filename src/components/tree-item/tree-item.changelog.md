@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-tree-item`: one entry of an `el-tree`, an item of its list (`role="listitem"`), with the entries below it in a list of their own. It has an icon at the start (`start` slot), its name (`label`, or the `label` slot) and a count at the end (`end`). ([#193](https://github.com/webtides/element-library/issues/193))

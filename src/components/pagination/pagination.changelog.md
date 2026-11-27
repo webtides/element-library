@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - `href`: the address of a page, with `{page}` in the place of its number (`/notes?page={page}`). With it the pages, the page before and the page after are links, in the server-rendered markup as well: a list that is rendered a page at a time is paged without JavaScript, a page opens in a new tab, and its address can be copied. Without it the pagination is buttons, as before. ([#189](https://github.com/webtides/element-library/issues/189))

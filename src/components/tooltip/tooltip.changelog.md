@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - `anchor`: the anchor as an element, for one that an id cannot name: an element in another tree than the tooltip, the light DOM of a component whose shadow root the tooltip is in. A property only, and it comes before `for`. ([#194](https://github.com/webtides/element-library/issues/194))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Changed
 
 - Where scripting is off, a server-rendered accordion without `open="true"` is closed and cannot be opened; it was open before, because nothing had collapsed it. The readme has a rule for a page that wants the content readable there (`@media (scripting: none)` and the `content` part). ([#187](https://github.com/webtides/element-library/issues/187))

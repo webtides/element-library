@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-splitter`: the edge between two panes that are beside each other, which the user drags to set the width of one of them. It is the control and sizes nothing itself, as a range does: `value` is the width in pixels, between `min` and `max`, and the layout around it takes it from the events. ([#182](https://github.com/webtides/element-library/issues/182))

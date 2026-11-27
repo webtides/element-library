@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-segmented-field`: one choice of a few options as a row of joined buttons, which behaves like a group of radios. It extends `el-radio-field`: a native `<fieldset>`/`<legend>` with an `<input type="radio">` per option, so the one tab stop, the arrow keys, the value in the form, its reset and `required` are native, and the label, the help message and the error message are the ones of every field. `input-change` reports the value. ([#166](https://github.com/webtides/element-library/issues/166))

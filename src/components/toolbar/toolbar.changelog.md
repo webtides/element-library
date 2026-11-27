@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-toolbar`: the row of controls over a list or a view. A toolbar for assistive technology (`role="toolbar"`, named by `label`), with what the page writes into it as its controls: `el-button`, `el-button-group`, `el-segmented-field`, and `el-divider` between two groups. ([#194](https://github.com/webtides/element-library/issues/194))

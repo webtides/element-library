@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Fixed
 
 - A dialog is never higher than what the browser shows. Its greatest height counted the address bar of a phone in (`100vh`), so the footer of a long dialog was below the edge while the bar was there. It follows the bar now (`100dvh`). ([#183](https://github.com/webtides/element-library/issues/183))

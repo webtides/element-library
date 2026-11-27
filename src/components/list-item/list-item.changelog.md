@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-list-item`: one row of an `el-list`, an item of its list (`role="listitem"`). It has a start (`start` slot), a title (default slot), a line under it (`description`), an end (`end`) and a control of its own (`action`). ([#192](https://github.com/webtides/element-library/issues/192))

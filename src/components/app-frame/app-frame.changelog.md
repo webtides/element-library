@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-app-frame`: the frame of an application. It fills what the browser shows and lays out five regions, a header, a footer, a navigation at the start side, an aside at the end side, and the content. A region the page leaves empty takes no room, and start and end follow the reading direction. ([#176](https://github.com/webtides/element-library/issues/176))

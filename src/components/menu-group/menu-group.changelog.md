@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-menu-group`: a group of entries in an `el-menu`. A group to assistive technology (`role="group"`), with `label` as its heading and its name. The heading the eye sees is not read a second time. ([#167](https://github.com/webtides/element-library/issues/167))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Fixed
 
 - A group finds its panels and links also when `name` and `for` were set as properties. It compared the `name` and the `for` attribute with `selected`, and a framework that creates the elements in the browser sets the property where the element has one (Svelte 5, for example after a hot reload of a component): such a panel had no attribute, the group matched none, hid every panel and took `aria-selected` from every link. The group reads the property now and falls back to the attribute, on start and with every selection. `el-tab-panel` and `el-tab-link` do not reflect the two properties. ([#196](https://github.com/webtides/element-library/issues/196))

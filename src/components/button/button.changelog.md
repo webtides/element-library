@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - `toggle`: the button is a toggle button, one that stays pressed. A click flips `pressed`, and so do the Space and the Enter key; the control has `aria-pressed` with the state, so a screen reader announces a toggle button. `pressed` is a property and an attribute the page can set and read, and a toggle button writes the attribute itself (`pressed="true"`, `"false"`). `toggle` is ignored on a button with `href`. ([#172](https://github.com/webtides/element-library/issues/172))

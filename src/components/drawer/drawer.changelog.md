@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Fixed
 
 - On a phone whose page reaches under the notch and the home indicator (`viewport-fit=cover`), the header of a drawer was under the status bar and its footer under the home indicator. The surface still reaches the three edges it lies against, and its header, its body and its footer keep clear of that room now. The size the page gives is the one of what is in the drawer, and the room is on top. Elsewhere nothing changes. ([#183](https://github.com/webtides/element-library/issues/183))

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-menu`: a menu button. A button of the page in the `trigger` slot opens a list of actions, which are `el-menu-item` elements. To assistive technology it is a menu (`role="menu"`) of menu items, and the button says that it opens one and whether it is open (`aria-haspopup="menu"`, `aria-expanded`). ([#167](https://github.com/webtides/element-library/issues/167))

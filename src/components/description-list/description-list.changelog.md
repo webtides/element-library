@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-description-list`: rows of a name and its value, for a settings page or the page of an entry. The element is the native `<dl>` (it is inside of the shadow root), and the page writes the names as `<dt>` and the values as `<dd>` into it. ([#195](https://github.com/webtides/element-library/issues/195))

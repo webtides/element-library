@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-tree`: entries that open and close, for folders, categories and a library beside the content. The tree is a list (`role="list"`, named by `label`), every `el-tree-item` in it is an entry, and an entry holds the entries below it, to any depth. ([#193](https://github.com/webtides/element-library/issues/193))

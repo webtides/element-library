@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-app-bar`: the bar at the top of a view, with a start (a button back, or the one for the navigation), a title and an end (the actions). Start and end follow the reading direction, and a region the page leaves empty takes no room. ([#178](https://github.com/webtides/element-library/issues/178))

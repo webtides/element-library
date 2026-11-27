@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-status-bar`: a narrow line of state at the lower edge of a tool for a desktop, with entries at its start and at its end (slot `end`), which follow the reading direction. An entry is what the page writes: a text, an icon with a name, an `el-button`, an `el-spinner` or an `el-progress-bar`. ([#180](https://github.com/webtides/element-library/issues/180))

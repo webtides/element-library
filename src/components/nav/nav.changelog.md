@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-nav`: the destinations of an application as a bar for the lower edge of a phone. A navigation landmark (`<nav>`, named by `label`) with a list of `el-nav-item` links. ([#179](https://github.com/webtides/element-library/issues/179))

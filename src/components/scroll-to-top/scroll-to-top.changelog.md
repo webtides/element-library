@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Changed
 
 - It scrolls the element around it that scrolls to the top, the content of an `el-app-frame` for example, and the window where there is none. Before, it scrolled the window whatever it was in. `duration` is ignored when that element has `scroll-behavior: smooth`. ([#176](https://github.com/webtides/element-library/issues/176))

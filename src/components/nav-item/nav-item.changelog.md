@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+## [0.4.0] - 2026-11-27
+
 ### Added
 
 - Initial `el-nav-item`: one destination of an `el-nav`. A link with an icon (slot `icon`) and a short text under it, as an entry of a list. `href`, `target` and `rel` are the ones of the link. ([#179](https://github.com/webtides/element-library/issues/179))
