@@ -6,6 +6,7 @@ import { define as defineBadge } from '../badge/badge.js';
 import { define as defineButton } from '../button/button.js';
 import { define as defineDescriptionList } from '../description-list/description-list.js';
 import { define as defineDialog } from '../dialog/dialog.js';
+import { define as defineInputField } from '../input-field/input-field.js';
 import { define as defineList } from '../list/list.js';
 import { define as defineListItem } from '../list-item/list-item.js';
 import { define as defineNav } from '../nav/nav.js';
@@ -21,6 +22,7 @@ defineBadge();
 defineButton();
 defineDescriptionList();
 defineDialog();
+defineInputField();
 defineList();
 defineListItem();
 defineNav();
@@ -555,6 +557,37 @@ export const Columns = {
                         `,
                     )}
                 </article>
+            </main>
+        </el-app-frame>
+    `,
+};
+
+export const Keyboard = {
+    name: 'A field at the lower edge, on a phone',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'Open this on a phone, scroll to the end and tap the field. The on-screen keyboard covers the lower part of the viewport, and the browser moves the page up behind it. The frame takes what shows: its header stays in view, the bar lies above the keyboard, and the field is in view between them.',
+            },
+        },
+    },
+    render: () => html`
+        <el-app-frame narrow-navigation="bar">
+            <header slot="header"><el-app-bar heading-level="1">Messages</el-app-bar></header>
+            <el-nav slot="navigation" label="Main">
+                ${destinations.map(
+                    ({ name, current, icon: path }) => html`
+                        <el-nav-item href="#${name.toLowerCase()}" current="${current ? 'true' : 'false'}"
+                            >${icon(path)}${name}</el-nav-item
+                        >
+                    `,
+                )}
+            </el-nav>
+            <main id="keyboard-main" style="padding:1rem">
+                ${tasks.map(([title, due]) => html`<p style="margin:0 0 1rem">${title}: ${due}</p>`)}
+                ${tasks.map(([title]) => html`<p style="margin:0 0 1rem">${title}</p>`)}
+                <el-input-field label="Reply" name="reply"></el-input-field>
             </main>
         </el-app-frame>
     `,

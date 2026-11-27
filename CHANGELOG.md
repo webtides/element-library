@@ -52,6 +52,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: `--el-app-frame-navigation-min-size`, `--el-app-frame-navigation-max-size`, `--el-app-frame-aside-min-size` and `--el-app-frame-aside-max-size` are the limits of a column that is resizable (`10rem`, and `min(30rem, 40cqi)`: two fifths of the width of the frame at most). The stylesheet holds a width that is kept between them.
 - Added: where the frame is narrow, a column has no edge to drag, and the drawer of the navigation keeps the width of the stylesheet.
 - Added: a view of columns in the content: a list and what is chosen in it beside each other, each scrolling on its own where the frame is wide, and a page that scrolls as a whole where it is narrow. The frame does it as it is: the region of the content has a height where the frame is wide, and the frame is a container for the queries of the page. The readme says what the page writes, and tests and a story hold it. ([#200](https://github.com/webtides/element-library/issues/200))
+- Added: an on-screen keyboard that the browser lays over the page: while it covers a part of the viewport, the frame is as high as the part above it and where that part is (`window.visualViewport`), so the header stays in view and the footer lies above the keyboard, without room for a home indicator. `:state(keyboard)` matches while it is so. Only a frame that fills the viewport follows, and not while the user has zoomed in. ([#201](https://github.com/webtides/element-library/issues/201))
+- Added: the field the user types into stays in view: the frame scrolls its region to it when the region gets less high, for a keyboard or a window that gets smaller. A field in a dialog or a popover is left to the browser.
 
 ### button
 

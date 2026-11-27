@@ -233,6 +233,8 @@ A bar does nothing about it, and does not need to. A browser lays its keyboard o
 
 A page that asks the browser to resize its content for the keyboard (`interactive-widget=resizes-content` in the viewport) has the bar above the keyboard instead.
 
+In an [`el-app-frame`](../app-frame/app-frame.readme.md) the bar lies above the keyboard: the frame is as high as what shows above it, so its header stays in view.
+
 ## Server-side rendering
 
 The element and its destinations render on a server with `@webtides/element-js-ssr-renderer`. Their look is their stylesheets: the layout, what the column of a frame makes of the destinations, the second group and its heading, the mark of the current destination, the texts that are off the screen and the room for the home indicator are there before the script has run, and nothing moves when the elements take over. The script adds the tooltips.

@@ -1309,6 +1309,199 @@ describe('Feature | AppFrame', () => {
         });
     });
 
+    describe('an on-screen keyboard over the page', () => {
+        // What a browser tells of its keyboard: the visual viewport is less high than the layout,
+        // and has moved in it. A test has no keyboard, and says the same in its place.
+        const viewport = window.visualViewport;
+        const said = (values) => {
+            for (const [name, value] of Object.entries(values)) {
+                Object.defineProperty(viewport, name, { configurable: true, get: () => value });
+            }
+        };
+        const keyboard = async (values, type = 'resize') => {
+            said(values);
+            viewport.dispatchEvent(new Event(type));
+            await rendered();
+        };
+        afterEach(() => {
+            for (const name of ['height', 'offsetTop', 'scale']) delete viewport[name];
+            viewport.dispatchEvent(new Event('resize'));
+        });
+
+        const messages = (count) =>
+            Array.from({ length: count }, (_, i) => `<p style="margin: 0; height: 30px">Message ${i + 1}</p>`).join('');
+        const chat = `
+            <header slot="header" style="display: block; height: 50px">Header</header>
+            <main id="chat-main">
+                ${messages(60)}
+                <label>Reply <input id="reply" style="display: block; box-sizing: border-box; height: 40px" /></label>
+            </main>
+            <footer slot="footer" style="display: block; height: 30px">Footer</footer>
+        `;
+        const layout = () => document.documentElement.clientHeight;
+        const inView = (el, node) => {
+            const view = el.scroller.getBoundingClientRect();
+            const { top, bottom } = node.getBoundingClientRect();
+            return top >= view.top && bottom <= view.bottom;
+        };
+
+        it('is as high as what shows above the keyboard, and where that part is', async () => {
+            const el = await viewportFrame(chat, { attributes: 'wide-from="80rem"' });
+            const full = el.getBoundingClientRect();
+            expect([full.top, full.height]).toEqual([0, layout()]);
+
+            // The keyboard takes 300px, and the browser has moved the page up by as much.
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            const { top, height } = el.getBoundingClientRect();
+            expect([top, height]).toEqual([300, layout() - 300]);
+            expect(el.matches(':state(keyboard)')).toBe(true);
+            // The header is at the top of what shows, and the footer above the keyboard.
+            expect(box(el, 'header')).toEqual([0, 0, full.width, 51]);
+            expect(box(el, 'footer')).toEqual([0, layout() - 300 - 31, full.width, 31]);
+        });
+
+        it('follows the page that the browser moves behind the keyboard', async () => {
+            const el = await viewportFrame(chat);
+
+            await keyboard({ height: layout() - 300, offsetTop: 0 });
+            expect(el.getBoundingClientRect().top).toBe(0);
+
+            await keyboard({ offsetTop: 300 }, 'scroll');
+            expect(el.getBoundingClientRect().top).toBe(300);
+            expect(el.getBoundingClientRect().height).toBe(layout() - 300);
+        });
+
+        it('fills the viewport again when the keyboard has gone', async () => {
+            const el = await viewportFrame(chat);
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            await keyboard({ height: layout(), offsetTop: 0 });
+
+            const { top, height } = el.getBoundingClientRect();
+            expect([top, height]).toEqual([0, layout()]);
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.style.length).toBe(0);
+        });
+
+        it('keeps the field the user types into in view', async () => {
+            const el = await viewportFrame(chat, { attributes: 'wide-from="80rem"' });
+            const field = el.querySelector('#reply');
+            // The field is the last thing in the content, at the lower edge of the screen.
+            el.scroller.scrollTop = el.scroller.scrollHeight;
+            field.focus({ preventScroll: true });
+            expect(inView(el, field)).toBe(true);
+
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            expect(activeElement()).toBe(field);
+            expect(inView(el, field)).toBe(true);
+            // Above the keyboard: over the lower edge of what shows.
+            expect(field.getBoundingClientRect().bottom).toBeLessThanOrEqual(layout());
+        });
+
+        it('brings the field back into view when its region gets less high for another reason', async () => {
+            // A web view that an application makes smaller for its keyboard: the layout follows,
+            // and the visual viewport says nothing.
+            const el = await frame(chat, { width: 400, height: 600 });
+            const field = el.querySelector('#reply');
+            el.scroller.scrollTop = el.scroller.scrollHeight;
+            field.focus({ preventScroll: true });
+
+            el.style.height = '300px';
+            await rendered();
+            await rendered();
+
+            expect(inView(el, field)).toBe(true);
+            expect(el.matches(':state(keyboard)')).toBe(false);
+        });
+
+        it('leaves the scroll alone where nothing is typed into', async () => {
+            const el = await viewportFrame(regions({ lines: 80 }));
+            const link = el.querySelector('#link');
+            link.focus({ preventScroll: true });
+            el.scroller.scrollTop = 0;
+
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            expect(el.scroller.scrollTop).toBe(0);
+        });
+
+        it('leaves a field in a dialog to the browser: it is in the top layer and in no region', async () => {
+            const el = await viewportFrame(`
+                <main id="dialog-main">
+                    ${messages(60)}
+                    <dialog id="over"><input id="in-dialog" /></dialog>
+                </main>
+            `);
+            el.querySelector('#over').showModal();
+            const field = el.querySelector('#in-dialog');
+            field.focus();
+            let asked = 0;
+            field.scrollIntoView = () => (asked += 1);
+
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            expect(asked).toBe(0);
+            // The frame behind the dialog is what shows all the same.
+            expect(el.matches(':state(keyboard)')).toBe(true);
+            el.querySelector('#over').close();
+        });
+
+        it('does not follow in a box of the page', async () => {
+            const el = await frame(chat, { width: 400, height: 600 });
+            const before = el.getBoundingClientRect();
+
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.getBoundingClientRect().top).toBe(before.top);
+            expect(el.getBoundingClientRect().height).toBe(600);
+        });
+
+        it('does not follow while the user has zoomed in', async () => {
+            const el = await viewportFrame(chat);
+
+            await keyboard({ height: layout() / 2, offsetTop: 100, scale: 2 });
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.getBoundingClientRect().height).toBe(layout());
+        });
+
+        it('takes a scrollbar or a rounded height for no keyboard', async () => {
+            const el = await viewportFrame(chat);
+
+            await keyboard({ height: layout() - 20, offsetTop: 0 });
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.getBoundingClientRect().height).toBe(layout());
+        });
+
+        it('stops listening when it leaves the page', async () => {
+            const el = await viewportFrame(chat);
+            el.remove();
+
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+        });
+
+        describe('on a phone with a home indicator', () => {
+            useSafeAreaInsets({ top: 47, right: 0, bottom: 34, left: 0 });
+
+            it('has the keyboard at its lower edge, and no home indicator to keep clear of', async () => {
+                const el = await viewportFrame(chat);
+                expect(getComputedStyle(part(el, 'footer')).paddingBottom).toBe('34px');
+
+                await keyboard({ height: layout() - 300, offsetTop: 300 });
+
+                expect(getComputedStyle(part(el, 'footer')).paddingBottom).toBe('0px');
+                // The status bar is still there.
+                expect(getComputedStyle(part(el, 'header')).paddingTop).toBe('47px');
+            });
+        });
+    });
+
     describe('the viewport', () => {
         it('fills what the browser shows, whatever margin the body has', async () => {
             document.body.style.margin = '8px';

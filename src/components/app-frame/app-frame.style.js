@@ -55,6 +55,19 @@ const style = css`
         --_el-app-frame-end: env(safe-area-inset-left, 0px);
     }
 
+    /*
+     * An on-screen keyboard covers the lower part of the viewport, and the browser has moved the
+     * page behind it: the frame is where the script says what shows is, and as high. Its lower
+     * edge is the keyboard and not the edge of the screen, so there is no home indicator to keep
+     * clear of.
+     */
+    :host(:state(keyboard)) {
+        --_el-app-frame-bottom: 0px;
+
+        inset-block: var(--_el-app-frame-visible-start, 0px) auto;
+        block-size: var(--_el-app-frame-visible-size, 100%);
+    }
+
     /* Where the user forces colours, a line is what tells two regions apart: it is there without
        a theme as well. */
     @media (forced-colors: active) {

@@ -150,6 +150,7 @@ The window does not scroll in a frame. What follows from it:
 - **[`el-scroll-to`](../scroll-to/scroll-to.readme.md)** brings its target into view as anywhere.
 - **[`el-sticky`](../sticky/sticky.readme.md)** follows the scroll of the window and has nothing to do in a frame: the header of the frame stays in view by itself.
 - **A phone does not take its address bar in**, because that follows the scroll of the document. The frame is as high as what shows beside the bar, in both of its states.
+- **A tap on the status bar of an iPhone does not bring the content to its top.** iOS scrolls the document for that tap, in Safari and in a `WKWebView`, and never a region of the page. The platform has no event for the tap. What a page can hear is the scroll of a document that was scrolled: a document that is one pixel higher than the viewport and scrolled down by it goes to zero with the tap, and the page sends the content to its top then (`frame.scroller.scrollTo({ top: 0 })`). The frame does not do that for you. Its document would scroll in every application, a finger that drags the header moves the document to zero as the tap does, and so does a router that sets the scroll back.
 
 ## A view of columns
 
@@ -321,6 +322,24 @@ el-app-frame::part(header) {
 }
 ```
 
+## The on-screen keyboard
+
+A browser on a phone lays its keyboard over the page and leaves the layout as it is. The frame is still as high as the viewport, with its lower part under the keyboard, and the browser moves the page up behind the keyboard to show the field the user types into: the header leaves the screen.
+
+The frame takes what shows instead (`window.visualViewport`): while a keyboard covers a part of the viewport, the frame is as high as the part above it, and where that part is.
+
+- **The header stays in view**, and the footer or the bar of destinations lies above the keyboard. Its lower edge is the keyboard then, so it leaves no room for the home indicator.
+- **The field the user types into stays in view**: the frame scrolls its region to it when the region gets less high. A field in a dialog or a popover is in no region, and the browser shows it.
+- `el-app-frame:state(keyboard)` matches while it is so.
+- This needs the script. A frame in a box of the page does not follow, and neither does a frame while the user has zoomed in: Safari zooms into a field whose text is smaller than `16px`.
+
+What the platform does not give:
+
+- **Safari on iOS and a `WKWebView` move the page first and tell of it afterwards.** For the fifth of a second the keyboard takes to come in, the regions are on their way to their places. Nothing a page does comes before that.
+- **Safari on iOS does not resize the layout for the keyboard**: it takes no notice of `interactive-widget=resizes-content` in the viewport of the page. Where a browser does resize the layout (Chrome on Android, with that word in the viewport), the frame follows by its stylesheet, and the script has nothing to do.
+
+In a web view of an application of your own, let the view end at the keyboard (its lower edge at `keyboardLayoutGuide.topAnchor`). The layout gets less high with the keyboard, the browser moves nothing, and the frame keeps the field in view.
+
 ## Keyboard
 
 A region that scrolls and has nothing in it that takes the focus is a stop of the Tab key itself: a text without a link, for example. Without that stop the keyboard could not scroll it. Some browsers do this by themselves, and the frame does it for the others. The stop goes when the region gets a control, or no longer scrolls.
@@ -348,7 +367,7 @@ On paper the frame is as long as its content: it gives up its height and what sc
 
 ## Server-side rendering
 
-The frame renders on a server with `@webtides/element-js-ssr-renderer`. Its layout is its stylesheet: the regions, the width from which it is wide, and the room for the notch need no script, and nothing moves when the element takes over. The script adds the drawer of the navigation, the stops of the Tab key for regions without a control, and what the skip link does beyond a link.
+The frame renders on a server with `@webtides/element-js-ssr-renderer`. Its layout is its stylesheet: the regions, the width from which it is wide, and the room for the notch need no script, and nothing moves when the element takes over. The script adds the drawer of the navigation, the stops of the Tab key for regions without a control, what the skip link does beyond a link, and what the frame does for an on-screen keyboard.
 
 Without server rendering, the regions of the page are below each other until the element is defined.
 

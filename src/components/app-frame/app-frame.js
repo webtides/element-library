@@ -1,7 +1,7 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import { define as defineDrawer } from '../drawer/drawer.js';
 import { define as defineSplitter } from '../splitter/splitter.js';
-import { containsFocusable } from '../../utils/focus.js';
+import { activeElement, containsFocusable } from '../../utils/focus.js';
 import { hasSlotted } from '../../utils/slots.js';
 import style, { DEFAULT_STEP, STEPS } from './app-frame.style.js';
 import Events from './app-frame.events.js';
@@ -14,6 +14,15 @@ const RESIZABLE = ['navigation', 'aside'];
 
 /** What opens and closes the navigation where it is a drawer: any element with this attribute. */
 const TOGGLE = '[data-navigation-toggle]';
+
+/** What the user types into: the controls an on-screen keyboard opens for. */
+const TYPED_INTO = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
+
+/**
+ * The least a part of the viewport is covered by, in pixels, for it to be taken as covered by an
+ * on-screen keyboard. Less is a scrollbar, or a height that is rounded.
+ */
+const KEYBOARD = 80;
 
 /**
  * The frame of an application: it fills what the browser shows and lays out five regions, a
@@ -37,6 +46,10 @@ const TOGGLE = '[data-navigation-toggle]';
  * `resizable` names the columns whose width the user sets by dragging their edge, an
  * `el-splitter` of the frame. `navigation-size` and `aside-size` are those widths: the frame tells
  * of them, and the page keeps them and gives them back.
+ *
+ * Where a browser lays its on-screen keyboard over the page, the frame is as high as what shows
+ * above the keyboard, and where that part is: the header stays in view, and the field the user
+ * types into does. That needs the script.
  *
  * @element el-app-frame
  *
@@ -87,6 +100,8 @@ const TOGGLE = '[data-navigation-toggle]';
  *   Default `min(30rem, 40cqi)`.
  *
  * @cssstate navigation-open - Set while the drawer of the navigation is open.
+ * @cssstate keyboard - Set while an on-screen keyboard covers a part of the viewport, and the
+ *   frame is as high as what shows above it.
  *
  * @property {string} skipLabel - The text of the link that skips to the content. Default
  *   `'Skip to content'`.
@@ -148,6 +163,20 @@ export default class AppFrame extends TemplateElement {
      */
     _started = false;
 
+    /**
+     * The height of what scrolls the content, as it was last: a field the user types into is
+     * brought back into view when that height gets less.
+     * @private
+     */
+    _scrollerSize = 0;
+
+    /**
+     * Tells of a visual viewport that changes: an on-screen keyboard that comes or goes, or the
+     * page that the browser moves behind it.
+     * @private
+     */
+    _onViewport = () => this._syncViewport();
+
     constructor() {
         super({
             styles: [style],
@@ -178,15 +207,22 @@ export default class AppFrame extends TemplateElement {
             this._syncView();
             this._syncTabStops();
             this._syncEdges();
+            this._syncFocus();
         });
         this._observeSizes();
         this._syncView();
         this._started = true;
         if (this._resizable().length > 0) this.requestUpdate();
+
+        window.visualViewport?.addEventListener('resize', this._onViewport);
+        window.visualViewport?.addEventListener('scroll', this._onViewport);
+        this._syncViewport();
     }
 
     disconnected() {
         this._resizeObserver?.disconnect();
+        window.visualViewport?.removeEventListener('resize', this._onViewport);
+        window.visualViewport?.removeEventListener('scroll', this._onViewport);
     }
 
     afterUpdate() {
@@ -349,6 +385,74 @@ export default class AppFrame extends TemplateElement {
         if (region === 'aside') this.asideSize = size;
         else this.navigationSize = size;
         this.dispatch(name, { region, size });
+    }
+
+    /**
+     * A browser that lays its on-screen keyboard over the page leaves the layout as it is: the
+     * frame is as high as the viewport, and its lower part is under the keyboard. To show the
+     * field the user types into, the browser moves the page up behind the keyboard, and the
+     * header leaves the screen with it.
+     *
+     * The visual viewport is what shows. While it is less high than the layout by more than a
+     * scrollbar, the frame takes its place and its height: the header is at the top of what
+     * shows, the footer above the keyboard, and the content scrolls between them. The browser
+     * tells of the viewport once it has moved it, so for the moment the keyboard comes in the
+     * regions are on their way.
+     *
+     * Only a frame that fills the viewport follows, and not while the user has zoomed in: what
+     * shows is a part of the page then, by the will of the user.
+     * @private
+     */
+    _syncViewport() {
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        const covered =
+            getComputedStyle(this).position === 'fixed' &&
+            Math.abs(viewport.scale - 1) < 0.01 &&
+            document.documentElement.clientHeight - viewport.height > KEYBOARD;
+
+        if (!covered) {
+            if (!this._internals.states.has('keyboard')) return;
+            this._internals.states.delete('keyboard');
+            this.style.removeProperty('--_el-app-frame-visible-start');
+            this.style.removeProperty('--_el-app-frame-visible-size');
+            return;
+        }
+
+        this.style.setProperty('--_el-app-frame-visible-start', `${viewport.offsetTop}px`);
+        this.style.setProperty('--_el-app-frame-visible-size', `${viewport.height}px`);
+        this._internals.states.add('keyboard');
+        this._showFocus();
+    }
+
+    /**
+     * The regions have changed their sizes. Where what scrolls the content got less high, a
+     * keyboard has come in or the window got smaller, and the field the user types into may be
+     * out of view now.
+     * @private
+     */
+    _syncFocus() {
+        const size = this.scroller?.clientHeight ?? 0;
+        const less = size < this._scrollerSize;
+        this._scrollerSize = size;
+        if (less) this._showFocus();
+    }
+
+    /**
+     * Brings the field the user types into back into view, in the region that scrolls it. A
+     * field in a dialog or a popover is in the top layer and in no region: the browser shows it.
+     * @private
+     */
+    _showFocus() {
+        const active = activeElement();
+        if (!active?.matches?.(TYPED_INTO)) return;
+
+        for (let node = active; node && node !== this; node = node.assignedSlot ?? node.parentNode ?? node.host) {
+            if (node === document) return;
+            if (node instanceof Element && node.matches(':modal, :popover-open')) return;
+        }
+        active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
 
     /**
