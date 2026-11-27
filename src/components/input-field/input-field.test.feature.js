@@ -167,6 +167,159 @@ describe('Feature | InputField', () => {
         expect(textEntryOn(serverControl({ name: 'code' }))).toEqual({});
     });
 
+    describe('the length of its text', () => {
+        const lengthsOn = (control) => [control.getAttribute('maxlength'), control.getAttribute('minlength')];
+        const frames = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+
+        it('passes maxlength and minlength on to the input, in the page and in server-rendered markup', async () => {
+            const el = await fixture(
+                `<el-input-field name="length-name" label="Name" maxlength="100" minlength="2"></el-input-field>`,
+            );
+            await frames();
+
+            expect(lengthsOn(el.querySelector('input'))).toEqual(['100', '2']);
+            // The SSR renderer hands the attributes over as numbers.
+            expect(lengthsOn(serverControl({ name: 'length-name', maxlength: 100, minlength: 2 }))).toEqual([
+                '100',
+                '2',
+            ]);
+        });
+
+        it('renders neither of them while it is not set, in the page and in server-rendered markup', async () => {
+            const el = await fixture(`<el-input-field name="length-none" label="Name"></el-input-field>`);
+            await frames();
+
+            for (const control of [el.querySelector('input'), serverControl({ name: 'length-none' })]) {
+                expect(control.hasAttribute('maxlength')).toBe(false);
+                expect(control.hasAttribute('minlength')).toBe(false);
+            }
+            expect([el.maxlength, el.minlength]).toEqual([null, null]);
+        });
+
+        it('has one of them without the other', async () => {
+            const el = await fixture(`<el-input-field name="length-one" label="Name" maxlength="20"></el-input-field>`);
+            await frames();
+
+            expect(lengthsOn(el.querySelector('input'))).toEqual(['20', null]);
+            expect(lengthsOn(serverControl({ name: 'length-one', minlength: 3 }))).toEqual([null, '3']);
+        });
+
+        it('keeps them when the field renders again, follows a new one, and takes one off that is not set any more', async () => {
+            const el = await fixture(
+                `<el-input-field name="length-again" label="Name" maxlength="100" minlength="2"></el-input-field>`,
+            );
+            await frames();
+            const input = el.querySelector('input');
+
+            el.label = 'Your name';
+            el.helpMessage = 'As on your passport';
+            await frames();
+            expect(el.querySelector('input')).toBe(input);
+            expect(lengthsOn(input)).toEqual(['100', '2']);
+
+            el.setAttribute('maxlength', '50');
+            el.minlength = null;
+            await frames();
+            await aTimeout(20);
+            expect(lengthsOn(input)).toEqual(['50', null]);
+            expect(input.hasAttribute('minlength')).toBe(false);
+
+            // Taken off the field: element-js leaves the attribute there, empty. The input has none.
+            el.removeAttribute('maxlength');
+            await frames();
+            await aTimeout(20);
+            expect(input.hasAttribute('maxlength')).toBe(false);
+        });
+
+        it('takes no more characters than maxlength while the user types, and its value is what the input has', async () => {
+            const el = await fixture(`<el-input-field name="length-max" label="Code" maxlength="5"></el-input-field>`);
+            await frames();
+            const input = el.querySelector('input');
+            const changes = [];
+            el.addEventListener('input-change', (event) => changes.push(event.detail));
+
+            await userEvent.click(input);
+            await userEvent.keyboard('abcdefgh');
+            await frames();
+
+            expect(input.value).toBe('abcde');
+            expect(el.value).toBe('abcde');
+            expect(changes.at(-1)).toBe('abcde');
+            expect(el.valid).toBe(true);
+        });
+
+        it('is not valid while a text the user has typed is shorter than minlength, and shows its error message', async () => {
+            const el = await fixture(
+                `<el-input-field name="length-min" label="Name" minlength="3" error-message="At least 3 characters"></el-input-field>`,
+            );
+            await frames();
+            const input = el.querySelector('input');
+
+            await userEvent.click(input);
+            await userEvent.keyboard('ab');
+            await userEvent.keyboard('{Tab}');
+            await frames();
+
+            // The validity of the control itself, as for required and for pattern.
+            expect(input.validity.tooShort).toBe(true);
+            expect(el.valid).toBe(false);
+            expect(input.getAttribute('aria-invalid')).toBe('true');
+            expect(el.querySelector('.error-message').textContent).toBe('At least 3 characters');
+            expect(input.getAttribute('aria-describedby')).toContain(el.querySelector('.error-message').id);
+
+            await userEvent.click(input);
+            await userEvent.keyboard('c');
+            await frames();
+
+            expect(el.valid).toBe(true);
+            expect(input.getAttribute('aria-invalid')).toBe('false');
+        });
+
+        it('keeps a form from being submitted while the text is too short', async () => {
+            const form = await fixture(`
+                <form>
+                    <el-input-field name="length-form" label="Name" minlength="3"></el-input-field>
+                    <button type="submit">Save</button>
+                </form>
+            `);
+            await frames();
+            let submitted = 0;
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                submitted++;
+            });
+
+            await userEvent.click(form.querySelector('input'));
+            await userEvent.keyboard('ab{Enter}');
+            await frames();
+            expect(submitted).toBe(0);
+
+            await userEvent.keyboard('c{Enter}');
+            await frames();
+            expect(submitted).toBe(1);
+            form.remove();
+        });
+
+        it('keeps the server-rendered input and its lengths when the element starts', async () => {
+            const wrapper = document.createElement('div');
+            document.body.append(wrapper);
+            wrapper.setHTMLUnsafe(
+                `<el-input-field name="length-ssr" maxlength="100" minlength="2">${serverMarkup({ name: 'length-ssr', maxlength: 100, minlength: 2 })}</el-input-field>`,
+            );
+            const el = wrapper.querySelector('el-input-field');
+            const serverInput = el.querySelector('input');
+            expect(lengthsOn(serverInput)).toEqual(['100', '2']);
+            await frames();
+
+            expect(el.querySelector('input')).toBe(serverInput);
+            expect(lengthsOn(serverInput)).toEqual(['100', '2']);
+            wrapper.remove();
+        });
+    });
+
     // The template has a place for the list of a combobox field and for the limits of a date field.
     it('has no attribute for a list, a limit or a step, in the page and in server-rendered markup', async () => {
         const el = await fixture(`<el-input-field name="plain-control" label="Name" type="number"></el-input-field>`);

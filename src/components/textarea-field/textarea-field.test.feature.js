@@ -81,6 +81,70 @@ describe('Feature | TextareaField', () => {
         expect(textarea.getAttribute('spellcheck')).toBe('true');
     });
 
+    it('passes maxlength and minlength on to the textarea, and renders neither while it is not set', async () => {
+        const el = await fixture(
+            `<el-textarea-field name="length-text" label="Text" maxlength="2000" minlength="10"></el-textarea-field>`,
+        );
+        const plain = await fixture(`<el-textarea-field name="length-plain" label="Text"></el-textarea-field>`);
+        await nextFrame();
+        await nextFrame();
+        const textarea = el.querySelector('textarea');
+
+        expect([textarea.getAttribute('maxlength'), textarea.getAttribute('minlength')]).toEqual(['2000', '10']);
+        expect(plain.querySelector('textarea').hasAttribute('maxlength')).toBe(false);
+        expect(plain.querySelector('textarea').hasAttribute('minlength')).toBe(false);
+
+        // Rendered again, changed, and taken off.
+        el.label = 'Your text';
+        await nextFrame();
+        await nextFrame();
+        expect(el.querySelector('textarea')).toBe(textarea);
+        expect(textarea.getAttribute('maxlength')).toBe('2000');
+
+        el.setAttribute('maxlength', '500');
+        el.minlength = null;
+        await nextFrame();
+        await nextFrame();
+        await aTimeout(20);
+        expect(textarea.getAttribute('maxlength')).toBe('500');
+        expect(textarea.hasAttribute('minlength')).toBe(false);
+
+        // Taken off the field: element-js leaves the attribute there, empty. The textarea has none.
+        el.removeAttribute('maxlength');
+        await nextFrame();
+        await nextFrame();
+        await aTimeout(20);
+        expect(textarea.hasAttribute('maxlength')).toBe(false);
+    });
+
+    it('takes no more characters than maxlength, and is not valid while a typed text is shorter than minlength', async () => {
+        const el = await fixture(
+            `<el-textarea-field name="length-typed" label="Text" maxlength="6" minlength="3" error-message="At least 3 characters"></el-textarea-field>`,
+        );
+        await nextFrame();
+        await nextFrame();
+        const textarea = el.querySelector('textarea');
+
+        await userEvent.click(textarea);
+        await userEvent.keyboard('ab');
+        await userEvent.keyboard('{Tab}');
+        await nextFrame();
+        await nextFrame();
+
+        expect(textarea.validity.tooShort).toBe(true);
+        expect(el.valid).toBe(false);
+        expect(el.querySelector('.error-message').textContent).toBe('At least 3 characters');
+
+        await userEvent.click(textarea);
+        await userEvent.keyboard('{End}cdefghij');
+        await nextFrame();
+        await nextFrame();
+
+        expect(textarea.value).toBe('abcdef');
+        expect(el.value).toBe('abcdef');
+        expect(el.valid).toBe(true);
+    });
+
     it('renders no text entry attribute that is not set', async () => {
         const el = await fixture(`<el-textarea-field name="body"></el-textarea-field>`);
         await nextFrame();

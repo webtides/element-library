@@ -47,6 +47,16 @@ describe('Feature | TextareaField | server-rendered', () => {
         expect(new FormData(el.closest('form')).get('body')).toBe(VALUE);
     });
 
+    it('has maxlength and minlength on the textarea in the markup of the server, and neither where it is not set', () => {
+        const el = mount(serverRender({ name: 'limited', maxlength: 2000, minlength: 10 }));
+        const plain = mount(serverRender({ name: 'unlimited' }));
+
+        expect(customElements.get('el-textarea-field')).toBeUndefined();
+        expect([control(el).getAttribute('maxlength'), control(el).getAttribute('minlength')]).toEqual(['2000', '10']);
+        expect(control(plain).hasAttribute('maxlength')).toBe(false);
+        expect(control(plain).hasAttribute('minlength')).toBe(false);
+    });
+
     it('points aria-describedby at the help message', () => {
         const el = mount(serverRender({ name: 'notes' }));
 

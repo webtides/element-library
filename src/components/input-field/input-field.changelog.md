@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `maxlength` and `minlength` are passed on to the native `<input>`, in server-rendered markup as well, and one that is not set is not rendered. The control takes no more characters than `maxlength` while the user types, and a typed text that is shorter than `minlength` makes the field invalid the way `required` and `pattern` do, with its `error-message`. Set on the element they did nothing before. The fields that extend this one take both as well. ([#190](https://github.com/webtides/element-library/issues/190))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `maxlength` and `minlength` are passed on to the input, as in `el-input-field`: a password that is typed shorter than `minlength` makes the field invalid, with its `error-message`. ([#190](https://github.com/webtides/element-library/issues/190))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

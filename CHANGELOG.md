@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### input-field
+
+- Added: `maxlength` and `minlength` are passed on to the native `<input>`, in server-rendered markup as well, and one that is not set is not rendered. The control takes no more characters than `maxlength` while the user types, and a typed text that is shorter than `minlength` makes the field invalid the way `required` and `pattern` do, with its `error-message`. Set on the element they did nothing before. The fields that extend this one take both as well. ([#190](https://github.com/webtides/element-library/issues/190))
+
 ### menu
 
 - Fixed: an open menu keeps the keyboard wherever the focus is. `Escape` closes it and gives the focus back to what it was opened for, and the key does not reach the page behind; `ArrowDown` and `ArrowUp` bring the focus to its first and to its last entry; the Tab key closes it, and the focus moves on from where it is. The menu heard its keys on its panel alone: an open menu whose entries did not have the focus was left with no key, and `Escape` closed what was behind it. It hears them at the window now, for as long as it is open. ([#202](https://github.com/webtides/element-library/issues/202))
@@ -26,6 +30,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: `type`: an entry that sets something instead of doing something. With `type="checkbox"` it is on or off (`role="menuitemcheckbox"`), with `type="radio"` it is one of several of which one is chosen (`role="menuitemradio"`). `checked` is its state, which it says (`aria-checked`), also while it is off and while it is disabled. A page could put a mark into the `icon` slot before, and a screen reader heard nothing of it: the role of an entry is inside of its shadow root. ([#205](https://github.com/webtides/element-library/issues/205))
 - Added: the state shows as a mark in front of the text, a check or a dot, in the new part `mark`. Its place is there while the entry is not checked as well, so the text does not move when the state changes. Where the user forces colours the mark has the colour of the text: the check is text, the dot is drawn with a border. ([#205](https://github.com/webtides/element-library/issues/205))
 - Added: the page sets the state: the entry does not change `checked` when it is chosen, and the menu fires `menu-select` and closes as for every entry. The state is in the server-rendered markup. ([#205](https://github.com/webtides/element-library/issues/205))
+
+### password-field
+
+- Added: `maxlength` and `minlength` are passed on to the input, as in `el-input-field`: a password that is typed shorter than `minlength` makes the field invalid, with its `error-message`. ([#190](https://github.com/webtides/element-library/issues/190))
+
+### textarea-field
+
+- Added: `maxlength` and `minlength` are passed on to the native `<textarea>`, in server-rendered markup as well, and one that is not set is not rendered. The control takes no more characters than `maxlength` while the user types, and a typed text that is shorter than `minlength` makes the field invalid the way `required` does, with its `error-message`. Set on the element they did nothing before. ([#190](https://github.com/webtides/element-library/issues/190))
 
 ## [0.4.0] - 2026-11-27
 

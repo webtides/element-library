@@ -40,6 +40,8 @@ import '@webtides/element-library/input-field/define';
 | `size` | `string` | `'medium'` | `small`, `medium` or `large`: the height, the padding and the font size of the control. Reflected. Shows once `styles/native.css` decorates the control. |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the input is empty |
 | `pattern` | `string\|boolean` | `false` | Regular expression pattern for input validation. If false, allows any input |
+| `maxlength` | `number` | `null` | Passed on to the control as `maxlength`: the browser takes no more characters than this while the user types |
+| `minlength` | `number` | `null` | Passed on as `minlength`: a text the user has typed that is shorter makes the field invalid |
 | `autocomplete` | `string` | `null` | Passed on to the control as `autocomplete` (e.g. `email`, `current-password`, `one-time-code`) |
 | `inputmode` | `string` | `null` | Passed on as `inputmode`: the on-screen keyboard to show (e.g. `numeric`, `email`) |
 | `enterkeyhint` | `string` | `null` | Passed on as `enterkeyhint`: the label of the enter key on an on-screen keyboard (e.g. `next`, `send`) |
@@ -100,6 +102,28 @@ _None_ - The component generates its own input element internally
 
 Removing one of these attributes later leaves it empty (`autocomplete=""`) on the element and on the control, if it was there when the element started: element-js writes a removed attribute back empty. An empty value has the meaning of the default: on for `spellcheck` and `autocorrect`, the browser's own choice for the other four.
 
+## The length of the text
+
+`maxlength` and `minlength` are passed on to the control, in server-rendered markup as well, and one that is not set is not rendered. The browser does the rest:
+
+```html
+<el-input-field
+    name="name"
+    label="Name"
+    maxlength="100"
+    minlength="2"
+    error-message="At least 2 characters"
+></el-input-field>
+```
+
+- **`maxlength`**: the control takes no more characters while the user types or pastes. Nothing is invalid for it: the text is never longer.
+- **`minlength`**: a text the user has typed that is shorter makes the field invalid, the way `required` and `pattern` do: `valid` is `false`, the field shows its `error-message` once it was touched, and the form is not submitted.
+- **Only what the user has typed is measured.** A browser does not hold a value against these limits that the page or the server has put into the control. A value from the server that is too long or too short is valid until the user changes it: the server checks what it gets.
+- **An empty field is not too short.** `minlength` is for a text that is there. Add `required` for a field that has to be filled.
+- **Say the limit.** The field shows no counter and no limit of its own: name it in `help-message`, and in `error-message` for the least length.
+
+The fields that extend this one take both as well (`el-password-field`, `el-combobox-field`). An `el-otp-field` has `length` for its code, and a date has no length.
+
 ## Accessibility
 
 - Includes proper ARIA attributes (`aria-describedby`, `aria-invalid`, `aria-errormessage`)
@@ -115,5 +139,5 @@ The component provides real-time validation feedback:
 - Validation state updates on focus, blur, and change events
 - Visual indicators appear after the field is touched
 - Error messages only display when field is touched and invalid
-- Supports HTML5 validation attributes (required, pattern, type)
+- Supports HTML5 validation attributes (required, pattern, minlength, type)
 - Clicking the invalid indicator (×) clears the input

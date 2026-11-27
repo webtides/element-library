@@ -92,6 +92,39 @@ describe('Feature | PasswordField', () => {
         expect(onInput()).toEqual(expected);
     });
 
+    it('passes maxlength and minlength on to the input, also when the toggle renders it again', async () => {
+        const el = await passwordFixture('maxlength="72" minlength="12"');
+        const onInput = () => ['maxlength', 'minlength'].map((name) => el.querySelector('input').getAttribute(name));
+        expect(onInput()).toEqual(['72', '12']);
+
+        el.querySelector('[data-password-toggle]').click();
+        await nextFrame();
+        expect(el.querySelector('input').getAttribute('type')).toBe('text');
+        expect(onInput()).toEqual(['72', '12']);
+
+        const plain = await passwordFixture();
+        expect(plain.querySelector('input').hasAttribute('maxlength')).toBe(false);
+        expect(plain.querySelector('input').hasAttribute('minlength')).toBe(false);
+    });
+
+    it('is not valid while a typed password is shorter than minlength, and shows its error message', async () => {
+        const el = await fixture(
+            `<el-password-field name="length-password" label="Password" minlength="12" error-message="At least 12 characters"></el-password-field>`,
+        );
+        await nextFrame();
+        const input = el.querySelector('input');
+
+        await userEvent.click(input);
+        await userEvent.keyboard('too short');
+        await userEvent.keyboard('{Tab}');
+        await nextFrame();
+        await nextFrame();
+
+        expect(input.validity.tooShort).toBe(true);
+        expect(el.valid).toBe(false);
+        expect(el.querySelector('.error-message').textContent).toBe('At least 12 characters');
+    });
+
     it('ignores --el-touch-target on a fine pointer', async () => {
         const wrapper = await fixture(
             `<div style="--el-touch-target: 44px"><el-password-field name="password" label="Password"></el-password-field></div>`,

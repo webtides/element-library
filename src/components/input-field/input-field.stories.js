@@ -115,3 +115,32 @@ export const Sizes = {
         </div>
     `,
 };
+
+export const Length = {
+    name: 'The length of the text',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: '`maxlength` and `minlength` go to the native input. The first field takes no more than 10 characters. The second is not valid while what was typed is shorter than 3, and shows its `error-message` once it was left.',
+            },
+        },
+    },
+    render: () => html`
+        <div style="display:grid;gap:1rem;max-width:20rem">
+            <el-input-field
+                name="length-short"
+                label="Short name"
+                help-message="At most 10 characters"
+                maxlength="10"
+            ></el-input-field>
+            <el-input-field
+                name="length-handle"
+                label="Handle"
+                help-message="At least 3 characters"
+                error-message="A handle has at least 3 characters"
+                minlength="3"
+            ></el-input-field>
+        </div>
+    `,
+};

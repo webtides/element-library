@@ -41,6 +41,8 @@ import '@webtides/element-library/textarea-field/define';
 | `value` | `string` | `null` | The current text content of the textarea field |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the textarea is empty |
 | `rows` | `number` | `3` | The number of visible text rows in the textarea |
+| `maxlength` | `number` | `null` | Passed on to the control as `maxlength`: the browser takes no more characters than this while the user types |
+| `minlength` | `number` | `null` | Passed on as `minlength`: a text the user has typed that is shorter makes the field invalid |
 | `autocomplete` | `string` | `null` | Passed on to the control as `autocomplete` (e.g. `email`, `current-password`, `one-time-code`) |
 | `inputmode` | `string` | `null` | Passed on as `inputmode`: the on-screen keyboard to show (e.g. `numeric`, `email`) |
 | `enterkeyhint` | `string` | `null` | Passed on as `enterkeyhint`: the label of the enter key on an on-screen keyboard (e.g. `next`, `send`) |
@@ -118,6 +120,26 @@ The value is rendered as the content of the `<textarea>`. A server-rendered fiel
 
 A line break at the very start of the value is missing until the element has started: the HTML parser drops a line break that directly follows `<textarea>`.
 
+## The length of the text
+
+`maxlength` and `minlength` are passed on to the control, in server-rendered markup as well, and one that is not set is not rendered. The browser does the rest:
+
+```html
+<el-textarea-field
+    name="notes"
+    label="Notes"
+    maxlength="2000"
+    minlength="10"
+    error-message="At least 10 characters"
+></el-textarea-field>
+```
+
+- **`maxlength`**: the control takes no more characters while the user types or pastes. Nothing is invalid for it: the text is never longer.
+- **`minlength`**: a text the user has typed that is shorter makes the field invalid, the way `required` and `pattern` do: `valid` is `false`, the field shows its `error-message` once it was touched, and the form is not submitted.
+- **Only what the user has typed is measured.** A browser does not hold a value against these limits that the page or the server has put into the control. A value from the server that is too long or too short is valid until the user changes it: the server checks what it gets.
+- **An empty field is not too short.** `minlength` is for a text that is there. Add `required` for a field that has to be filled.
+- **Say the limit.** The field shows no counter and no limit of its own: name it in `help-message`, and in `error-message` for the least length.
+
 ## Validation
 
 The component provides real-time validation feedback:
@@ -125,7 +147,7 @@ The component provides real-time validation feedback:
 - Validation state updates on focus, on blur and with every change of the text
 - Visual indicators (checkmark for valid, cross for invalid) appear beside the textarea after the field is touched
 - Error messages only display when field is touched and invalid
-- Supports HTML5 validation attributes (required, disabled)
+- Supports HTML5 validation attributes (required, minlength, disabled)
 - Clicking the invalid indicator (×) clears the textarea content
 - Tab key (keyCode 9) doesn't trigger change events to avoid false validation during navigation (inherited from `form-field`)
 

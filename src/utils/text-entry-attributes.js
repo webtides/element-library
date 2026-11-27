@@ -49,3 +49,16 @@ export function shadowNativeTextEntryProperties(element) {
 export function textEntryAttributes(element) {
     return Object.fromEntries(TEXT_ENTRY_ATTRIBUTES.map((name) => [name, element[name] ?? null]));
 }
+
+/**
+ * `maxlength` or `minlength` for the control: the number of the field, or `null` for one that is
+ * not set, which a plain binding leaves out.
+ *
+ * Empty is not set as well. element-js keeps an attribute that was on the field when it started:
+ * taken off, or with its property set to `null`, it is written back empty.
+ * @param {number | string | null | undefined} value
+ * @returns {number | string | null}
+ */
+export function lengthAttribute(value) {
+    return value === '' || value === undefined ? null : value;
+}

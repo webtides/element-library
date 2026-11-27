@@ -1,6 +1,10 @@
 import { html, defineElement, classMap, spreadAttributes } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
-import { shadowNativeTextEntryProperties, textEntryAttributes } from '../../utils/text-entry-attributes.js';
+import {
+    lengthAttribute,
+    shadowNativeTextEntryProperties,
+    textEntryAttributes,
+} from '../../utils/text-entry-attributes.js';
 import style from './textarea-field.style.js';
 
 /**
@@ -16,6 +20,11 @@ import style from './textarea-field.style.js';
  * @property {string} placeholder - Placeholder text shown while the textarea is empty.
  * @property {number} rows - Number of visible text rows. Forwarded to the underlying
  *   `<textarea>`'s `rows` attribute.
+ * @property {number | null} maxlength - Passed on to the control as `maxlength`: the browser takes
+ *   no more characters than this while the user types. `null` (the default) leaves the attribute
+ *   out.
+ * @property {number | null} minlength - Passed on as `minlength`: a text the user has typed that is
+ *   shorter makes the field invalid. `null` (the default) leaves the attribute out.
  * @property {string | null} autocomplete - Passed on to the control as its `autocomplete`
  *   attribute (e.g. `'email'`, `'current-password'`, `'one-time-code'`). `null` (the default)
  *   leaves the attribute out. The same holds for the five properties below.
@@ -39,6 +48,8 @@ export default class TextareaField extends FormField {
             ...super.properties(),
             placeholder: '',
             rows: 3,
+            maxlength: null,
+            minlength: null,
             autocomplete: null,
             inputmode: null,
             enterkeyhint: null,
@@ -90,6 +101,8 @@ export default class TextareaField extends FormField {
                 placeholder="${this.placeholder}"
                 ?required="${this.required}"
                 ?disabled="${this.disabled}"
+                maxlength="${lengthAttribute(this.maxlength)}"
+                minlength="${lengthAttribute(this.minlength)}"
                 ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"

@@ -1,6 +1,10 @@
 import { html, defineElement, classMap, when, optionalAttribute, spreadAttributes } from '@webtides/element-js';
 import FormField from '../form-field/form-field.js';
-import { shadowNativeTextEntryProperties, textEntryAttributes } from '../../utils/text-entry-attributes.js';
+import {
+    lengthAttribute,
+    shadowNativeTextEntryProperties,
+    textEntryAttributes,
+} from '../../utils/text-entry-attributes.js';
 import style from './input-field.style.js';
 
 /**
@@ -22,6 +26,11 @@ import style from './input-field.style.js';
  * @property {string | false} pattern - Regular expression used as the input's `pattern`
  *   attribute. When `false` (the default), the `pattern` attribute is omitted entirely, so
  *   the field applies no pattern constraint.
+ * @property {number | null} maxlength - Passed on to the control as `maxlength`: the browser takes
+ *   no more characters than this while the user types. `null` (the default) leaves the attribute
+ *   out.
+ * @property {number | null} minlength - Passed on as `minlength`: a text the user has typed that is
+ *   shorter makes the field invalid. `null` (the default) leaves the attribute out.
  * @property {string | null} autocomplete - Passed on to the control as its `autocomplete`
  *   attribute (e.g. `'email'`, `'current-password'`, `'one-time-code'`). `null` (the default)
  *   leaves the attribute out. The same holds for the five properties below.
@@ -53,6 +62,8 @@ export default class InputField extends FormField {
             size: 'medium',
             placeholder: '',
             pattern: false,
+            maxlength: null,
+            minlength: null,
             autocomplete: null,
             inputmode: null,
             enterkeyhint: null,
@@ -121,6 +132,8 @@ export default class InputField extends FormField {
                 min="${min}"
                 max="${max}"
                 step="${step}"
+                maxlength="${lengthAttribute(this.maxlength)}"
+                minlength="${lengthAttribute(this.minlength)}"
                 ${spreadAttributes(textEntryAttributes(this))}
                 aria-describedby="${this._describedBy()}"
                 aria-invalid="${this.valid ? 'false' : 'true'}"
