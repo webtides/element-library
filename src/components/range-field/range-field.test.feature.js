@@ -136,16 +136,16 @@ describe('Feature | RangeField', () => {
             );
             const changes = changesOf(el);
 
+            // One key at a time: the field tells of a change once it has rendered, so two keys
+            // are one change or two, by whether a frame lies between them.
             controlOf(el).focus();
-            await userEvent.keyboard('{ArrowRight}');
-            await frames();
-            await userEvent.keyboard('{ArrowLeft}{ArrowLeft}');
-            await frames();
-            await userEvent.keyboard('{End}');
-            await frames();
+            for (const key of ['{ArrowRight}', '{ArrowLeft}', '{ArrowLeft}', '{End}']) {
+                await userEvent.keyboard(key);
+                await frames();
+            }
 
             expect(el.value).toBe('50');
-            expect(changes).toEqual(['25', '15', '50']);
+            expect(changes).toEqual(['25', '20', '15', '50']);
         });
 
         it('moves the thumb to a value that a script sets, also after the user has moved it', async () => {
