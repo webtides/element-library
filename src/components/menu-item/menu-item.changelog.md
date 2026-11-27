@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `type`: an entry that sets something instead of doing something. With `type="checkbox"` it is on or off (`role="menuitemcheckbox"`), with `type="radio"` it is one of several of which one is chosen (`role="menuitemradio"`). `checked` is its state, which it says (`aria-checked`), also while it is off and while it is disabled. A page could put a mark into the `icon` slot before, and a screen reader heard nothing of it: the role of an entry is inside of its shadow root. ([#205](https://github.com/webtides/element-library/issues/205))
+- The state shows as a mark in front of the text, a check or a dot, in the new part `mark`. Its place is there while the entry is not checked as well, so the text does not move when the state changes. Where the user forces colours the mark has the colour of the text: the check is text, the dot is drawn with a border. ([#205](https://github.com/webtides/element-library/issues/205))
+- The page sets the state: the entry does not change `checked` when it is chosen, and the menu fires `menu-select` and closes as for every entry. The state is in the server-rendered markup. ([#205](https://github.com/webtides/element-library/issues/205))
+
 ## [0.4.0] - 2026-11-27
 
 ### Added

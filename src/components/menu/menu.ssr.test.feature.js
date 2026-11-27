@@ -50,6 +50,14 @@ const serverMenu = () =>
             { label: 'Danger' },
             { label: 'Danger' },
             item('Delete', { variant: 'danger', disabled: 'true' }, { variant: 'danger', disabled: true }),
+        )}${serverRender(
+            'el-menu-group',
+            groupStyle,
+            { label: 'View' },
+            { label: 'View' },
+            item('Compact', { type: 'radio', checked: 'true' }, { type: 'radio', checked: true }) +
+                item('Wide', { type: 'radio' }, { type: 'radio' }) +
+                item('Archived', { type: 'checkbox', disabled: 'true' }, { type: 'checkbox', disabled: true }),
         )}`,
     );
 
@@ -90,7 +98,7 @@ describe('Feature | Menu | server-rendered', () => {
         // The panel is a popover that is not shown, and the entries are in it.
         expect(part(el, 'panel').matches(':popover-open')).toBe(false);
         expect(box(part(el, 'panel')).slice(2)).toEqual([0, 0]);
-        expect(wrapper.querySelectorAll('el-menu-item').length).toBe(3);
+        expect(wrapper.querySelectorAll('el-menu-item').length).toBe(6);
         for (const entry of wrapper.querySelectorAll('el-menu-item')) expect(box(entry).slice(2)).toEqual([0, 0]);
         // The element is as wide as its button, and one line high.
         expect(box(el)[2]).toBe(box(wrapper.querySelector('[slot="trigger"]'))[2]);
@@ -137,6 +145,25 @@ describe('Feature | Menu | server-rendered', () => {
         wrapper.remove();
     });
 
+    it('has the entries that are checked in its markup, with their state and the place of their mark', () => {
+        const wrapper = mount(serverMenu());
+        const base = (id) => part(wrapper.querySelector(id), 'base');
+        const state = (id) => [
+            base(id).getAttribute('role'),
+            base(id).getAttribute('aria-checked'),
+            part(wrapper.querySelector(id), 'mark').hidden,
+        ];
+
+        expect(customElements.get('el-menu-item')).toBeUndefined();
+        expect(state('#compact')).toEqual(['menuitemradio', 'true', false]);
+        expect(state('#wide')).toEqual(['menuitemradio', 'false', false]);
+        expect(state('#archived')).toEqual(['menuitemcheckbox', 'false', false]);
+        expect(base('#archived').getAttribute('aria-disabled')).toBe('true');
+        // An entry without a type says nothing of a state, and has no place for a mark.
+        expect(state('#edit')).toEqual(['menuitem', null, true]);
+        wrapper.remove();
+    });
+
     it('looks the same before and after the elements take over, and works from there', async () => {
         const wrapper = mount(serverMenu());
         const el = wrapper.querySelector('el-menu');
@@ -173,6 +200,19 @@ describe('Feature | Menu | server-rendered', () => {
         await nextFrame();
         expect(chosen).toEqual(['edit']);
         expect(document.activeElement).toBe(trigger);
+
+        // The entries that are checked say what the server said, and show it.
+        const compact = wrapper.querySelector('#compact');
+        expect(compact.checked).toBe(true);
+        expect(part(compact, 'base').getAttribute('aria-checked')).toBe('true');
+        expect(part(wrapper.querySelector('#wide'), 'base').getAttribute('aria-checked')).toBe('false');
+        el.show();
+        await nextFrame();
+        await nextFrame();
+        expect(getComputedStyle(part(compact, 'mark'), '::before').content).toBe('""');
+        // As wide as the text of the menu is high: 14 pixels without a theme.
+        expect(part(compact, 'mark').getBoundingClientRect().width).toBe(14);
+        el.hide();
         wrapper.remove();
     });
 });

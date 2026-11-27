@@ -21,6 +21,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Fixed: a menu that is opened with `showAt()` is where it was opened while its own element is out of view, below a long list for example. It was at its own element instead, off the screen: the element was placed once before it had taken its place from `showAt()`, and that placement, which had to try the other side, was done after the right one. The panel is placed once it is shown now, and one placement at a time.
 - Fixed: entries that the page renders after the menu has opened, and entries whose element is defined after it, get the focus once they are there: the first one, or the last one where `ArrowUp` has opened the menu. The menu is placed again for its new size. The focus stayed where it was, and a menu at a point kept the place of an empty panel. ([#202](https://github.com/webtides/element-library/issues/202))
 
+### menu-item
+
+- Added: `type`: an entry that sets something instead of doing something. With `type="checkbox"` it is on or off (`role="menuitemcheckbox"`), with `type="radio"` it is one of several of which one is chosen (`role="menuitemradio"`). `checked` is its state, which it says (`aria-checked`), also while it is off and while it is disabled. A page could put a mark into the `icon` slot before, and a screen reader heard nothing of it: the role of an entry is inside of its shadow root. ([#205](https://github.com/webtides/element-library/issues/205))
+- Added: the state shows as a mark in front of the text, a check or a dot, in the new part `mark`. Its place is there while the entry is not checked as well, so the text does not move when the state changes. Where the user forces colours the mark has the colour of the text: the check is text, the dot is drawn with a border. ([#205](https://github.com/webtides/element-library/issues/205))
+- Added: the page sets the state: the entry does not change `checked` when it is chosen, and the menu fires `menu-select` and closes as for every entry. The state is in the server-rendered markup. ([#205](https://github.com/webtides/element-library/issues/205))
+
 ## [0.4.0] - 2026-11-27
 
 ### accordion

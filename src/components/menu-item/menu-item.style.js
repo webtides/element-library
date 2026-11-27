@@ -38,6 +38,36 @@ const style = css`
         justify-content: center;
     }
 
+    /* The place of the mark of an entry that is on or off, or one of several. It is as wide
+       while the entry is not checked, so the text of an entry does not move when it is, and the
+       texts of the entries of a group begin on one line. */
+    .mark {
+        display: inline-grid;
+        flex: none;
+        place-items: center;
+        inline-size: 1em;
+        block-size: 1em;
+        line-height: 1;
+    }
+
+    .mark[hidden] {
+        display: none;
+    }
+
+    /* On: a check, the sign in the box of a checkbox field. It is text, which shows where the
+       user forces colours. */
+    .item--checkbox[aria-checked='true'] .mark::before {
+        content: '\2713';
+    }
+
+    /* The chosen one of several: a dot. It is drawn with a border and has no size of its own: a
+       background is taken away where the user forces colours, a border stays. */
+    .item--radio[aria-checked='true'] .mark::before {
+        content: '';
+        border: 0.2em solid currentColor;
+        border-radius: 50%;
+    }
+
     /* One line as a rule. A text that is longer than the menu is wide wraps: an action that is
        cut off cannot be read. */
     .label {

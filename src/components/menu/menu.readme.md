@@ -168,6 +168,19 @@ Entries that belong together go into an [`el-menu-group`](../menu-group/menu-gro
 </el-menu>
 ```
 
+## Entries that are checked
+
+An [`el-menu-item`](../menu-item/menu-item.readme.md) with `type="checkbox"` is on or off, one with `type="radio"` is the chosen one of several, and `checked` is the state. The entry says the state and shows it with a mark in front of its text.
+
+```html
+<el-menu-group label="Layout">
+    <el-menu-item type="radio" value="list" checked="true">List</el-menu-item>
+    <el-menu-item type="radio" value="grid">Grid</el-menu-item>
+</el-menu-group>
+```
+
+Choosing such an entry is a choice as every other: `menu-select`, and the menu closes. The menu changes no state: the page sets `checked` in its listener, or renders the menu again with the answer of a server.
+
 ## The panel
 
 - **In the top layer.** The panel is a native popover: an element around the menu that clips (`overflow: hidden`) does not cut it off, and no `z-index` is needed. It takes no room on the page.
@@ -280,7 +293,7 @@ menu.addEventListener('menu-show', async () => {
 ## Not in this element
 
 - A menu in a menu (a submenu).
-- Entries that are checked (`menuitemcheckbox`, `menuitemradio`).
+- A menu that stays open after a choice.
 - A menu bar.
 
 For a panel in the flow of the page there is [`el-dropdown`](../dropdown/dropdown.readme.md), and for a floating panel with any content [`el-popover`](../popover/popover.readme.md).
@@ -291,7 +304,7 @@ The menu and its entries render on a server with `@webtides/element-js-ssr-rende
 
 ## Accessibility
 
-- The panel has `role="menu"`, with the name of `label` or the one of its button. The entries have `role="menuitem"`, the groups `role="group"` with their heading as their name.
+- The panel has `role="menu"`, with the name of `label` or the one of its button. The entries have `role="menuitem"`, or `menuitemcheckbox` and `menuitemradio` with their state (`aria-checked`), the groups `role="group"` with their heading as their name.
 - The button says that it opens a menu and whether the menu is open.
 - The focus is on an entry while the menu is open, and goes back to the button, or to what the menu was opened for, when the menu closes after a choice or `Escape`.
 - The keys of the menu work wherever the focus is while the menu is open: `Escape` closes it, the arrow keys bring the focus into it.

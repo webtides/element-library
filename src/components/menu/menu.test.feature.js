@@ -959,6 +959,125 @@ describe('Feature | Menu', () => {
         });
     });
 
+    describe('entries that are checked', () => {
+        const view = `
+            <el-menu-group id="layout" label="Layout">
+                <el-menu-item id="list" type="radio" value="list" checked="true">List</el-menu-item>
+                <el-menu-item id="grid" type="radio" value="grid">Grid</el-menu-item>
+                <el-menu-item id="board" type="radio" value="board" disabled="true">Board</el-menu-item>
+            </el-menu-group>
+            <el-menu-group>
+                <el-menu-item id="archived" type="checkbox" value="archived">Show archived</el-menu-item>
+            </el-menu-group>
+        `;
+        const stateOf = (el, id) => part(el.querySelector(id), 'base').getAttribute('aria-checked');
+
+        it('are radios and checkboxes of the menu to assistive technology, which say their state', async () => {
+            const el = await menu(view);
+            await openWith(el);
+            const role = (id) => accessibleRole(part(el.querySelector(id), 'base'));
+
+            expect(await role('#list')).toBe('menuitemradio');
+            expect(await role('#archived')).toBe('menuitemcheckbox');
+            expect(['#list', '#grid', '#board', '#archived'].map((id) => stateOf(el, id))).toEqual([
+                'true',
+                'false',
+                'false',
+                'false',
+            ]);
+            expect(await accessibleName(part(el.querySelector('#grid'), 'base'))).toBe('Grid');
+        });
+
+        it('tell the page of a choice as every entry does, and the page sets the state', async () => {
+            const el = await menu(view);
+            const told = [];
+            // What a page does: the chosen one of its group is checked, a checkbox is flipped.
+            el.addEventListener('menu-select', ({ detail: { item, value } }) => {
+                told.push([value, item.type, item.checked]);
+                if (item.type === 'radio') {
+                    for (const other of item.parentElement.querySelectorAll('el-menu-item')) {
+                        other.checked = other === item;
+                    }
+                } else {
+                    item.checked = !item.checked;
+                }
+            });
+            await openWith(el);
+
+            await userEvent.keyboard('{ArrowDown}{Enter}');
+            await rendered();
+            expect(el.open).toBe(false);
+            expect(document.activeElement).toBe(triggerOf(el));
+
+            await openWith(el);
+            await userEvent.keyboard('{End}');
+            await userEvent.keyboard(' ');
+            await rendered();
+
+            // The state the entry had when it was chosen: the menu has changed nothing.
+            expect(told).toEqual([
+                ['grid', 'radio', false],
+                ['archived', 'checkbox', false],
+            ]);
+            expect(['#list', '#grid', '#archived'].map((id) => stateOf(el, id))).toEqual(['false', 'true', 'true']);
+        });
+
+        it('leaves the state as it is where the page does not set it', async () => {
+            const el = await menu(view);
+            const chosen = selections(el);
+            await openWith(el);
+
+            await userEvent.click(el.querySelector('#grid'));
+            await rendered();
+
+            expect(chosen).toEqual([['grid', 'grid']]);
+            expect(stateOf(el, '#grid')).toBe('false');
+            expect(stateOf(el, '#list')).toBe('true');
+        });
+
+        it('have the keys of the menu, and one that is disabled is reached and cannot be chosen', async () => {
+            const el = await menu(view);
+            const chosen = selections(el);
+            await openWith(el);
+            const seen = [focused()];
+
+            for (const key of ['{ArrowDown}', '{ArrowDown}', '{ArrowDown}', '{ArrowDown}', '{Home}', 'b']) {
+                await userEvent.keyboard(key);
+                seen.push(focused());
+            }
+            await userEvent.keyboard('{Enter}');
+            await rendered();
+
+            expect(seen).toEqual(['list', 'grid', 'board', 'archived', 'list', 'list', 'board']);
+            expect(chosen).toEqual([]);
+            expect(el.open).toBe(true);
+            expect(stateOf(el, '#board')).toBe('false');
+        });
+
+        it('have their texts on one line in a group, and the mark in front of them', async () => {
+            const el = await menu(view);
+            await openWith(el);
+            const textOf = (id) => part(el.querySelector(id), 'label').getBoundingClientRect().left;
+            const markOf = (id) => part(el.querySelector(id), 'mark').getBoundingClientRect();
+
+            expect(textOf('#grid')).toBe(textOf('#list'));
+            expect(textOf('#board')).toBe(textOf('#list'));
+            expect(markOf('#list').width).toBeGreaterThan(0);
+            expect(markOf('#list').right).toBeLessThanOrEqual(textOf('#list'));
+            expect(getComputedStyle(part(el.querySelector('#list'), 'mark'), '::before').content).toBe('""');
+            expect(getComputedStyle(part(el.querySelector('#grid'), 'mark'), '::before').content).toBe('none');
+        });
+
+        it('pass axe in an open menu', async () => {
+            const el = await menu(view);
+            await openWith(el);
+
+            const results = await axe.run(el.parentElement);
+
+            expect(results.violations).toEqual([]);
+        });
+    });
+
     describe('the panel', () => {
         const boxOf = (node) => {
             const { left, top, right, bottom, width, height } = node.getBoundingClientRect();
