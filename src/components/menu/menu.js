@@ -113,6 +113,15 @@ export default class Menu extends TemplateElement {
     _leaving = false;
 
     /**
+     * Whether the panel is being placed, and whether it was asked to be placed again meanwhile.
+     * @private
+     */
+    _placing = false;
+
+    /** @private */
+    _placeAgain = false;
+
+    /**
      * The entry that had the focus last while the menu is open. It gets the focus back when a
      * press beside the entries has given it to the panel.
      * @private
@@ -636,17 +645,40 @@ export default class Menu extends TemplateElement {
         this._stopAutoUpdate = undefined;
     }
 
-    /** @private */
+    /**
+     * Places the panel at what the menu is open at.
+     *
+     * Not before the panel is shown: the element renders when `open` is set, before the menu has
+     * taken its place from `showAt()`, and would be placed at its own element. And one placement
+     * at a time: a placement takes a few turns, more where the panel has to try the other side,
+     * so one that was asked for first can be done last. A menu whose own element is out of view,
+     * below a long list, was taken there that way. What is asked for while the panel is being
+     * placed is placed after it, at what the menu is open at by then.
+     * @private
+     */
     async _position() {
         const panel = this.$refs.panel;
-        if (!panel || !this.open) return;
+        if (!panel || !this.open || !panel.matches(':popover-open')) return;
+        if (this._placing) {
+            this._placeAgain = true;
+            return;
+        }
 
-        const atPoint = this._place && !(this._place instanceof Element);
-        await placeAtAnchor(this._anchor(), panel, {
-            // At a point the corner of the menu is at the pointer, as the menu of the system is.
-            placement: atPoint ? 'bottom-start' : this.placement,
-            distance: atPoint ? 0 : this.distance,
-        });
+        this._placing = true;
+        try {
+            do {
+                this._placeAgain = false;
+                const atPoint = this._place && !(this._place instanceof Element);
+                await placeAtAnchor(this._anchor(), panel, {
+                    // At a point the corner of the menu is at the pointer, as the menu of the
+                    // system is.
+                    placement: atPoint ? 'bottom-start' : this.placement,
+                    distance: atPoint ? 0 : this.distance,
+                });
+            } while (this._placeAgain && this.open);
+        } finally {
+            this._placing = false;
+        }
     }
 
     template() {

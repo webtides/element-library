@@ -1257,6 +1257,39 @@ describe('Feature | Menu', () => {
             expect(bottom).toBeLessThanOrEqual(innerHeight);
         });
 
+        it('is where it was opened while its own place in the page is out of view, below a long list', async () => {
+            const wrapper = await fixture(`
+                <div style="${theme} padding: 100px;">
+                    <div id="long-row" tabindex="0" style="display: flex; gap: 8px; height: 40px">
+                        Row
+                        <button id="long-more" type="button" aria-haspopup="menu" aria-label="Actions for the row">…</button>
+                    </div>
+                    <div style="height: 3000px"></div>
+                    <el-menu label="Actions">${three}</el-menu>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            await rendered();
+            const el = wrapper.querySelector('el-menu');
+            const button = wrapper.querySelector('#long-more');
+            expect(el.getBoundingClientRect().top).toBeGreaterThan(innerHeight);
+
+            el.showAt({ x: 150, y: 120 }, wrapper.querySelector('#long-row'));
+            await rendered();
+            await rendered();
+
+            expect(corner(el)).toEqual([150, 120]);
+
+            el.hide();
+            await rendered();
+            el.showAt(button);
+            await rendered();
+            await rendered();
+            const at = button.getBoundingClientRect();
+
+            expect(corner(el)).toEqual([Math.round(at.left), Math.round(at.bottom + 4)]);
+        });
+
         it('opens for a right click on a row, and stays open when the button is let go', async () => {
             const { el, find } = await rows();
             const row = find('#row2');
