@@ -9,7 +9,13 @@ describe('Unit | Nav', () => {
 
     it('has no name, takes its layout from where it is and shows its texts by default', async () => {
         const el = new Nav();
-        expect(el.properties()).toEqual({ label: '', layout: 'auto', labels: true });
+        expect(el.properties()).toEqual({
+            label: '',
+            layout: 'auto',
+            column: 'rail',
+            secondaryLabel: '',
+            labels: true,
+        });
     });
 
     it('defines the tooltip it shows the names of destinations with an icon alone with', async () => {

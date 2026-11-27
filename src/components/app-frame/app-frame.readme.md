@@ -205,7 +205,8 @@ Some navigations are a few destinations, not a list of everything: the three to 
 
 - Where the frame is narrow, the navigation lies at the lower edge, over the footer if there is one. There is no drawer, and a button for one is not there.
 - Where the frame is wide, the navigation is the column at the start side, as wide as what is in it.
-- The frame tells the `el-nav` which of the two it is, in a CSS property that is inherited: the destinations are a bar or a rail, and the page writes them once.
+- The frame tells the `el-nav` which of the two it is, in a CSS property that is inherited: the destinations are a bar or a column, and the page writes them once. The column is a rail, or a list of rows with `column="list"` on the `el-nav`.
+- The property is inherited, so an `el-nav` in an element of the page that is in the slot is told the same. A sidebar with the name of the application above its destinations and the account below them is such an element: see the readme of [`el-nav`](../nav/nav.readme.md).
 
 ## Regions for one width
 

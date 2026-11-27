@@ -366,6 +366,99 @@ export const WrittenOnce = {
     `,
 };
 
+const further = [
+    { name: "What's new", icon: 'M4 11v2a1 1 0 0 0 1 1h2l5 4V6L7 10H5a1 1 0 0 0-1 1M16 9a4 4 0 0 1 0 6' },
+    { name: 'Feedback', icon: 'M5 5h14v10H9l-4 4z' },
+];
+
+export const Sidebar = {
+    name: 'A sidebar, and a bar on a phone',
+    args: { column: 'list' },
+    argTypes: {
+        column: { options: ['list', 'rail'], control: { type: 'inline-radio' } },
+        wideFrom: { table: { disable: true } },
+        skipLabel: { table: { disable: true } },
+    },
+    parameters: {
+        docs: {
+            description: {
+                story: 'An element of the page in the `navigation` slot, with the name of the application, an `el-nav` and the account in it. Where the frame is wide, the destinations are a list (`column="list"` on the `el-nav`) or a rail: an attribute a server writes per view. The `el-nav` takes the height that is left, so its destinations scroll and the account stays in view. Where the frame is narrow, the same destinations are a bar at the lower edge: the second group is left out, and the page hides what is no destination with a query by the width of the frame.',
+            },
+        },
+    },
+    render: ({ column }) => html`
+        <style>
+            .story-side {
+                display: flex;
+                flex-direction: column;
+                block-size: 100%;
+            }
+
+            .story-side-account {
+                flex: none;
+                display: grid;
+                gap: 0.75rem;
+                padding: 1rem;
+                border-top: 1px solid var(--el-color-border, currentColor);
+                font-size: 0.875rem;
+            }
+
+            /* The frame is a container: what is no destination is there where it is wide. */
+            @container (width < 48rem) {
+                .story-side-only {
+                    display: none;
+                }
+            }
+        </style>
+        <el-app-frame narrow-navigation="bar" narrow-only="header">
+            <header slot="header"><el-app-bar heading-level="1">Tasks</el-app-bar></header>
+            <div slot="navigation" class="story-side">
+                <a
+                    class="story-side-only"
+                    href="#home"
+                    style="flex:none;padding:1.25rem 1rem;font-size:1.125rem;font-weight:700;overflow:hidden;text-overflow:ellipsis"
+                    >${column === 'rail' ? 'T' : 'Tasks'}</a
+                >
+                <el-nav label="Main" column="${column}" secondary-label="More">
+                    ${destinations.map(
+                        ({ name, current, icon: path }) => html`
+                            <el-nav-item href="#${name.toLowerCase()}" current="${current ? 'true' : 'false'}"
+                                >${icon(path)}${name}</el-nav-item
+                            >
+                        `,
+                    )}
+                    ${further.map(
+                        ({ name, icon: path }) => html`
+                            <el-nav-item slot="secondary" href="#${name.toLowerCase().replace(/\W+/g, '-')}"
+                                >${icon(path)}${name}</el-nav-item
+                            >
+                        `,
+                    )}
+                </el-nav>
+                <div class="story-side-account story-side-only">
+                    <span style="overflow:hidden;text-overflow:ellipsis" title="ada@example.com"
+                        >${column === 'rail' ? 'A' : 'ada@example.com'}</span
+                    >
+                    <el-button appearance="outlined" size="small">${column === 'rail' ? 'Out' : 'Log out'}</el-button>
+                </div>
+            </div>
+            <main id="sidebar-main" style="padding:1rem">
+                <h2 style="margin:0 0 1rem;font-size:1.5rem;font-weight:700">Inbox</h2>
+                <el-list label="Tasks in the inbox" appearance="outlined">
+                    ${tasks.map(
+                        ([title, due]) => html`
+                            <el-list-item>
+                                ${title}
+                                <span slot="description">${due}</span>
+                            </el-list-item>
+                        `,
+                    )}
+                </el-list>
+            </main>
+        </el-app-frame>
+    `,
+};
+
 const paragraphs = [
     'The frame of an application has five regions: a header, a footer, a navigation, an aside and the content. The page writes the element of every region, and the frame lays it out.',
     'A tool for a desktop has a narrow line of state at its lower edge. It says whether the connection is there, where the cursor is and whether the document is saved.',

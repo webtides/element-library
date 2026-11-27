@@ -32,15 +32,22 @@ function serverRender(tag, style, attributes, properties, children, hostStyle = 
 }
 
 const icon = `<svg slot="icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /></svg>`;
-const item = (name, current = false) =>
+const item = (name, current = false, slot = '') =>
     serverRender(
         'el-nav-item',
         itemStyle,
-        { id: name.toLowerCase(), href: `#${name.toLowerCase()}`, ...(current ? { current: 'true' } : {}) },
+        {
+            id: name.toLowerCase(),
+            href: `#${name.toLowerCase()}`,
+            ...(current ? { current: 'true' } : {}),
+            ...(slot ? { slot } : {}),
+        },
         { href: `#${name.toLowerCase()}`, current },
         `${icon}${name}`,
     );
-const serverNav = (attributes = { label: 'Main' }) =>
+const four = `${item('Inbox', true)}${item('Today')}${item('Upcoming')}${item('Done')}`;
+const more = `${item('News', false, 'secondary')}${item('Feedback', false, 'secondary')}`;
+const serverNav = (attributes = { label: 'Main' }, children = four) =>
     serverRender(
         'el-nav',
         navStyle,
@@ -48,9 +55,11 @@ const serverNav = (attributes = { label: 'Main' }) =>
         {
             label: attributes.label ?? '',
             ...(attributes.layout ? { layout: attributes.layout } : {}),
+            ...(attributes.column ? { column: attributes.column } : {}),
+            ...(attributes['secondary-label'] ? { secondaryLabel: attributes['secondary-label'] } : {}),
             ...(attributes.labels ? { labels: attributes.labels !== 'false' } : {}),
         },
-        `${item('Inbox', true)}${item('Today')}${item('Upcoming')}${item('Done')}`,
+        children,
     );
 /** A frame with the destinations in its navigation, which are a bar where it is narrow. */
 const serverFrameOnce = (nav) =>
@@ -76,7 +85,8 @@ function mount(html, { width = 400, height = 0 } = {}) {
     const wrapper = document.createElement('div');
     wrapper.style.cssText = `
         --el-border-width: 1px; --el-control-height: 40px;
-        --el-space-1: 4px; --el-space-2: 8px; --el-space-3: 12px; --el-font-size-xs: 12px; --el-font-size-md: 16px;
+        --el-space-1: 4px; --el-space-2: 8px; --el-space-3: 12px; --el-radius-md: 6px;
+        --el-font-size-xs: 12px; --el-font-size-sm: 14px; --el-font-size-md: 16px;
         --el-color-bg: rgb(255, 255, 255); --el-color-fg: rgb(10, 10, 10); --el-color-fg-muted: rgb(90, 90, 90);
         --el-color-bg-muted: rgb(230, 230, 230); --el-color-border: rgb(150, 150, 150);
         font: 16px/24px sans-serif; color: rgb(10, 10, 10); background: rgb(255, 255, 255);
@@ -98,7 +108,7 @@ const box = (origin, node) => {
 function look(wrapper) {
     const el = wrapper.querySelector('el-nav');
     return {
-        parts: ['base', 'list'].map((name) => [name, box(wrapper, part(el, name))]),
+        parts: ['base', 'list', 'secondary', 'secondary-label'].map((name) => [name, box(wrapper, part(el, name))]),
         items: [...el.querySelectorAll('el-nav-item')].map((entry) => {
             const link = getComputedStyle(part(entry, 'link'));
             const shape = getComputedStyle(part(entry, 'icon'));
@@ -107,7 +117,14 @@ function look(wrapper) {
                 link: box(wrapper, part(entry, 'link')),
                 icon: box(wrapper, part(entry, 'icon')),
                 label: box(wrapper, part(entry, 'label')),
-                paint: [link.color, link.fontWeight, shape.backgroundColor, shape.borderTopWidth],
+                paint: [
+                    link.color,
+                    link.fontWeight,
+                    link.backgroundColor,
+                    link.borderTopWidth,
+                    shape.backgroundColor,
+                    shape.borderTopWidth,
+                ],
             };
         }),
     };
@@ -187,6 +204,60 @@ describe('Feature | Nav | server-rendered', () => {
         expect(box(wide, part(wide.querySelector('el-nav'), 'base'))).toEqual([0, 47, 90, 600 - 47 - 34]);
     });
 
+    it('is a list before any element is defined, where the page says so', () => {
+        const wrapper = mount(serverNav({ label: 'Main', layout: 'list' }), { width: 300, height: 400 });
+        const el = wrapper.querySelector('el-nav');
+        const inbox = el.querySelector('#inbox');
+
+        expect(customElements.get('el-nav')).toBeUndefined();
+        // As wide as its place. Alone it keeps the top, the side and the lower edge clear itself.
+        expect(box(wrapper, part(el, 'base'))).toEqual([0, 0, 300, 400]);
+        expect([...el.querySelectorAll('el-nav-item')].map((entry) => box(wrapper, entry))).toEqual([
+            [18, 55, 273, 40],
+            [18, 99, 273, 40],
+            [18, 143, 273, 40],
+            [18, 187, 273, 40],
+        ]);
+        // The text is beside the icon, and the current row has its surface.
+        expect(box(wrapper, part(inbox, 'label'))[0]).toBeGreaterThan(box(wrapper, part(inbox, 'icon'))[0] + 24);
+        expect(getComputedStyle(part(inbox, 'link')).backgroundColor).toBe('rgb(230, 230, 230)');
+        expect(getComputedStyle(part(inbox, 'icon')).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    });
+
+    it('is the list the page asks for where a frame is wide, and a bar where it is narrow, before any element is defined', () => {
+        const nav = () => serverNav({ label: 'Main', column: 'list' });
+        const narrow = mount(serverFrameOnce(nav()));
+        const wide = mount(serverFrameOnce(nav()), { width: 1000 });
+        const tops = (wrapper) =>
+            [...wrapper.querySelectorAll('el-nav-item')].map((entry) => Math.round(box(wrapper, entry)[1]));
+
+        expect(customElements.get('el-app-frame')).toBeUndefined();
+        expect(customElements.get('el-nav')).toBeUndefined();
+        expect(tops(narrow)).toEqual([510, 510, 510, 510]);
+        // Wide: rows below each other, in a column of 16rem and the room of the screen at its side.
+        expect(tops(wide)).toEqual([55, 99, 143, 187]);
+        expect(box(wide, part(wide.querySelector('el-nav'), 'base'))).toEqual([0, 47, 266, 600 - 47 - 34]);
+        expect(box(wide, wide.querySelector('#inbox'))).toEqual([18, 55, 240, 40]);
+    });
+
+    it('has the second group with its heading in a list, and leaves it out of a bar, before any element is defined', async () => {
+        const attributes = { label: 'Main', 'secondary-label': 'More' };
+        const list = mount(serverNav({ ...attributes, layout: 'list' }, `${four}${more}`), { width: 300, height: 500 });
+        const bar = mount(serverNav(attributes, `${four}${more}`));
+        const group = (wrapper) => wrapper.querySelector('el-nav');
+
+        expect(customElements.get('el-nav')).toBeUndefined();
+        expect(part(group(list), 'secondary-label').textContent.trim()).toBe('More');
+        expect(await accessibleName(part(group(list), 'secondary-list'))).toBe('More');
+        expect(box(list, list.querySelector('#news'))[1]).toBeGreaterThan(
+            box(list, list.querySelector('#done'))[1] + 40,
+        );
+        expect(getComputedStyle(part(group(bar), 'secondary')).display).toBe('none');
+        expect(box(bar, bar.querySelector('#inbox'))[2]).toBe(92.5);
+        // Without a second group the markup says that it is not there.
+        expect(part(mount(serverNav()).querySelector('el-nav'), 'secondary').hidden).toBe(true);
+    });
+
     it('hides the texts of destinations with an icon alone, and has no tooltip, before the script', async () => {
         const wrapper = mount(serverNav({ label: 'Main', layout: 'rail', labels: 'false' }), { height: 400 });
         const el = wrapper.querySelector('el-nav');
@@ -206,6 +277,12 @@ describe('Feature | Nav | server-rendered', () => {
             mount(serverNav({ label: 'Main', layout: 'rail', labels: 'false' }), { height: 400 }),
             mount(serverFrameOnce(serverNav())),
             mount(serverFrameOnce(serverNav()), { width: 1000 }),
+            mount(serverNav({ label: 'Main', layout: 'list', 'secondary-label': 'More' }, `${four}${more}`), {
+                width: 300,
+                height: 500,
+            }),
+            mount(serverFrameOnce(serverNav({ label: 'Main', column: 'list' }, `${four}${more}`)), { width: 1000 }),
+            mount(serverFrameOnce(serverNav({ label: 'Main', column: 'list' }, `${four}${more}`))),
         ];
         const before = wrappers.map(look);
 
@@ -224,6 +301,6 @@ describe('Feature | Nav | server-rendered', () => {
         // The script has brought the tooltips of the destinations with an icon alone, and no other.
         const tooltipsOf = (wrapper) =>
             wrapper.querySelector('el-nav').shadowRoot.querySelectorAll('el-tooltip').length;
-        expect(wrappers.map(tooltipsOf)).toEqual([0, 0, 0, 4, 0, 0]);
+        expect(wrappers.map(tooltipsOf)).toEqual([0, 0, 0, 4, 0, 0, 0, 0, 0]);
     });
 });

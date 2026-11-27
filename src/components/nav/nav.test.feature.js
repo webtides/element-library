@@ -292,7 +292,7 @@ describe('Feature | Nav', () => {
         it('scrolls where it has more destinations than its height takes, and every one is reached', async () => {
             const many = Array.from({ length: 12 }, (_, i) => destination(`Place${i}`)).join('');
             const el = await rail(`${many}${settings}`);
-            const list = part(el, 'list');
+            const list = part(el, 'groups');
 
             expect(getComputedStyle(list).overflowY).toBe('auto');
             expect(list.scrollHeight).toBeGreaterThan(list.clientHeight);
@@ -339,6 +339,263 @@ describe('Feature | Nav', () => {
             const el = await rail(`${four}${settings}`);
             const results = await axe.run(el.parentElement);
             expect(results.violations).toEqual([]);
+        });
+    });
+
+    describe('the list', () => {
+        const list = (content = four, options = {}) =>
+            nav(content, { attributes: 'label="Main" layout="list"', width: 300, height: 400, ...options });
+        const settings = `
+            <el-nav-item slot="end" id="settings" href="#settings">${icon}Settings</el-nav-item>
+            <el-nav-item slot="end" id="account" href="#account">${icon}Account</el-nav-item>
+        `;
+
+        it('has its destinations below each other, as wide as its place, with a line to the content', async () => {
+            const el = await list();
+            const { borderRightWidth, borderTopWidth } = getComputedStyle(part(el, 'base'));
+
+            expect(box(el.parentElement, part(el, 'base')).slice(2)).toEqual([300, 400]);
+            expect([borderRightWidth, borderTopWidth]).toEqual(['1px', '0px']);
+            // A row is as high as a control, with room around the rows and between them.
+            expect([...el.querySelectorAll('el-nav-item')].map((item) => box(el, item))).toEqual([
+                [8, 8, 283, 40],
+                [8, 52, 283, 40],
+                [8, 96, 283, 40],
+                [8, 140, 283, 40],
+            ]);
+        });
+
+        it('has the text of a destination beside its icon, in one row', async () => {
+            const el = await list();
+            const today = el.querySelector('#today');
+            const [iconLeft, iconTop, iconWidth, iconHeight] = box(today, part(today, 'icon'));
+            const [labelLeft, labelTop, , labelHeight] = box(today, part(today, 'label'));
+
+            // The icon at the start, the text after it, both in the middle of the row.
+            expect(iconLeft).toBe(13);
+            expect(labelLeft).toBe(iconLeft + iconWidth + 12);
+            expect(Math.abs(iconTop + iconHeight / 2 - 20)).toBeLessThanOrEqual(0.5);
+            expect(Math.abs(labelTop + labelHeight / 2 - 20)).toBeLessThanOrEqual(0.5);
+            expect(getComputedStyle(part(today, 'link')).fontSize).toBe('14px');
+        });
+
+        it('is as wide as its own width where its place is as wide as what is in it', async () => {
+            const el = await list(four, { style: `${theme} display: flex; align-items: flex-start;` });
+            // 16rem, and the line.
+            expect(box(el.parentElement, part(el, 'base'))[2]).toBe(257);
+
+            const wider = await list(four, {
+                style: `${theme} display: flex; align-items: flex-start; --el-nav-list-size: 300px;`,
+                width: 600,
+            });
+            expect(box(wider.parentElement, part(wider, 'base'))[2]).toBe(301);
+        });
+
+        it('is as wide as a place that is narrower than its own width', async () => {
+            const el = await list(four, { width: 180 });
+
+            expect(box(el.parentElement, part(el, 'base'))[2]).toBe(180);
+            expect(box(el, el.querySelector('#inbox'))[2]).toBe(163);
+        });
+
+        it('cuts a text that does not fit, and keeps the height of the row', async () => {
+            const el = await list(destination('A very long name of a destination that does not fit'), { width: 180 });
+            const item = el.querySelector('el-nav-item');
+            const label = part(item, 'label');
+
+            expect(box(el, item).slice(2)).toEqual([163, 40]);
+            expect(label.scrollWidth).toBeGreaterThan(label.clientWidth);
+            expect(getComputedStyle(label).textOverflow).toBe('ellipsis');
+        });
+
+        it('marks the current destination by its weight and a surface behind its row, not by its colour alone', async () => {
+            const el = await list();
+            const look = (id) => {
+                const item = el.querySelector(id);
+                const link = getComputedStyle(part(item, 'link'));
+                const shape = getComputedStyle(part(item, 'icon'));
+                return [
+                    link.fontWeight,
+                    link.color,
+                    link.backgroundColor,
+                    link.borderTopWidth,
+                    link.borderTopLeftRadius,
+                    shape.backgroundColor,
+                    shape.borderTopWidth,
+                ];
+            };
+
+            expect(look('#inbox')).toEqual([
+                '600',
+                'rgb(10, 10, 10)',
+                'rgb(230, 230, 230)',
+                '1px',
+                '6px',
+                TRANSPARENT,
+                '0px',
+            ]);
+            expect(look('#today')).toEqual(['400', 'rgb(90, 90, 90)', TRANSPARENT, '0px', '6px', TRANSPARENT, '0px']);
+            // A row is the same with and without the border of its surface, and so is what is in it.
+            const boxes = (id) => ['link', 'icon', 'label'].map((name) => box(el, part(el.querySelector(id), name)));
+            const [inbox, today] = [boxes('#inbox'), boxes('#today')];
+            expect(inbox.map(([left, , , height]) => [left, height])).toEqual(
+                today.map(([left, , , height]) => [left, height]),
+            );
+        });
+
+        it('has a count at the end of its row, read with the name of the destination', async () => {
+            const el = await list(
+                `${destination('Inbox', 'current="true"', '<el-badge slot="badge" pill="true">12</el-badge>')}${destination('Today')}`,
+            );
+            const inbox = el.querySelector('#inbox');
+            const [linkLeft, , linkWidth, linkHeight] = box(inbox, part(inbox, 'link'));
+            const [labelLeft, , labelWidth] = box(inbox, part(inbox, 'label'));
+            const [badgeLeft, badgeTop, badgeWidth, badgeHeight] = box(inbox, part(inbox, 'badge'));
+
+            expect(getComputedStyle(part(inbox, 'badge')).position).toBe('static');
+            // After the text, which takes the room in between, and 12px and the border from the end.
+            expect(badgeLeft).toBe(labelLeft + labelWidth + 12);
+            expect(badgeLeft + badgeWidth).toBe(linkLeft + linkWidth - 13);
+            expect(Math.abs(badgeTop + badgeHeight / 2 - linkHeight / 2)).toBeLessThanOrEqual(0.5);
+            expect(await accessibleName(part(inbox, 'link'))).toBe('Inbox 12');
+        });
+
+        it('has a group at its lower end, which stays in view while the others scroll', async () => {
+            const many = Array.from({ length: 12 }, (_, i) => destination(`Place${i}`)).join('');
+            const el = await list(`${many}${settings}`);
+            const groups = part(el, 'groups');
+
+            expect(await accessibleRole(part(el, 'end'))).toBe('list');
+            expect(groups.scrollHeight).toBeGreaterThan(groups.clientHeight);
+            expect(box(el.parentElement, part(el, 'base'))[3]).toBe(400);
+            const [, top, , height] = box(el, el.querySelector('#account'));
+            expect(top + height).toBe(400 - 8);
+
+            el.parentElement.querySelector('.before').focus();
+            const stops = [];
+            for (let i = 0; i < 14; i++) {
+                await userEvent.keyboard('{Tab}');
+                stops.push(activeElement().getRootNode().host.id);
+            }
+            expect(stops).toEqual([...Array.from({ length: 12 }, (_, i) => `place${i}`), 'settings', 'account']);
+        });
+
+        it('has its line at the left in a right-to-left page, and the icon at the right of its text', async () => {
+            const el = await list(four, { dir: 'rtl' });
+            const today = el.querySelector('#today');
+            const { borderLeftWidth, borderRightWidth } = getComputedStyle(part(el, 'base'));
+
+            expect([borderLeftWidth, borderRightWidth]).toEqual(['1px', '0px']);
+            expect(box(today, part(today, 'icon'))[0]).toBeGreaterThan(box(today, part(today, 'label'))[0]);
+        });
+
+        it('passes axe', async () => {
+            const el = await list(`${four}${settings}`);
+            const results = await axe.run(el.parentElement);
+            expect(results.violations).toEqual([]);
+        });
+    });
+
+    describe('the second group', () => {
+        const more = `
+            <el-nav-item slot="secondary" id="news" href="#news">${icon}News</el-nav-item>
+            <el-nav-item slot="secondary" id="feedback" href="#feedback">${icon}Feedback</el-nav-item>
+        `;
+        const withMore = (layout, options = {}) =>
+            nav(`${four}${more}`, {
+                attributes: `label="Main" layout="${layout}" secondary-label="More"`,
+                width: 300,
+                height: 500,
+                ...options,
+            });
+
+        it('is a list of its own below the first, under its heading, in a list', async () => {
+            const el = await withMore('list');
+            const heading = part(el, 'secondary-label');
+            const [, headingTop, , headingHeight] = box(el, heading);
+
+            expect(heading.textContent.trim()).toBe('More');
+            expect(getComputedStyle(heading).display).toBe('block');
+            expect(headingTop).toBeGreaterThan(box(el, el.querySelector('#done'))[1] + 40);
+            expect(box(el, el.querySelector('#news'))[1]).toBeGreaterThanOrEqual(headingTop + headingHeight);
+            // The heading starts where the icons of the rows start.
+            expect(box(el, heading)[0]).toBe(0);
+            expect(getComputedStyle(heading).paddingLeft).toBe('21px');
+            expect(box(el, el.querySelector('#news')).slice(2)).toEqual([283, 40]);
+        });
+
+        it('has the heading as its name, read once', async () => {
+            const el = await withMore('list');
+            const group = part(el, 'secondary-list');
+
+            expect(await accessibleRole(group)).toBe('list');
+            expect(await accessibleName(group)).toBe('More');
+            expect(part(el, 'secondary-label').getAttribute('aria-hidden')).toBe('true');
+            // The first group has no name: it is the navigation.
+            expect(await accessibleName(part(el, 'list'))).toBe('');
+        });
+
+        it('is below a line in a rail, and its heading is its name alone', async () => {
+            const el = await withMore('rail');
+            const group = part(el, 'secondary');
+
+            expect(getComputedStyle(part(el, 'secondary-label')).display).toBe('none');
+            expect(getComputedStyle(group).borderTopWidth).toBe('1px');
+            expect(await accessibleName(part(el, 'secondary-list'))).toBe('More');
+            // Below the four of the first group, the line and the room around it.
+            expect(box(el, el.querySelector('#news'))).toEqual([0, 4 * 56 + 8 + 1, 80, 56]);
+            expect(box(el, el.querySelector('#feedback'))).toEqual([0, 5 * 56 + 8 + 1, 80, 56]);
+        });
+
+        it('is left out in a bar, which has no room for it', async () => {
+            const el = await nav(`${four}${more}`, { attributes: 'label="Main" secondary-label="More"' });
+
+            expect(getComputedStyle(part(el, 'secondary')).display).toBe('none');
+            expect(el.querySelector('#news').getBoundingClientRect().width).toBe(0);
+            expect(await accessibleRole(part(el, 'secondary-list'))).not.toBe('list');
+            expect(box(el, el.querySelector('#inbox'))[2]).toBe(100);
+        });
+
+        it('is not there while it is empty, and has no heading while the page gives none', async () => {
+            const el = await nav(four, { attributes: 'label="Main" layout="list"', width: 300, height: 500 });
+            expect(part(el, 'secondary').hidden).toBe(true);
+
+            el.insertAdjacentHTML('beforeend', more);
+            await rendered();
+            expect(part(el, 'secondary').hidden).toBe(false);
+            expect(part(el, 'secondary-label').hidden).toBe(true);
+            expect(part(el, 'secondary-list').hasAttribute('aria-label')).toBe(false);
+
+            el.setAttribute('secondary-label', 'Mehr');
+            await rendered();
+            expect(part(el, 'secondary-label').hidden).toBe(false);
+            expect(await accessibleName(part(el, 'secondary-list'))).toBe('Mehr');
+        });
+
+        it('scrolls with the first group, above the group at the lower end', async () => {
+            const el = await withMore('list', { height: 200 });
+            el.insertAdjacentHTML(
+                'beforeend',
+                `<el-nav-item slot="end" id="settings" href="#settings">${icon}Settings</el-nav-item>`,
+            );
+            await rendered();
+            const groups = part(el, 'groups');
+
+            expect(groups.scrollHeight).toBeGreaterThan(groups.clientHeight);
+            groups.scrollTop = groups.scrollHeight;
+            await nextFrame();
+            const feedback = el.querySelector('#feedback').getBoundingClientRect();
+            const settings = el.querySelector('#settings').getBoundingClientRect();
+            expect(feedback.bottom).toBeLessThanOrEqual(settings.top);
+            expect(feedback.bottom).toBeLessThanOrEqual(groups.getBoundingClientRect().bottom);
+        });
+
+        it('passes axe in a list and in a rail', async () => {
+            for (const layout of ['list', 'rail']) {
+                const el = await withMore(layout);
+                const results = await axe.run(el.parentElement);
+                expect(results.violations).toEqual([]);
+            }
         });
     });
 
@@ -457,12 +714,13 @@ describe('Feature | Nav', () => {
     });
 
     describe('the layout by where the element is', () => {
-        const frameWith = async (slot, { width = 1000, attributes = '' } = {}) => {
+        let frames = 0;
+        const frameWith = async (slot, { width = 1000, attributes = '', nav = '' } = {}) => {
             const wrapper = await fixture(`
                 <div style="${theme} width: ${width}px;">
                     <el-app-frame style="position: relative; height: 600px" ${attributes}>
-                        <main id="auto-main-${width}-${slot}"><p>Content</p></main>
-                        <el-nav slot="${slot}" label="Main">${four}</el-nav>
+                        <main id="auto-main-${frames++}"><p>Content</p></main>
+                        <el-nav slot="${slot}" label="Main" ${nav}>${four}</el-nav>
                     </el-app-frame>
                 </div>
             `);
@@ -490,6 +748,108 @@ describe('Feature | Nav', () => {
             // The region draws the line, and is as wide as the rail.
             expect(getComputedStyle(part(el, 'base')).borderRightWidth).toBe('0px');
             expect(box(frame, frame.shadowRoot.querySelector('[part~="navigation"]'))).toEqual([0, 0, 81, 600]);
+        });
+
+        it('is the list the page asks for in the column of a frame, and a bar where the frame is narrow', async () => {
+            const attributes = 'narrow-navigation="bar"';
+            const wide = await frameWith('navigation', { attributes, nav: 'column="list"' });
+            const narrow = await frameWith('navigation', { attributes, nav: 'column="list"', width: 400 });
+            const frame = wide.closest('el-app-frame');
+
+            // The stylesheet decides: nothing is written onto the element.
+            expect(wide.hasAttribute('layout')).toBe(false);
+            expect(tops(wide)).toEqual([8, 52, 96, 140]);
+            // As wide as a list is, in a column that is as wide as what is in it. The region
+            // draws the line.
+            expect(box(frame, part(wide, 'base'))).toEqual([0, 0, 256, 600]);
+            expect(getComputedStyle(part(wide, 'base')).borderRightWidth).toBe('0px');
+            expect(box(frame, frame.shadowRoot.querySelector('[part~="navigation"]'))).toEqual([0, 0, 257, 600]);
+            expect(box(wide, wide.querySelector('#inbox'))).toEqual([8, 8, 240, 40]);
+
+            expect(tops(narrow)).toEqual([0, 0, 0, 0]);
+            expect(box(narrow, narrow.querySelector('#inbox'))[2]).toBe(100);
+        });
+
+        it('fills a column that has a width', async () => {
+            const kept = await frameWith('navigation', {
+                attributes: 'narrow-navigation="bar" navigation-size="320"',
+                nav: 'column="list"',
+            });
+            const drawer = await frameWith('navigation', { nav: 'column="list"' });
+
+            expect(box(kept.closest('el-app-frame'), part(kept, 'base'))).toEqual([0, 0, 320, 600]);
+            // A frame whose navigation is a drawer where it is narrow has a column of 16rem.
+            expect(box(drawer.closest('el-app-frame'), part(drawer, 'base'))).toEqual([0, 0, 256, 600]);
+        });
+
+        it('says so once, and a change of the attribute changes the column', async () => {
+            const el = await frameWith('navigation', { attributes: 'narrow-navigation="bar"' });
+            expect(tops(el)).toEqual([0, 56, 112, 168]);
+
+            el.setAttribute('column', 'list');
+            await rendered();
+            expect(tops(el)).toEqual([8, 52, 96, 140]);
+        });
+
+        describe('in an element of the page that is in the slot', () => {
+            const many = Array.from({ length: 14 }, (_, i) => destination(`Place${i}`)).join('');
+            const wrapped = async ({ width = 1000, column = 'list' } = {}) => {
+                const wrapper = await fixture(`
+                    <div style="${theme} width: ${width}px;">
+                        <el-app-frame style="position: relative; height: 600px" narrow-navigation="bar">
+                            <main id="wrapped-main-${width}-${column}"><p>Content</p></main>
+                            <div slot="navigation" class="side" style="display: flex; flex-direction: column; height: 100%">
+                                <div class="logo" style="flex: none; height: 50px">Logo</div>
+                                <el-nav label="Main" column="${column}">
+                                    ${many}
+                                    <el-nav-item slot="end" id="settings" href="#settings">${icon}Settings</el-nav-item>
+                                </el-nav>
+                                <div class="account" style="flex: none; height: 60px">Account</div>
+                            </div>
+                        </el-app-frame>
+                    </div>
+                `);
+                wrappers.push(wrapper);
+                await rendered();
+                return wrapper.querySelector('el-nav');
+            };
+
+            it('takes its layout from the frame, as one that is in the slot itself', async () => {
+                const list = await wrapped();
+                const rail = await wrapped({ column: 'rail' });
+                const bar = await wrapped({ width: 400 });
+
+                expect(tops(list).slice(0, 3)).toEqual([8, 52, 96]);
+                expect(box(list, list.querySelector('#place0')).slice(2)).toEqual([240, 40]);
+                expect(tops(rail).slice(0, 3)).toEqual([0, 56, 112]);
+                expect(box(rail, rail.querySelector('#place0')).slice(2)).toEqual([80, 56]);
+                // One row at the lower edge. The group at the lower end is left out.
+                const row = [...bar.querySelectorAll('el-nav-item:not([slot])')].map((item) => box(bar, item)[1]);
+                expect(new Set(row).size).toBe(1);
+                expect(bar.querySelector('#settings').getBoundingClientRect().height).toBe(0);
+            });
+
+            it('takes the height that is left, scrolls its destinations and keeps its lower end in view', async () => {
+                const el = await wrapped();
+                const frame = el.closest('el-app-frame');
+                const region = frame.shadowRoot.querySelector('[part~="navigation"]');
+                const groups = part(el, 'groups');
+
+                // Between what the page has put above and below it.
+                expect(box(frame, el)).toEqual([0, 50, 256, 600 - 50 - 60]);
+                expect(box(frame, frame.querySelector('.account'))).toEqual([0, 540, 256, 60]);
+                // The destinations scroll, and the column of the frame does not.
+                expect(groups.scrollHeight).toBeGreaterThan(groups.clientHeight);
+                expect(region.scrollHeight).toBe(region.clientHeight);
+                const [, top, , height] = box(frame, el.querySelector('#settings'));
+                expect(top + height).toBe(540 - 8);
+            });
+
+            it('passes axe', async () => {
+                const el = await wrapped();
+                const results = await axe.run(el.closest('el-app-frame').parentElement);
+                expect(results.violations).toEqual([]);
+            });
         });
 
         it('is the layout the page names, wherever it is', async () => {
@@ -551,12 +911,36 @@ describe('Feature | Nav', () => {
             const el = await nav(four, { style: 'font: 16px/24px sans-serif;' });
             expect(getComputedStyle(part(el, 'base')).borderTopWidth).toBe('1px');
         });
+
+        it('keeps the surface of the current row of a list as a border, and no other row has one', async () => {
+            const el = await nav(four, { attributes: 'label="Main" layout="list"', width: 300, height: 400 });
+            const row = (id) => getComputedStyle(part(el.querySelector(id), 'link'));
+
+            expect(row('#inbox').borderTopWidth).toBe('1px');
+            expect(row('#inbox').borderTopColor).not.toBe(TRANSPARENT);
+            expect(row('#today').borderTopWidth).toBe('0px');
+            expect(getComputedStyle(part(el, 'base')).borderRightWidth).toBe('1px');
+        });
+
+        it('has the line over the second group of a rail without a theme as well', async () => {
+            const el = await nav(
+                `${four}<el-nav-item slot="secondary" id="news" href="#news">${icon}News</el-nav-item>`,
+                { attributes: 'label="Main" layout="rail"', height: 500, style: 'font: 16px/24px sans-serif;' },
+            );
+            expect(getComputedStyle(part(el, 'secondary')).borderTopWidth).toBe('1px');
+        });
     });
 
     describe('without a theme', () => {
         it('paints nothing of its own, and reads in a light and in a dark scheme', async () => {
-            for (const scheme of ['light', 'dark']) {
-                const el = await nav(four, {
+            for (const [scheme, attributes] of [
+                ['light', 'label="Main"'],
+                ['dark', 'label="Main"'],
+                ['light', 'label="Main" layout="list" secondary-label="More"'],
+                ['dark', 'label="Main" layout="list" secondary-label="More"'],
+            ]) {
+                const el = await nav(`${four}<el-nav-item slot="secondary" href="#news">${icon}News</el-nav-item>`, {
+                    attributes,
                     style: `color-scheme: ${scheme}; background: Canvas; color: CanvasText; font: 16px/24px sans-serif;`,
                 });
 
@@ -581,6 +965,14 @@ describe('Feature | Nav', () => {
                 const { width, height } = part(item, 'link').getBoundingClientRect();
                 expect(width).toBeGreaterThanOrEqual(44);
                 expect(height).toBeGreaterThanOrEqual(44);
+            }
+        });
+
+        it('makes every row of a list at least as high as a finger needs', async () => {
+            const el = await nav(four, { attributes: 'label="Main" layout="list"', width: 300, height: 400 });
+
+            for (const item of el.querySelectorAll('el-nav-item')) {
+                expect(part(item, 'link').getBoundingClientRect().height).toBe(44);
             }
         });
     });

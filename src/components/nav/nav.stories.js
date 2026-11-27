@@ -54,7 +54,7 @@ export default {
         labels: true,
     },
     argTypes: {
-        layout: { options: ['auto', 'bar', 'rail'], control: { type: 'inline-radio' } },
+        layout: { options: ['auto', 'bar', 'rail', 'list'], control: { type: 'inline-radio' } },
     },
 };
 
@@ -65,7 +65,7 @@ export const Playground = {
                 label="${label}"
                 layout="${layout}"
                 labels="${labels ? 'true' : 'false'}"
-                style="${layout === 'rail' ? 'height:24rem' : ''}"
+                style="${layout === 'rail' || layout === 'list' ? 'height:24rem' : ''}"
             >
                 <el-nav-item href="#inbox" current="true">${icon(icons.inbox)}Inbox</el-nav-item>
                 <el-nav-item href="#today">${icon(icons.today)}Today</el-nav-item>
@@ -188,4 +188,79 @@ export const ShortRail = {
         },
     },
     render: () => html`<div style="height:14rem;display:flex">${railOf(true)}</div>`,
+};
+
+const news = 'M4 11v2a1 1 0 0 0 1 1h2l5 4V6L7 10H5a1 1 0 0 0-1 1M16 9a4 4 0 0 1 0 6';
+const feedback = 'M5 5h14v10H9l-4 4z';
+
+const listOf = () => html`
+    <el-nav label="Main" layout="list" secondary-label="More">
+        <el-nav-item href="#inbox" current="true">
+            ${icon(icons.inbox)}Inbox
+            <el-badge slot="badge" pill="true"
+                >12<span
+                    style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap"
+                >
+                    unread</span
+                ></el-badge
+            >
+        </el-nav-item>
+        <el-nav-item href="#today">${icon(icons.today)}Today</el-nav-item>
+        <el-nav-item href="#upcoming">${icon(icons.upcoming)}Upcoming</el-nav-item>
+        <el-nav-item href="#done">${icon(icons.done)}Done</el-nav-item>
+        <el-nav-item slot="secondary" href="#news">${icon(news)}What's new</el-nav-item>
+        <el-nav-item slot="secondary" href="#feedback">${icon(feedback)}Feedback</el-nav-item>
+        <el-nav-item slot="end" href="#settings">${icon(settings)}Settings</el-nav-item>
+        <el-nav-item slot="end" href="#account">${icon(account)}Account</el-nav-item>
+    </el-nav>
+`;
+
+export const List = {
+    name: 'A list',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: '`layout="list"`: a sidebar. Each destination is a row with its icon and its text beside it, and the list is as wide as its place, 16rem here. The `secondary` slot is a second group under its heading (`secondary-label`), and the `end` slot is at the lower end. A count is at the end of its row.',
+            },
+        },
+    },
+    render: () => html`<div style="height:30rem;width:16rem">${listOf()}</div>`,
+};
+
+export const ShortList = {
+    name: 'A list with more destinations than the height takes',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'The two groups at the top scroll together, and the one at the lower end stays in view.',
+            },
+        },
+    },
+    render: () => html`<div style="height:16rem;width:16rem">${listOf()}</div>`,
+};
+
+export const SecondGroupInARail = {
+    name: 'The second group in a rail',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'A rail shows the `secondary` slot below a line. Its heading does not show and is the name of the group for assistive technology. A bar leaves the group out.',
+            },
+        },
+    },
+    render: () => html`
+        <div style="height:30rem;display:flex">
+            <el-nav label="Main" layout="rail" secondary-label="More">
+                <el-nav-item href="#inbox" current="true">${icon(icons.inbox)}Inbox</el-nav-item>
+                <el-nav-item href="#today">${icon(icons.today)}Today</el-nav-item>
+                <el-nav-item href="#done">${icon(icons.done)}Done</el-nav-item>
+                <el-nav-item slot="secondary" href="#news">${icon(news)}News</el-nav-item>
+                <el-nav-item slot="secondary" href="#feedback">${icon(feedback)}Feedback</el-nav-item>
+                <el-nav-item slot="end" href="#settings">${icon(settings)}Settings</el-nav-item>
+            </el-nav>
+        </div>
+    `,
 };

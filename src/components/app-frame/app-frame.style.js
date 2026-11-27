@@ -212,7 +212,7 @@ const style = css`
     .drawer {
         --el-drawer-size: var(--el-app-frame-navigation-size, 16rem);
         /* An el-nav in the drawer has its destinations below each other. */
-        --_el-context-nav-rail: ;
+        --_el-context-nav-column: ;
     }
 
     .drawer::part(body) {
@@ -326,9 +326,10 @@ const wideStyle = (step) => {
             ${frame} .navigation {
                 ${noInsets}
                 --_el-context-inset-inline-start: var(--_el-app-frame-start);
-                /* The region draws the line to the content, and an el-nav in it is a rail. */
+                /* The region draws the line to the content, and an el-nav in it is a column: a
+                   rail or a list. */
                 --_el-context-line-inline-end: 0px;
-                --_el-context-nav-rail: ;
+                --_el-context-nav-column: ;
                 --_el-context-line-block-start: initial;
 
                 display: block;
