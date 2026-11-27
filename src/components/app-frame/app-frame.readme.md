@@ -335,6 +335,8 @@ A browser on a phone lays its keyboard over the page and leaves the layout as it
 
 The frame takes what shows instead (`window.visualViewport`): while a keyboard covers a part of the viewport, the frame is as high as the part above it, and where that part is.
 
+No browser says that a keyboard is there, so the frame reads it from two signs: the visual viewport is lower than the layout by more than 80 pixels, and the user types into something. That is an `input`, a `textarea`, a `select` or a text they edit (`contenteditable`) that has the focus, in the page or in an open shadow root, or an `iframe` that has it. The height alone does not tell: Safari on iOS makes the visual viewport less high while a finger pulls the page past its top as well.
+
 - **The header stays in view**, and the footer or the bar of destinations lies above the keyboard. Its lower edge is the keyboard then, so it leaves no room for the home indicator.
 - **The field the user types into stays in view**: the frame scrolls its region to it when the region gets less high. A field in a dialog or a popover is in no region, and the browser shows it.
 - `el-app-frame:state(keyboard)` matches while it is so.
@@ -344,6 +346,8 @@ What the platform does not give:
 
 - **Safari on iOS and a `WKWebView` move the page first and tell of it afterwards.** For the fifth of a second the keyboard takes to come in, the regions are on their way to their places. Nothing a page does comes before that.
 - **Safari on iOS does not resize the layout for the keyboard**: it takes no notice of `interactive-widget=resizes-content` in the viewport of the page. Where a browser does resize the layout (Chrome on Android, with that word in the viewport), the frame follows by its stylesheet, and the script has nothing to do.
+- **A field that has the focus without a keyboard looks like one with a keyboard.** With a hardware keyboard, or after the user has put the on-screen keyboard away, a page that is pulled past its top in Safari is taken for a keyboard for as long as the finger pulls: the footer comes to the lower edge of the screen.
+- **A field the frame cannot see is none for it**: one in a closed shadow root. The frame does not follow the keyboard that comes for it.
 
 In a web view of an application of your own, let the view end at the keyboard (its lower edge at `keyboardLayoutGuide.topAnchor`). The layout gets less high with the keyboard, the browser moves nothing, and the frame keeps the field in view.
 

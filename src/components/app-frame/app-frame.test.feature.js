@@ -1347,11 +1347,14 @@ describe('Feature | AppFrame', () => {
             const { top, bottom } = node.getBoundingClientRect();
             return top >= view.top && bottom <= view.bottom;
         };
+        // A keyboard is there for a field: the browser shows one once a field has the focus.
+        const typeInto = (el, field = '#reply') => el.querySelector(field).focus({ preventScroll: true });
 
         it('is as high as what shows above the keyboard, and where that part is', async () => {
             const el = await viewportFrame(chat, { attributes: 'wide-from="80rem"' });
             const full = el.getBoundingClientRect();
             expect([full.top, full.height]).toEqual([0, layout()]);
+            typeInto(el);
 
             // The keyboard takes 300px, and the browser has moved the page up by as much.
             await keyboard({ height: layout() - 300, offsetTop: 300 });
@@ -1366,6 +1369,7 @@ describe('Feature | AppFrame', () => {
 
         it('follows the page that the browser moves behind the keyboard', async () => {
             const el = await viewportFrame(chat);
+            typeInto(el);
 
             await keyboard({ height: layout() - 300, offsetTop: 0 });
             expect(el.getBoundingClientRect().top).toBe(0);
@@ -1377,6 +1381,7 @@ describe('Feature | AppFrame', () => {
 
         it('fills the viewport again when the keyboard has gone', async () => {
             const el = await viewportFrame(chat);
+            typeInto(el);
             await keyboard({ height: layout() - 300, offsetTop: 300 });
 
             await keyboard({ height: layout(), offsetTop: 0 });
@@ -1389,6 +1394,7 @@ describe('Feature | AppFrame', () => {
 
         it('fills the viewport again in a browser that forgets the states it was told', async () => {
             const el = await viewportFrame(chat);
+            typeInto(el);
             await keyboard({ height: layout() - 300, offsetTop: 300 });
             expect(el.matches(':state(keyboard)')).toBe(true);
 
@@ -1440,14 +1446,94 @@ describe('Feature | AppFrame', () => {
         });
 
         it('leaves the scroll alone where nothing is typed into', async () => {
-            const el = await viewportFrame(regions({ lines: 80 }));
+            const el = await frame(regions({ lines: 80 }), { width: 400, height: 600 });
             const link = el.querySelector('#link');
             link.focus({ preventScroll: true });
             el.scroller.scrollTop = 0;
+            expect(inView(el, link)).toBe(false);
 
-            await keyboard({ height: layout() - 300, offsetTop: 300 });
+            el.style.height = '300px';
+            await rendered();
+            await rendered();
 
             expect(el.scroller.scrollTop).toBe(0);
+        });
+
+        it('takes a viewport that shows less for no keyboard while nothing is typed into', async () => {
+            // Safari on iOS: a finger pulls the page past its top, and the visual viewport is less
+            // high by the length of the pull. A keyboard that has moved nothing says the same.
+            const el = await viewportFrame(chat);
+
+            await keyboard({ height: layout() - 300, offsetTop: 0 });
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.getBoundingClientRect().height).toBe(layout());
+            expect(el.style.length).toBe(0);
+        });
+
+        it('takes it for none while a link has the focus: no keyboard comes for one', async () => {
+            const el = await viewportFrame(regions());
+            el.querySelector('#link').focus({ preventScroll: true });
+
+            await keyboard({ height: layout() - 300, offsetTop: 0 });
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.getBoundingClientRect().height).toBe(layout());
+        });
+
+        for (const [what, markup, focus] of [
+            [
+                'a field in a shadow root',
+                '<div id="typed-host"></div>',
+                (el) => {
+                    const host = el.querySelector('#typed-host');
+                    host.attachShadow({ mode: 'open' }).innerHTML = '<input />';
+                    host.shadowRoot.querySelector('input').focus({ preventScroll: true });
+                    return host.shadowRoot.querySelector('input');
+                },
+            ],
+            [
+                'a text the user edits',
+                '<p id="typed-text" contenteditable="plaintext-only">Text</p>',
+                (el) => {
+                    el.querySelector('#typed-text').focus({ preventScroll: true });
+                    return el.querySelector('#typed-text');
+                },
+            ],
+            [
+                // Another page keeps to itself what has the focus in it.
+                'a frame with another page',
+                '<iframe id="typed-frame" title="Another page" srcdoc="<input />"></iframe>',
+                (el) => {
+                    el.querySelector('#typed-frame').focus({ preventScroll: true });
+                    return el.querySelector('#typed-frame');
+                },
+            ],
+        ]) {
+            it(`takes it for a keyboard while ${what} has the focus`, async () => {
+                const el = await viewportFrame(`<main id="typed-main">${markup}</main>`);
+                const typed = focus(el);
+                expect(activeElement()).toBe(typed);
+
+                await keyboard({ height: layout() - 300, offsetTop: 0 });
+
+                expect(el.matches(':state(keyboard)')).toBe(true);
+                expect(el.getBoundingClientRect().height).toBe(layout() - 300);
+            });
+        }
+
+        it('is none any more once the field has lost the focus', async () => {
+            const el = await viewportFrame(chat);
+            typeInto(el);
+            await keyboard({ height: layout() - 300, offsetTop: 300 });
+            expect(el.matches(':state(keyboard)')).toBe(true);
+
+            el.querySelector('#reply').blur();
+            // The browser moves the page back before it tells of the height it has again.
+            await keyboard({ offsetTop: 0 }, 'scroll');
+
+            expect(el.matches(':state(keyboard)')).toBe(false);
+            expect(el.getBoundingClientRect().height).toBe(layout());
         });
 
         it('leaves a field in a dialog to the browser: it is in the top layer and in no region', async () => {
@@ -1474,6 +1560,7 @@ describe('Feature | AppFrame', () => {
         it('does not follow in a box of the page', async () => {
             const el = await frame(chat, { width: 400, height: 600 });
             const before = el.getBoundingClientRect();
+            typeInto(el);
 
             await keyboard({ height: layout() - 300, offsetTop: 300 });
 
@@ -1484,6 +1571,7 @@ describe('Feature | AppFrame', () => {
 
         it('does not follow while the user has zoomed in', async () => {
             const el = await viewportFrame(chat);
+            typeInto(el);
 
             await keyboard({ height: layout() / 2, offsetTop: 100, scale: 2 });
 
@@ -1493,6 +1581,7 @@ describe('Feature | AppFrame', () => {
 
         it('takes a scrollbar or a rounded height for no keyboard', async () => {
             const el = await viewportFrame(chat);
+            typeInto(el);
 
             await keyboard({ height: layout() - 20, offsetTop: 0 });
 
@@ -1503,8 +1592,15 @@ describe('Feature | AppFrame', () => {
         it('stops listening when it leaves the page', async () => {
             const el = await viewportFrame(chat);
             el.remove();
+            // The keyboard is there for another field of the page.
+            const field = document.body.appendChild(document.createElement('input'));
+            field.focus({ preventScroll: true });
 
-            await keyboard({ height: layout() - 300, offsetTop: 300 });
+            try {
+                await keyboard({ height: layout() - 300, offsetTop: 300 });
+            } finally {
+                field.remove();
+            }
 
             expect(el.matches(':state(keyboard)')).toBe(false);
         });
@@ -1515,6 +1611,7 @@ describe('Feature | AppFrame', () => {
             it('has the keyboard at its lower edge, and no home indicator to keep clear of', async () => {
                 const el = await viewportFrame(chat);
                 expect(getComputedStyle(part(el, 'footer')).paddingBottom).toBe('34px');
+                typeInto(el);
 
                 await keyboard({ height: layout() - 300, offsetTop: 300 });
 
@@ -1820,6 +1917,8 @@ describe('Feature | AppFrame', () => {
                 viewport.dispatchEvent(new Event('resize'));
             };
             el.scroller.scrollTop = 900;
+            // A keyboard is there for a field.
+            el.querySelector('#tap-field').focus({ preventScroll: true });
 
             say({ height: layout - 300, offsetTop: 0 });
             // The browser shows the field behind the keyboard: the document does not snap.
@@ -1827,6 +1926,8 @@ describe('Feature | AppFrame', () => {
             await tap();
             expect(el.matches(':state(keyboard)')).toBe(true);
             expect(heard.length).toBe(0);
+            // The frame has brought the field into view, at the end of the content.
+            expect(el.scroller.scrollTop).toBeGreaterThan(900);
 
             // Gone again: the document is back by its pixel once that has settled.
             delete viewport.height;
@@ -1834,7 +1935,8 @@ describe('Feature | AppFrame', () => {
             viewport.dispatchEvent(new Event('resize'));
             await tap();
             expect(heard.length).toBe(0);
-            expect(el.scroller.scrollTop).toBe(900);
+            // Still at its end, in a region that is as high as before.
+            expect(el.scroller.scrollTop).toBeGreaterThan(900);
             await settled();
             expect(window.scrollY).toBe(1);
             expect(root.style.scrollSnapType).toBe('y mandatory');

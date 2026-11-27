@@ -16,7 +16,8 @@ const RESIZABLE = ['navigation', 'aside'];
 const TOGGLE = '[data-navigation-toggle]';
 
 /** What the user types into: the controls an on-screen keyboard opens for. */
-const TYPED_INTO = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
+const TYPED_INTO =
+    'input, textarea, select, [contenteditable=""], [contenteditable="true"], [contenteditable="plaintext-only"]';
 
 /**
  * The least a part of the viewport is covered by, in pixels, for it to be taken as covered by an
@@ -494,10 +495,15 @@ export default class AppFrame extends TemplateElement {
      * header leaves the screen with it.
      *
      * The visual viewport is what shows. While it is less high than the layout by more than a
-     * scrollbar, the frame takes its place and its height: the header is at the top of what
-     * shows, the footer above the keyboard, and the content scrolls between them. The browser
-     * tells of the viewport once it has moved it, so for the moment the keyboard comes in the
-     * regions are on their way.
+     * scrollbar, and the user types into something, the frame takes its place and its height:
+     * the header is at the top of what shows, the footer above the keyboard, and the content
+     * scrolls between them. The browser tells of the viewport once it has moved it, so for the
+     * moment the keyboard comes in the regions are on their way.
+     *
+     * A viewport that shows less is no keyboard by itself. Safari on iOS makes the visual
+     * viewport less high while a finger pulls the page past its top, by the length of the pull
+     * and with the numbers of a keyboard. A keyboard is there for a field, so the frame takes
+     * one that has the focus for the sign.
      *
      * Only a frame that fills the viewport follows, and not while the user has zoomed in: what
      * shows is a part of the page then, by the will of the user.
@@ -510,7 +516,8 @@ export default class AppFrame extends TemplateElement {
         const covered =
             getComputedStyle(this).position === 'fixed' &&
             Math.abs(viewport.scale - 1) < 0.01 &&
-            document.documentElement.clientHeight - viewport.height > KEYBOARD;
+            document.documentElement.clientHeight - viewport.height > KEYBOARD &&
+            this._isTyping();
 
         if (!covered) {
             if (!this._keyboard) return;
@@ -532,6 +539,17 @@ export default class AppFrame extends TemplateElement {
         this._keyboard = true;
         this._internals.states.add('keyboard');
         this._showFocus();
+    }
+
+    /**
+     * Whether the user types into something: a field or a text they edit has the focus, in the
+     * page or in a shadow root that is open, or a frame with another page has it, which keeps
+     * to itself what has the focus in it. An on-screen keyboard is there for one of these.
+     * @private
+     * @returns {boolean}
+     */
+    _isTyping() {
+        return activeElement()?.matches?.(`${TYPED_INTO}, iframe`) === true;
     }
 
     /**
