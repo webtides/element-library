@@ -12,8 +12,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### combobox-field
+
+- Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
+
+### date-field
+
+- Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
+
 ### input-field
 
+- Added: content of the page at the start and at the end of the control: an element with `slot="start"` or `slot="end"` among the children of the field is taken into the control when the field renders. An icon, a unit, the start of an address, a button. It stands in a row with the input, whose text does not run under it, and follows the reading direction. The field moves the element of the page and does not copy it, and server-rendered markup has it in its place. ([#168](https://github.com/webtides/element-library/issues/168))
+- Added: a click on a text or on an icon in the control puts the focus into the input; a button or a link there keeps its click and its stop of the Tab key. A text there is part of the description of the input (`aria-describedby`), so a unit is read with it; an icon and a button are not. ([#168](https://github.com/webtides/element-library/issues/168))
+- Added: `clearable`: a button at the end of the control that empties the field. It shows while the field has a value and is not disabled, `input-change` reports the empty value, and the focus stays in the input. `clear-label` is its name (`Clear`). ([#168](https://github.com/webtides/element-library/issues/168))
+- Added: with `styles/native.css` the control with its content is the control to the eye: the border, the surface and the focus ring are around all of it, as the border of a field that is not valid and the look of a disabled one, and it is as high as an input of its size alone. Without that file the content stands beside an input with the look of the browser. A field without content and without `clearable` renders its input alone, as before. ([#168](https://github.com/webtides/element-library/issues/168))
 - Added: `maxlength` and `minlength` are passed on to the native `<input>`, in server-rendered markup as well, and one that is not set is not rendered. The control takes no more characters than `maxlength` while the user types, and a typed text that is shorter than `minlength` makes the field invalid the way `required` and `pattern` do, with its `error-message`. Set on the element they did nothing before. The fields that extend this one take both as well. ([#190](https://github.com/webtides/element-library/issues/190))
 
 ### menu
@@ -31,8 +43,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: the state shows as a mark in front of the text, a check or a dot, in the new part `mark`. Its place is there while the entry is not checked as well, so the text does not move when the state changes. Where the user forces colours the mark has the colour of the text: the check is text, the dot is drawn with a border. ([#205](https://github.com/webtides/element-library/issues/205))
 - Added: the page sets the state: the entry does not change `checked` when it is chosen, and the menu fires `menu-select` and closes as for every entry. The state is in the server-rendered markup. ([#205](https://github.com/webtides/element-library/issues/205))
 
+### otp-field
+
+- Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
+
 ### password-field
 
+- Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. Its own button, the one that shows the password, stays beside the control. ([#168](https://github.com/webtides/element-library/issues/168))
 - Added: `maxlength` and `minlength` are passed on to the input, as in `el-input-field`: a password that is typed shorter than `minlength` makes the field invalid, with its `error-message`. ([#190](https://github.com/webtides/element-library/issues/190))
 
 ### textarea-field

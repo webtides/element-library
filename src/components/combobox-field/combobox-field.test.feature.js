@@ -405,4 +405,29 @@ describe('Feature | ComboboxField', () => {
             expect(results.violations.map((violation) => violation.id)).toEqual([]);
         });
     });
+
+    it('takes content of the page into its control, and its input keeps the list of its suggestions', async () => {
+        const el = await fixture(`
+            <el-combobox-field name="content-combobox" label="City" options='["Berlin", "Bern"]' clearable="true" value="Bern">
+                <span slot="start" id="content-combobox-start">DE</span>
+            </el-combobox-field>
+        `);
+        await nextFrame();
+        await nextFrame();
+        const control = el.querySelector(':scope > .field > .control');
+        const input = el.querySelector('input');
+        const list = el.querySelector('datalist');
+
+        expect(input.parentElement).toBe(control);
+        expect(el.querySelector('#content-combobox-start').parentElement).toBe(control.querySelector('.control-start'));
+        expect(input.getAttribute('list')).toBe(list.id);
+        expect(input.list).toBe(list);
+        expect(list.querySelectorAll('option').length).toBe(2);
+
+        el.querySelector('.control-clear').click();
+        await nextFrame();
+        await nextFrame();
+        expect(el.value).toBe('');
+        expect(document.activeElement).toBe(input);
+    });
 });

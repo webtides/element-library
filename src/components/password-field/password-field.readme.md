@@ -62,6 +62,16 @@ The label, the help message, the control and the error message stack in a column
 
 On a touch screen (`@media (any-pointer: coarse)`) the reveal button is at least `--el-touch-target` wide and high, the input at least that high, and the clear cross of an invalid field at least that wide and high. Without that token, and on a fine pointer, the sizes stay as they are.
 
+## Content in the control
+
+As [`el-input-field`](../input-field/input-field.readme.md#content-in-the-control), which this field extends, it takes an element of the page with `slot="start"` or `slot="end"` into its control, and `clearable="true"` adds a button that empties it (`clear-label` is its name).
+
+```html
+<el-password-field name="password" label="Password" minlength="12"><span slot="end">min. 12</span></el-password-field>
+```
+
+The button that shows the password is not part of the control: it stands after it, as it does without content.
+
 ## Accessibility
 
 - The reveal button is a real `<button>` with an `aria-label` that flips between "Show password" and "Hide password", and an `aria-pressed` state, so its purpose and state are announced. Set `show-label` and `hide-label` to translate the two labels.

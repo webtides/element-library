@@ -964,6 +964,18 @@ export const Page = {
                             error-message="Please enter a valid email."
                         ></el-input-field>
 
+                        <el-input-field
+                            name="site"
+                            type="text"
+                            label="Your studio's site"
+                            placeholder="example.com"
+                            clearable="true"
+                            autocapitalize="none"
+                            help-message="Where we can see your work."
+                        >
+                            <span slot="start">https://</span>
+                        </el-input-field>
+
                         <el-password-field
                             name="password"
                             label="Choose a password"

@@ -226,6 +226,189 @@ describe('Feature | Styles | native.css', () => {
         });
     });
 
+    describe('a control with content of the page in it', () => {
+        const TAGS = ['input', 'password', 'otp', 'combobox', 'date'];
+        const frames = async () => {
+            await nextFrame();
+            await nextFrame();
+        };
+        const fields = (attributes = '') =>
+            TAGS.map(
+                (tag) =>
+                    `<el-${tag}-field name="native-control-${tag}" label="Label" ${attributes}><span slot="end">kg</span></el-${tag}-field>`,
+            ).join('');
+
+        describe('with a theme alone', () => {
+            useStyles(theme);
+
+            it('stands beside the input, which keeps the look of the browser', async () => {
+                const el = await fixture(
+                    `<el-input-field name="native-control-headless" label="Weight"><span slot="end">kg</span></el-input-field>`,
+                );
+                await frames();
+                const [control, input, unit] = ['.control', 'input', '[slot="end"]'].map((selector) =>
+                    el.querySelector(selector),
+                );
+
+                expect(getComputedStyle(control).borderTopWidth).toBe('0px');
+                expect(getComputedStyle(input).borderTopStyle).toBe('inset');
+                expect(input.getBoundingClientRect().right).toBeLessThanOrEqual(unit.getBoundingClientRect().left);
+            });
+        });
+
+        describe('with a theme and native.css', () => {
+            useStyles(theme, native);
+
+            it('has the look of an input around all of it, and the input inside has none', async () => {
+                const wrapper = await fixture(`<div style="color-scheme: light">${fields()}</div>`);
+                await frames();
+
+                for (const field of wrapper.children) {
+                    const control = field.querySelector('.control');
+                    const input = getComputedStyle(field.querySelector('input'));
+
+                    expect(look(control), field.localName).toEqual(DECORATED);
+                    expect(getComputedStyle(control).backgroundColor, field.localName).toBe('rgb(255, 255, 255)');
+                    expect(
+                        [input.borderTopWidth, input.paddingLeft, input.backgroundColor, input.minHeight],
+                        field.localName,
+                    ).toEqual(['0px', '0px', 'rgba(0, 0, 0, 0)', '0px']);
+                }
+            });
+
+            it('is as high and as wide as an input alone, at every size', async () => {
+                const wrapper = await fixture(`
+                    <div style="width: 300px">
+                        ${['small', 'medium', 'large']
+                            .map(
+                                (size) => `
+                            <el-input-field name="native-plain-${size}" label="Plain" size="${size}" value="12"></el-input-field>
+                            <el-input-field name="native-content-${size}" label="Content" size="${size}" clearable="true" value="12">
+                                <span slot="start">ca.</span><span slot="end">kg</span>
+                            </el-input-field>`,
+                            )
+                            .join('')}
+                    </div>
+                `);
+                await frames();
+                // Both have a value, and so the mark of a field that was touched beside them.
+                const boxes = [...wrapper.children].map((field) => sizeOf(field.querySelector('.control, input')));
+
+                for (const index of [0, 2, 4]) {
+                    expect(boxes[index + 1].height, `size ${index / 2}`).toBe(boxes[index].height);
+                    expect(boxes[index + 1].width, `size ${index / 2}`).toBe(boxes[index].width);
+                }
+                expect(
+                    [1, 3, 5].map((index) => getComputedStyle(wrapper.children[index].querySelector('input')).fontSize),
+                ).toEqual(['14px', '16px', '18px']);
+                // The text of the content has the size of the text of the input.
+                expect(getComputedStyle(wrapper.children[5].querySelector('[slot="end"]')).fontSize).toBe('18px');
+            });
+
+            it('is as high as the input of the same field alone, for every field that extends the input field', async () => {
+                const wrapper = await fixture(`
+                    <div>${TAGS.map((tag) => `<el-${tag}-field name="native-alone-${tag}" label="Alone"></el-${tag}-field>`).join('')}${fields()}</div>
+                `);
+                await frames();
+                const heights = [...wrapper.children].map(
+                    (field) =>
+                        sizeOf(field.querySelector(':scope > .field > .control, :scope > .field > input')).height,
+                );
+
+                expect(heights.slice(TAGS.length)).toEqual(heights.slice(0, TAGS.length));
+            });
+
+            it('shows the focus ring around all of it while its input has the focus, and not for a button in it', async () => {
+                const el = await fixture(`
+                    <el-input-field name="native-control-focus" label="Key" value="abc" style="--el-duration-md: 0s">
+                        <button slot="end" type="button">Copy</button>
+                    </el-input-field>
+                `);
+                await frames();
+                const [control, input, button] = ['.control', 'input', 'button[slot="end"]'].map((selector) =>
+                    el.querySelector(selector),
+                );
+                const resting = getComputedStyle(control).borderTopColor;
+
+                input.focus();
+                await frames();
+                expect(getComputedStyle(control).borderTopColor).not.toBe(resting);
+                expect(getComputedStyle(control).boxShadow).not.toBe('none');
+                expect(getComputedStyle(input).boxShadow).toBe('none');
+                expect(getComputedStyle(input).outlineStyle).toBe('none');
+
+                button.focus();
+                await frames();
+                expect(getComputedStyle(control).borderTopColor).toBe(resting);
+                expect(getComputedStyle(control).boxShadow).toBe('none');
+            });
+
+            it('has the border of a field that is not valid around all of it', async () => {
+                const wrapper = await fixture(`
+                    <div style="color-scheme: light; --el-duration-md: 0s">${fields('valid="false" touched="true"')}</div>
+                `);
+                await frames();
+
+                for (const field of wrapper.children) {
+                    expect(getComputedStyle(field.querySelector('.control')).borderTopColor, field.localName).toBe(
+                        'rgb(213, 34, 34)',
+                    );
+                }
+            });
+
+            it('fades as a whole while it is disabled, and its input not a second time', async () => {
+                const wrapper = await fixture(`<div>${fields('disabled="true"')}</div>`);
+                await frames();
+
+                for (const field of wrapper.children) {
+                    expect(getComputedStyle(field.querySelector('.control')).opacity, field.localName).toBe('0.55');
+                    expect(getComputedStyle(field.querySelector('.control')).cursor, field.localName).toBe(
+                        'not-allowed',
+                    );
+                    expect(getComputedStyle(field.querySelector('input')).opacity, field.localName).toBe('1');
+                }
+            });
+
+            it('keeps the look when the page has a reset', async () => {
+                const reset = document.createElement('style');
+                reset.textContent = `
+                    *, ::before, ::after { border-width: 0; border-style: solid; border-color: rgb(229, 231, 235); }
+                    button, input, optgroup, select, textarea { padding: 0; margin: 0; font-size: 100%; color: inherit; }
+                `;
+                document.head.append(reset);
+                try {
+                    const wrapper = await fixture(`<div style="color-scheme: light">${fields()}</div>`);
+                    await frames();
+                    for (const field of wrapper.children) {
+                        expect(look(field.querySelector('.control')), field.localName).toEqual(DECORATED);
+                    }
+                } finally {
+                    reset.remove();
+                }
+            });
+
+            describe('on a touch screen', () => {
+                useTouchScreen();
+
+                it('is at least --el-touch-target high, as an input alone', async () => {
+                    const wrapper = await fixture(`
+                        <div style="--el-touch-target: 48px">
+                            <el-input-field name="native-touch-plain" label="Plain" size="small"></el-input-field>
+                            <el-input-field name="native-touch-content" label="Content" size="small"><span slot="end">kg</span></el-input-field>
+                        </div>
+                    `);
+                    await frames();
+                    const [plain, content] = [...wrapper.children].map(
+                        (field) => sizeOf(field.querySelector('.control, input')).height,
+                    );
+
+                    expect(content).toBe(48);
+                    expect(content).toBe(plain);
+                });
+            });
+        });
+    });
+
     describe('the tokens of a theme', () => {
         it('give way to a token of the page that is in no layer, also when the theme is loaded after it', async () => {
             const own = document.createElement('style');

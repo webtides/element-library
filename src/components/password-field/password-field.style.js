@@ -1,6 +1,7 @@
 import hostStyle from '../../styles/host.style.js';
 import formControlStyle from '../../styles/form-control.style.js';
 import sizeStyle from '../../styles/size.style.js';
+import inputControlStyle from '../../styles/input-control.style.js';
 
 const css = String.raw;
 
@@ -81,5 +82,6 @@ export default [
     hostStyle('el-password-field'),
     formControlStyle('el-password-field'),
     sizeStyle('el-password-field'),
+    inputControlStyle('el-password-field'),
     style,
 ].join('\n');

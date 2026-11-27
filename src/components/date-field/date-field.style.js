@@ -1,6 +1,7 @@
 import hostStyle from '../../styles/host.style.js';
 import formControlStyle from '../../styles/form-control.style.js';
 import sizeStyle from '../../styles/size.style.js';
+import inputControlStyle from '../../styles/input-control.style.js';
 
 const css = String.raw;
 
@@ -48,6 +49,10 @@ const style = css`
     }
 `;
 
-export default [hostStyle('el-date-field'), formControlStyle('el-date-field'), sizeStyle('el-date-field'), style].join(
-    '\n',
-);
+export default [
+    hostStyle('el-date-field'),
+    formControlStyle('el-date-field'),
+    sizeStyle('el-date-field'),
+    inputControlStyle('el-date-field'),
+    style,
+].join('\n');

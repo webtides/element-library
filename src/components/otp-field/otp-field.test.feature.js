@@ -381,4 +381,30 @@ describe('Feature | OtpField', () => {
             expect(completes).toEqual(['123456', '123456']);
         });
     });
+
+    it('takes content of the page into its control, and the button that clears it empties the code', async () => {
+        const el = await fixture(`
+            <el-otp-field name="content-otp" label="Code" clearable="true">
+                <span slot="start" id="content-otp-start">G-</span>
+            </el-otp-field>
+        `);
+        await frames();
+        const control = el.querySelector(':scope > .field > .control');
+        const input = el.querySelector('input');
+        expect(input.parentElement).toBe(control);
+        expect(el.querySelector('#content-otp-start').parentElement).toBe(control.querySelector('.control-start'));
+        expect(el.querySelector('.control-clear').hidden).toBe(true);
+
+        await userEvent.click(input);
+        await userEvent.keyboard('123 456');
+        await frames();
+        expect(el.value).toBe('123456');
+        expect(el.querySelector('.control-clear').hidden).toBe(false);
+
+        await userEvent.click(el.querySelector('.control-clear'));
+        await settled();
+        expect(input.value).toBe('');
+        expect(String(el.value ?? '')).toBe('');
+        expect(document.activeElement).toBe(input);
+    });
 });

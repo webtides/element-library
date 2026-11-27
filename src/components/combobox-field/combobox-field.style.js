@@ -1,6 +1,7 @@
 import hostStyle from '../../styles/host.style.js';
 import formControlStyle from '../../styles/form-control.style.js';
 import sizeStyle from '../../styles/size.style.js';
+import inputControlStyle from '../../styles/input-control.style.js';
 
 const css = String.raw;
 
@@ -52,5 +53,6 @@ export default [
     hostStyle('el-combobox-field'),
     formControlStyle('el-combobox-field'),
     sizeStyle('el-combobox-field'),
+    inputControlStyle('el-combobox-field'),
     style,
 ].join('\n');

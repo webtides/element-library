@@ -84,6 +84,14 @@ The label, the help message, the control and the error message stack in a column
 
 On a touch screen (`@media (any-pointer: coarse)`) the control is at least `--el-touch-target` high. Without that token, and on a fine pointer, the sizes stay as they are.
 
+## Content in the control
+
+As [`el-input-field`](../input-field/input-field.readme.md#content-in-the-control), which this field extends, it takes an element of the page with `slot="start"` or `slot="end"` into its control, and `clearable="true"` adds a button that empties it (`clear-label` is its name).
+
+```html
+<el-combobox-field name="city" label="City" options='["Berlin", "Bern"]' clearable="true"></el-combobox-field>
+```
+
 ## Accessibility
 
 - The control is a native text input with a list: the browser makes it a combobox for a screen reader, named by the label (`<label for>`), and announces the suggestions as it shows them.

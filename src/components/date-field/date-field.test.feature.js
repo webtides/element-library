@@ -604,4 +604,30 @@ describe('Feature | DateField', () => {
             expect(results.violations.map((violation) => violation.id)).toEqual([]);
         });
     });
+
+    it('takes content of the page into its control, and keeps the limits of its date on the input', async () => {
+        const el = await fixture(`
+            <el-date-field name="content-date" label="Delivery" min="2026-01-01" max="2026-12-31" clearable="true" value="2026-11-27">
+                <span slot="end" id="content-date-end">UTC</span>
+            </el-date-field>
+        `);
+        await frames();
+        const control = el.querySelector(':scope > .field > .control');
+        const input = el.querySelector('input');
+
+        expect(input.parentElement).toBe(control);
+        expect(el.querySelector('#content-date-end').parentElement).toBe(control.querySelector('.control-end'));
+        expect([input.type, input.min, input.max, input.value]).toEqual([
+            'date',
+            '2026-01-01',
+            '2026-12-31',
+            '2026-11-27',
+        ]);
+        expect(await accessibleDescription(input)).toBe('UTC');
+
+        el.querySelector('.control-clear').click();
+        await frames();
+        expect(input.value).toBe('');
+        expect(String(el.value ?? '')).toBe('');
+    });
 });

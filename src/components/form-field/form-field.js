@@ -320,7 +320,7 @@ export default class FormField extends TemplateElement {
      * The id is another one on every page load. Server-rendered markup has the ids of the server
      * until the element starts, which writes its own to the same elements.
      * @private
-     * @param {'input' | 'help-message' | 'error-message' | 'list'} part
+     * @param {'input' | 'help-message' | 'error-message' | 'list' | 'control-start' | 'control-end'} part
      * @returns {string}
      */
     _idOf(part) {

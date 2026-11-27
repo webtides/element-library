@@ -144,3 +144,67 @@ export const Length = {
         </div>
     `,
 };
+
+export const Content = {
+    name: 'Content in the control',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'An element of the page with `slot="start"` or `slot="end"` is taken into the control: an icon, a unit, the start of an address, a button. A click on a text or an icon puts the focus into the input, a button keeps its click. `clearable="true"` adds a button that empties the field while it has a value. With `styles/native.css`, which this Storybook loads with every theme, the border and the focus ring are around all of it.',
+            },
+        },
+    },
+    render: () => html`
+        <div style="display:grid;gap:1rem;max-width:22rem">
+            <el-input-field
+                name="content-search"
+                label="Search"
+                clearable="true"
+                value="tea"
+                clear-label="Clear the search"
+            >
+                <svg
+                    slot="start"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    aria-hidden="true"
+                >
+                    <path d="M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14zM20 20l-4-4" />
+                </svg>
+            </el-input-field>
+            <el-input-field name="content-price" label="Price" inputmode="decimal" help-message="Without tax">
+                <span slot="end">Euro</span>
+            </el-input-field>
+            <el-input-field name="content-site" label="Your site" size="small">
+                <span slot="start">https://</span>
+            </el-input-field>
+            <el-input-field name="content-key" label="Key" value="4f2a-91c7" size="large">
+                <button
+                    slot="end"
+                    type="button"
+                    style="border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-decoration:underline"
+                    onclick="navigator.clipboard?.writeText(this.closest('el-input-field').value)"
+                >
+                    Copy
+                </button>
+            </el-input-field>
+            <el-input-field name="content-weight" label="Weight" required="true" error-message="Say how heavy it is">
+                <span slot="end">kg</span>
+            </el-input-field>
+            <el-input-field name="content-disabled" label="Disabled" value="12" disabled="true" clearable="true">
+                <span slot="end">kg</span>
+            </el-input-field>
+            <div dir="rtl">
+                <el-input-field name="content-rtl" label="السعر" clearable="true" value="12">
+                    <span slot="end">يورو</span>
+                </el-input-field>
+            </div>
+        </div>
+    `,
+};

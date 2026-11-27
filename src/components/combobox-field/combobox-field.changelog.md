@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- Takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

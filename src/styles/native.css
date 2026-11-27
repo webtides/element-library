@@ -134,6 +134,106 @@ el-select-field select:disabled ~ .dropdown-indicator {
 }
 
 /*
+ * A text field with content of the page in its control: something at the start
+ * or at the end of it, or the button that clears it. The field renders a row
+ * around its input for that (.control), and the row is the control to the eye:
+ * it has the border, the surface and the focus ring, and the input inside of
+ * it has none of them. It is as high as an input of its size alone.
+ *
+ * The rules for the input in the row name the row, so they win over the rules
+ * for an input above whichever comes first.
+ */
+el-input-field .control,
+el-password-field .control,
+el-otp-field .control,
+el-combobox-field .control,
+el-date-field .control {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(var(--el-control-height) * var(--_el-size-scale, 1));
+  border: var(--el-border-width) solid var(--el-color-border);
+  border-radius: var(--el-radius-md);
+  padding-inline: var(--el-space-3);
+  background: var(--el-color-bg);
+  color: var(--el-color-fg);
+  font-family: var(--el-font-family);
+  font-size: var(--_el-size-font-size, var(--el-font-size-md));
+  line-height: var(--el-line-height);
+  transition:
+    border-color var(--el-duration-md) var(--el-ease),
+    box-shadow var(--el-duration-md) var(--el-ease);
+}
+
+@media (any-pointer: coarse) {
+  el-input-field .control,
+  el-password-field .control,
+  el-otp-field .control,
+  el-combobox-field .control,
+  el-date-field .control {
+    min-height: max(calc(var(--el-control-height) * var(--_el-size-scale, 1)), var(--el-touch-target, 0px));
+  }
+}
+
+el-input-field .control input,
+el-password-field .control input,
+el-otp-field .control input,
+el-combobox-field .control input,
+el-date-field .control input {
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  padding-inline: 0;
+  background: transparent;
+  font-size: inherit;
+}
+
+el-input-field .control input:focus,
+el-password-field .control input:focus,
+el-otp-field .control input:focus,
+el-combobox-field .control input:focus,
+el-date-field .control input:focus {
+  box-shadow: none;
+}
+
+/* The ring is for the input: a button in the row has its own. */
+el-input-field .control:has(input:focus),
+el-password-field .control:has(input:focus),
+el-otp-field .control:has(input:focus),
+el-combobox-field .control:has(input:focus),
+el-date-field .control:has(input:focus) {
+  border-color: var(--el-color-focus-ring);
+  box-shadow:
+    0 0 0 var(--el-focus-ring-offset) var(--el-color-bg),
+    0 0 0 calc(var(--el-focus-ring-offset) + var(--el-focus-ring-width)) var(--el-color-focus-ring);
+}
+
+el-input-field:state(invalid) .control,
+el-password-field:state(invalid) .control,
+el-otp-field:state(invalid) .control,
+el-combobox-field:state(invalid) .control,
+el-date-field:state(invalid) .control {
+  border-color: var(--el-color-danger);
+}
+
+/* The row fades as a whole, and its input not a second time. */
+el-input-field .control:has(input:disabled),
+el-password-field .control:has(input:disabled),
+el-otp-field .control:has(input:disabled),
+el-combobox-field .control:has(input:disabled),
+el-date-field .control:has(input:disabled) {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+el-input-field .control input:disabled,
+el-password-field .control input:disabled,
+el-otp-field .control input:disabled,
+el-combobox-field .control input:disabled,
+el-date-field .control input:disabled {
+  opacity: 1;
+}
+
+/*
  * The parts of a date (day, month, year) stand in a wrapper that has a padding
  * of its own above and below. Without it the control is as high as an input
  * for text beside it.

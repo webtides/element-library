@@ -373,4 +373,36 @@ describe('Feature | PasswordField', () => {
             expect(sizeOf(wrapper.querySelector('input')).height).toBeGreaterThanOrEqual(44);
         });
     });
+
+    it('takes content of the page into its control, and keeps its own button beside it', async () => {
+        const el = await fixture(`
+            <el-password-field name="content-password" label="Password" clearable="true" value="secret">
+                <span slot="end" id="content-password-end">min. 12</span>
+            </el-password-field>
+        `);
+        await nextFrame();
+        await nextFrame();
+        const control = el.querySelector(':scope > .field > .control');
+        const end = el.querySelector('#content-password-end');
+        const toggle = el.querySelector('[data-password-toggle]');
+
+        expect(el.querySelector('input').parentElement).toBe(control);
+        expect(end.parentElement).toBe(control.querySelector('.control-end'));
+        // The toggle is not part of the control: it stands after it, as it did.
+        expect(toggle.parentElement).toBe(el.querySelector(':scope > .field'));
+        expect(toggle.getBoundingClientRect().left).toBeGreaterThanOrEqual(control.getBoundingClientRect().right);
+
+        // The toggle renders the input again: the content is the same element in the same place.
+        toggle.click();
+        await nextFrame();
+        await nextFrame();
+        expect(el.querySelector('input').getAttribute('type')).toBe('text');
+        expect(el.querySelector('#content-password-end')).toBe(end);
+        expect(end.parentElement).toBe(el.querySelector('.control-end'));
+
+        el.querySelector('.control-clear').click();
+        await nextFrame();
+        await nextFrame();
+        expect(el.value).toBe('');
+    });
 });

@@ -40,6 +40,8 @@ import '@webtides/element-library/input-field/define';
 | `size` | `string` | `'medium'` | `small`, `medium` or `large`: the height, the padding and the font size of the control. Reflected. Shows once `styles/native.css` decorates the control. |
 | `placeholder` | `string` | `''` | Placeholder text displayed when the input is empty |
 | `pattern` | `string\|boolean` | `false` | Regular expression pattern for input validation. If false, allows any input |
+| `clearable` | `boolean` | `false` | Whether the control has a button that empties it. The button shows while the field has a value and is not disabled |
+| `clearLabel` | `string` | `'Clear'` | The name of that button for assistive technology |
 | `maxlength` | `number` | `null` | Passed on to the control as `maxlength`: the browser takes no more characters than this while the user types |
 | `minlength` | `number` | `null` | Passed on as `minlength`: a text the user has typed that is shorter makes the field invalid |
 | `autocomplete` | `string` | `null` | Passed on to the control as `autocomplete` (e.g. `email`, `current-password`, `one-time-code`) |
@@ -84,7 +86,65 @@ On a touch screen (`@media (any-pointer: coarse)`) the input is at least `--el-t
 
 #### Slots
 
-_None_ - The component generates its own input element internally
+The field has no shadow root, so these are no slots of the platform: an element of the page with the `slot` attribute, among the children of the field, is taken into the control when the field renders. See [Content in the control](#content-in-the-control).
+
+| Name    | Description                                                                           |
+| ------- | ------------------------------------------------------------------------------------- |
+| `start` | Content at the start of the control, in front of the text: an icon, a text, a button. |
+| `end`   | Content at the end of the control, after the text: a unit, a button.                  |
+
+## Content in the control
+
+A search field with a magnifying glass, a price with its currency, an address that starts with `https://`, a key with a button that copies it: the page puts an element with `slot="start"` or `slot="end"` into the field, and the field takes it into its control.
+
+```html
+<el-input-field name="q" label="Search" clearable="true">
+    <svg slot="start" aria-hidden="true">…</svg>
+</el-input-field>
+
+<el-input-field name="price" label="Price" inputmode="decimal">
+    <span slot="end">Euro</span>
+</el-input-field>
+
+<el-input-field name="site" label="Your site">
+    <span slot="start">https://</span>
+</el-input-field>
+
+<el-input-field name="key" label="Key" value="4f2a-91c7">
+    <el-copy-button slot="end" value="4f2a-91c7"></el-copy-button>
+</el-input-field>
+```
+
+- **In the control.** The content stands in a row with the input, the start in front of it and the end after it, and the text of the input does not run under it: the input is as wide as what is left. In a right-to-left page the start is at the right.
+- **The elements of the page themselves.** The field moves them, it does not copy them: a listener of the page stays on its button, and the element is the same after every render. An element that comes later is taken in with the next render (`field.requestUpdate()`). A text needs an element around it (`<span slot="end">kg</span>`).
+- **A click on a text or on an icon** puts the focus into the input: to the eye all of it is the control. **A button or a link** there keeps its click and is a stop of the Tab key of its own, after the input for one at the end.
+- **A text is read with the input.** A unit or a currency is part of what the value means, so the input names the content as a part of its description (`aria-describedby`), in front of the help message: "Price, edit text, Euro". Write a text a screen reader can say, "Euro" before "€". **An icon is not**: give it `aria-hidden="true"`. Content with a control in it is no description either: the button has a name of its own.
+- **The mark of a field that was touched** (✓ or ✗) keeps its place beside the control, and does not lie on the content at the end.
+- **Server-rendered**, the content is in its place in the markup, and the element takes it over where it is.
+
+#### With and without `styles/native.css`
+
+The border of a native input cannot have anything inside of it. So the field renders a row around the input (`.control`), only while there is content for it or the field is `clearable`, and [`styles/native.css`](../../styles/native.css) makes that row the control: it has the border, the surface and the radius of an input, and the input inside of it has none. The focus ring is around all of it while the input has the focus, and not for a button in it, which has its own. The border of a field that is not valid is around all of it, and a disabled field fades as a whole. The row is as high as an input of its `size` alone.
+
+Without that file the input keeps the border of the browser, as every control does, and the content stands beside it in the row.
+
+#### The button that clears the field
+
+`clearable="true"` adds a button at the end of the control, in front of the content at the end. It shows while the field has a value and is not disabled.
+
+```html
+<el-input-field name="city" label="City" clearable="true" clear-label="Clear the city"></el-input-field>
+```
+
+- It empties the value, `input-change` reports the empty value, and the focus is in the input after.
+- It is a button with a name (`clear-label`, `Clear` by default: set it for other languages), and a stop of the Tab key after the input.
+- On a touch screen it is at least `--el-touch-target` wide and high.
+
+The fields that extend this one have both: [`el-combobox-field`](../combobox-field/combobox-field.readme.md), [`el-date-field`](../date-field/date-field.readme.md), [`el-otp-field`](../otp-field/otp-field.readme.md) and [`el-password-field`](../password-field/password-field.readme.md), which keeps its own button beside the control.
+
+#### Not in this element
+
+Two controls joined into one row: a select for the country code in front of a phone number, a button outside of the field that touches it. A select or a textarea with content in it.
 
 ## Keyboard and autofill hints
 
@@ -127,6 +187,8 @@ The fields that extend this one take both as well (`el-password-field`, `el-comb
 ## Accessibility
 
 - Includes proper ARIA attributes (`aria-describedby`, `aria-invalid`, `aria-errormessage`)
+- A text at the start or at the end of the control is part of the description of the input, an icon is not, and a button there is a control of its own
+- The button that clears the field has a name (`clear-label`)
 - Links labels to inputs via `for` attribute
 - Supports screen reader only labels
 - Visual validity indicators (✓ for valid, × for invalid)

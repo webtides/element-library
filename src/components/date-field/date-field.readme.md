@@ -101,6 +101,16 @@ The label, the help message, the control and the error message stack in a column
 
 On a touch screen (`@media (any-pointer: coarse)`) the control is at least `--el-touch-target` high. Without that token, and on a fine pointer, the sizes stay as they are.
 
+## Content in the control
+
+As [`el-input-field`](../input-field/input-field.readme.md#content-in-the-control), which this field extends, it takes an element of the page with `slot="start"` or `slot="end"` into its control, and `clearable="true"` adds a button that empties it (`clear-label` is its name).
+
+```html
+<el-date-field name="start" label="Start" type="time"><span slot="end">UTC</span></el-date-field>
+```
+
+The control of the browser has an icon of its own at its end, which opens the picker: content at the end stands after it.
+
 ## Accessibility
 
 - The control is the native one for a date or a time, named by the label (`<label for>`). Its parts (day, month, year) are entered with the keyboard and changed with the arrow keys, and the picker of the browser brings its own keyboard handling.

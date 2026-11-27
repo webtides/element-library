@@ -103,6 +103,14 @@ The label, the help message, the control and the error message stack in a column
 
 On a touch screen (`@media (any-pointer: coarse)`) the control and the clear cross are at least `--el-touch-target` high. Without that token, and on a fine pointer, the sizes stay as they are.
 
+## Content in the control
+
+As [`el-input-field`](../input-field/input-field.readme.md#content-in-the-control), which this field extends, it takes an element of the page with `slot="start"` or `slot="end"` into its control, and `clearable="true"` adds a button that empties it (`clear-label` is its name).
+
+```html
+<el-otp-field name="code" label="Code"><span slot="start">G-</span></el-otp-field>
+```
+
 ## Accessibility
 
 - One native text input, named by the label (`<label for>`). A screen reader reads the code as one value, and the user moves in it as in any text.
