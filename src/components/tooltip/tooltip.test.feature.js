@@ -625,6 +625,28 @@ describe('Feature | Tooltip', () => {
             expect(el.open).toBe(false);
         });
 
+        it('closes in a browser that forgets the states it was told', async () => {
+            const { el } = await tooltipFixture();
+            const hidden = [];
+            el.addEventListener('tooltip-hide', () => hidden.push(1));
+
+            el.show();
+            await untilShown(el);
+
+            // WebKit: a moment after `states.add()`, `states.has()` is `false` and the set is
+            // empty, while the state still matches. Chromium keeps what it was told.
+            el._internals.states.has = () => false;
+            try {
+                el.hide();
+                await untilHidden(el);
+            } finally {
+                delete el._internals.states.has;
+            }
+
+            expect(el.matches(':state(open)')).toBe(false);
+            expect(hidden.length).toBe(1);
+        });
+
         it('fires tooltip-show and tooltip-hide, which reach a listener further up', async () => {
             const { wrapper, el } = await tooltipFixture();
 

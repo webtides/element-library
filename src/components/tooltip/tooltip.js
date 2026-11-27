@@ -80,6 +80,14 @@ export default class Tooltip extends TemplateElement {
          * @type {Set<'anchor' | 'tooltip' | 'focus'>}
          */
         this._reasons = new Set();
+
+        /**
+         * Whether the tooltip is shown, as it has said last (`:state(open)`). Kept here, and not
+         * read back from the states of the element: WebKit forgets what was added to them a
+         * moment later (`states.has()` is `false`), while the state still matches.
+         * @private
+         */
+        this._shown = false;
     }
 
     properties() {
@@ -337,6 +345,7 @@ export default class Tooltip extends TemplateElement {
         }
 
         if (!this.matches(':popover-open')) this.showPopover();
+        this._shown = true;
         this._internals.states.add('open');
         this._startPositioning();
 
@@ -354,7 +363,8 @@ export default class Tooltip extends TemplateElement {
     /** @private */
     _applyClose() {
         // Not shown: nothing to undo and nothing to report.
-        if (!this._internals.states.has('open')) return;
+        if (!this._shown) return;
+        this._shown = false;
 
         this._stopPositioning();
         this._openListeners?.abort();
