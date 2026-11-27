@@ -11,6 +11,9 @@ import { define as defineListItem } from '../list-item/list-item.js';
 import { define as defineNav } from '../nav/nav.js';
 import { define as defineNavItem } from '../nav-item/nav-item.js';
 import { define as defineScrollToTop } from '../scroll-to-top/scroll-to-top.js';
+import { define as defineStatusBar } from '../status-bar/status-bar.js';
+import { define as defineTree } from '../tree/tree.js';
+import { define as defineTreeItem } from '../tree-item/tree-item.js';
 import { toast } from '../toast/toast.js';
 define();
 defineAppBar();
@@ -23,6 +26,9 @@ defineListItem();
 defineNav();
 defineNavItem();
 defineScrollToTop();
+defineStatusBar();
+defineTree();
+defineTreeItem();
 
 export default {
     title: 'Components/AppFrame',
@@ -356,6 +362,75 @@ export const WrittenOnce = {
                     )}
                 </el-list>
             </main>
+        </el-app-frame>
+    `,
+};
+
+const paragraphs = [
+    'The frame of an application has five regions: a header, a footer, a navigation, an aside and the content. The page writes the element of every region, and the frame lays it out.',
+    'A tool for a desktop has a narrow line of state at its lower edge. It says whether the connection is there, where the cursor is and whether the document is saved.',
+    'The line keeps its height whatever is in it, and the content scrolls above it.',
+];
+
+export const Workbench = {
+    name: 'A tool for a desktop',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'An editor: the files in the navigation, the outline of the document in the aside, and an `el-status-bar` in the footer. The line of state is for a desktop (`wide-only="footer"`): where the frame is narrow it is not there, and the files open as a drawer.',
+            },
+        },
+    },
+    render: () => html`
+        <el-app-frame wide-only="footer aside" navigation-label="Files">
+            <header slot="header">
+                <el-app-bar heading-level="1">
+                    <el-button slot="start" data-navigation-toggle circle="true" aria-label="Files">${menu}</el-button>
+                    Notes
+                </el-app-bar>
+            </header>
+
+            <nav slot="navigation" aria-label="Files" style="padding:0.5rem">
+                <el-tree label="Files">
+                    <el-tree-item label="Guides" open="true">
+                        <el-tree-item label="The frame of an application" href="#frame" current="true"></el-tree-item>
+                        <el-tree-item label="Destinations" href="#destinations"></el-tree-item>
+                        <el-tree-item label="A line of state" href="#state"></el-tree-item>
+                    </el-tree-item>
+                    <el-tree-item label="Drafts">
+                        <el-tree-item label="Ideas for the next release" href="#ideas"></el-tree-item>
+                    </el-tree-item>
+                    <el-tree-item label="Readme" href="#readme"></el-tree-item>
+                </el-tree>
+            </nav>
+
+            <main id="workbench-main" style="padding:1rem 1.5rem;max-width:44rem">
+                <h2 style="margin:0 0 1rem;font-size:1.5rem;font-weight:700">The frame of an application</h2>
+                ${Array.from(
+                    { length: 8 },
+                    (_, index) => html`<p style="margin:0 0 1rem">${paragraphs[index % paragraphs.length]}</p>`,
+                )}
+            </main>
+
+            <aside slot="aside" aria-label="Outline" style="padding:1rem">
+                <h2 style="margin:0 0 0.75rem;font-size:1.125rem;font-weight:600">Outline</h2>
+                <el-list label="Headings of the document" density="compact" appearance="plain">
+                    <el-list-item href="#regions">The regions</el-list-item>
+                    <el-list-item href="#scrolling">What scrolls</el-list-item>
+                    <el-list-item href="#state">A line of state</el-list-item>
+                </el-list>
+            </aside>
+
+            <footer slot="footer">
+                <el-status-bar>
+                    <span>Connected</span>
+                    <span>Line 12, column 4</span>
+                    <span role="status">Saved</span>
+                    <span slot="end">Markdown</span>
+                    <el-button slot="end">main</el-button>
+                </el-status-bar>
+            </footer>
         </el-app-frame>
     `,
 };

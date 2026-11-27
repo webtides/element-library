@@ -292,6 +292,12 @@ const kit = [
         blurb: 'The destinations of an application: a bar on a phone, a rail beside it.',
         fresh: true,
     },
+    {
+        tag: 'el-status-bar',
+        category: 'Navigation',
+        blurb: 'A narrow line of state at the lower edge of a tool.',
+        fresh: true,
+    },
     { tag: 'el-card', category: 'Surfaces', blurb: 'A surface that groups what belongs together.' },
     { tag: 'el-avatar', category: 'Surfaces', blurb: 'An image, initials or an icon for a person.' },
     { tag: 'el-badge', category: 'Surfaces', blurb: 'A label for a status or a count.' },
@@ -618,6 +624,13 @@ class DemoKitBrowser extends TemplateElement {
                       ></el-pagination>`
                     : ''
             }
+            <!-- The state of the list in one line: a status bar keeps its height, whatever it says. -->
+            <el-status-bar class="block mt-6" style="border:1px solid var(--el-color-border,currentColor);border-top:0">
+                <span>${items.length} of ${kit.length} components</span>
+                <span>Page ${Math.min(this.page, pages)} of ${pages}</span>
+                <span slot="end">${this.sort === 'name' ? 'A to Z' : 'By category'}</span>
+                <el-button slot="end" data-reload>Reload</el-button>
+            </el-status-bar>
 
             <el-drawer label="${selected ? selected.tag : 'Details'}">
                 ${

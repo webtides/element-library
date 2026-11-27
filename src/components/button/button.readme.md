@@ -156,6 +156,8 @@ A button with `data-navigation-toggle` opens the navigation of an [`el-app-frame
 <el-button data-navigation-toggle circle="true" aria-label="Navigation"><svg aria-hidden="true">…</svg></el-button>
 ```
 
+In an [`el-status-bar`](../status-bar/status-bar.readme.md) a button is as high as the bar and plain, and has its small text. Its focus ring is inside of it there: around the button there is the edge of the bar, and under the bar the edge of the screen. The bar says all of that in CSS properties that are inherited.
+
 ## A toggle button
 
 With `toggle` the button stays pressed: "Bold" in the toolbar of an editor, "Mute", a filter above a list, the star of a favourite.

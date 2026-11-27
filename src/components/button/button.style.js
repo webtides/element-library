@@ -95,7 +95,9 @@ const style = css`
        gives it one. */
     .button:focus-visible {
         outline: var(--el-focus-ring-width, 2px) solid var(--el-color-focus-ring, transparent);
-        outline-offset: var(--el-focus-ring-offset, 2px);
+        /* A container that has the edge of the screen around it, an el-status-bar, says where the
+           ring is: inside of the button. */
+        outline-offset: var(--_el-context-focus-ring-offset, var(--el-focus-ring-offset, 2px));
     }
 
     /* Without a theme the ring is inside of the control, in the colour of the label. Nothing says

@@ -105,7 +105,7 @@ Reads `--el-color-bg` and `--el-color-fg` for its surface and its text, `--el-co
 
 ## What the page writes, and what the frame does
 
-The frame knows regions, not what they mean: the footer is a bar of destinations on a phone and a line of state on a desktop. So the page writes the element of every region, which says what it is, and the frame lays it out.
+The frame knows regions, not what they mean: the footer is a bar of destinations on a phone ([`el-nav`](../nav/nav.readme.md)) and a line of state on a desktop ([`el-status-bar`](../status-bar/status-bar.readme.md)). So the page writes the element of every region, which says what it is, and the frame lays it out.
 
 | Slot         | The page writes                          | Landmark                |
 | ------------ | ---------------------------------------- | ----------------------- |

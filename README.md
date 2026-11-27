@@ -107,6 +107,7 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | skeleton             | A shape in the place of content that is still loading, with sheen and pulse     | `0.1.0` |
 | slider               | CSS only slider element to slide child elements                                 | `0.4.3` |
 | spinner              | A spinner for a wait of unknown length, sized by the font size                  | `0.1.0` |
+| status-bar           | A narrow line of state at the lower edge of a tool for a desktop                | `0.1.0` |
 | sticky               |                                                                                 | `0.2.0` |
 | svg-use              |                                                                                 | `0.1.0` |
 | switch-field         | An on/off toggle backed by a native checkbox with role="switch"                 | `0.1.0` |
