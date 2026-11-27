@@ -146,3 +146,41 @@ export const Sizes = {
 export const Disabled = {
     render: () => html` <el-file-field name="locked" label="Your CV" disabled="true"></el-file-field> `,
 };
+
+export const DropArea = {
+    name: 'An area to drop a file onto',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'With `drop-message` the field shows an area around its control. Drag a file from the desktop over it: the line is drawn through while the file is over the area, and the drop is a choice as one in the dialog. The first field takes an OPML or a CSV file and says so for another one, the second takes several pictures.',
+            },
+        },
+    },
+    render: () => html`
+        <div style="display:grid;gap:1.5rem;max-width:26rem">
+            <el-file-field
+                name="drop-list"
+                label="Your list"
+                accept=".opml,.csv"
+                help-message="OPML or CSV"
+                error-message="An OPML or a CSV file, and one alone"
+                drop-message="Drop the list here, or choose it"
+            ></el-file-field>
+            <el-file-field
+                name="drop-pictures"
+                label="Pictures"
+                accept="image/*"
+                multiple="true"
+                error-message="Pictures only"
+                drop-message="Drop your pictures here"
+            ></el-file-field>
+            <el-file-field
+                name="drop-disabled"
+                label="Disabled"
+                disabled="true"
+                drop-message="Nothing can be dropped here"
+            ></el-file-field>
+        </div>
+    `,
+};

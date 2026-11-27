@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `drop-message`: an area to drop a file onto, around the control, with that text in it. The control took a drop on its small button, and nothing invited one. While a dragged file is over the area it looks different, and the host has the state `dragover`. A click on the area opens the dialog; the keyboard is on the control in it. ([#197](https://github.com/webtides/element-library/issues/197))
+- A drop is a choice as one in the dialog: the control has the files, `input` and `change` are fired on it, and `input-change` reports them. A drop that `accept` or `multiple` refuses is not taken, the control keeps what it had, and the field says that the choice was not valid, with its `error-message`. ([#197](https://github.com/webtides/element-library/issues/197))
+- Without JavaScript the area is a box with its text around the control of the browser, which posts the file with its form as before. ([#197](https://github.com/webtides/element-library/issues/197))
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

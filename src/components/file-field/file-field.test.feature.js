@@ -284,6 +284,266 @@ describe('Feature | FileField', () => {
         });
     });
 
+    describe('an area to drop a file onto', () => {
+        const areaOf = (el) => el.querySelector(':scope > .field > .drop-area');
+        const area = async (name, attributes = '') => {
+            const el = await fixture(
+                `<el-file-field name="${name}" label="List" drop-message="Drop the list here, or choose it" ${attributes}></el-file-field>`,
+            );
+            await frames();
+            return el;
+        };
+        const typed = (name, type) => new File([name], name, { type });
+        // What the browser hands over while files are dragged and when they are dropped.
+        const dragged = (...files) => {
+            const data = new DataTransfer();
+            for (const one of files) data.items.add(one);
+            return data;
+        };
+        const drag = (target, type, data) => {
+            const event = new DragEvent(type, { bubbles: true, cancelable: true, composed: true, dataTransfer: data });
+            target.dispatchEvent(event);
+            return event;
+        };
+        const drop = async (el, ...files) => {
+            const event = drag(areaOf(el), 'drop', dragged(...files));
+            await frames();
+            return event;
+        };
+
+        it('is not there without a text for it: the field is its control, as before', async () => {
+            const el = await fixture(`<el-file-field name="area-none" label="List"></el-file-field>`);
+            await frames();
+
+            expect(areaOf(el)).toBe(null);
+            expect(el.querySelector(':scope > .field > input[type="file"]')).not.toBe(null);
+        });
+
+        it('shows the text of the page around the control of the browser, which describes the control', async () => {
+            const el = await area('area-text', 'help-message="OPML or CSV"');
+            const control = controlOf(el);
+
+            expect(control.parentElement).toBe(areaOf(el));
+            expect(areaOf(el).querySelector('.drop-message').textContent).toBe('Drop the list here, or choose it');
+            expect(await accessibleName(control)).toBe('List');
+            expect(await accessibleDescription(control)).toBe('Drop the list here, or choose it OPML or CSV');
+            // The area is a box around both, wider and higher than the control.
+            expect(sizeOf(areaOf(el)).height).toBeGreaterThan(sizeOf(control).height + 20);
+            expect(getComputedStyle(areaOf(el)).borderTopStyle).toBe('dashed');
+        });
+
+        it('opens the dialog for a click on it, beside its control, and leaves a click on the control to the browser', async () => {
+            const el = await area('area-click');
+            const control = controlOf(el);
+            // Nothing opens in a test: the click on the control is counted and held back.
+            const clicks = [];
+            control.addEventListener('click', (event) => {
+                clicks.push(event.isTrusted ? 'user' : 'field');
+                event.preventDefault();
+            });
+
+            await userEvent.click(areaOf(el).querySelector('.drop-message'));
+            expect(clicks).toEqual(['field']);
+
+            await userEvent.click(control);
+            expect(clicks).toEqual(['field', 'user']);
+        });
+
+        it('has the keyboard on its control: the Tab key stops there, and the ring is around the area', async () => {
+            const wrapper = await fixture(`
+                <div>
+                    <button type="button" id="area-before">Before</button>
+                    <el-file-field name="area-keys" label="List" drop-message="Drop the list here"></el-file-field>
+                </div>
+            `);
+            await frames();
+            const el = wrapper.querySelector('el-file-field');
+            wrapper.querySelector('#area-before').focus();
+
+            await userEvent.keyboard('{Tab}');
+
+            expect(document.activeElement).toBe(controlOf(el));
+            expect(getComputedStyle(areaOf(el)).outlineStyle).toBe('solid');
+            expect(getComputedStyle(controlOf(el)).outlineStyle).toBe('none');
+        });
+
+        it('looks different while a file is over it, says so on the host, and allows the drop', async () => {
+            const el = await area('area-over', 'style="--el-duration-md: 0s"');
+            const data = dragged(file('list.opml'));
+            const resting = getComputedStyle(areaOf(el)).borderTopStyle;
+
+            const entered = drag(areaOf(el), 'dragenter', data);
+            const over = drag(areaOf(el), 'dragover', data);
+            expect(el.matches(':state(dragover)')).toBe(true);
+            expect(getComputedStyle(areaOf(el)).borderTopStyle).toBe('solid');
+            expect(resting).toBe('dashed');
+            // Without this the browser would refuse the drop.
+            expect([entered.defaultPrevented, over.defaultPrevented]).toEqual([true, true]);
+
+            // Into the control inside of the area, and out of the area again.
+            drag(controlOf(el), 'dragenter', data);
+            drag(areaOf(el), 'dragleave', data);
+            expect(el.matches(':state(dragover)')).toBe(true);
+            drag(controlOf(el), 'dragleave', data);
+            expect(el.matches(':state(dragover)')).toBe(false);
+            expect(getComputedStyle(areaOf(el)).borderTopStyle).toBe('dashed');
+        });
+
+        it('takes a text that is dragged for nothing: only a file is for this field', async () => {
+            const el = await area('area-not-a-file');
+            const data = new DataTransfer();
+            data.setData('text/plain', 'not a file');
+
+            const over = drag(areaOf(el), 'dragover', data);
+            const dropped = drag(areaOf(el), 'drop', data);
+
+            expect(el.matches(':state(dragover)')).toBe(false);
+            expect([over.defaultPrevented, dropped.defaultPrevented]).toEqual([false, false]);
+        });
+
+        it('takes a dropped file as a choice in the dialog: the control has it, and the same events are fired', async () => {
+            const el = await area('area-drop');
+            const control = controlOf(el);
+            const changes = changesOf(el);
+            const native = [];
+            for (const type of ['input', 'change']) el.addEventListener(type, (event) => native.push(event.type));
+            drag(areaOf(el), 'dragenter', dragged(file('list.opml')));
+
+            const event = await drop(el, file('list.opml', '<opml />'));
+
+            expect(event.defaultPrevented).toBe(true);
+            expect(el.matches(':state(dragover)')).toBe(false);
+            expect([...control.files].map((one) => one.name)).toEqual(['list.opml']);
+            expect(await el.files[0].text()).toBe('<opml />');
+            expect(el.value).toEqual(['list.opml']);
+            expect(changes).toEqual([['list.opml']]);
+            expect(native).toEqual(['input', 'change']);
+            expect(el.valid).toBe(true);
+        });
+
+        it('takes a drop onto its control as one onto the area', async () => {
+            const el = await area('area-on-control', 'accept=".opml"');
+            const refused = drag(controlOf(el), 'drop', dragged(file('notes.txt')));
+            await frames();
+
+            expect(refused.defaultPrevented).toBe(true);
+            expect(el.files).toEqual([]);
+        });
+
+        it('submits a dropped file with its form, and takes several where the field takes several', async () => {
+            const form = await fixture(`
+                <form>
+                    <el-file-field name="area-form" label="Lists" drop-message="Drop the lists here" multiple="true"></el-file-field>
+                </form>
+            `);
+            await frames();
+            const el = form.querySelector('el-file-field');
+
+            await drop(el, file('a.opml'), file('b.opml'));
+
+            expect(el.value).toEqual(['a.opml', 'b.opml']);
+            expect(new FormData(form).getAll('area-form').map((one) => one.name)).toEqual(['a.opml', 'b.opml']);
+            form.remove();
+        });
+
+        it('does not take a file that accept refuses, keeps what it had, and says that the choice was not valid', async () => {
+            const el = await area('area-accept', 'accept=".opml,text/csv" error-message="An OPML or a CSV file"');
+            await drop(el, typed('first.csv', 'text/csv'));
+            const changes = changesOf(el);
+            expect(el.value).toEqual(['first.csv']);
+
+            await drop(el, typed('picture.png', 'image/png'));
+
+            expect(el.value).toEqual(['first.csv']);
+            expect(el.files.map((one) => one.name)).toEqual(['first.csv']);
+            expect(changes).toEqual([]);
+            expect(el.valid).toBe(false);
+            expect(el.touched).toBe(true);
+            expect(el.matches(':state(invalid)')).toBe(true);
+            expect(messageOf(el)).toBe('An OPML or a CSV file');
+            expect(controlOf(el).getAttribute('aria-invalid')).toBe('true');
+
+            // The next choice the field can take is valid again.
+            await drop(el, file('second.opml'));
+            expect(el.value).toEqual(['second.opml']);
+            expect(el.valid).toBe(true);
+            expect(messageOf(el)).toBe(null);
+        });
+
+        it('takes none of several files when accept refuses one of them', async () => {
+            const el = await area('area-accept-some', 'accept=".opml" multiple="true" error-message="OPML files only"');
+
+            await drop(el, file('a.opml'), file('notes.txt'));
+
+            expect(el.value).toEqual([]);
+            expect(el.valid).toBe(false);
+            expect(messageOf(el)).toBe('OPML files only');
+        });
+
+        it('does not take several files where the field takes one', async () => {
+            const el = await area('area-one', 'error-message="One file"');
+
+            await drop(el, file('a.opml'), file('b.opml'));
+
+            expect(el.value).toEqual([]);
+            expect(el.files).toEqual([]);
+            expect(el.valid).toBe(false);
+            expect(messageOf(el)).toBe('One file');
+        });
+
+        it('takes no file while it is disabled, opens no dialog and does not say that it would', async () => {
+            const el = await area('area-disabled', 'disabled="true"');
+            const data = dragged(file('list.opml'));
+            let clicks = 0;
+            controlOf(el).addEventListener('click', () => clicks++);
+
+            const over = drag(areaOf(el), 'dragover', data);
+            const dropped = drag(areaOf(el), 'drop', data);
+            areaOf(el).querySelector('.drop-message').click();
+            await frames();
+
+            expect([over.defaultPrevented, dropped.defaultPrevented]).toEqual([false, false]);
+            expect(el.matches(':state(dragover)')).toBe(false);
+            expect(el.files).toEqual([]);
+            expect(clicks).toBe(0);
+            expect(getComputedStyle(areaOf(el)).opacity).toBe('0.55');
+        });
+
+        it('has the area, its text and a control that works alone in server-rendered markup', () => {
+            const source = document.createElement('el-file-field');
+            Object.assign(source, source.properties(), {
+                name: 'area-ssr',
+                label: 'List',
+                dropMessage: 'Drop the list here',
+                accept: '.opml',
+            });
+            const wrapper = document.createElement('div');
+            wrapper.setHTMLUnsafe(`<form>${source.template().toString()}</form>`);
+            const control = wrapper.querySelector('.drop-area > input[type="file"]');
+
+            expect(wrapper.querySelector('.drop-area > .drop-message').textContent).toBe('Drop the list here');
+            // No script is needed for the control: it has its name, and is in a form.
+            expect([control.name, control.accept, control.form]).toEqual([
+                'area-ssr',
+                '.opml',
+                wrapper.querySelector('form'),
+            ]);
+            expect(control.getAttribute('aria-describedby').split(' ')[0]).toBe(
+                wrapper.querySelector('.drop-message').id,
+            );
+        });
+
+        it('passes axe, with a file over it and after a drop it did not take', async () => {
+            const el = await area('area-axe', 'accept=".opml" error-message="An OPML file" help-message="OPML"');
+            drag(areaOf(el), 'dragenter', dragged(file('list.opml')));
+            expect((await axe.run(el)).violations).toEqual([]);
+
+            await drop(el, file('notes.txt'));
+
+            expect((await axe.run(el)).violations).toEqual([]);
+        });
+    });
+
     describe('in a native form', () => {
         const formWith = async (markup) => {
             const form = await fixture(`<form>${markup}<button type="submit">Send</button></form>`);

@@ -10,15 +10,21 @@ import style from './file-field.style.js';
  * The files come from the user. A script cannot choose one, the browser does not allow that; it can
  * take the choice away with an empty `value`.
  *
+ * With `drop-message` the field shows an area around its control to drop a file onto, with that
+ * text in it. The area looks different while a dragged file is over it, a click on it opens the
+ * dialog, and a drop is a choice as one in the dialog is: the control has the files, and the same
+ * events are fired.
+ *
  * @element el-file-field
  *
- * @fires {CustomEvent<string[]>} input-change - Fired when the user has chosen files, and when the
- *   choice was taken away. `detail` is the list of the names; the files are in `files` of the
- *   element. Bubbles.
+ * @fires {CustomEvent<string[]>} input-change - Fired when the user has chosen files, in the
+ *   dialog or with a drop, and when the choice was taken away. `detail` is the list of the names;
+ *   the files are in `files` of the element. Bubbles.
  *
  * @cssstate touched - Set on the host once the user has left the control for another place of the
  *   page, or the browser has refused a submit because of it. Inherits `valid` and `invalid` from
  *   `FormField`.
+ * @cssstate dragover - Set on the host while a dragged file is over the area to drop onto.
  *
  * @property {string[]} value - The names of the chosen files. It follows the control: a script can
  *   set it to an empty list, which takes the choice away, and to nothing else.
@@ -31,8 +37,17 @@ import style from './file-field.style.js';
  * @property {'small'|'medium'|'large'} size - Size of the control: its height, its padding and its
  *   font size. Default `'medium'`. Reflected to the `size` attribute. It shows once the control is
  *   decorated (`styles/native.css`); a control with the look of the browser keeps its size.
+ * @property {string} dropMessage - The text of an area to drop a file onto: "Drop the list here,
+ *   or choose it". With one the field shows the area, around its control. Default `''`.
  */
 export default class FileField extends FormField {
+    /**
+     * How many elements of the area a dragged file is over: the browser tells of every one it
+     * enters and leaves, the text and the control in the area as well.
+     * @private
+     */
+    _dragDepth = 0;
+
     /**
      * The names the control had when the field last looked. See `_matchControl()`.
      * @private
@@ -64,6 +79,7 @@ export default class FileField extends FormField {
             multiple: false,
             capture: null,
             size: 'medium',
+            dropMessage: '',
         };
     }
 
@@ -108,7 +124,86 @@ export default class FileField extends FormField {
                 blur: () => document.hasFocus() && this.onBlur(),
                 invalid: (event) => this._onInvalid(event.target),
             },
+            '.drop-area': {
+                click: (event) => this._onAreaClick(event),
+                dragenter: (event) => this._onDrag(event, 1),
+                dragover: (event) => this._onDrag(event, 0),
+                dragleave: (event) => this._onDrag(event, -1),
+                drop: (event) => this._onDrop(event),
+            },
         };
+    }
+
+    /**
+     * A click on the area beside its control opens the dialog, as a click on the control does.
+     * @private
+     * @param {MouseEvent} event
+     */
+    _onAreaClick(event) {
+        const control = this.$refs.input;
+        if (event.target === control || control.disabled) return;
+        control.click();
+    }
+
+    /**
+     * A file is dragged into the area, over it or out of it. The area says that it takes the file
+     * (the browser shows a drop that is allowed with the pointer), and the host has the state
+     * `dragover` for as long. Text or a link that is dragged is nothing for this field.
+     * @private
+     * @param {DragEvent} event
+     * @param {-1 | 0 | 1} step - Into an element of the area, over one, or out of one.
+     */
+    _onDrag(event, step) {
+        if (this.$refs.input.disabled || !event.dataTransfer?.types?.includes('Files')) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+
+        this._dragDepth = Math.max(0, this._dragDepth + step);
+        if (this._dragDepth > 0 || step === 0) this._internals.states.add('dragover');
+        else this._internals.states.delete('dragover');
+    }
+
+    /**
+     * Files were dropped onto the area. They are a choice as one in the dialog is: the control
+     * gets them and tells of it with `input` and `change`, which the field follows as it does for
+     * the dialog.
+     *
+     * The dialog does not offer what `accept` leaves out, and one file alone without `multiple`.
+     * A drop can bring anything, so the field asks itself. A drop it cannot take as a whole is
+     * not taken at all: the control keeps what it had, and the field says that the choice was
+     * not valid, with its error message.
+     * @private
+     * @param {DragEvent} event
+     */
+    _onDrop(event) {
+        const control = this.$refs.input;
+        if (control.disabled || !event.dataTransfer?.types?.includes('Files')) return;
+        // The browser would open the file in place of the page.
+        event.preventDefault();
+        this._dragDepth = 0;
+        this._internals.states.delete('dragover');
+
+        const files = [...event.dataTransfer.files];
+        if (files.length === 0) return;
+        if ((files.length > 1 && !this.multiple) || !files.every((file) => accepts(this.accept, file))) {
+            this.touched = true;
+            this.valid = false;
+            return;
+        }
+
+        control.files = event.dataTransfer.files;
+        control.dispatchEvent(new Event('input', { bubbles: true }));
+        control.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    /**
+     * The description of the control: the text of the area first, then the messages of the field.
+     * @private
+     * @returns {string}
+     */
+    _describedBy() {
+        const ids = super._describedBy();
+        return this.dropMessage ? `${this._idOf('drop-message')} ${ids}` : ids;
     }
 
     /**
@@ -180,8 +275,7 @@ export default class FileField extends FormField {
     /** @private */
     fieldTemplate() {
         const capture = this.capture ?? false;
-
-        return html`
+        const control = html`
             <input
                 ref="input"
                 type="file"
@@ -197,7 +291,43 @@ export default class FileField extends FormField {
                 aria-errormessage="${this._idOf('error-message')}"
             />
         `;
+
+        // A field without an area is its control, as it was.
+        if (!this.dropMessage) return control;
+
+        // The control is in the area and stays the control of the browser: it shows the name of
+        // the file, takes the keyboard, and posts the file where no script runs.
+        return html`
+            <div class="drop-area">
+                <span id="${this._idOf('drop-message')}" class="drop-message">${this.dropMessage}</span>
+                ${control}
+            </div>
+        `;
     }
+}
+
+/**
+ * Whether a file is one of the kinds an `accept` attribute names: an ending (`.pdf`), a type
+ * (`application/pdf`) or a group of types (`image/*`), with commas between them. Without one
+ * every file is.
+ * @param {string} accept
+ * @param {File} file
+ * @returns {boolean}
+ */
+export function accepts(accept, file) {
+    const kinds = String(accept ?? '')
+        .split(',')
+        .map((kind) => kind.trim().toLowerCase())
+        .filter(Boolean);
+    if (kinds.length === 0) return true;
+
+    const name = file.name.toLowerCase();
+    const type = file.type.toLowerCase();
+    return kinds.some((kind) => {
+        if (kind.startsWith('.')) return name.endsWith(kind);
+        if (kind.endsWith('/*')) return type.startsWith(kind.slice(0, -1));
+        return type === kind;
+    });
 }
 
 export function define() {

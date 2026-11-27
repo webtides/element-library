@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: takes content of the page into its control, an element with `slot="start"` or `slot="end"`, and has the button that empties it (`clearable`, `clear-label`), as `el-input-field`, which it extends. ([#168](https://github.com/webtides/element-library/issues/168))
 
+### file-field
+
+- Added: `drop-message`: an area to drop a file onto, around the control, with that text in it. The control took a drop on its small button, and nothing invited one. While a dragged file is over the area it looks different, and the host has the state `dragover`. A click on the area opens the dialog; the keyboard is on the control in it. ([#197](https://github.com/webtides/element-library/issues/197))
+- Added: a drop is a choice as one in the dialog: the control has the files, `input` and `change` are fired on it, and `input-change` reports them. A drop that `accept` or `multiple` refuses is not taken, the control keeps what it had, and the field says that the choice was not valid, with its `error-message`. ([#197](https://github.com/webtides/element-library/issues/197))
+- Added: without JavaScript the area is a box with its text around the control of the browser, which posts the file with its form as before. ([#197](https://github.com/webtides/element-library/issues/197))
+
 ### input-field
 
 - Added: content of the page at the start and at the end of the control: an element with `slot="start"` or `slot="end"` among the children of the field is taken into the control when the field renders. An icon, a unit, the start of an address, a button. It stands in a row with the input, whose text does not run under it, and follows the reading direction. The field moves the element of the page and does not copy it, and server-rendered markup has it in its place. ([#168](https://github.com/webtides/element-library/issues/168))

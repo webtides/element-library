@@ -81,7 +81,7 @@ element-library/
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
 - **dropdown**: Panel in the flow of the page that a trigger shows and hides; no menu (that is `el-menu`) and no floating panel (that is `el-popover`)
 - **empty-state**: Message in the place of a list that is empty, with an optional action
-- **file-field**: One or several files for a form: a native `<input type="file">` with the label and the messages of a field
+- **file-field**: One or several files for a form: a native `<input type="file">` with the label and the messages of a field; with `drop-message` an area to drop a file onto, around the control: a drop sets the files of the control and fires `input` and `change` on it, so it is a choice as one in the dialog, and the field asks itself what `accept` and `multiple` let through (the browser does not for a drop)
 - **form-field**: Base form field
 - **input-field**: Text input field
 - **lazy-src**: Lazy loading wrapper
