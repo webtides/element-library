@@ -137,6 +137,13 @@ export default class Menu extends TemplateElement {
     _entering = false;
 
     /**
+     * Whether the pointer that went down last is on the element the menu is open at, the button
+     * of a row. The `showAt()` the page calls with the click of that press closes the menu.
+     * @private
+     */
+    _pressedAtPlace = false;
+
+    /**
      * A pointer that goes down beside the open menu closes it. The panel is a popover the menu
      * opens and closes itself (`popover="manual"`): the platform would close one of its own
      * (`auto`) when the pointer that opened it is let go, the finger after a long press.
@@ -145,9 +152,17 @@ export default class Menu extends TemplateElement {
      */
     _onPressOutside = (event) => {
         const path = event.composedPath();
+        this._pressedAtPlace = false;
         if (path.includes(this.$refs.panel)) return;
         // The button of the menu closes it with its click.
         if (!this._place && path.includes(this._trigger())) return;
+        // So does the element the menu is open at, the button of a row. Its click is the one of
+        // the page, which calls showAt() with it: closed here, the menu would be opened again
+        // by that call, and the button could not close what it has opened.
+        if (this._place instanceof Element && path.includes(this._place)) {
+            this._pressedAtPlace = true;
+            return;
+        }
 
         this._restoreFocus = false;
         this.open = false;
@@ -161,6 +176,8 @@ export default class Menu extends TemplateElement {
      * @param {KeyboardEvent} event
      */
     _onKeyDown = (event) => {
+        // A key is no press of a pointer: `Enter` on the button of a row is a click as well.
+        this._pressedAtPlace = false;
         if (event.altKey || event.ctrlKey || event.metaKey) return;
 
         const items = this._items();
@@ -317,6 +334,9 @@ export default class Menu extends TemplateElement {
      * `opener` is what the menu is opened for. It gets the focus back when the menu closes, and
      * `menu-select` names it (`detail.opener`). Without one it is the element the menu is placed
      * at.
+     *
+     * Called with the click of a press on the element the menu is open at, it closes the menu:
+     * the button of a row closes what it has opened, with the listener that opens it.
      * @param {Element | { x: number, y: number }} place - The element, or the point in the
      *   coordinates of the viewport (`clientX`, `clientY`).
      * @param {Element} [opener] - The row or the button the menu is opened for.
@@ -330,10 +350,18 @@ export default class Menu extends TemplateElement {
         // top layer, and moves. The page is told of both, the row it has left and the row it is
         // open for now.
         if (this.open && this.$refs.panel?.matches(':popover-open')) {
+            // The pointer is on what the menu is open at, and the page calls this with the click
+            // of that press: a second press on a button closes what the first one has opened.
+            if (this._pressedAtPlace && next.place === this._place) {
+                this.open = false;
+                return;
+            }
+
             this.dispatch(Events.HIDE);
             this._place = next.place;
             this._opener = next.opener;
             this._current = undefined;
+            this._pressedAtPlace = false;
             this._syncTrigger();
             this._startPositioning();
             this._focusEntry();
@@ -598,6 +626,7 @@ export default class Menu extends TemplateElement {
         this._opener = undefined;
         this._current = undefined;
         this._entering = false;
+        this._pressedAtPlace = false;
 
         if (openMenu === this) openMenu = undefined;
         document.removeEventListener('pointerdown', this._onPressOutside, true);

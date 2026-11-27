@@ -4,6 +4,7 @@ import axe from 'axe-core';
 import {
     accessibleName,
     accessibleRole,
+    aTimeout,
     fixture,
     forcePseudoClasses,
     nextFrame,
@@ -1471,6 +1472,171 @@ describe('Feature | Menu', () => {
             expect(el.open).toBe(true);
             expect(corner(el)).toEqual([160, 170]);
             expect(focused()).toBe('edit');
+        });
+
+        describe('the button of a row, with the listener of the readme', () => {
+            // What the readme has for the button of a row, and nothing more.
+            const withButtons = async () => {
+                const { el, find } = await rows();
+                find('#list').addEventListener('click', (event) => {
+                    const button = event.target.closest('[aria-haspopup="menu"]');
+                    if (button) el.showAt(button);
+                });
+                const told = [];
+                el.addEventListener('menu-show', () => told.push(`show for ${el.opener.id}`));
+                el.addEventListener('menu-hide', () => told.push('hide'));
+                return { el, find, told };
+            };
+            const press = async (pointer, element) => {
+                const { left, top, width, height } = element.getBoundingClientRect();
+                await pointer.down(left + width / 2, top + height / 2);
+                await pointer.up();
+                await rendered();
+                await rendered();
+            };
+
+            for (const type of ['mouse', 'touch']) {
+                it(`closes the menu it has opened with a second press of a ${type === 'mouse' ? 'mouse' : 'finger'}, and the menu stays closed`, async () => {
+                    const { el, find, told } = await withButtons();
+                    const button = find('#more2');
+                    const pointer = realPointer(type);
+
+                    await press(pointer, button);
+                    expect(el.open).toBe(true);
+                    expect(el.opener).toBe(button);
+                    expect(button.getAttribute('aria-expanded')).toBe('true');
+
+                    await press(pointer, button);
+                    await aTimeout(100);
+
+                    expect(el.open).toBe(false);
+                    expect(isShown(el)).toBe(false);
+                    expect(button.getAttribute('aria-expanded')).toBe('false');
+                    expect(told).toEqual(['show for more2', 'hide']);
+
+                    // And opens it again with a third one.
+                    await press(pointer, button);
+
+                    expect(el.open).toBe(true);
+                    expect(told).toEqual(['show for more2', 'hide', 'show for more2']);
+                });
+            }
+
+            it('stays open while the pointer is down on its button, and closes with the click', async () => {
+                const { el, find } = await withButtons();
+                const button = find('#more2');
+                const mouse = realPointer();
+                await press(mouse, button);
+                const { left, top } = button.getBoundingClientRect();
+
+                await mouse.down(left + 5, top + 5);
+                await rendered();
+                expect(el.open).toBe(true);
+
+                await mouse.up();
+                await rendered();
+                expect(el.open).toBe(false);
+            });
+
+            it('moves the menu to the button of another row with a press there', async () => {
+                const { el, find, told } = await withButtons();
+                const mouse = realPointer();
+                // The menu lies below its button: the button of a row above it is beside it.
+                await press(mouse, find('#more3'));
+
+                await press(mouse, find('#more1'));
+
+                expect(el.open).toBe(true);
+                expect(el.opener).toBe(find('#more1'));
+                expect(find('#more3').getAttribute('aria-expanded')).toBe('false');
+                expect(find('#more1').getAttribute('aria-expanded')).toBe('true');
+                expect(told).toEqual(['show for more3', 'hide', 'show for more1']);
+            });
+
+            it('opens the menu with Enter and with the space bar', async () => {
+                for (const key of ['{Enter}', ' ']) {
+                    const { el, find } = await withButtons();
+                    const button = find('#more2');
+                    button.focus();
+
+                    await userEvent.keyboard(key);
+                    await rendered();
+
+                    expect(el.open, key).toBe(true);
+                    expect(el.opener, key).toBe(button);
+                    expect(focused(), key).toBe('edit');
+                    el.hide();
+                    await rendered();
+                }
+            });
+
+            it('closes for a press on the element it is open at, also where it was opened for the row', async () => {
+                const { el, find } = await rows();
+                find('#list').addEventListener('click', (event) => {
+                    const button = event.target.closest('[aria-haspopup="menu"]');
+                    if (button) el.showAt(button, button.closest('li'));
+                });
+                const mouse = realPointer();
+                await press(mouse, find('#more2'));
+                expect(el.opener).toBe(find('#row2'));
+
+                await press(mouse, find('#more2'));
+
+                expect(el.open).toBe(false);
+            });
+
+            it('stays open for a script that asks for the same button again, with no press before it', async () => {
+                const { el, find, told } = await withButtons();
+                const button = find('#more2');
+
+                el.showAt(button);
+                await rendered();
+                el.showAt(button);
+                await rendered();
+
+                expect(el.open).toBe(true);
+                expect(told).toEqual(['show for more2', 'hide', 'show for more2']);
+            });
+
+            it('opens at the pointer for a right click on the row whose button it is open at', async () => {
+                const { el, find } = await withButtons();
+                find('#list').addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                    el.showAt({ x: event.clientX, y: event.clientY }, event.target.closest('li'));
+                });
+                await press(realPointer(), find('#more2'));
+                const mouse = realPointer('mouse', { button: 'right' });
+                const { left, top } = find('#more2').getBoundingClientRect();
+
+                await mouse.down(left + 5, top + 5);
+                await mouse.up();
+                await rendered();
+
+                expect(el.open).toBe(true);
+                expect(el.opener).toBe(find('#row2'));
+                expect(corner(el)).toEqual([Math.round(left + 5), Math.round(top + 5)]);
+            });
+
+            it('takes Enter on its button for no second press, after a press that ended beside the button', async () => {
+                const { el, find } = await withButtons();
+                const button = find('#more2');
+                const mouse = realPointer();
+                await press(mouse, button);
+                // The pointer goes down on the button and is let go beside it: no click.
+                const { left, top } = button.getBoundingClientRect();
+                await mouse.down(left + 5, top + 5);
+                await mouse.move(left - 150, top + 5);
+                await mouse.up();
+                await rendered();
+                expect(el.open).toBe(true);
+
+                button.focus();
+                await userEvent.keyboard('{Enter}');
+                await rendered();
+
+                expect(el.open).toBe(true);
+                expect(focused()).toBe('edit');
+            });
         });
 
         it('tells a button of the page that says it opens a menu whether the menu is open', async () => {

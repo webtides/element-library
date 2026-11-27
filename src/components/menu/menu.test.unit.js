@@ -57,6 +57,40 @@ describe('Unit | Menu', () => {
         expect(escape()).toBe(false);
     });
 
+    it('closes for showAt() after a pointer went down on the element it is open at, and for no other call', async () => {
+        const button = document.createElement('button');
+        const el = document.createElement('el-menu');
+        document.body.append(button, el);
+        const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+        const press = (target) =>
+            target.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
+        await frame();
+
+        el.showAt(button);
+        await frame();
+        await frame();
+        // A call without a press: the menu stays open.
+        el.showAt(button);
+        expect(el.open).toBe(true);
+
+        // A press on something else than the button closes the menu when the pointer goes down.
+        press(document.body);
+        expect(el.open).toBe(false);
+        await frame();
+        await frame();
+
+        el.showAt(button);
+        await frame();
+        await frame();
+        press(button);
+        expect(el.open).toBe(true);
+        el.showAt(button);
+        expect(el.open).toBe(false);
+
+        button.remove();
+        el.remove();
+    });
+
     it('opens and closes without a button and without entries', async () => {
         const el = document.createElement('el-menu');
         document.body.append(el);

@@ -54,7 +54,7 @@ document.querySelector('el-menu').addEventListener('menu-select', (event) => {
 | `show()` | Opens the menu, with the focus on its first entry. |
 | `hide()` | Closes the menu. |
 | `toggle()` | Opens the menu when it is closed, and closes it when open. |
-| `showAt(place, opener?)` | Opens the menu somewhere else than at its own button: at an element of the page, or at a point `{ x, y }` of the viewport. `opener` is what it is opened for. |
+| `showAt(place, opener?)` | Opens the menu somewhere else than at its own button: at an element of the page, or at a point `{ x, y }` of the viewport. `opener` is what it is opened for. Called with the click of a press on the element the menu is open at, it closes the menu. |
 
 #### Read-only properties
 
@@ -175,7 +175,7 @@ Entries that belong together go into an [`el-menu-group`](../menu-group/menu-gro
 - **As wide as its entries**, between `--el-menu-min-width` and `--el-menu-max-width`. A text that is longer wraps.
 - **A long menu scrolls** in what the browser shows.
 - **One at a time.** A menu that opens closes another one that is open.
-- **A press beside it closes it**, when the pointer goes down. The panel is a popover the menu opens and closes itself (`popover="manual"`): one the platform closes would be gone when the finger of a long press is lifted.
+- **A press beside it closes it**, when the pointer goes down. Its own button, and the element it was opened at with `showAt()`, are not beside it: they close it with their click. The panel is a popover the menu opens and closes itself (`popover="manual"`): one the platform closes would be gone when the finger of a long press is lifted.
 
 Its place comes from [Floating UI](https://floating-ui.com), which the element imports (`@floating-ui/dom`).
 
@@ -228,6 +228,7 @@ menu.addEventListener('menu-select', (event) => {
 - **`showAt({ x, y }, opener)`** opens the menu at a point of the viewport, the `clientX` and `clientY` of an event. The corner of the menu is at the point, as the menu of the system is, and the menu stays inside of the viewport.
 - **`showAt(element)`** opens it at an element, placed as at its own button (`placement`, `distance`).
 - **The opener** is what the menu is opened for: the second argument, or the element it is placed at. It is `menu.opener` while the menu is open and `detail.opener` of `menu-select`, and it gets the focus back when the menu closes after a choice or `Escape`. A row that should get the focus back has to be able to take it (`tabindex`).
+- **A second press on the button of a row closes the menu**, with the listener above and nothing more. While the pointer is down on the element the menu is open at, the menu stays open, and the `showAt()` the page calls with the click of that press closes it. The button says `aria-expanded="false"` after. A call of `showAt()` with no press before it, from a script or for `Enter` on the button, opens the menu.
 - **An open menu moves** when `showAt()` is called again, for a right click on another row. It tells of both: `menu-hide` for the row it has left, `menu-show` for the one it is open for.
 - **The roles and the keys** are the ones of the menu: the focus is on the first entry, the arrow keys move through the entries, `Escape` closes.
 - **Nothing in the menu of the right click alone.** A right click and a long press are found by a user who knows them. The button of the row offers the same entries to everybody else, and to the keyboard.

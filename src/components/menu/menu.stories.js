@@ -265,7 +265,7 @@ export const ManyRows = {
         controls: { disable: true },
         docs: {
             description: {
-                story: 'One `el-menu` without a button of its own, after the list. A right click on a row, or a long press of a finger, opens it where the pointer is: `menu.showAt({ x, y }, row)`. The button at the end of a row opens the same menu at the button: `menu.showAt(button)`. Nothing is in the menu of the right click alone. What the menu was opened for is `detail.opener` of `menu-select`, and gets the focus back.',
+                story: 'One `el-menu` without a button of its own, after the list. A right click on a row, or a long press of a finger, opens it where the pointer is: `menu.showAt({ x, y }, row)`. The button at the end of a row opens the same menu at the button: `menu.showAt(button)`, and a second press on it closes the menu. Nothing is in the menu of the right click alone. What the menu was opened for is `detail.opener` of `menu-select`, and gets the focus back.',
             },
             story: { inline: false, height: '26rem' },
         },
