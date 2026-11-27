@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vite-plus/test';
-import { accessibleName, accessibleRole, nextFrame } from '../../test-helpers.js';
+import { accessibleName, accessibleRole, nextFrame, realPointer } from '../../test-helpers.js';
 import Toolbar, { define } from './toolbar.js';
 import Button, { define as defineButton } from '../button/button.js';
 import SegmentedField, { define as defineSegmentedField } from '../segmented-field/segmented-field.js';
@@ -149,6 +149,10 @@ describe('Feature | Toolbar | server-rendered', () => {
             mount(serverRender({ label: 'Message', size: 'large', appearance: 'filled' })),
         ];
         toolbars[0].scrollIntoView({ block: 'start' });
+        // The mouse of an earlier test is still where that test left it. A button that comes to lie
+        // under it is under the pointer a few frames later, where the page can hover, and has
+        // another background then: the pointer leaves the page first.
+        await realPointer().leave();
         const before = toolbars.map(look);
 
         defineButton();

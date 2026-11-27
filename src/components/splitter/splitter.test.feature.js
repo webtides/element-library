@@ -17,9 +17,9 @@ const wrappers = [];
 afterEach(async () => {
     for (const wrapper of wrappers.splice(0)) wrapper.remove();
     getSelection().removeAllRanges();
-    // The pointer of one test is still there in the next, and under it an edge is a mark where the
-    // page can hover: it waits in a corner no fixture reaches.
-    await realPointer().move(410, 890);
+    // The pointer of one test is still there in the next, and in the test files after this one:
+    // it leaves the page.
+    await realPointer().leave();
 });
 
 // A theme: lines of 1px, and colours that can be told apart.

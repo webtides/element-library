@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, beforeEach } from 'vite-plus/test';
+import { describe, it, expect, afterEach } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
 import {
@@ -811,9 +811,9 @@ describe('Feature | AppFrame', () => {
                 style: `${theme} ${limits('navigation')} ${limits('aside')}`,
                 ...options,
             });
-        // The pointer of one test is still there in the next: it waits in a corner no frame reaches.
-        beforeEach(() => realPointer().move(410, 890));
-        afterEach(() => realPointer().move(410, 890));
+        // The pointer of one test is still there in the next, and in the test files after this
+        // one: it leaves the page.
+        afterEach(() => realPointer().leave());
 
         const edge = (el, region) => el.shadowRoot.querySelector(`[part~="${region}-splitter"]`);
         const separator = (el, region) => edge(el, region)?.shadowRoot.querySelector('[part~="base"]');

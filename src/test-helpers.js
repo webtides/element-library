@@ -166,8 +166,12 @@ export async function emulateSafeAreaInsets(insets) {
  *
  * The coordinates are the ones of the viewport of the test, as `getBoundingClientRect()` gives
  * them. A point outside of the viewport is not reached. Chromium only.
+ *
+ * A mouse and a pen stay where a test leaves them, for the tests and the test files after it as
+ * well: what comes to lie under the pointer is under `:hover`, where the page can hover. `leave()`
+ * takes the pointer out of the page. Call it after every test that has moved one (`afterEach`).
  * @param {'mouse' | 'pen' | 'touch'} [type] - Default `'mouse'`.
- * @returns {{ down: (x: number, y: number) => Promise<void>, move: (x: number, y: number) => Promise<void>, up: () => Promise<void> }}
+ * @returns {{ down: (x: number, y: number) => Promise<void>, move: (x: number, y: number) => Promise<void>, up: () => Promise<void>, leave: () => Promise<void> }}
  */
 export function realPointer(type = 'mouse') {
     const session = cdp();
@@ -224,6 +228,18 @@ export function realPointer(type = 'mouse') {
                 await mouse('mouseReleased', 'left');
             }
             pressed = false;
+        },
+        async leave() {
+            // A finger that is lifted is nowhere.
+            if (type === 'touch') return;
+            await session.send('Input.dispatchMouseEvent', {
+                type: 'mouseMoved',
+                x: -10,
+                y: -10,
+                button: 'none',
+                buttons: 0,
+                pointerType: type,
+            });
         },
     };
 }
