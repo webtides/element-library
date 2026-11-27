@@ -131,6 +131,16 @@ An `el-button` passes both on to the control inside of it. A button that shows a
 
 The entries are no stops of the Tab key: the menu is one, through its button, and moves the focus itself. An entry that is disabled is reached by the arrow keys, so a screen reader finds it, and cannot be chosen.
 
+#### While the focus is not on an entry
+
+An open menu keeps the keyboard wherever the focus is: after a press beside the entries, on a row whose finger has just been lifted, before the entries are there. It hears the keys at the window for as long as it is open, before the page does.
+
+- **`Escape` closes the menu from anywhere**, and the focus goes back to its button, or to what the menu was opened for. The key does not reach the page behind: a dialog around the menu stays open. Only a listener in the capture phase of the window that was there before the menu opened hears it first.
+- **`ArrowDown` and `ArrowUp` bring the focus into the menu** from anywhere in the page, to its first and to its last entry.
+- **The Tab key closes the menu from anywhere**, and the focus moves on from where it is.
+- **Every other key is the one of the page** while the focus is not in the menu. A page with shortcuts of single letters asks itself whether a menu is open (`menu.open`).
+- **A press beside the entries**, on the heading of a group, on a line or on the padding of the panel, leaves the focus on the entry that had it, and the arrow keys go on from there. Where no entry had it, the panel takes the focus of the press itself: it has `tabindex="-1"`, and is no stop of the Tab key.
+
 ## Choosing an entry
 
 Choosing is a click on an entry, with the pointer, `Enter` or `Space`. The menu fires `menu-select` and closes, and the focus is on the button again.
@@ -250,6 +260,21 @@ A long press on a text selects it in Safari, and the selection takes the finger 
 }
 ```
 
+## Entries that come later
+
+The page can render the entries when the menu is asked for, as the answer of a server, and an autoloader can define `el-menu-item` when it first sees one. The menu is open then before an entry can take the focus, and the focus stays where it was.
+
+```js
+menu.addEventListener('menu-show', async () => {
+    const actions = await load(menu.opener);
+    menu.replaceChildren(...actions.map(entry));
+});
+```
+
+- **The focus goes to the first entry once the entries are there**: when they have come into the menu, and when their element is defined. To the last one where `ArrowUp` has opened the menu. Not where the user has put the focus into the menu by then.
+- **The menu is placed again**: it has another size with its entries, and stays inside of the viewport.
+- **Until then the keys work as above**: `Escape` closes the menu.
+
 ## Not in this element
 
 - A menu in a menu (a submenu).
@@ -267,6 +292,7 @@ The menu and its entries render on a server with `@webtides/element-js-ssr-rende
 - The panel has `role="menu"`, with the name of `label` or the one of its button. The entries have `role="menuitem"`, the groups `role="group"` with their heading as their name.
 - The button says that it opens a menu and whether the menu is open.
 - The focus is on an entry while the menu is open, and goes back to the button, or to what the menu was opened for, when the menu closes after a choice or `Escape`.
+- The keys of the menu work wherever the focus is while the menu is open: `Escape` closes it, the arrow keys bring the focus into it.
 - The entry that has the focus of the keyboard has a ring inside of it, which shows where the user forces colours.
 - On a touch screen every entry is at least `--el-touch-target` high.
 - Without a theme the menu has the colours of the system, and reads in a light and in a dark scheme.

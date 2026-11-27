@@ -113,6 +113,21 @@ export default class Menu extends TemplateElement {
     _leaving = false;
 
     /**
+     * The entry that had the focus last while the menu is open. It gets the focus back when a
+     * press beside the entries has given it to the panel.
+     * @private
+     * @type {HTMLElement | undefined}
+     */
+    _current = undefined;
+
+    /**
+     * Whether the menu is open and has not put the focus on an entry yet: its entries are not
+     * there, or not defined. The focus goes to them once they are.
+     * @private
+     */
+    _entering = false;
+
+    /**
      * A pointer that goes down beside the open menu closes it. The panel is a popover the menu
      * opens and closes itself (`popover="manual"`): the platform would close one of its own
      * (`auto`) when the pointer that opened it is let go, the finger after a long press.
@@ -127,6 +142,79 @@ export default class Menu extends TemplateElement {
 
         this._restoreFocus = false;
         this.open = false;
+    };
+
+    /**
+     * The keys of a menu, for as long as it is open and wherever the focus is: an open menu that
+     * has lost the focus would be left with no key at all. The window hears a key before the
+     * page does, so `Escape` closes the menu and nothing behind it.
+     * @private
+     * @param {KeyboardEvent} event
+     */
+    _onKeyDown = (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+        const items = this._items();
+        const active = activeElement();
+        const index = items.findIndex((item) => item === active || item.shadowRoot?.contains(active));
+        const inMenu = index >= 0 || active === this.$refs.panel;
+
+        // The focus leaves the menu with this key, and may leave the page: the browser says
+        // where it goes only while it stays in the page. Outside of the menu the focus moves on
+        // from where it is, and the menu closes as well.
+        if (event.key === 'Tab') {
+            if (inMenu) {
+                this._leaving = true;
+                requestAnimationFrame(() => (this._leaving = false));
+            } else {
+                this._restoreFocus = false;
+                this.open = false;
+            }
+            return;
+        }
+        // The key is the one of the menu: a dialog around it stays open.
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            event.stopPropagation();
+            this._restoreFocus = true;
+            this.open = false;
+            return;
+        }
+        // The focus is somewhere else in the page: the arrow keys bring it into the menu, and
+        // every other key is the one of the page.
+        if (!inMenu) {
+            if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+            event.preventDefault();
+            event.stopPropagation();
+            this._enterAt = event.key === 'ArrowUp' ? 'last' : 'first';
+            this._focusEntry();
+            return;
+        }
+
+        const go = (to) => {
+            event.preventDefault();
+            items[(to + items.length) % items.length]?.focus();
+        };
+
+        if (event.key === 'ArrowDown') go(index + 1);
+        else if (event.key === 'ArrowUp') go(index < 0 ? items.length - 1 : index - 1);
+        else if (event.key === 'Home') go(0);
+        else if (event.key === 'End') go(items.length - 1);
+        else if (event.key === ' ') {
+            // A button is pressed with the space bar by the browser. A link is not, and in a menu
+            // the key chooses every entry. On the panel it chooses nothing, and scrolls nothing.
+            event.preventDefault();
+            if (index >= 0) active.click();
+        } else if (event.key.length === 1 && event.key.trim()) {
+            // A letter: the next entry that starts with it, from the one that has the focus on.
+            const letter = event.key.toLocaleLowerCase();
+            const starts = (item) => this._textOf(item).toLocaleLowerCase().startsWith(letter);
+            const next = [...items.slice(index + 1), ...items.slice(0, index + 1)].find(starts);
+            if (next) {
+                event.preventDefault();
+                next.focus();
+            }
+        }
     };
 
     constructor() {
@@ -152,12 +240,13 @@ export default class Menu extends TemplateElement {
     disconnected() {
         this._stopPositioning();
         document.removeEventListener('pointerdown', this._onPressOutside, true);
+        window.removeEventListener('keydown', this._onKeyDown, true);
         if (openMenu === this) openMenu = undefined;
     }
 
     afterUpdate() {
         this._syncTrigger();
-        // A new placement or distance, other entries in the panel.
+        // A new placement or distance.
         if (this.open) this._position();
     }
 
@@ -191,9 +280,12 @@ export default class Menu extends TemplateElement {
                 slotchange: () => this._syncTrigger(),
             },
             "[part~='panel']": {
-                keydown: (event) => this._onKeyDown(event),
                 click: (event) => this._onClick(event),
+                focusin: (event) => this._onFocusIn(event),
                 focusout: (event) => this._onFocusOut(event),
+                // The element does not render again when an entry comes or goes: the slot tells
+                // of it. An entry that has come renders with the next frame.
+                slotchange: () => requestAnimationFrame(() => this._entriesChanged()),
             },
         };
     }
@@ -232,6 +324,7 @@ export default class Menu extends TemplateElement {
             this.dispatch(Events.HIDE);
             this._place = next.place;
             this._opener = next.opener;
+            this._current = undefined;
             this._syncTrigger();
             this._startPositioning();
             this._focusEntry();
@@ -341,9 +434,18 @@ export default class Menu extends TemplateElement {
      * @private
      * @returns {boolean}
      */
-    _hasFocusInPanel() {
+    _hasFocusOnEntry() {
         const active = activeElement();
         return this._items().some((item) => item === active || item.shadowRoot?.contains(active));
+    }
+
+    /**
+     * Whether the focus is in the menu: on an entry, or on the panel around the entries.
+     * @private
+     * @returns {boolean}
+     */
+    _hasFocusInPanel() {
+        return activeElement() === this.$refs.panel || this._hasFocusOnEntry();
     }
 
     /**
@@ -360,58 +462,6 @@ export default class Menu extends TemplateElement {
         this._enterAt = event.key === 'ArrowUp' ? 'last' : 'first';
         if (this.open) this._focusEntry();
         else this.open = true;
-    }
-
-    /**
-     * The keys of a menu, while the focus is on one of its entries.
-     * @private
-     * @param {KeyboardEvent} event
-     */
-    _onKeyDown(event) {
-        if (event.altKey || event.ctrlKey || event.metaKey) return;
-        // The focus leaves the menu with this key, and may leave the page: the browser says
-        // where it goes only while it stays in the page.
-        if (event.key === 'Tab') {
-            this._leaving = true;
-            requestAnimationFrame(() => (this._leaving = false));
-            return;
-        }
-        // The key is the one of the menu: a dialog around it stays open.
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            event.stopPropagation();
-            this._restoreFocus = true;
-            this.open = false;
-            return;
-        }
-
-        const items = this._items();
-        const active = activeElement();
-        const index = items.findIndex((item) => item === active || item.shadowRoot?.contains(active));
-        const go = (to) => {
-            event.preventDefault();
-            items[(to + items.length) % items.length]?.focus();
-        };
-
-        if (event.key === 'ArrowDown') go(index + 1);
-        else if (event.key === 'ArrowUp') go(index < 0 ? items.length - 1 : index - 1);
-        else if (event.key === 'Home') go(0);
-        else if (event.key === 'End') go(items.length - 1);
-        else if (event.key === ' ' && index >= 0) {
-            // A button is pressed with the space bar by the browser. A link is not, and in a menu
-            // the key chooses every entry.
-            event.preventDefault();
-            active.click();
-        } else if (event.key.length === 1 && event.key.trim()) {
-            // A letter: the next entry that starts with it, from the one that has the focus on.
-            const letter = event.key.toLocaleLowerCase();
-            const starts = (item) => this._textOf(item).toLocaleLowerCase().startsWith(letter);
-            const next = [...items.slice(index + 1), ...items.slice(0, index + 1)].find(starts);
-            if (next) {
-                event.preventDefault();
-                next.focus();
-            }
-        }
     }
 
     /**
@@ -447,13 +497,54 @@ export default class Menu extends TemplateElement {
     }
 
     /**
-     * Puts the focus on the entry the menu is entered at.
+     * The focus has come into the menu. On an entry: the menu remembers it. On the panel itself:
+     * the user has pressed beside the entries, on the heading of a group, a line or the padding,
+     * and the entry that had the focus gets it back. The keyboard goes on from there.
+     * @private
+     * @param {FocusEvent} event
+     */
+    _onFocusIn(event) {
+        if (event.target !== this.$refs.panel) {
+            const path = event.composedPath();
+            this._current = this._items().find((item) => path.includes(item)) ?? this._current;
+            return;
+        }
+        if (this._current && this._items().includes(this._current)) this._current.focus();
+    }
+
+    /**
+     * Puts the focus on the entry the menu is entered at. An entry that is not there yet, or
+     * whose element is not defined yet, cannot take it: the menu waits for it.
      * @private
      */
     _focusEntry() {
         const items = this._items();
         (this._enterAt === 'last' ? items.at(-1) : items[0])?.focus();
-        this._enterAt = 'first';
+        if (this._hasFocusOnEntry()) {
+            this._entering = false;
+            this._enterAt = 'first';
+            return;
+        }
+        if (this._entering) return;
+
+        // The page renders the entries when the menu is asked for, or an autoloader defines the
+        // element of an entry when it first sees one. An element that is defined renders with
+        // the next frame.
+        this._entering = true;
+        customElements.whenDefined('el-menu-item').then(() => requestAnimationFrame(() => this._entriesChanged()));
+    }
+
+    /**
+     * Other entries in the open menu, or entries that have rendered by now. The panel has
+     * another size, and a menu at a point is placed once. And the focus goes to the entry the
+     * menu is entered at, where none could take it when the menu opened and nothing in the menu
+     * has it by now.
+     * @private
+     */
+    _entriesChanged() {
+        if (!this.open) return;
+        this._position();
+        if (this._entering && !this._hasFocusInPanel()) this._focusEntry();
     }
 
     /** @private */
@@ -471,8 +562,11 @@ export default class Menu extends TemplateElement {
         openMenu = this;
 
         this._restoreFocus = false;
+        this._current = undefined;
+        this._entering = false;
         if (!panel.matches(':popover-open')) panel.showPopover();
         document.addEventListener('pointerdown', this._onPressOutside, true);
+        window.addEventListener('keydown', this._onKeyDown, true);
         this._internals.states.add('open');
         this._syncTrigger();
         this._startPositioning();
@@ -493,9 +587,12 @@ export default class Menu extends TemplateElement {
         const opener = this._opener ?? this._trigger();
         this._place = undefined;
         this._opener = undefined;
+        this._current = undefined;
+        this._entering = false;
 
         if (openMenu === this) openMenu = undefined;
         document.removeEventListener('pointerdown', this._onPressOutside, true);
+        window.removeEventListener('keydown', this._onKeyDown, true);
         this._stopPositioning();
         if (panel.matches(':popover-open')) panel.hidePopover();
         this._internals.states.delete('open');
@@ -553,10 +650,20 @@ export default class Menu extends TemplateElement {
     }
 
     template() {
-        // A plain binding leaves the name out while there is none.
+        // A plain binding leaves the name out while there is none. The panel takes the focus of a
+        // press beside its entries, and is no stop of the Tab key: without it the focus of such
+        // a press would be nowhere in the page.
         return html`
             <slot part="trigger" name="trigger" ref="trigger" data-trigger></slot>
-            <div part="panel" ref="panel" class="panel" popover="manual" role="menu" aria-label="${this.label || null}">
+            <div
+                part="panel"
+                ref="panel"
+                class="panel"
+                popover="manual"
+                role="menu"
+                tabindex="-1"
+                aria-label="${this.label || null}"
+            >
                 <slot></slot>
             </div>
         `;

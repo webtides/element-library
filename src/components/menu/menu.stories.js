@@ -333,3 +333,49 @@ export const ManyRows = {
         `;
     },
 };
+
+export const EntriesThatComeLater = {
+    name: 'Entries the page renders when the menu opens',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: 'The menu is empty until it is asked for: the page renders its entries half a second after `menu-show`, as the answer of a server. The focus goes to the first entry once the entries are there, and the menu is placed again for its size. Until then `Escape` closes the menu, wherever the focus is.',
+            },
+        },
+    },
+    render: () => {
+        setTimeout(() => {
+            const menu = document.querySelector('#later-menu');
+            if (!menu || menu.dataset.wired) return;
+            menu.dataset.wired = 'true';
+
+            const clear = () => {
+                for (const child of [...menu.children]) if (!child.slot) child.remove();
+            };
+            menu.addEventListener('menu-show', () => {
+                menu.insertAdjacentHTML('beforeend', '<div style="padding:0.5rem 0.75rem">Loading …</div>');
+                setTimeout(() => {
+                    if (!menu.open) return;
+                    clear();
+                    for (const name of ['Inbox', 'Archive', 'Read later']) {
+                        const item = document.createElement('el-menu-item');
+                        item.setAttribute('value', name.toLowerCase());
+                        item.textContent = name;
+                        menu.append(item);
+                    }
+                }, 500);
+            });
+            menu.addEventListener('menu-hide', clear);
+        });
+
+        return html`
+            <div style="padding:1rem">
+                <el-menu id="later-menu" @menu-select="${tell}">
+                    <el-button slot="trigger" caret="true">Move to</el-button>
+                </el-menu>
+                <p data-chosen role="status" style="margin:1rem 0 0;font-size:0.875rem">Nothing chosen yet</p>
+            </div>
+        `;
+    },
+};

@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 ## Unreleased
 
+### menu
+
+- Fixed: an open menu keeps the keyboard wherever the focus is. `Escape` closes it and gives the focus back to what it was opened for, and the key does not reach the page behind; `ArrowDown` and `ArrowUp` bring the focus to its first and to its last entry; the Tab key closes it, and the focus moves on from where it is. The menu heard its keys on its panel alone: an open menu whose entries did not have the focus was left with no key, and `Escape` closed what was behind it. It hears them at the window now, for as long as it is open. ([#202](https://github.com/webtides/element-library/issues/202))
+- Fixed: a press on the heading of a group, on a line or on the padding of the panel leaves the focus on the entry that had it, and the arrow keys go on from there. The focus was nowhere in the page after such a press. Where no entry had the focus, the panel takes it itself: it has `tabindex="-1"`, and is no stop of the Tab key. ([#202](https://github.com/webtides/element-library/issues/202))
+- Fixed: entries that the page renders after the menu has opened, and entries whose element is defined after it, get the focus once they are there: the first one, or the last one where `ArrowUp` has opened the menu. The menu is placed again for its new size. The focus stayed where it was, and a menu at a point kept the place of an empty panel. ([#202](https://github.com/webtides/element-library/issues/202))
+
 ## [0.4.0] - 2026-11-27
 
 ### accordion

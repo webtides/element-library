@@ -422,6 +422,281 @@ describe('Feature | Menu', () => {
         });
     });
 
+    describe('an open menu that has not the focus', () => {
+        const grouped = `
+            <el-menu-item id="open" value="open">Open</el-menu-item>
+            <el-menu-item id="save" value="save">Save</el-menu-item>
+            <el-divider></el-divider>
+            <el-menu-group id="share" label="Share">
+                <el-menu-item id="mail" value="mail">Mail</el-menu-item>
+                <el-menu-item id="link" value="link">Copy link</el-menu-item>
+            </el-menu-group>
+        `;
+        /** What the page behind the menu hears of the keys. */
+        const keysOfThePage = () => {
+            const heard = [];
+            const hear = (event) => heard.push(event.key);
+            window.addEventListener('keydown', hear);
+            document.addEventListener('keydown', hear);
+            return {
+                heard,
+                stop() {
+                    window.removeEventListener('keydown', hear);
+                    document.removeEventListener('keydown', hear);
+                },
+            };
+        };
+
+        for (const [where, leave] of [
+            ['on another control of the page', (el) => el.parentElement.querySelector('.after').focus()],
+            ['nowhere in the page', () => activeElement().blur()],
+        ]) {
+            it(`closes with Escape while the focus is ${where}, and the page behind does not get the key`, async () => {
+                const el = await menu();
+                el.show();
+                await rendered();
+                leave(el);
+                expect(el.open).toBe(true);
+                expect(focused()).toBe(undefined);
+                const page = keysOfThePage();
+
+                await userEvent.keyboard('{Escape}');
+                await rendered();
+                page.stop();
+
+                expect(el.open).toBe(false);
+                expect(isShown(el)).toBe(false);
+                expect(document.activeElement).toBe(triggerOf(el));
+                expect(page.heard).toEqual([]);
+            });
+        }
+
+        it('closes alone with Escape in a dialog while the focus is beside it: the dialog stays open', async () => {
+            const wrapper = await fixture(`
+                <div style="${theme}">
+                    <dialog id="around">
+                        <button id="other" type="button">Other</button>
+                        <el-menu><button slot="trigger" type="button">More</button>${three}</el-menu>
+                    </dialog>
+                </div>
+            `);
+            wrappers.push(wrapper);
+            const dialog = wrapper.querySelector('#around');
+            dialog.showModal();
+            await rendered();
+            const el = wrapper.querySelector('el-menu');
+            el.show();
+            await rendered();
+            wrapper.querySelector('#other').focus();
+
+            await userEvent.keyboard('{Escape}');
+            await rendered();
+
+            expect(el.open).toBe(false);
+            expect(dialog.open).toBe(true);
+            expect(document.activeElement).toBe(triggerOf(el));
+            dialog.close();
+        });
+
+        it('goes to its first entry with ArrowDown and to its last with ArrowUp from anywhere in the page', async () => {
+            for (const [key, entry] of [
+                ['{ArrowDown}', 'edit'],
+                ['{ArrowUp}', 'delete'],
+            ]) {
+                const el = await menu();
+                el.show();
+                await rendered();
+                // The second entry had the focus: the menu is entered at its end all the same.
+                await userEvent.keyboard('{ArrowDown}');
+                el.parentElement.querySelector('.after').focus();
+                const page = keysOfThePage();
+
+                await userEvent.keyboard(key);
+                page.stop();
+
+                expect(el.open, key).toBe(true);
+                expect(focused(), key).toBe(entry);
+                expect(page.heard, key).toEqual([]);
+            }
+        });
+
+        it('leaves every other key to the page while the focus is not in it', async () => {
+            const el = await menu();
+            el.show();
+            await rendered();
+            el.parentElement.querySelector('.after').focus();
+            const page = keysOfThePage();
+
+            await userEvent.keyboard('d{Home}');
+            page.stop();
+
+            expect(focused()).toBe(undefined);
+            expect(page.heard).toEqual(['d', 'd', 'Home', 'Home']);
+        });
+
+        it('closes with the Tab key from anywhere in the page, and the focus moves on from there', async () => {
+            const el = await menu();
+            el.show();
+            await rendered();
+            el.parentElement.querySelector('.before').focus();
+
+            await userEvent.keyboard('{Tab}');
+            await rendered();
+
+            expect(el.open).toBe(false);
+            expect(document.activeElement).toBe(triggerOf(el));
+        });
+
+        for (const [what, at] of [
+            [
+                'the heading of a group',
+                (el) => el.querySelector('#share').shadowRoot.querySelector('[part~="label"]').getBoundingClientRect(),
+            ],
+            ['a line between two entries', (el) => el.querySelector('el-divider').getBoundingClientRect()],
+            [
+                'the padding of the panel',
+                (el) => {
+                    const { left, top } = panelOf(el).getBoundingClientRect();
+                    return new DOMRect(left + 1, top + 1, 4, 4);
+                },
+            ],
+        ]) {
+            it(`keeps the keyboard after a press on ${what}: the arrow keys go on from the entry that had the focus`, async () => {
+                const el = await menu(grouped);
+                const chosen = selections(el);
+                await openWith(el);
+                await userEvent.keyboard('{ArrowDown}');
+                expect(focused()).toBe('save');
+                const { left, top, width, height } = at(el);
+                const mouse = realPointer();
+
+                await mouse.down(left + width / 2, top + height / 2);
+                await mouse.up();
+                await rendered();
+
+                expect(el.open).toBe(true);
+                expect(chosen).toEqual([]);
+                expect(focused()).toBe('save');
+
+                await userEvent.keyboard('{ArrowDown}');
+
+                expect(focused()).toBe('mail');
+            });
+        }
+
+        it('has the focus on its panel after a press beside the entries while no entry had it, and the keys go on', async () => {
+            const el = await menu(grouped);
+            const chosen = selections(el);
+            el.show();
+            await rendered();
+            el.querySelector('#open').remove();
+            await rendered();
+            const { left, top } = panelOf(el).getBoundingClientRect();
+            const mouse = realPointer();
+
+            await mouse.down(left + 3, top + 3);
+            await mouse.up();
+            await rendered();
+
+            expect(activeElement()).toBe(panelOf(el));
+            // The space bar chooses nothing there, and the Tab key does not stop at the panel.
+            await userEvent.keyboard(' ');
+            expect(chosen).toEqual([]);
+            expect(el.open).toBe(true);
+            expect(panelOf(el).tabIndex).toBe(-1);
+
+            await userEvent.keyboard('{ArrowUp}');
+
+            expect(focused()).toBe('link');
+        });
+
+        it('puts the focus on the first entry once the page has rendered the entries', async () => {
+            const el = await menu('');
+            triggerOf(el).focus();
+
+            el.show();
+            await rendered();
+            expect(el.open).toBe(true);
+            expect(document.activeElement).toBe(triggerOf(el));
+
+            el.insertAdjacentHTML('beforeend', three);
+            await rendered();
+
+            expect(focused()).toBe('edit');
+        });
+
+        it('enters at the last entry once the entries are there, where ArrowUp has opened the menu', async () => {
+            const el = await menu('');
+
+            await openWith(el, '{ArrowUp}');
+            el.insertAdjacentHTML('beforeend', three);
+            await rendered();
+
+            expect(focused()).toBe('delete');
+        });
+
+        it('is placed again at its point once the entries are there: it stays inside of the viewport', async () => {
+            const el = await menu('');
+
+            el.showAt({ x: innerWidth - 5, y: innerHeight - 5 });
+            await rendered();
+            el.insertAdjacentHTML('beforeend', three);
+            await rendered();
+            await rendered();
+            const { right, bottom, height } = panelOf(el).getBoundingClientRect();
+
+            expect(height).toBeGreaterThan(100);
+            expect(right).toBeLessThanOrEqual(innerWidth);
+            expect(bottom).toBeLessThanOrEqual(innerHeight);
+            expect(focused()).toBe('edit');
+        });
+
+        it('leaves the focus where the user has put it in the menu before its other entries came', async () => {
+            const el = await menu('<el-menu-item id="edit" value="edit" hidden>Edit</el-menu-item>');
+            el.show();
+            await rendered();
+            panelOf(el).focus();
+
+            el.insertAdjacentHTML('beforeend', '<el-menu-item id="delete" value="delete">Delete</el-menu-item>');
+            await rendered();
+
+            expect(activeElement()).toBe(panelOf(el));
+        });
+
+        it('puts the focus on the first entry once the element of an entry is defined', async () => {
+            // In a page of its own: an element that is defined in this one stays defined.
+            const frame = document.createElement('iframe');
+            frame.style.cssText = 'display: block; width: 400px; height: 300px; border: 0;';
+            document.body.append(frame);
+            wrappers.push(frame);
+            const page = frame.contentWindow;
+            const load = (file) => page.eval(`import(${JSON.stringify(new URL(file, import.meta.url).href)})`);
+            const frames = async () => {
+                await new Promise((resolve) => page.requestAnimationFrame(resolve));
+                await new Promise((resolve) => page.requestAnimationFrame(resolve));
+            };
+            (await load('./menu.js')).define();
+            page.document.body.innerHTML = `
+                <button id="row" type="button">Row</button>
+                <el-menu label="Actions">${three}</el-menu>
+            `;
+            await frames();
+            const el = page.document.querySelector('el-menu');
+            const row = page.document.querySelector('#row');
+            row.focus();
+
+            el.showAt({ x: 20, y: 40 }, row);
+            await frames();
+            expect(el.open).toBe(true);
+            expect(page.document.activeElement).toBe(row);
+
+            (await load('../menu-item/menu-item.js')).define();
+            await frames();
+
+            expect(page.document.activeElement.id).toBe('edit');
+        });
+    });
+
     describe('choosing an entry', () => {
         it('closes the menu, tells the page which one it was, and gives the focus back', async () => {
             const el = await menu();
