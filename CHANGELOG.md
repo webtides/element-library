@@ -114,6 +114,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: in an `el-nav` that shows icons alone (`labels="false"`) the text of the destination is off the screen and stays the name of its link. In a rail a destination is as high as it is, and in a bar a share of the width: the `el-nav` says which in CSS properties that are inherited. ([#181](https://github.com/webtides/element-library/issues/181))
 - Added: as a row of a list (`layout="list"` of the `el-nav`, or `column="list"` in the column of a frame) the text is beside the icon, the row is as high as a control, the shape of the current destination is behind the whole row, and what is in the `badge` slot is at the end of the row. The `el-nav` says so in CSS properties that are inherited: the markup of a destination is the same. ([#199](https://github.com/webtides/element-library/issues/199))
 
+### pagination
+
+- Added: `href`: the address of a page, with `{page}` in the place of its number (`/notes?page={page}`). With it the pages, the page before and the page after are links, in the server-rendered markup as well: a list that is rendered a page at a time is paged without JavaScript, a page opens in a new tab, and its address can be copied. Without it the pagination is buttons, as before. ([#189](https://github.com/webtides/element-library/issues/189))
+- Added: the current page is a link to its own address with `aria-current="page"`. On the first page the way back, and on the last one the way on, is a link without an address: no stop of the Tab key, and announced as a link that is not available (`role="link"`, `aria-disabled="true"`).
+- Added: a link fires no `pagination-change` and does not set `page`: the address brings the next page. The parts, the sizes, the focus ring and the touch targets are the ones of the buttons.
+
 ### scroll-to-top
 
 - Changed: it scrolls the element around it that scrolls to the top, the content of an `el-app-frame` for example, and the window where there is none. Before, it scrolled the window whatever it was in. `duration` is ignored when that element has `scroll-behavior: smooth`. ([#176](https://github.com/webtides/element-library/issues/176))

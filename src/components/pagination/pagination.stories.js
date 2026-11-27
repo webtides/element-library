@@ -226,3 +226,47 @@ export const OwnIconsAndLabels = {
         await expect(el.shadowRoot.querySelector('[part~="next"]')).toHaveAttribute('aria-label', 'Nächste Seite');
     },
 };
+
+export const Links = {
+    name: 'Pages as links',
+    parameters: {
+        controls: { disable: true },
+        docs: {
+            description: {
+                story: '`href` is the address of a page, with `{page}` in the place of its number. The pages are links then: hover one to see its address, open it in a new tab, or follow it. Here the address is a fragment of this page, and the story sets `page` when the fragment changes, as a server would with the next page. On the first page the way back is a link without an address.',
+            },
+        },
+    },
+    render: () => {
+        const page = () => Number(/^#notes-page-(\d+)$/.exec(location.hash)?.[1]) || 1;
+        const follow = () => {
+            const el = document.querySelector('#links-pagination');
+            const out = document.querySelector('#links-output');
+            if (!el || !out) return;
+            el.page = page();
+            out.textContent = `Entries ${(page() - 1) * 10 + 1} to ${Math.min(page() * 10, 182)} of 182`;
+        };
+        window.removeEventListener('hashchange', window.__elPaginationFollow);
+        window.__elPaginationFollow = follow;
+        window.addEventListener('hashchange', follow);
+        setTimeout(follow);
+
+        return html`
+            <p id="links-output" role="status" style="margin:0 0 1rem"></p>
+            <el-pagination
+                id="links-pagination"
+                href="#notes-page-{page}"
+                total="182"
+                page="${page()}"
+                label="Pages of the notes"
+            ></el-pagination>
+        `;
+    },
+    play: async ({ canvasElement }) => {
+        const el = canvasElement.querySelector('el-pagination');
+        await waitFor(() => expect(el.shadowRoot.querySelector('[aria-current]')).not.toBeNull());
+        const next = el.shadowRoot.querySelector('[part~="next"]');
+        await expect(next.localName).toBe('a');
+        await expect(el.shadowRoot.querySelector('button')).toBeNull();
+    },
+};

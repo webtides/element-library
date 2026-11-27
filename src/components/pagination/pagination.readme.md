@@ -2,7 +2,7 @@
 
 `pagination` is the way through a list that is split into pages. It shows the current page, the pages around it, the first and the last, and a button for the page before and the page after. The pages in between are left out, and the row keeps its length while the current page moves.
 
-It loads nothing itself: a button sets `page` and fires `pagination-change`, and the page shows the entries that belong to it.
+It loads nothing itself: a button sets `page` and fires `pagination-change`, and the page shows the entries that belong to it. For a list that a server renders a page at a time, the pages are links instead: see [Pages as links](#pages-as-links).
 
 ## How to use
 
@@ -41,6 +41,7 @@ pagination.addEventListener('pagination-change', (event) => {
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `page` | `number` | `1` | The current page, counted from 1. Reflected. |
+| `href` | `string` | `''` | The address of a page, with `{page}` in the place of its number: `/notes?page={page}`. With it the pages are links. |
 | `total` | `number` | `0` | The number of entries in the whole list. |
 | `per-page` | `number` | `10` | The number of entries on one page. |
 | `siblings` | `number` | `1` | How many pages are shown on each side of the current page. |
@@ -60,7 +61,7 @@ _None._
 
 | Name | Detail | Description |
 | --- | --- | --- |
-| `pagination-change` | `{ page: number }` | Fired when a button has changed the page. Not fired when `page` is set from a script. |
+| `pagination-change` | `{ page: number }` | Fired when a button has changed the page. Not fired when `page` is set from a script, and not by a link. |
 
 #### Slots
 
@@ -75,7 +76,7 @@ _None._
 | ---------- | ------------------------------------------------------------ |
 | `base`     | The `nav` landmark.                                          |
 | `list`     | The row of the buttons.                                      |
-| `button`   | Every button: the pages, the page before and the page after. |
+| `button`   | Every button, or link: the pages, the page before and after. |
 | `page`     | The button of a page.                                        |
 | `current`  | The button of the current page.                              |
 | `previous` | The button for the page before.                              |
@@ -122,7 +123,24 @@ Where the row does not fit into its container it breaks into a second row. With 
 
 A click on the current page does nothing. `page` set from a script changes the row without an event.
 
-The pagination renders buttons, not links: it does not change the address of the page. Write the page into the address in the listener where a page should be reachable by a link.
+A button does not change the address of the page. Where every page of the list has an address, give the pagination `href`: its pages are links then, and fire nothing.
+
+## Pages as links
+
+A list that a server renders a page at a time has the page in its address: `/notes?page=3`. Such a list works before any script has run, a page of it opens in a new tab and can be sent to somebody, and a step back leads to the page before. `href` says how the address of a page is formed, with `{page}` in the place of the number:
+
+```html
+<el-pagination href="/notes?page={page}" total="182" page="3"></el-pagination>
+```
+
+- **The pages, the page before and the page after are links** (`<a href>`), in the server-rendered markup as well. They lead to their page without JavaScript, and a click with a modifier key or the middle button is the browser's.
+- **The mark can be anywhere in the address**, and more than once: `/notes/page/{page}` works as `?page={page}` does.
+- **What else is in the address stays**, because the page writes all of it: `href="/search?q=tea&sort=new&page={page}"`. The element does not read the address of the document. A server does not have one to read, and the markup of the server would differ from the one of the browser.
+- **The current page** is a link too, to the address the user is at, with `aria-current="page"`.
+- **On the first page there is no way back, and on the last one no way on.** That entry is a link without an address there: the Tab key does not stop at it, and it says to assistive technology that it is a link and that it is not available (`role="link"`, `aria-disabled="true"`).
+- **A link fires nothing and sets nothing.** `pagination-change` is the event of a button. The address the link leads to brings the next page, and with it the `page` of the element. An application that changes the view without loading hears the click as it hears the one of any link, and sets `page` when the view has changed.
+- The parts, the sizes, the focus ring and the touch targets are the ones of the buttons. `::part(button)`, `::part(page)`, `::part(current)`, `::part(previous)` and `::part(next)` select a link as they select a button.
+- Without `href` the pagination is buttons, as before.
 
 ## Size and look
 
@@ -153,7 +171,7 @@ Both `page` and `size` are reflected: the element writes them onto itself as att
 ## Accessibility
 
 - The pagination is a navigation landmark (`nav`) with the name in `label`. Two paginations on one page need two names, "Pages of the results" and "Pages of the comments" for example.
-- The row is a list of buttons. Every button has a name: "Page 3", "Previous page", "Next page". The button of the current page is marked with `aria-current="page"`.
+- The row is a list of buttons, or of links with `href`. Every one has a name: "Page 3", "Previous page", "Next page". The current page is marked with `aria-current="page"`.
 - The names are English by default. For another language set `label`, `page-label`, `previous-label` and `next-label`.
 - The ellipsis and the arrow heads are hidden from assistive technology.
 - All buttons are reached with `Tab` and pressed with `Enter` or `Space`. The button for the page before is disabled on the first page, the one for the page after on the last.
@@ -164,4 +182,4 @@ Both `page` and `size` are reflected: the element writes them onto itself as att
 
 ## Server-side rendering
 
-The pagination is fully part of the server-rendered markup (Declarative Shadow DOM): the row for the `page`, `total` and `per-page` of the element, the current page and the disabled buttons. Without JavaScript the buttons do nothing.
+The pagination is fully part of the server-rendered markup (Declarative Shadow DOM): the row for the `page`, `total` and `per-page` of the element, the current page and the disabled buttons. Without JavaScript the buttons do nothing. With `href` the row is links, which lead to their pages without it.

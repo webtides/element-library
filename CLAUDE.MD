@@ -92,7 +92,7 @@ element-library/
 - **scroll-to**: Scroll to target element
 - **notification**: Alert with variants, auto-dismiss and a live region, inline or as a toast
 - **otp-field**: One-time code of a second factor: one native input (extends the input field) that takes spaces and hyphens out and says when the code is complete
-- **pagination**: Way through a list that is split into pages: a `nav` with a button per page
+- **pagination**: Way through a list that is split into pages: a `nav` with a button per page; with `href`, the address of a page with `{page}` in the place of its number, the pages are links in the server-rendered markup (the way that leads nowhere at an end is a link without an address, `role="link"` and `aria-disabled`), and a link fires nothing
 - **password-field**: Masked password input with an optional show/hide toggle
 - **popover**: Panel that floats next to an anchor (native popover, placed with Floating UI)
 - **progress-bar**: Track that fills with the progress of a task, or moves while the progress is not known

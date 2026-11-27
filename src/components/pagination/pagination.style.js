@@ -57,6 +57,13 @@ const style = css`
         transition: background var(--el-duration-md, 0s) var(--el-ease, linear);
     }
 
+    /* A page that is a link (\`href\`) has the box of a button: a button counts its sizes from
+       its border and has no line under its text. */
+    a[part~='button'] {
+        box-sizing: border-box;
+        text-decoration: none;
+    }
+
     [part~='ellipsis'] {
         color: var(--el-color-fg-muted, inherit);
         user-select: none;
@@ -140,7 +147,10 @@ const style = css`
         }
     }
 
-    [part~='button'][disabled] {
+    /* The way back on the first page and the way on at the last one: a button that is disabled,
+       or a link without an address. */
+    [part~='button'][disabled],
+    [part~='button'][aria-disabled='true'] {
         background: transparent;
         opacity: 0.55;
         cursor: not-allowed;

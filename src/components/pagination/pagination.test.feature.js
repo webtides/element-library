@@ -7,6 +7,7 @@ import {
     fixture,
     forcePseudoClasses,
     nextFrame,
+    realPointer,
     sizeOf,
     useForcedColors,
     useTouchScreen,
@@ -1016,6 +1017,269 @@ describe('Feature | Pagination', () => {
         });
     });
 
+    describe('pages as links', () => {
+        const links = (attributes = 'total="200" page="10"', href = '/notes?page={page}') =>
+            themed(`<el-pagination href="${href}" ${attributes}></el-pagination>`);
+        const link = (el, page) => parts(el, 'page').find((candidate) => candidate.textContent.trim() === String(page));
+        const address = (node) => node.getAttribute('href');
+
+        it('renders a link to every page of the row, with the number in the place of its mark', async () => {
+            const el = await links();
+
+            expect(row(el)).toBe('1 … 9 10 11 … 20');
+            expect(parts(el, 'page').map((node) => [node.localName, address(node)])).toEqual([
+                ['a', '/notes?page=1'],
+                ['a', '/notes?page=9'],
+                ['a', '/notes?page=10'],
+                ['a', '/notes?page=11'],
+                ['a', '/notes?page=20'],
+            ]);
+            expect(el.shadowRoot.querySelector('button')).toBeNull();
+            el.parentElement.remove();
+        });
+
+        it('is a link to assistive technology, named as the button of a page is', async () => {
+            const el = await links();
+
+            expect(await accessibleRole(link(el, 9))).toBe('link');
+            expect(await accessibleName(link(el, 9))).toBe('Page 9');
+            expect(await accessibleRole(part(el, 'previous'))).toBe('link');
+            expect(await accessibleName(part(el, 'previous'))).toBe('Previous page');
+            expect(await accessibleName(part(el, 'next'))).toBe('Next page');
+            el.parentElement.remove();
+        });
+
+        it('marks the current page, which is a link to the address the user is at', async () => {
+            const el = await links();
+
+            expect(current(el)).toBe(link(el, 10));
+            expect(current(el).getAttribute('part')).toBe('button page current');
+            expect(address(current(el))).toBe('/notes?page=10');
+            expect(el.shadowRoot.querySelectorAll('[aria-current]').length).toBe(1);
+            el.parentElement.remove();
+        });
+
+        it('leads to the page before and to the page after', async () => {
+            const el = await links();
+
+            expect(address(part(el, 'previous'))).toBe('/notes?page=9');
+            expect(address(part(el, 'next'))).toBe('/notes?page=11');
+            expect(part(el, 'previous').rel).toBe('prev');
+            expect(part(el, 'next').rel).toBe('next');
+            el.parentElement.remove();
+        });
+
+        it('has no way back on the first page and no way on at the last one, and says so', async () => {
+            const [first, last] = await themed(`
+                <el-pagination href="/notes?page={page}" total="200" page="1"></el-pagination>
+                <el-pagination href="/notes?page={page}" total="200" page="20"></el-pagination>
+            `);
+            await rendered();
+
+            for (const node of [part(first, 'previous'), part(last, 'next')]) {
+                // No address, so no link the keyboard stops at or a click follows. The role and
+                // the state say what it is.
+                expect(node.hasAttribute('href')).toBe(false);
+                expect(node.hasAttribute('rel')).toBe(false);
+                expect(node.getAttribute('aria-disabled')).toBe('true');
+                expect(await accessibleRole(node)).toBe('link');
+                expect(getComputedStyle(node).cursor).toBe('not-allowed');
+                expect(getComputedStyle(node).opacity).toBe('0.55');
+            }
+            expect(await accessibleName(part(first, 'previous'))).toBe('Previous page');
+            // The other way is a link as on every page.
+            expect(address(part(first, 'next'))).toBe('/notes?page=2');
+            expect(part(first, 'next').hasAttribute('aria-disabled')).toBe(false);
+            expect(address(part(last, 'previous'))).toBe('/notes?page=19');
+            first.parentElement.remove();
+        });
+
+        it('keeps what is in the address beside the page', async () => {
+            const el = await links('total="200" page="3"', '/search?q=green+tea&amp;sort=new&amp;page={page}#results');
+
+            expect(address(link(el, 4))).toBe('/search?q=green+tea&sort=new&page=4#results');
+            expect(address(part(el, 'next'))).toBe('/search?q=green+tea&sort=new&page=4#results');
+            expect(new URL(link(el, 4).href).searchParams.get('q')).toBe('green tea');
+            el.parentElement.remove();
+        });
+
+        it('takes the number wherever the address has its mark, in a path as well', async () => {
+            const el = await links('total="30" page="2"', '/notes/page/{page}?from={page}');
+
+            expect(address(link(el, 3))).toBe('/notes/page/3?from=3');
+            el.parentElement.remove();
+        });
+
+        it('follows a click as a link does, and fires nothing', async () => {
+            const el = await links('total="200" page="10"', '#notes-page-{page}');
+            const pages = changes(el);
+            const before = location.hash;
+
+            await userEvent.click(link(el, 11));
+            await rendered();
+
+            expect(location.hash).toBe('#notes-page-11');
+            expect(pages).toEqual([]);
+            // The address brings the next page: the element keeps the one it was given.
+            expect(el.page).toBe(10);
+            expect(current(el).textContent.trim()).toBe('10');
+            history.replaceState(null, '', before || location.pathname + location.search);
+            el.parentElement.remove();
+        });
+
+        it('leaves a click with a modifier and the middle button to the browser', async () => {
+            const el = await links('total="200" page="10"', '#notes-page-{page}');
+            const prevented = [];
+            // Asked at the end of the way of the event, and kept from opening a tab here.
+            window.addEventListener(
+                'click',
+                (event) => {
+                    prevented.push(event.defaultPrevented);
+                    event.preventDefault();
+                },
+                { once: true },
+            );
+            link(el, 11).dispatchEvent(
+                new MouseEvent('click', {
+                    bubbles: true,
+                    composed: true,
+                    cancelable: true,
+                    metaKey: true,
+                    ctrlKey: true,
+                }),
+            );
+
+            expect(prevented).toEqual([false]);
+            el.parentElement.remove();
+        });
+
+        it('stops the Tab key at every link, and not at the way that leads nowhere', async () => {
+            const wrapper = await fixture(`
+                <div style="${tokens}">
+                    <button class="before" type="button">Before</button>
+                    <el-pagination href="/notes?page={page}" total="50" page="1"></el-pagination>
+                </div>
+            `);
+            const el = wrapper.querySelector('el-pagination');
+            wrapper.querySelector('.before').focus();
+
+            const stops = [];
+            for (let i = 0; i < 6; i++) {
+                await userEvent.keyboard('{Tab}');
+                stops.push(el.shadowRoot.activeElement?.getAttribute('aria-label'));
+            }
+            expect(stops).toEqual(['Page 1', 'Page 2', 'Page 3', 'Page 4', 'Page 5', 'Next page']);
+            wrapper.remove();
+        });
+
+        it('has the boxes, the look and the focus ring of the buttons', async () => {
+            const [asLinks, asButtons] = await themed(`
+                <el-pagination href="/notes?page={page}" total="200" page="10"></el-pagination>
+                <el-pagination total="200" page="10"></el-pagination>
+            `);
+            await rendered();
+            // The pointer of a test before this one may lie on a page, which has a tint then.
+            await realPointer().leave();
+            const look = (el) =>
+                parts(el, 'button').map((node) => {
+                    const { width, height } = node.getBoundingClientRect();
+                    const style = getComputedStyle(node);
+                    return [
+                        node.getAttribute('part'),
+                        width,
+                        height,
+                        style.color,
+                        style.backgroundColor,
+                        style.fontSize,
+                        style.fontWeight,
+                        style.borderRadius,
+                        style.textDecorationLine,
+                    ];
+                });
+
+            expect(look(asLinks)).toEqual(look(asButtons));
+            expect(sizeOf(asLinks)).toEqual(sizeOf(asButtons));
+
+            const ring = async (el) => {
+                const node = parts(el, 'page')[1];
+                await forcePseudoClasses(node, ['focus-visible']);
+                const { outlineStyle, outlineWidth, outlineColor, outlineOffset } = getComputedStyle(node);
+                return [outlineStyle, outlineWidth, outlineColor, outlineOffset];
+            };
+            const [ofLinks, ofButtons] = [await ring(asLinks), await ring(asButtons)];
+            expect(ofLinks).toEqual(['solid', '3px', 'rgb(200, 0, 100)', '1px']);
+            expect(ofLinks).toEqual(ofButtons);
+            asLinks.parentElement.remove();
+        });
+
+        it('follows the sizes of the buttons', async () => {
+            const [small, large] = await themed(`
+                <el-pagination href="/p/{page}" total="200" page="10" size="small"></el-pagination>
+                <el-pagination href="/p/{page}" total="200" page="10" size="large"></el-pagination>
+            `);
+            await rendered();
+
+            expect(parts(small, 'page')[0].getBoundingClientRect().height).toBeLessThan(40);
+            expect(parts(large, 'page')[0].getBoundingClientRect().height).toBeGreaterThan(40);
+            small.parentElement.remove();
+        });
+
+        it('is buttons again without an address, and links with one', async () => {
+            const el = await links();
+            el.href = '';
+            await rendered();
+            expect(parts(el, 'page').every((node) => node.localName === 'button')).toBe(true);
+
+            el.setAttribute('href', '/list/{page}');
+            await rendered();
+            expect(parts(el, 'page').every((node) => node.localName === 'a')).toBe(true);
+            expect(address(part(el, 'next'))).toBe('/list/11');
+            el.parentElement.remove();
+        });
+
+        it('shows another page when the page sets it, as after a change of the view without loading', async () => {
+            const el = await links();
+            el.page = 12;
+            await rendered();
+
+            expect(current(el).textContent.trim()).toBe('12');
+            expect(address(part(el, 'previous'))).toBe('/notes?page=11');
+            el.parentElement.remove();
+        });
+
+        describe('on a touch screen', () => {
+            useTouchScreen();
+
+            it('makes every link at least as large as a finger needs', async () => {
+                const el = await themed(
+                    `<el-pagination href="/p/{page}" total="200" page="10" size="small"></el-pagination>`,
+                    '--el-touch-target: 44px;',
+                );
+                await rendered();
+
+                for (const node of parts(el, 'button')) {
+                    const { width, height } = node.getBoundingClientRect();
+                    expect(width).toBeGreaterThanOrEqual(44);
+                    expect(height).toBeGreaterThanOrEqual(44);
+                }
+                el.parentElement.remove();
+            });
+        });
+
+        it('has no accessibility violations, on the first page and in the middle', async () => {
+            const wrapper = await fixture(`
+                <main style="${tokens} background: rgb(255, 255, 255)">
+                    <el-pagination href="/notes?page={page}" total="200" page="1" label="Notes"></el-pagination>
+                    <el-pagination href="/hits?page={page}" total="200" page="10" label="Hits"></el-pagination>
+                </main>
+            `);
+
+            const results = await axe.run(wrapper);
+            expect(results.violations).toEqual([]);
+            wrapper.remove();
+        });
+    });
+
     describe('server-side rendering', () => {
         it('renders the whole row on the server', async () => {
             const el = await fixture(`<el-pagination total="200" page="10"></el-pagination>`);
@@ -1035,6 +1299,65 @@ describe('Feature | Pagination', () => {
             expect(markup.match(/aria-current/g).length).toBe(1);
             expect(markup).not.toMatch(/disabled/);
             el.remove();
+        });
+
+        it('renders the pages as links on the server, with their addresses', async () => {
+            const el = await fixture(
+                `<el-pagination href="/notes?q=a&amp;page={page}" total="200" page="1"></el-pagination>`,
+            );
+            const markup = el
+                .template()
+                .toString()
+                .replace(/<!--[\s\S]*?-->/g, '')
+                .replace(/\s+/g, ' ');
+
+            expect(markup).toMatch(
+                /<a part="button page current" href="\/notes\?q=a&amp;page=1" aria-label="Page 1" aria-current="page"\s*> 1 <\/a>/,
+            );
+            expect(markup).toMatch(
+                /<a part="button page" href="\/notes\?q=a&amp;page=2" aria-label="Page 2"\s*> 2 <\/a>/,
+            );
+            expect(markup).toMatch(
+                /<a part="button next" href="\/notes\?q=a&amp;page=2" rel="next"\s+aria-label="Next page"/,
+            );
+            // The way back on the first page: no address, and the role and the state in its place.
+            expect(markup).toMatch(
+                /<a part="button previous"\s+role="link" aria-disabled="true" aria-label="Previous page"/,
+            );
+            expect(markup).not.toMatch(/<button/);
+            el.remove();
+        });
+
+        it('takes over server-rendered links as they are, and they lead on without a script', async () => {
+            const source = document.createElement('el-pagination');
+            Object.assign(source, source.properties(), { total: 200, page: 3, href: '#server-page-{page}' });
+            const wrapper = document.createElement('div');
+            document.body.append(wrapper);
+            wrapper.setHTMLUnsafe(`
+                <el-pagination href="#server-page-{page}" total="200" page="3">
+                    <template shadowrootmode="open">${source.template().toString()}</template>
+                </el-pagination>
+            `);
+            const el = wrapper.querySelector('el-pagination');
+            const server = {
+                row: row(el),
+                links: parts(el, 'button'),
+                addresses: parts(el, 'button').map((node) => node.getAttribute('href')),
+            };
+            const before = location.hash;
+
+            // The markup of the server is links that the browser follows by itself.
+            expect(server.addresses.slice(0, 3)).toEqual(['#server-page-2', '#server-page-1', '#server-page-2']);
+            await rendered();
+
+            expect(row(el)).toBe(server.row);
+            expect(parts(el, 'button')).toEqual(server.links);
+            expect(parts(el, 'button').map((node) => node.getAttribute('href'))).toEqual(server.addresses);
+
+            await userEvent.click(part(el, 'next'));
+            expect(location.hash).toBe('#server-page-4');
+            history.replaceState(null, '', before || location.pathname + location.search);
+            wrapper.remove();
         });
 
         it('takes over a server-rendered pagination as it is', async () => {

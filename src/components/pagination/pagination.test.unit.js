@@ -26,6 +26,7 @@ describe('Unit | Pagination', () => {
         const el = new Pagination();
         expect(el.properties()).toEqual({
             page: 1,
+            href: '',
             total: 0,
             perPage: 10,
             siblings: 1,

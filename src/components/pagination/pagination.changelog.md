@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `href`: the address of a page, with `{page}` in the place of its number (`/notes?page={page}`). With it the pages, the page before and the page after are links, in the server-rendered markup as well: a list that is rendered a page at a time is paged without JavaScript, a page opens in a new tab, and its address can be copied. Without it the pagination is buttons, as before. ([#189](https://github.com/webtides/element-library/issues/189))
+- The current page is a link to its own address with `aria-current="page"`. On the first page the way back, and on the last one the way on, is a link without an address: no stop of the Tab key, and announced as a link that is not available (`role="link"`, `aria-disabled="true"`).
+- A link fires no `pagination-change` and does not set `page`: the address brings the next page. The parts, the sizes, the focus ring and the touch targets are the ones of the buttons.
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

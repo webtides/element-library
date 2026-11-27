@@ -5,6 +5,9 @@ import Events from './pagination.events.js';
 /** What `perPage` is without a value that can be used. */
 const PER_PAGE = 10;
 
+/** What stands for the number of a page in `href`. */
+const PAGE = '{page}';
+
 /**
  * A whole number that is not negative, from a property that may hold anything.
  * @param {*} value
@@ -24,17 +27,24 @@ function count(value, fallback) {
  * The pagination does not load anything. A button sets `page` and fires `pagination-change`, and
  * the page shows the entries that belong to it.
  *
+ * A list that a server renders a page at a time has the page in its address. With `href`, the
+ * address of a page with `{page}` in the place of its number, the pages are links: they are in
+ * the server-rendered markup, lead to their page without a script, open in a new tab and can be
+ * copied. A link fires nothing and changes nothing: the address it leads to brings the next page.
+ *
  * @element el-pagination
  *
  * @fires {CustomEvent<{ page: number }>} pagination-change - Fired when a button has changed the
- *   page. `detail.page` is the new page. Not fired when `page` is set from a script.
+ *   page. `detail.page` is the new page. Not fired when `page` is set from a script, and not by
+ *   a link.
  *
  * @slot previous-icon - The icon of the button for the page before. Unset, an arrow head.
  * @slot next-icon - The icon of the button for the page after. Unset, an arrow head.
  *
  * @csspart base - The `nav` landmark.
  * @csspart list - The row of the buttons.
- * @csspart button - Every button: the pages, the page before and the page after.
+ * @csspart button - Every button: the pages, the page before and the page after. With `href`
+ *   they are links, and keep their parts.
  * @csspart page - The button of a page.
  * @csspart current - The button of the current page.
  * @csspart previous - The button for the page before.
@@ -43,6 +53,9 @@ function count(value, fallback) {
  *
  * @property {number} page - The current page, counted from 1. A page that does not exist is shown
  *   as the nearest one that does. Default `1`. Reflected to the `page` attribute.
+ * @property {string} href - The address of a page, with `{page}` in the place of its number:
+ *   `/notes?page={page}`. With it the pages, the page before and the page after are links.
+ *   Default `''`: buttons.
  * @property {number} total - The number of entries in the whole list. Default `0`.
  * @property {number} perPage - The number of entries on one page. Default `10`.
  * @property {number} siblings - How many pages are shown on each side of the current page.
@@ -76,6 +89,7 @@ export default class Pagination extends TemplateElement {
     properties() {
         return {
             page: 1,
+            href: '',
             total: 0,
             perPage: PER_PAGE,
             siblings: 1,
@@ -194,13 +208,42 @@ export default class Pagination extends TemplateElement {
         ];
     }
 
+    /**
+     * The address of a page: `href` with the number in the place of its mark.
+     * @private
+     * @param {number} page
+     * @returns {string}
+     */
+    _address(page) {
+        return String(this.href).replaceAll(PAGE, String(page));
+    }
+
     /** @private */
     _pageTemplate(page, current) {
         const isCurrent = page === current;
+        const part = isCurrent ? 'button page current' : 'button page';
+
+        // A link to the page. The current one is a link as well, to the address the user is at:
+        // it can be copied and opened again.
+        if (this.href) {
+            return html`
+                <li>
+                    <a
+                        part="${part}"
+                        href="${this._address(page)}"
+                        aria-label="${this.pageLabel} ${page}"
+                        aria-current="${isCurrent ? 'page' : null}"
+                    >
+                        ${page}
+                    </a>
+                </li>
+            `;
+        }
+
         return html`
             <li>
                 <button
-                    part="${isCurrent ? 'button page current' : 'button page'}"
+                    part="${part}"
                     type="button"
                     aria-label="${this.pageLabel} ${page}"
                     aria-current="${isCurrent ? 'page' : undefined}"
@@ -212,63 +255,94 @@ export default class Pagination extends TemplateElement {
         `;
     }
 
+    /**
+     * The way to the page before or after, as a link. Where there is no such page, at the first
+     * page and at the last one, it is a link without an address: no stop of the Tab key, and one
+     * that says to assistive technology that it leads nowhere now.
+     * @private
+     * @param {'previous'|'next'} name
+     * @param {number} page - The page it leads to.
+     * @param {string} label
+     * @param {*} icon - The slot of its icon.
+     */
+    _stepLinkTemplate(name, page, label, icon) {
+        const there = page >= 1 && page <= this.pages;
+        return html`
+            <li>
+                <a
+                    part="button ${name}"
+                    href="${there ? this._address(page) : null}"
+                    rel="${there ? (name === 'previous' ? 'prev' : 'next') : null}"
+                    role="${there ? null : 'link'}"
+                    aria-disabled="${there ? null : 'true'}"
+                    aria-label="${label}"
+                >
+                    ${icon}
+                </a>
+            </li>
+        `;
+    }
+
     template() {
         const current = this._currentPage();
+        const arrow = (points) => html`
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <polyline points="${points}"></polyline>
+            </svg>
+        `;
+        const previousIcon = html`<slot name="previous-icon">${arrow('15 18 9 12 15 6')}</slot>`;
+        const nextIcon = html`<slot name="next-icon">${arrow('9 18 15 12 9 6')}</slot>`;
 
         return html`
             <nav part="base" aria-label="${this.label}">
                 <ul part="list" role="list">
-                    <li>
-                        <button
-                            part="button previous"
-                            type="button"
-                            aria-label="${this.previousLabel}"
-                            ?disabled="${current <= 1}"
-                            data-step="-1"
-                        >
-                            <slot name="previous-icon">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    aria-hidden="true"
-                                >
-                                    <polyline points="15 18 9 12 15 6"></polyline>
-                                </svg>
-                            </slot>
-                        </button>
-                    </li>
+                    ${
+                        this.href
+                            ? this._stepLinkTemplate('previous', current - 1, this.previousLabel, previousIcon)
+                            : html`
+                                  <li>
+                                      <button
+                                          part="button previous"
+                                          type="button"
+                                          aria-label="${this.previousLabel}"
+                                          ?disabled="${current <= 1}"
+                                          data-step="-1"
+                                      >
+                                          ${previousIcon}
+                                      </button>
+                                  </li>
+                              `
+                    }
                     ${this._items().map((page) =>
                         page === null
                             ? html`<li part="ellipsis" aria-hidden="true">…</li>`
                             : this._pageTemplate(page, current),
                     )}
-                    <li>
-                        <button
-                            part="button next"
-                            type="button"
-                            aria-label="${this.nextLabel}"
-                            ?disabled="${current >= this.pages}"
-                            data-step="1"
-                        >
-                            <slot name="next-icon">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    aria-hidden="true"
-                                >
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                            </slot>
-                        </button>
-                    </li>
+                    ${
+                        this.href
+                            ? this._stepLinkTemplate('next', current + 1, this.nextLabel, nextIcon)
+                            : html`
+                                  <li>
+                                      <button
+                                          part="button next"
+                                          type="button"
+                                          aria-label="${this.nextLabel}"
+                                          ?disabled="${current >= this.pages}"
+                                          data-step="1"
+                                      >
+                                          ${nextIcon}
+                                      </button>
+                                  </li>
+                              `
+                    }
                 </ul>
             </nav>
         `;
