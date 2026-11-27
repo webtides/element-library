@@ -265,7 +265,7 @@ export const ManyRows = {
         controls: { disable: true },
         docs: {
             description: {
-                story: 'One `el-menu` without a button of its own, after the list. A right click on a row, or a long press of a finger, opens it where the pointer is: `menu.showAt({ x, y }, row)`. The button at the end of a row opens the same menu at the button: `menu.showAt(button)`, and a second press on it closes the menu. Nothing is in the menu of the right click alone. What the menu was opened for is `detail.opener` of `menu-select`, and gets the focus back.',
+                story: 'One `el-menu` without a button of its own, after the list. A right click on a row, or a long press of a finger, opens it where the pointer is: `menu.showAt({ x, y }, row)`. The button at the end of a row opens the same menu at the button: `menu.showAt(button)`, and a second press on it closes the menu. The list scrolls in a region: at a point the menu closes when the list scrolls under it, at a button it follows the button. Nothing is in the menu of the right click alone. What the menu was opened for is `detail.opener` of `menu-select`, and gets the focus back.',
             },
             story: { inline: false, height: '26rem' },
         },
@@ -300,8 +300,17 @@ export const ManyRows = {
 
         return html`
             <div style="padding:1rem;max-width:30rem">
-                <ul id="rows-list" style="list-style:none;margin:0;padding:0">
-                    ${['Release notes', 'Questions about the invoice', 'Room for the workshop', 'Next sprint'].map(
+                <ul id="rows-list" style="list-style:none;margin:0;padding:0;max-height:13rem;overflow:auto">
+                    ${[
+                        'Release notes',
+                        'Questions about the invoice',
+                        'Room for the workshop',
+                        'Next sprint',
+                        'Notes of the review',
+                        'Holidays',
+                        'Budget for the next year',
+                        'Feedback on the draft',
+                    ].map(
                         (name) => html`
                             <li
                                 data-row="${name}"

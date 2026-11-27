@@ -1,4 +1,4 @@
-import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
+import { arrow, autoUpdate, computePosition, flip, getOverflowAncestors, offset, shift } from '@floating-ui/dom';
 
 /** How close to the edge of the viewport a floating element may come, and its arrow to one of its corners. */
 const EDGE_PADDING = 8;
@@ -68,4 +68,18 @@ export async function placeAtAnchor(anchor, floating, { placement, distance = 0,
  */
 export function followAnchor(anchor, floating, update) {
     return autoUpdate(anchor, floating, update);
+}
+
+/**
+ * What scrolls an element away: the regions around it that scroll, and the window for the page.
+ * The way up goes through slots and out of shadow roots, so the region of an `el-app-frame` is
+ * one of them for what is in its content.
+ *
+ * A `scroll` event does not bubble and does not leave a shadow root: who wants to know that an
+ * element has moved listens on each of these.
+ * @param {Element} element
+ * @returns {Array<Element | Window>}
+ */
+export function scrollersOf(element) {
+    return getOverflowAncestors(element).filter((scroller) => scroller instanceof Element || scroller === window);
 }

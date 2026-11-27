@@ -172,8 +172,11 @@ export async function emulateSafeAreaInsets(insets) {
  * takes the pointer out of the page. Call it after every test that has moved one (`afterEach`).
  *
  * A mouse presses its left button, or the right one: `realPointer('mouse', { button: 'right' })`.
+ * And it has a wheel: `await mouse.wheel(100, 300, 200)` scrolls what is under that point down by
+ * 200 pixels. The browser scrolls over some frames: wait for what the scroll does
+ * (`expect.poll()`), not for a number of frames.
  * @param {'mouse' | 'pen' | 'touch'} [type] - Default `'mouse'`.
- * @returns {{ down: (x: number, y: number) => Promise<void>, move: (x: number, y: number) => Promise<void>, up: () => Promise<void>, leave: () => Promise<void> }}
+ * @returns {{ down: (x: number, y: number) => Promise<void>, move: (x: number, y: number) => Promise<void>, up: () => Promise<void>, wheel: (x: number, y: number, deltaY: number) => Promise<void>, leave: () => Promise<void> }}
  * @param {object} [options]
  * @param {'left'|'right'} [options.button] - The button of a mouse.
  */
@@ -232,6 +235,18 @@ export function realPointer(type = 'mouse', { button = 'left' } = {}) {
                 await mouse('mouseReleased', button);
             }
             pressed = false;
+        },
+        async wheel(x, y, deltaY) {
+            at = { x, y };
+            await session.send('Input.dispatchMouseEvent', {
+                type: 'mouseWheel',
+                ...inPage(x, y),
+                deltaX: 0,
+                deltaY,
+                button: 'none',
+                buttons: 0,
+                pointerType: 'mouse',
+            });
         },
         async leave() {
             // A finger that is lifted is nowhere.

@@ -91,6 +91,38 @@ describe('Unit | Menu', () => {
         el.remove();
     });
 
+    it('listens for a scroll of the page while it is open at a point, and at no other time', async () => {
+        const button = document.createElement('button');
+        const el = document.createElement('el-menu');
+        document.body.append(button, el);
+        const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+        const scroll = () => document.dispatchEvent(new Event('scroll'));
+        await frame();
+
+        el.showAt(button);
+        await frame();
+        await frame();
+        scroll();
+        expect(el.open).toBe(true);
+
+        el.showAt({ x: 10, y: 10 });
+        await frame();
+        scroll();
+        expect(el.open).toBe(false);
+        await frame();
+        await frame();
+
+        // Its own button, or nothing: the menu is at an element.
+        el.show();
+        await frame();
+        await frame();
+        scroll();
+        expect(el.open).toBe(true);
+
+        button.remove();
+        el.remove();
+    });
+
     it('opens and closes without a button and without entries', async () => {
         const el = document.createElement('el-menu');
         document.body.append(el);

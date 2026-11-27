@@ -1,6 +1,6 @@
 import { TemplateElement, defineElement, html } from '@webtides/element-js';
 import { activeElement } from '../../utils/focus.js';
-import { followAnchor, placeAtAnchor } from '../../utils/floating.js';
+import { followAnchor, placeAtAnchor, scrollersOf } from '../../utils/floating.js';
 import style from './menu.style.js';
 import Events from './menu.events.js';
 
@@ -165,6 +165,39 @@ export default class Menu extends TemplateElement {
         }
 
         this._restoreFocus = false;
+        this.open = false;
+    };
+
+    /**
+     * Whether the menu closes because the page has scrolled under it. The focus goes back to
+     * what the menu was opened for without scrolling to it then: the scroll of the user goes on.
+     * @private
+     */
+    _closedByScroll = false;
+
+    /**
+     * What the menu listens on for a scroll while it is open at a point.
+     * @private
+     * @type {Array<Element | Window | Document> | undefined}
+     */
+    _scrollers = undefined;
+
+    /**
+     * What a menu at a point was opened for scrolls away under it: the page, or a region around
+     * the row. The menu closes, as the menu of the system does. At an element it follows the
+     * element instead, and it has no point to be left at.
+     *
+     * A scroll inside of the menu is none of these: a long menu scrolls in its panel. Neither is
+     * one of a region that does not move what the menu was opened for, another column of the
+     * page. A menu that was opened for nothing closes for every scroll in the page beside it.
+     * @private
+     * @param {Event} event
+     */
+    _onScroll = (event) => {
+        if (event.target instanceof Node && this.contains(event.target)) return;
+
+        this._restoreFocus = false;
+        this._closedByScroll = true;
         this.open = false;
     };
 
@@ -635,7 +668,8 @@ export default class Menu extends TemplateElement {
         if (panel.matches(':popover-open')) panel.hidePopover();
         this._internals.states.delete('open');
         this._syncTrigger();
-        if (restore) opener?.focus?.();
+        if (restore) opener?.focus?.({ preventScroll: this._closedByScroll });
+        this._closedByScroll = false;
         this.dispatch(Events.HIDE);
     }
 
@@ -660,11 +694,27 @@ export default class Menu extends TemplateElement {
     _startPositioning() {
         this._stopPositioning();
         const anchor = this._anchor();
-        // A point does not move: the menu is placed at it once.
+        // A point does not move: the menu is placed at it once, and closes when what it was
+        // opened for scrolls away under it.
         if (anchor instanceof Element) {
             this._stopAutoUpdate = followAnchor(anchor, this.$refs.panel, () => this._position());
         } else {
             this._position();
+            this._listenForScroll();
+        }
+    }
+
+    /**
+     * A scroll does not bubble and does not leave a shadow root, so the menu listens where it
+     * happens: on every region around what it was opened for, and on the window for the page.
+     * Opened for nothing, it hears every scroll of the page on its way down from the document.
+     * @private
+     */
+    _listenForScroll() {
+        const capture = !this._opener;
+        this._scrollers = this._opener ? scrollersOf(this._opener) : [document];
+        for (const scroller of this._scrollers) {
+            scroller.addEventListener('scroll', this._onScroll, { capture, passive: true });
         }
     }
 
@@ -672,6 +722,11 @@ export default class Menu extends TemplateElement {
     _stopPositioning() {
         this._stopAutoUpdate?.();
         this._stopAutoUpdate = undefined;
+        for (const scroller of this._scrollers ?? []) {
+            scroller.removeEventListener('scroll', this._onScroll, false);
+            scroller.removeEventListener('scroll', this._onScroll, true);
+        }
+        this._scrollers = undefined;
     }
 
     /**

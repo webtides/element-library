@@ -1474,6 +1474,189 @@ describe('Feature | Menu', () => {
             expect(focused()).toBe('edit');
         });
 
+        describe('at a point, while something scrolls under it', () => {
+            // A page that scrolls, with a row at its top, a region that scrolls a row of its own
+            // and one that scrolls nothing the menu is opened for.
+            const page = async (entries = three) => {
+                const wrapper = await fixture(`
+                    <div style="${theme} padding: 100px;">
+                        <div id="top-row" tabindex="0" style="height: 40px">Row</div>
+                        <button id="top-more" type="button" aria-haspopup="menu" aria-label="Actions for the row">…</button>
+                        <div id="around" style="height: 100px; overflow: auto">
+                            <div id="inner-row" tabindex="0" style="height: 40px">Row in a region</div>
+                            <div style="height: 600px"></div>
+                        </div>
+                        <div id="beside" style="height: 100px; overflow: auto"><div style="height: 600px"></div></div>
+                        <div style="height: 3000px"></div>
+                        <el-menu label="Actions">${entries}</el-menu>
+                    </div>
+                `);
+                wrappers.push(wrapper);
+                await rendered();
+                const find = (selector) => wrapper.querySelector(selector);
+                return { el: find('el-menu'), find };
+            };
+            afterEach(() => window.scrollTo(0, 0));
+
+            it('closes when the wheel scrolls the page, and the scroll goes on: the focus does not bring the row back', async () => {
+                const { el, find } = await page();
+                const row = find('#top-row');
+                el.showAt({ x: 150, y: 120 }, row);
+                await rendered();
+                expect(focused()).toBe('edit');
+
+                // Beside the menu and beside the regions: the page scrolls.
+                await realPointer().wheel(50, 300, 400);
+                await expect.poll(() => el.open).toBe(false);
+                await expect.poll(() => scrollY).toBeGreaterThan(350);
+                await rendered();
+                const reached = scrollY;
+                await aTimeout(200);
+
+                expect(isShown(el)).toBe(false);
+                // The row has the focus again, and is out of view where the scroll has left it.
+                expect(document.activeElement).toBe(row);
+                expect(row.getBoundingClientRect().bottom).toBeLessThan(0);
+                expect(scrollY).toBe(reached);
+            });
+
+            it('closes when a region around what it was opened for scrolls, and leaves the region where it is', async () => {
+                const { el, find } = await page();
+                const region = find('#around');
+                el.showAt({ x: 150, y: 120 }, find('#inner-row'));
+                await rendered();
+
+                region.scrollTop = 200;
+                await rendered();
+                await rendered();
+
+                expect(el.open).toBe(false);
+                expect(document.activeElement).toBe(find('#inner-row'));
+                expect(region.scrollTop).toBe(200);
+            });
+
+            it('closes when a region in a shadow root scrolls the row that is in its slot', async () => {
+                const { el, find } = await page();
+                const host = document.createElement('div');
+                host.attachShadow({ mode: 'open' }).innerHTML =
+                    '<div id="scroller" style="height: 100px; overflow: auto"><slot></slot></div>';
+                host.innerHTML =
+                    '<div id="slotted-row" tabindex="0" style="height: 40px">Row</div><div style="height: 600px"></div>';
+                find('#top-row').before(host);
+                await rendered();
+                el.showAt({ x: 150, y: 220 }, host.querySelector('#slotted-row'));
+                await rendered();
+
+                host.shadowRoot.querySelector('#scroller').scrollTop = 50;
+                await rendered();
+                await rendered();
+
+                expect(el.open).toBe(false);
+            });
+
+            it('stays open while a region scrolls that does not move what it was opened for', async () => {
+                const { el, find } = await page();
+                el.showAt({ x: 150, y: 120 }, find('#top-row'));
+                await rendered();
+
+                find('#beside').scrollTop = 200;
+                find('#around').scrollTop = 200;
+                await rendered();
+                await rendered();
+
+                expect(el.open).toBe(true);
+                expect(focused()).toBe('edit');
+            });
+
+            it('closes for every scroll beside it where it was opened for nothing', async () => {
+                const { el, find } = await page();
+                el.showAt({ x: 150, y: 120 });
+                await rendered();
+
+                find('#beside').scrollTop = 200;
+                await rendered();
+                await rendered();
+
+                expect(el.open).toBe(false);
+            });
+
+            it('stays open while a long menu scrolls in its panel, and at the end of it', async () => {
+                const many = Array.from(
+                    { length: 40 },
+                    (_, index) => `<el-menu-item id="e${index}">Entry ${index}</el-menu-item>`,
+                );
+                const { el, find } = await page(many.join(''));
+                el.showAt({ x: 150, y: 20 }, find('#top-row'));
+                await rendered();
+                const panel = panelOf(el);
+                const { left, top } = panel.getBoundingClientRect();
+                expect(panel.scrollHeight).toBeGreaterThan(panel.clientHeight);
+                const mouse = realPointer();
+
+                await mouse.wheel(left + 40, top + 40, 200);
+                await expect.poll(() => panel.scrollTop).toBeGreaterThan(150);
+                expect(el.open).toBe(true);
+
+                // To its end and on: the page behind does not take the scroll over.
+                panel.scrollTop = panel.scrollHeight;
+                await rendered();
+                await mouse.wheel(left + 40, top + 40, 400);
+                await aTimeout(300);
+
+                expect(el.open).toBe(true);
+                expect(scrollY).toBe(0);
+            });
+
+            it('follows an element it was opened at while the page scrolls, as before', async () => {
+                const { el, find } = await page();
+                const button = find('#top-more');
+                el.showAt(button);
+                await rendered();
+                const before = corner(el)[1];
+
+                window.scrollBy(0, 60);
+                await expect.poll(() => corner(el)[1]).toBe(before - 60);
+
+                expect(el.open).toBe(true);
+                expect(corner(el)[1]).toBe(Math.round(button.getBoundingClientRect().bottom + 4));
+            });
+
+            it('leaves the focus where it is when it was not in the menu', async () => {
+                const { el, find } = await page();
+                el.showAt({ x: 150, y: 120 }, find('#top-row'));
+                await rendered();
+                find('#top-more').focus();
+
+                window.scrollBy(0, 300);
+                await rendered();
+                await rendered();
+
+                expect(el.open).toBe(false);
+                expect(document.activeElement).toBe(find('#top-more'));
+            });
+
+            it('stays open when it moves from a point to an element, and closes again once it is at a point', async () => {
+                const { el, find } = await page();
+                el.showAt({ x: 150, y: 120 }, find('#top-row'));
+                await rendered();
+                el.showAt(find('#top-more'));
+                await rendered();
+
+                window.scrollBy(0, 40);
+                await rendered();
+                await rendered();
+                expect(el.open).toBe(true);
+
+                el.showAt({ x: 150, y: 120 }, find('#top-row'));
+                await rendered();
+                window.scrollBy(0, 40);
+                await rendered();
+                await rendered();
+
+                expect(el.open).toBe(false);
+            });
+        });
+
         describe('the button of a row, with the listener of the readme', () => {
             // What the readme has for the button of a row, and nothing more.
             const withButtons = async () => {
