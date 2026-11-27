@@ -88,6 +88,9 @@ Each theme defines the library's `--el-*` design-token contract at `:root` and u
 | lazy-src             |                                                                                 | `0.2.0` |
 | list                 | A list of rows with one density, one line between them and one text line        | `0.1.0` |
 | list-item            | One row of a list: a start, a title, a line under it, an end, a link as a whole | `0.1.0` |
+| menu                 | A button that opens a list of actions: a menu the keyboard moves through        | `0.1.0` |
+| menu-group           | A group of entries in a menu, with a heading                                    | `0.1.0` |
+| menu-item            | One entry of a menu: an action, or a link                                       | `0.1.0` |
 | nav                  | The destinations of an application: a bar on a phone, a rail or a list beside   | `0.1.0` |
 | nav-item             | One destination of a nav: a link with an icon, a short text and a count         | `0.1.0` |
 | notification         | An alert with variants, auto-dismiss and a live region, inline or as a toast    | `0.1.0` |

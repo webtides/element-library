@@ -87,6 +87,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 
 - Added: `el-list-item`, a new component: one row of an `el-list`, an item of its list (`role="listitem"`). It has a start (`start` slot), a title (default slot), a line under it (`description`), an end (`end`) and a control of its own (`action`). With `href` the row is a link as a whole: the title is a native link (`target` is passed on, `rel` is written with it), and its target is the whole row. A control in `action` lies on top of the link and stays a target of its own. On a touch screen a row that is a link is at least `--el-touch-target` high. `current` marks the current or the chosen row: `aria-current` (`"page"` on the link, `"true"` on a row without one), a tint, a bar at the start in the accent colour and a heavier title. The bar is a border, so it stays where the user forces colours. `mark` draws a dot in the padding at the start of the row, which does not move the texts. Its text is read in front of the title and is part of the name of the link (`mark="Unread"`). A long title breaks into more lines, inside of a word where it has to, so a text a user typed cannot widen the page. `truncate` cuts the title and the line under it after one line. The row runs no script: its link works before the element takes over, and without JavaScript in server-rendered markup. ([#192](https://github.com/webtides/element-library/issues/192))
 
+### menu
+
+- Added: `el-menu`, a new component: a menu button. A button of the page in the `trigger` slot opens a list of actions, which are `el-menu-item` elements. To assistive technology it is a menu (`role="menu"`) of menu items, and the button says that it opens one and whether it is open (`aria-haspopup="menu"`, `aria-expanded`). ([#167](https://github.com/webtides/element-library/issues/167))
+- Added: a click, `Enter`, `Space` and `ArrowDown` on the button open the menu and put the focus on its first entry, `ArrowUp` on its last. In the menu the arrow keys move through the entries and around the ends, `Home` and `End` go to the first and to the last, and a letter goes to the next entry that starts with it.
+- Added: `Escape` closes the menu and gives the focus back to the button. The Tab key closes it and moves on, and a click beside it closes it.
+- Added: choosing an entry closes the menu and fires `menu-select`, with the entry in `detail.item` and its `value` in `detail.value`. `menu-show` and `menu-hide` tell of the menu itself, `open` (reflected) and `:state(open)` say whether it is shown, and `show()`, `hide()` and `toggle()` open and close it from a script.
+- Added: the panel is a native popover in the top layer: nothing clips it, and it moves nothing on the page. It is placed at the button with Floating UI, at the side `placement` names (`bottom-start` by default) with a gap of `distance`, on the other side without room there, and never outside of the viewport. A long menu scrolls in what the browser shows.
+- Added: a surface, a border and a shadow from the tokens, with the colours of the system without a theme. `--el-menu-min-width` (`10rem`) and `--el-menu-max-width` (`20rem`) bound its width. An `el-divider` in the menu is a line between two entries.
+
+### menu-group
+
+- Added: `el-menu-group`, a new component: a group of entries in an `el-menu`. A group to assistive technology (`role="group"`), with `label` as its heading and its name. The heading the eye sees is not read a second time. ([#167](https://github.com/webtides/element-library/issues/167))
+- Added: a line divides a group from what is before it in the menu. A group that is the first thing in its menu has none. Where the user forces colours the line is there without a theme as well.
+
+### menu-item
+
+- Added: `el-menu-item`, a new component: one entry of an `el-menu`. A `<button>` with `role="menuitem"`, or a link with `href`, `target` and `rel`. It is out of the order of the Tab key: the menu moves the focus to it. ([#167](https://github.com/webtides/element-library/issues/167))
+- Added: `value` is what the entry stands for, for the listener of `menu-select`. Choosing an entry is a click on it, which the page can hear on the entry as well.
+- Added: `disabled`: the entry cannot be chosen. It says so (`aria-disabled`), fires no click, and the keyboard still gets to it. A link that is disabled has no address.
+- Added: the `icon` slot takes an icon in front of the text, and takes no room while it is empty.
+- Added: `variant` (reflected): `danger` shows an entry for something that cannot be undone in the colour of a danger, from the shared variants.
+- Added: the entry under the pointer and the one with the focus of the keyboard have a tint of the text colour, and the focus a ring inside of the entry, which is what shows where the user forces colours. On a touch screen an entry is at least `--el-touch-target` high.
+
 ### nav
 
 - Added: `el-nav`, a new component: the destinations of an application as a bar for the lower edge of a phone. A navigation landmark (`<nav>`, named by `label`) with a list of `el-nav-item` links. ([#179](https://github.com/webtides/element-library/issues/179))

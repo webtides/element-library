@@ -1,0 +1,130 @@
+import { TemplateElement, defineElement, html, classMap } from '@webtides/element-js';
+import { hasSlotted } from '../../utils/slots.js';
+import style from './menu-item.style.js';
+
+/**
+ * One entry of an `el-menu`: an action, or a link with an address. A menu item to assistive
+ * technology (`role="menuitem"`). The menu moves the focus of the keyboard to it, so it is no stop
+ * of the Tab key itself.
+ *
+ * Choosing an entry is a click on it: listen for `click` on the entry, or for `menu-select` on the
+ * menu, which names the entry and its `value`.
+ *
+ * @element el-menu-item
+ *
+ * @slot - The text of the entry.
+ * @slot icon - An icon in front of the text: a decoration, the text is the name.
+ *
+ * @csspart base - The entry: a `<button>`, or an `<a>` with `href`.
+ * @csspart icon - The place of the icon.
+ * @csspart label - The text of the entry.
+ *
+ * @property {string} href - The address the entry leads to. With one it is a link.
+ * @property {string} target - Where to open the address.
+ * @property {string} rel - `rel` attribute for the link, written when `target` is set. Default
+ *   `'noreferrer noopener'`.
+ * @property {string} value - What the entry stands for, for the listener of `menu-select`:
+ *   `'delete'`. Default `''`.
+ * @property {boolean} disabled - Whether the entry cannot be chosen. The keyboard still gets to
+ *   it. Default `false`.
+ * @property {'neutral'|'brand'|'success'|'warning'|'danger'} variant - The variant of the entry:
+ *   `danger` for something that cannot be undone. Default `'neutral'`. Reflected to the `variant`
+ *   attribute.
+ */
+export default class MenuItem extends TemplateElement {
+    constructor() {
+        super({
+            styles: [style],
+            shadowRender: true,
+            // The shared variants module selects the host by this attribute.
+            propertyOptions: { variant: { reflect: true } },
+        });
+    }
+
+    properties() {
+        return {
+            href: '',
+            target: '',
+            rel: 'noreferrer noopener',
+            value: '',
+            disabled: false,
+            variant: 'neutral',
+        };
+    }
+
+    events() {
+        return {
+            "[part~='base']": {
+                // A template element does not render again when a child comes, goes or changes
+                // its `slot` attribute. The slot tells of all three.
+                slotchange: () => this.requestUpdate(),
+                // An entry that is disabled keeps its click to itself: the page hears nothing.
+                click: (event) => {
+                    if (!this._disabled()) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                },
+            },
+        };
+    }
+
+    /**
+     * Puts the focus on the entry: on the control inside of it.
+     * @param {FocusOptions} [options]
+     */
+    focus(options) {
+        this.shadowRoot?.querySelector("[part~='base']")?.focus(options);
+    }
+
+    /**
+     * @private
+     * @returns {boolean}
+     */
+    _disabled() {
+        return this.disabled === true || this.disabled === 'true' || this.disabled === '';
+    }
+
+    template() {
+        const disabled = this._disabled();
+        const classes = classMap({ item: true, 'item--disabled': disabled });
+        const content = html`
+            <span part="icon" class="icon" ?hidden="${!hasSlotted(this, 'icon')}"><slot name="icon"></slot></span>
+            <span part="label" class="label"><slot></slot></span>
+        `;
+
+        // The role and the place in the order of the Tab key are inside of the shadow root: they
+        // are part of the server-rendered markup that way. A link that is disabled has no address
+        // to follow, so it is the button.
+        if (this.href && !disabled) {
+            return html`
+                <a
+                    part="base"
+                    class="${classes}"
+                    role="menuitem"
+                    tabindex="-1"
+                    href="${this.href}"
+                    target="${this.target || null}"
+                    rel="${this.target ? this.rel : null}"
+                    >${content}</a
+                >
+            `;
+        }
+
+        return html`
+            <button
+                part="base"
+                class="${classes}"
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                aria-disabled="${disabled ? 'true' : null}"
+            >
+                ${content}
+            </button>
+        `;
+    }
+}
+
+export function define() {
+    defineElement('el-menu-item', MenuItem);
+}

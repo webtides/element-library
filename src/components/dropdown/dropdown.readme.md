@@ -1,6 +1,11 @@
 # Dropdown
 
-`dropdown` is a component that creates a toggleable dropdown menu with trigger and content slots. It handles click-outside and escape key interactions to automatically close the dropdown when the user clicks outside or presses the Escape key.
+`dropdown` is a component that shows and hides a panel for a trigger, with trigger and content slots. It closes when the user clicks outside or presses the Escape key.
+
+The panel is in the flow of the page: it takes room below its trigger, and what follows moves down. That is what the dropdown is for, a part of the page that opens in its place. For the two things it is often taken for, there are elements of their own:
+
+- **A menu of actions** behind a button is an [`el-menu`](../menu/menu.readme.md): entries with roles, the keyboard through them, and a panel that floats.
+- **A panel that floats** next to its anchor, with any content, is an [`el-popover`](../popover/popover.readme.md).
 
 ## How to use
 

@@ -100,8 +100,7 @@ const unsplash = (id, w = 500) => `https://images.unsplash.com/${id}?ixlib=rb-1.
 const navLink = (selector, label) =>
     html`<el-scroll-to selector="${selector}"><a class="cursor-pointer hover:underline">${label}</a></el-scroll-to>`;
 
-const dropdownItem = (label) =>
-    html`<a class="block px-3 py-1.5 rounded hover:opacity-70 cursor-pointer" role="menuitem">${label}</a>`;
+const dropdownItem = (label) => html`<el-menu-item value="${label}">${label}</el-menu-item>`;
 
 // A lazy-loaded image grid — the one place we genuinely need <img> to show el-lazy-src working.
 const lazyGallery = (title, caption) => html`
@@ -265,7 +264,13 @@ const kit = [
     { tag: 'el-empty-state', category: 'Feedback', blurb: 'A message where a list is empty.' },
     { tag: 'el-tab-group', category: 'Navigation', blurb: 'Tabs and their panels, with the arrow keys.' },
     { tag: 'el-accordion', category: 'Navigation', blurb: 'A section that opens and closes.' },
-    { tag: 'el-dropdown', category: 'Navigation', blurb: 'A menu behind a trigger.' },
+    { tag: 'el-dropdown', category: 'Navigation', blurb: 'A panel in the flow of the page behind a trigger.' },
+    {
+        tag: 'el-menu',
+        category: 'Navigation',
+        blurb: 'A button that opens a list of actions.',
+        fresh: true,
+    },
     { tag: 'el-pagination', category: 'Navigation', blurb: 'The way through a list in pages.' },
     { tag: 'el-breadcrumb', category: 'Navigation', blurb: 'The trail from the start page to this one.', fresh: true },
     {
@@ -690,21 +695,13 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
         ${sprite}
 
         <style>
-            /* Float the dropdown's themed panel as an overlay instead of pushing the header taller. */
-            el-dropdown::part(panel) {
-                position: absolute;
-                right: 0;
-                margin-top: 0.5rem;
-                z-index: 50;
-            }
-
             /* The pages of the kit stand in the middle below the list. */
             demo-kit-browser el-pagination::part(list) {
                 justify-content: center;
             }
         </style>
 
-        <!-- ───────── Sticky header with dropdown menu ───────── -->
+        <!-- ───────── Sticky header with a menu ───────── -->
         <el-sticky>
             <header
                 class="w-full border-b"
@@ -715,18 +712,12 @@ const page = ({ brandIcon, brandName, footerNote, nav, dropdownLabel, dropdownIt
 
                     <nav class="hidden sm:flex items-center gap-6 text-sm">${nav}</nav>
 
-                    <el-dropdown open="false">
-                        <div slot="trigger">
-                            <button
-                                type="button"
-                                class="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium"
-                                style="border-color:var(--el-color-border,light-dark(#d1d5db,#4b5563))"
-                            >
-                                ${icon('icon-user')} ${dropdownLabel}
-                            </button>
-                        </div>
-                        <div slot="content" class="grid gap-1 text-sm w-44">${dropdownItems.map(dropdownItem)}</div>
-                    </el-dropdown>
+                    <el-menu placement="bottom-end">
+                        <el-button slot="trigger" appearance="outlined" caret="true">
+                            ${icon('icon-user')} ${dropdownLabel}
+                        </el-button>
+                        ${dropdownItems.map(dropdownItem)}
+                    </el-menu>
                 </div>
             </header>
         </el-sticky>

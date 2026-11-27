@@ -79,7 +79,7 @@ element-library/
 - **dialog**: Modal dialog built on the native `<dialog>` element
 - **divider**: Line between two groups of content, horizontal or vertical
 - **drawer**: Panel that slides in from an edge of the viewport (extends the dialog)
-- **dropdown**: Dropdown component
+- **dropdown**: Panel in the flow of the page that a trigger shows and hides; no menu (that is `el-menu`) and no floating panel (that is `el-popover`)
 - **empty-state**: Message in the place of a list that is empty, with an optional action
 - **file-field**: One or several files for a form: a native `<input type="file">` with the label and the messages of a field
 - **form-field**: Base form field
@@ -87,6 +87,9 @@ element-library/
 - **lazy-src**: Lazy loading wrapper
 - **list**: List of rows: `role="list"`, one density, a line between two rows, and one line where the texts of all rows begin (subgrid)
 - **list-item**: One row of a list: a start, a title, a line under it, an end and a control of its own; a link as a whole with `href`
+- **menu**: Menu button: a button of the page (`trigger` slot) opens a list of actions, `el-menu-item` elements; the panel is the menu (`role="menu"`, named by `label` or by its button) and a native popover placed with Floating UI (`placement`, `bottom-start` by default); the button gets `aria-haspopup="menu"` and `aria-expanded` from the script; the arrow keys, `Home`, `End` and a first letter move the focus through the entries (roving, the entries are out of the Tab order), `Escape` gives the focus back, the Tab key closes and moves on; choosing an entry is a click on it, closes the menu and fires `menu-select` (`detail.item`, `detail.value`)
+- **menu-group**: Group of entries in a menu: `role="group"` with `label` as its heading and its name, and a line over it unless it is the first thing in the menu (`:nth-child(1 of :not([slot]))`, as the button of the menu is a child as well)
+- **menu-item**: One entry of a menu: a `<button role="menuitem">`, or a link with `href`; `value` for the listener of `menu-select`; `disabled` says so with `aria-disabled`, keeps its click to itself and stays reachable by the keyboard; an `icon` slot in front of the text; `variant="danger"` from the shared variants
 - **nav**: Destinations of an application: a `nav` landmark with a list of `el-nav-item`, as a bar for the lower edge of a phone (three to five in equal parts), as a rail for the side of a wider screen (icons alone with tooltips), or as a list for a sidebar (an icon and its text in a row, as wide as its place); a rail and a list have a group at their top and one at their lower end (`end`), and a second group under a heading (`secondary`, `secondary-label`) that a bar leaves out; `layout="auto"` is a bar, and in the column of an `el-app-frame`, which says so in an inherited property, what `column` names (`rail` or `list`): a class of the landmark, so a server decides per view; in an element of the page in the `navigation` slot it takes the same layout, and the height that is left in a flex column of that element
 - **nav-item**: One destination of a nav: a link with an icon, a short text under it and a count or a dot; the current one is marked by its weight and a shape behind its icon; as a row of a list the text is beside the icon, the shape is behind the whole row and the count is at its end (the `el-nav` says which in inherited properties)
 - **scroll-to**: Scroll to target element
