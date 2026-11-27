@@ -20,7 +20,7 @@ const style = css`
            one is in no grid of this list. */
         --_el-list-columns: initial;
         --_el-list-item-padding-inline: var(--el-list-padding-inline, var(--el-space-4, 1rem));
-        --_el-list-item-gap: var(--el-space-3, 0.75rem);
+        --_el-list-item-gap: var(--el-list-gap, var(--el-space-3, 0.75rem));
 
         display: grid;
         grid-column: 1 / -1;
@@ -50,16 +50,30 @@ const style = css`
 
     /* ── Start ────────────────────────────────────────────────────────────── */
 
+    /*
+     * The gaps of a row are the gaps of its parts, not a margin of what the page slots into them:
+     * a rule of the page wins over a ::slotted rule, and a reset that takes the margin off every
+     * element would take the gaps with it.
+     *
+     * A part with a gap ends, or begins, with an empty box of its own. A gap is between two boxes:
+     * with something slotted there is one between it and that box, and with nothing slotted the box
+     * is alone, and the part has no width. So a row without a start has no gap at its start, and a
+     * list without a start in any row has no first column.
+     */
     .start {
         display: flex;
         align-items: center;
+        column-gap: var(--_el-list-item-gap);
     }
 
-    /* The gap to the texts comes with what is slotted, so a row without a start has none, and a
-       list without a start in any row has no first column. A margin of the page wins over it. */
+    .start::after,
+    .end::before,
+    .action::before {
+        content: '';
+    }
+
     ::slotted([slot='start']) {
         flex: none;
-        margin-inline-end: var(--_el-list-item-gap);
     }
 
     /* ── Mark ─────────────────────────────────────────────────────────────── */
@@ -140,6 +154,7 @@ const style = css`
         display: flex;
         flex: 0 1 auto;
         align-items: center;
+        column-gap: var(--_el-list-item-gap);
         min-width: 0;
         max-width: 50%;
         color: var(--el-color-fg-muted, inherit);
@@ -152,14 +167,10 @@ const style = css`
         display: flex;
         flex: none;
         align-items: center;
+        column-gap: var(--_el-list-item-gap);
         /* On top of the link of the row: a control here is a target of its own. */
         position: relative;
         z-index: 1;
-    }
-
-    ::slotted([slot='end']),
-    ::slotted([slot='action']) {
-        margin-inline-start: var(--_el-list-item-gap);
     }
 
     /* ── A row that is a link ─────────────────────────────────────────────── */

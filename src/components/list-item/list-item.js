@@ -33,6 +33,8 @@ import style from './list-item.style.js';
  *
  * @cssproperty --el-list-padding-inline - The padding of the row at its start and its end. Unset,
  *   it is `--el-space-4`, and `1rem` without a theme.
+ * @cssproperty --el-list-gap - The gap between the start, the texts, the end and the control of
+ *   the row. Unset, it is `--el-space-3`, and `0.75rem` without a theme.
  *
  * @property {string} href - The address the row leads to. Unset, the row is no link.
  * @property {string} target - Where to open the address (only with `href`).

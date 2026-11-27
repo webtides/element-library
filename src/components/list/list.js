@@ -19,6 +19,8 @@ import style from './list.style.js';
  * @cssproperty --el-list-padding-inline - The padding of a row at its start and its end. Unset, it
  *   is `--el-space-4`, and `1rem` without a theme. Read by the rows, so it can be set on the list
  *   or for the page.
+ * @cssproperty --el-list-gap - The gap between the start, the texts, the end and the control of a
+ *   row. Unset, it is `--el-space-3`, and `0.75rem` without a theme. Read by the rows as well.
  *
  * @property {string} label - The name of the list for assistive technology. Unset, the list has
  *   none.

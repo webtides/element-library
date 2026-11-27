@@ -355,6 +355,56 @@ async function protocolNodeId(session, element) {
 }
 
 /**
+ * The reset of a page that takes the margin, the padding and the border off every element, in the
+ * cascade layer a page has it in: the one of Tailwind CSS v4.
+ */
+export const PAGE_RESET = '@layer base { *, ::before, ::after { margin: 0; padding: 0; border: 0 solid; } }';
+
+/**
+ * Measures the same thing twice: on the page as it is, and on the same page with `PAGE_RESET` in
+ * its stylesheet. An element that takes nothing from the margin, the padding and the border of what
+ * the page slots into it measures the same both times:
+ *
+ *     const { plain, reset } = await withAndWithoutPageReset(async () => {
+ *         const el = await fixture(`<el-list>…</el-list>`);
+ *         return gapsOf(el);
+ *     });
+ *     expect(reset).toEqual(plain);
+ *
+ * A rule of the page wins over a `::slotted()` rule and over a `:host` rule of a shadow root,
+ * whatever its specificity and its cascade layer. So a reset takes away what an element gives to
+ * the content of the page that way.
+ *
+ * The reset is in the stylesheets of the document, and element-js adopts those into every shadow
+ * root: an element `measure` creates has the reset in its own tree as well, as on a page.
+ *
+ * It takes the margin of the `body` too. Measure against an element of the fixture, not against the
+ * viewport, and give the fixture a width of its own.
+ * @template T
+ * @param {() => Promise<T>} measure - Renders what is measured, and returns the measures. Called
+ *   twice.
+ * @returns {Promise<{ plain: T, reset: T }>}
+ */
+export async function withAndWithoutPageReset(measure) {
+    const plain = await measure();
+
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(PAGE_RESET);
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    try {
+        // A paragraph has a margin of the browser, which the reset takes: the page has the reset.
+        const probe = document.body.appendChild(document.createElement('p'));
+        const margin = getComputedStyle(probe).marginBlockStart;
+        probe.remove();
+        if (margin !== '0px') throw new Error('withAndWithoutPageReset: the page did not get the reset');
+
+        return { plain, reset: await measure() };
+    } finally {
+        document.adoptedStyleSheets = document.adoptedStyleSheets.filter((other) => other !== sheet);
+    }
+}
+
+/**
  * The rendered size of an element, rounded to tenths of a pixel.
  * @param {Element} element
  * @returns {{ width: number, height: number }}

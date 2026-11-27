@@ -12,6 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `--el-list-gap` sets the gap between the start, the texts, the end and the control of a row, on the list, on a row, or for the page. Unset, it is `--el-space-3` as before. ([#206](https://github.com/webtides/element-library/issues/206))
+
+### Changed
+
+- A page that gave the gap back itself, with a margin on what it slots into `start`, `end` and `action`, takes those rules out: a margin of the page adds to the gap now. ([#206](https://github.com/webtides/element-library/issues/206))
+
+### Fixed
+
+- The gap beside what is in `start`, `end` and `action` holds on a page whose stylesheet takes the margin off every element (`* { margin: 0 }`, the reset of Tailwind CSS v4). The row gave the gap to what the page slots in, as a margin (`::slotted`), and a rule of the page wins over such a rule, whatever its specificity and its cascade layer: the icon touched the title. The gap is one of the parts of the row now, and the row takes nothing from the margin, the padding or the border of what is slotted. A row without a `start` has no gap there, and a list without one in any row has no first column, as before. ([#206](https://github.com/webtides/element-library/issues/206))
+
 ## [0.4.0] - 2026-11-27
 
 ### Added

@@ -80,6 +80,7 @@ _None._
 | Name | Default | Description |
 | --- | --- | --- |
 | `--el-list-padding-inline` | `--el-space-4` | The padding of the row at its start and its end. Set on the list, or for the page. Without a theme it is `1rem`. |
+| `--el-list-gap` | `--el-space-3` | The gap between the start, the texts, the end and the control of the row. Set on the list, on a row, or for the page. Without a theme it is `0.75rem`. |
 
 ## A row that is a link
 
@@ -97,6 +98,21 @@ Both stand at the end of the row, `end` first.
 - **`action`** is for a control: a button, a switch, a menu. It lies on top of the link and is a target of its own, with a place of its own in the tab order after the link.
 
 A control belongs into `action`. In `end` it would lie under the link of the row, and a click on it would follow the link. In a row without `href` the two only differ in their order and their colour.
+
+## The gaps of a row
+
+Between what is in `start` and the texts is a gap, and one in front of what is in `end` and in `action`: `--el-space-3`, `0.75rem` without a theme. A part that nothing is slotted into has no gap and no width.
+
+- **The gap belongs to the row**, not to what the page slots into it. The row takes nothing from the margin, the padding or the border of those elements, so a reset of the page that takes them off every element (`* { margin: 0 }`) changes nothing.
+- **`--el-list-gap` sets it**, on the list, on a row, or for the page:
+
+```css
+el-list {
+    --el-list-gap: 1rem;
+}
+```
+
+- **A margin of the page** on an element in `start`, `end` or `action` is not the gap: it adds to it.
 
 ## The current row
 

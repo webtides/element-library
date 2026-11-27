@@ -1,7 +1,14 @@
 import { describe, it, expect } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
 import axe from 'axe-core';
-import { accessibleName, accessibleRole, fixture, nextFrame, sizeOf } from '../../test-helpers.js';
+import {
+    accessibleName,
+    accessibleRole,
+    fixture,
+    nextFrame,
+    sizeOf,
+    withAndWithoutPageReset,
+} from '../../test-helpers.js';
 import { define } from './list-item.js';
 import { define as defineList } from '../list/list.js';
 import { define as defineButton } from '../button/button.js';
@@ -76,6 +83,118 @@ describe('Feature | ListItem', () => {
             // 12 + 24 + 12.
             expect(sizeOf(part(el, 'base')).height).toBe(48);
             expect(sizeOf(part(el, 'title')).width).toBe(400 - 32);
+        });
+    });
+
+    describe('the gaps between its parts', () => {
+        // What the page slots in has a size of its own, which a reset leaves alone.
+        const row = `
+            <el-list-item>
+                <span slot="start" style="display:block;width:40px;height:40px"></span>
+                Ada Lovelace
+                <span slot="description">The notes are ready</span>
+                <span slot="end" style="display:block;width:48px;height:24px"></span>
+                <span slot="action" style="display:block;width:32px;height:32px"></span>
+            </el-list-item>
+        `;
+        const gapsOf = (el) => {
+            const box = (node) => node.getBoundingClientRect();
+            const base = box(part(el, 'base'));
+            const start = box(el.querySelector('[slot="start"]'));
+            const end = box(el.querySelector('[slot="end"]'));
+            const action = box(el.querySelector('[slot="action"]'));
+            return {
+                beforeStart: Math.round(start.left - base.left),
+                startToTitle: Math.round(box(part(el, 'title')).left - start.right),
+                textToEnd: Math.round(end.left - box(part(el, 'text')).right),
+                endToAction: Math.round(action.left - end.right),
+                afterAction: Math.round(base.right - action.right),
+            };
+        };
+
+        it('are the same on a page that takes the margin off every element', async () => {
+            const { plain, reset } = await withAndWithoutPageReset(async () => gapsOf(await itemOf(row)));
+
+            // The padding of the row is --el-space-4, a gap --el-space-3.
+            expect(plain).toEqual({
+                beforeStart: 16,
+                startToTitle: 12,
+                textToEnd: 12,
+                endToAction: 12,
+                afterAction: 16,
+            });
+            expect(reset).toEqual(plain);
+        });
+
+        it('are not there for a part that nothing is slotted into, with the reset as without it', async () => {
+            const { plain, reset } = await withAndWithoutPageReset(async () => {
+                const el = await itemOf(`<el-list-item>Only a title</el-list-item>`);
+                return {
+                    start: sizeOf(part(el, 'start')).width,
+                    end: sizeOf(part(el, 'end')).width,
+                    action: sizeOf(part(el, 'action')).width,
+                    // The texts begin at the padding of the row: its list has no first column.
+                    title: Math.round(
+                        part(el, 'title').getBoundingClientRect().left - part(el, 'base').getBoundingClientRect().left,
+                    ),
+                    titleWidth: sizeOf(part(el, 'title')).width,
+                };
+            });
+
+            expect(plain).toEqual({ start: 0, end: 0, action: 0, title: 16, titleWidth: 400 - 32 });
+            expect(reset).toEqual(plain);
+        });
+
+        it('are after every element of a start, and in front of every element of an end', async () => {
+            const el = await itemOf(`
+                <el-list-item>
+                    <span slot="start" style="display:block;width:16px;height:16px"></span>
+                    <span slot="start" style="display:block;width:16px;height:16px"></span>
+                    Two icons
+                    <span slot="end" style="display:block;width:16px;height:16px"></span>
+                    <span slot="end" style="display:block;width:16px;height:16px"></span>
+                </el-list-item>
+            `);
+            const [first, second] = [...el.querySelectorAll('[slot="start"]')].map((node) =>
+                node.getBoundingClientRect(),
+            );
+            const [third, fourth] = [...el.querySelectorAll('[slot="end"]')].map((node) =>
+                node.getBoundingClientRect(),
+            );
+
+            expect(Math.round(second.left - first.right)).toBe(12);
+            expect(Math.round(part(el, 'title').getBoundingClientRect().left - second.right)).toBe(12);
+            expect(Math.round(third.left - part(el, 'text').getBoundingClientRect().right)).toBe(12);
+            expect(Math.round(fourth.left - third.right)).toBe(12);
+        });
+
+        it('take their width from --el-list-gap, set on the list or on a row', async () => {
+            const list = await listOf(row + row, 'label="Rows" style="--el-list-gap: 20px"');
+            const [first, second] = list.children;
+            second.style.setProperty('--el-list-gap', '4px');
+            await nextFrame();
+
+            expect(gapsOf(first)).toEqual({
+                beforeStart: 16,
+                startToTitle: 20,
+                textToEnd: 20,
+                endToAction: 20,
+                afterAction: 16,
+            });
+            expect(gapsOf(second)).toMatchObject({ textToEnd: 4, endToAction: 4 });
+            // The texts of all rows begin on one line, after the widest start and its gap.
+            expect(Math.round(part(second, 'title').getBoundingClientRect().left)).toBe(
+                Math.round(part(first, 'title').getBoundingClientRect().left),
+            );
+        });
+
+        it('are not taken by a margin of the page, which adds to them', async () => {
+            const el = await itemOf(row);
+            el.querySelector('[slot="start"]').style.marginInlineEnd = '8px';
+            el.querySelector('[slot="end"]').style.marginInlineStart = '8px';
+            await nextFrame();
+
+            expect(gapsOf(el)).toMatchObject({ startToTitle: 20, textToEnd: 20 });
         });
     });
 

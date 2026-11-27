@@ -71,6 +71,7 @@ _None._
 | Name | Default | Description |
 | --- | --- | --- |
 | `--el-list-padding-inline` | `--el-space-4` | The padding of a row at its start and its end. Read by the rows, so it can be set on the list or for the page. Without a theme it is `1rem`. |
+| `--el-list-gap` | `--el-space-3` | The gap between the start, the texts, the end and the control of a row. Read by the rows as well. Without a theme it is `0.75rem`. See [the gaps of a row](../list-item/list-item.readme.md#the-gaps-of-a-row). |
 
 ## Where the texts begin
 

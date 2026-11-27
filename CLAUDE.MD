@@ -335,6 +335,13 @@ Note: Tests run in a real browser (Chromium via Playwright) using Vitest's brows
 1. **Write a state, and never read it back.** `this._internals.states.add()` and `.delete()` work in every browser. In WebKit `states.has()` is `false` and the set is empty a moment after `add()`, while `:state()` still matches (measured on iOS 27: within a second). A component that has to know keeps a field of its own, as `_keyboard` in `app-frame.js`.
 2. **A test in Chromium does not see this.** It says what WebKit does in its place: `el._internals.states.has = () => false`.
 
+### When an Element Lays Out What the Page Slots Into It
+
+1. **Take nothing from the margin, the padding or the border of a slotted element.** A rule of the page wins over a `::slotted()` rule of a shadow root, whatever its specificity and its cascade layer, and a reset has such a rule for every element: `*, ::before, ::after { margin: 0; padding: 0; border: 0 solid; }` in Tailwind CSS v4. A gap or a line that hangs on those properties is gone on such a page. `margin: 0` for what is slotted is no such rule: it is what the reset says as well.
+2. **Give the room to a part in the shadow root.** A gap that is there only with something slotted is the `column-gap` of the part around the slot, which ends or begins with an empty box of its own (`::after` or `::before` with `content: ''`): a gap is between two boxes, so a part with nothing slotted has none (`list-item.style.js`).
+3. **Offer a custom property for that room** (`--el-list-gap`), and name it in the readme: the page cannot take the room away with a margin of its own any more, which adds to it.
+4. **Test it with `withAndWithoutPageReset()`** (`src/test-helpers.js`). It measures the same fixture twice, on the page as it is and on the page with that reset, and the test compares the two. Slot elements with a size of their own into the fixture: the reset changes a `<button>` of the page itself.
+
 ### When Modifying Components
 
 1. **Check dependents**: Components may be used by other components

@@ -38,6 +38,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/) and this 
 - Added: with `styles/native.css` the control with its content is the control to the eye: the border, the surface and the focus ring are around all of it, as the border of a field that is not valid and the look of a disabled one, and it is as high as an input of its size alone. Without that file the content stands beside an input with the look of the browser. A field without content and without `clearable` renders its input alone, as before. ([#168](https://github.com/webtides/element-library/issues/168))
 - Added: `maxlength` and `minlength` are passed on to the native `<input>`, in server-rendered markup as well, and one that is not set is not rendered. The control takes no more characters than `maxlength` while the user types, and a typed text that is shorter than `minlength` makes the field invalid the way `required` and `pattern` do, with its `error-message`. Set on the element they did nothing before. The fields that extend this one take both as well. ([#190](https://github.com/webtides/element-library/issues/190))
 
+### list
+
+- Added: `--el-list-gap` sets the gap between the start, the texts, the end and the control of a row. The rows read it, so it can be set on the list or for the page. ([#206](https://github.com/webtides/element-library/issues/206))
+
+### list-item
+
+- Fixed: the gap beside what is in `start`, `end` and `action` holds on a page whose stylesheet takes the margin off every element (`* { margin: 0 }`, the reset of Tailwind CSS v4). The row gave the gap to what the page slots in, as a margin (`::slotted`), and a rule of the page wins over such a rule, whatever its specificity and its cascade layer: the icon touched the title. The gap is one of the parts of the row now, and the row takes nothing from the margin, the padding or the border of what is slotted. A row without a `start` has no gap there, and a list without one in any row has no first column, as before. ([#206](https://github.com/webtides/element-library/issues/206))
+- Changed: a page that gave the gap back itself, with a margin on what it slots into `start`, `end` and `action`, takes those rules out: a margin of the page adds to the gap now. ([#206](https://github.com/webtides/element-library/issues/206))
+- Added: `--el-list-gap` sets the gap between the start, the texts, the end and the control of a row, on the list, on a row, or for the page. Unset, it is `--el-space-3` as before. ([#206](https://github.com/webtides/element-library/issues/206))
+
 ### menu
 
 - Fixed: an open menu keeps the keyboard wherever the focus is. `Escape` closes it and gives the focus back to what it was opened for, and the key does not reach the page behind; `ArrowDown` and `ArrowUp` bring the focus to its first and to its last entry; the Tab key closes it, and the focus moves on from where it is. The menu heard its keys on its panel alone: an open menu whose entries did not have the focus was left with no key, and `Escape` closed what was behind it. It hears them at the window now, for as long as it is open. ([#202](https://github.com/webtides/element-library/issues/202))
