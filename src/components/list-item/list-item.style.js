@@ -149,10 +149,11 @@ const style = css`
     /* ── End ──────────────────────────────────────────────────────────────── */
 
     /* A value, a count, a chevron: it takes the width it has, up to half of the row, and breaks
-       after that. */
+       after that. It does not shrink with the texts: beside a long title a date would break after
+       every character, and an icon would leave its place. */
     .end {
         display: flex;
-        flex: 0 1 auto;
+        flex: none;
         align-items: center;
         column-gap: var(--_el-list-item-gap);
         min-width: 0;

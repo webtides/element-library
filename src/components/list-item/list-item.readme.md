@@ -126,7 +126,9 @@ It is told apart by a tint of the text colour, by a bar at its start in the acce
 
 ## Long texts
 
-A title that is longer than the row breaks into more lines, and so does the line under it. A text without a space (an address, a word a user typed) breaks inside of the word: a row is never wider than its list. What is in `end` takes half of the row at most and breaks after that.
+A title that is longer than the row breaks into more lines, and so does the line under it. A text without a space (an address, a word a user typed) breaks inside of the word: a row is never wider than its list.
+
+What is in `end` keeps its width beside a long title: a date stays on one line, and an icon keeps its size and its place. So the ends of all rows of a list end on one line. It takes half of the row at most, and breaks after that.
 
 `truncate="true"` cuts the title and the line under it after one line, with an ellipsis. What is cut is not shown anywhere else; use it where the row leads to the whole text.
 

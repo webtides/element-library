@@ -18,10 +18,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- A page that kept the end from shrinking itself (`el-list-item::part(end) { flex-shrink: 0 }`) does not need that rule any more. ([#207](https://github.com/webtides/element-library/issues/207))
 - A page that gave the gap back itself, with a margin on what it slots into `start`, `end` and `action`, takes those rules out: a margin of the page adds to the gap now. ([#206](https://github.com/webtides/element-library/issues/206))
 
 ### Fixed
 
+- What is in `end` keeps its width beside a title or a description that is longer than the row. It shrank together with the texts, down to next to nothing: on a phone a date broke after every character and stood as a column of ten lines, and an icon shrank to a sliver, or left its place and was drawn in the padding of the row where the page kept it from shrinking. It takes the width it has now, up to half of the row, and breaks after that, as the readme said. The ends of all rows of a list end on one line. ([#207](https://github.com/webtides/element-library/issues/207))
 - The gap beside what is in `start`, `end` and `action` holds on a page whose stylesheet takes the margin off every element (`* { margin: 0 }`, the reset of Tailwind CSS v4). The row gave the gap to what the page slots in, as a margin (`::slotted`), and a rule of the page wins over such a rule, whatever its specificity and its cascade layer: the icon touched the title. The gap is one of the parts of the row now, and the row takes nothing from the margin, the padding or the border of what is slotted. A row without a `start` has no gap there, and a list without one in any row has no first column, as before. ([#206](https://github.com/webtides/element-library/issues/206))
 
 ## [0.4.0] - 2026-11-27

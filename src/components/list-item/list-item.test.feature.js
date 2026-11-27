@@ -409,6 +409,86 @@ describe('Feature | ListItem', () => {
             expect(sizeOf(part(item, 'end')).width).toBeLessThanOrEqual((400 - 32) / 2);
         });
 
+        describe('beside what is in end, on a phone', () => {
+            // A title and a line under it that are each longer than the row, 375px wide.
+            const title = 'Notes of the meeting with the board about the plans for the coming year';
+            const text = `${title}<span slot="description">${title}, and what follows from them</span>`;
+            const date = `<span slot="end" class="in-end">24.11.2026</span>`;
+            const iconWith = (style) =>
+                `<svg slot="end" class="in-end" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="${style}"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" /></svg>`;
+            // An icon as it is, and one the page keeps from shrinking, as a utility class does.
+            const icon = iconWith('');
+            const fixedIcon = iconWith('flex: none');
+            const phone = async (markup) => {
+                const wrapper = await fixture(
+                    `<div style="${place} ${tokens} width: 375px;"><el-list label="Notes">${markup}</el-list></div>`,
+                );
+                await nextFrame();
+                return wrapper.firstElementChild;
+            };
+            const box = (node) => node.getBoundingClientRect();
+            // Where the padding at the end of a row begins.
+            const padding = (item) => Math.round((box(part(item, 'base')).right - 16) * 10) / 10;
+            const end = (item) => Math.round(box(item.querySelector('.in-end')).right * 10) / 10;
+
+            it('keeps a date in end on one line', async () => {
+                const el = await phone(`
+                    <el-list-item href="#long">${text}${date}</el-list-item>
+                    <el-list-item href="#short">Short${date}</el-list-item>
+                `);
+                const [long, short] = [...el.children].map((item) => box(item.querySelector('.in-end')));
+
+                expect(sizeOf(part(el.children[0], 'title')).height).toBeGreaterThan(24);
+                expect(long.height).toBe(24);
+                // As wide as in a row with a short text.
+                expect(long.width).toBe(short.width);
+                expect(end(el.children[0])).toBe(padding(el.children[0]));
+            });
+
+            it('keeps an icon in end in the row: it ends where the padding of the row begins', async () => {
+                const el = await phone(`
+                    <el-list-item href="#long">${text}${icon}</el-list-item>
+                    <el-list-item href="#fixed">${text}${fixedIcon}</el-list-item>
+                `);
+
+                for (const item of el.children) {
+                    const href = item.getAttribute('href');
+                    expect(sizeOf(item.querySelector('.in-end')), href).toEqual({ width: 16, height: 16 });
+                    expect(end(item), href).toBe(padding(item));
+                    // The gap, and the icon.
+                    expect(sizeOf(part(item, 'end')).width, href).toBe(12 + 16);
+                }
+                expect(el.parentElement.scrollWidth).toBe(375);
+            });
+
+            it('ends what is in end on one line in all rows of a list', async () => {
+                const el = await phone(`
+                    <el-list-item href="#one">${text}${date}</el-list-item>
+                    <el-list-item href="#two">Short${date}</el-list-item>
+                    <el-list-item href="#three">${text}${icon}</el-list-item>
+                    <el-list-item href="#four">${text}${fixedIcon}</el-list-item>
+                    <el-list-item href="#five">Short${icon}</el-list-item>
+                `);
+                const items = [...el.children];
+
+                expect(new Set(items.map(end)).size).toBe(1);
+                expect(end(items[0])).toBe(padding(items[0]));
+            });
+
+            it('gives what is wider than half of the row half of it, and breaks it there', async () => {
+                const el = await phone(`
+                    <el-list-item href="#long">${text}<span slot="end" class="in-end">${title}</span></el-list-item>
+                `);
+                const item = el.firstElementChild;
+
+                // Half of what is between the paddings of the row.
+                expect(sizeOf(part(item, 'end')).width).toBe((375 - 32) / 2);
+                expect(sizeOf(item.querySelector('.in-end')).height).toBeGreaterThan(24);
+                expect(end(item)).toBe(padding(item));
+                expect(el.parentElement.scrollWidth).toBe(375);
+            });
+        });
+
         it('cuts the title and the line under it after one line with truncate', async () => {
             const el = await listOf(`
                 <el-list-item truncate="true" href="#long">${long}<span slot="description">${long} ${long}</span></el-list-item>
