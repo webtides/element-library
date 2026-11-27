@@ -78,6 +78,12 @@ const style = css`
 
     /* ── The link that skips to the content ───────────────────────────────── */
 
+    /* The landmark around the link has no box of its own to see: the link is out of the flow, so
+       the landmark has no height, and the frame under it begins at the upper edge. */
+    .skip-landmark {
+        display: block;
+    }
+
     .skip {
         position: absolute;
         z-index: 1;
@@ -518,6 +524,7 @@ const printStyle = css`
             display: none;
         }
 
+        .skip-landmark,
         .skip {
             display: none;
         }

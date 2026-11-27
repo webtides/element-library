@@ -12,6 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+### Added
+
+- `skip-landmark-label` is the name of that landmark for assistive technology, `Skip link` by default. The page gives it a name in its language, and one no other navigation of the page has: two navigations of one name are one too many (`landmark-unique`). ([#209](https://github.com/webtides/element-library/issues/209))
+
+### Changed
+
+- The frame has a landmark of its own now, where it had none: a page sees one more navigation in its list of landmarks. A page that worked around the finding, with a skip link of its own in its banner and `el-app-frame::part(skip-link) { display: none }`, takes both out: it would have two skip links, or a navigation with nothing in it. ([#209](https://github.com/webtides/element-library/issues/209))
+
+### Fixed
+
+- The link that skips to the content lies in a landmark: a navigation (`<nav>`) of the frame, the part `skip-landmark`. A page whose shell is a frame was reported by axe on every view (`region: el-app-frame,.skip`): content outside of a landmark. axe lets a skip link stand alone, and knows one by its place in front of the first link of the page that leads elsewhere; the link of the frame is in a shadow root, and so is the first link of most views (an `el-nav-item`), so neither is in front of the other in the document. A link the page writes in front of the frame is reported for the same reason. The link stays the first stop of the Tab key, where the frame is narrow and where it is wide, does what it did, and has its text from `skip-label`. The landmark takes no room, and is in server-rendered markup. ([#209](https://github.com/webtides/element-library/issues/209))
+
 ## [0.4.0] - 2026-11-27
 
 ### Added

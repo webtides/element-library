@@ -2215,6 +2215,49 @@ describe('Feature | AppFrame', () => {
             expect(getComputedStyle(link).backgroundColor).toBe('rgb(255, 255, 255)');
         });
 
+        it('stays the first stop of the Tab key where the frame is wide and where it is narrow', async () => {
+            for (const width of [1000, 400]) {
+                const el = await frame(regions(), { width });
+
+                el.parentElement.querySelector('.before').focus();
+                await userEvent.keyboard('{Tab}');
+                expect(activeElement(), width).toBe(part(el, 'skip-link'));
+            }
+        });
+
+        it('lies in a landmark of the frame: a navigation, which the page names', async () => {
+            const el = await frame(regions());
+            const landmark = part(el, 'skip-landmark');
+
+            expect(landmark.localName).toBe('nav');
+            expect(part(el, 'skip-link').parentElement).toBe(landmark);
+            expect(await accessibleRole(landmark)).toBe('navigation');
+            expect(await accessibleName(landmark)).toBe('Skip link');
+
+            el.skipLandmarkLabel = 'Sprunglink';
+            await rendered();
+            expect(await accessibleName(landmark)).toBe('Sprunglink');
+        });
+
+        it('takes the name of that landmark from an attribute as well, and the link keeps its text', async () => {
+            const el = await frame(regions(), {
+                attributes: 'skip-label="Zum Inhalt" skip-landmark-label="Sprunglink"',
+            });
+
+            expect(await accessibleName(part(el, 'skip-landmark'))).toBe('Sprunglink');
+            expect(await accessibleName(part(el, 'skip-link'))).toBe('Zum Inhalt');
+        });
+
+        it('takes no room for that landmark: the regions begin at the upper edge of the frame', async () => {
+            for (const width of [1000, 400]) {
+                const el = await frame(regions(), { width });
+
+                expect(part(el, 'skip-landmark').getBoundingClientRect().height, width).toBe(0);
+                expect(part(el, 'base').getBoundingClientRect().top, width).toBe(el.getBoundingClientRect().top);
+                expect(part(el, 'base').getBoundingClientRect().height, width).toBe(600);
+            }
+        });
+
         it('takes its text from the page', async () => {
             const el = await frame(regions(), { attributes: 'skip-label="Zum Inhalt"' });
             expect(await accessibleName(part(el, 'skip-link'))).toBe('Zum Inhalt');
@@ -2693,6 +2736,7 @@ describe('Feature | AppFrame', () => {
             expect(content.getBoundingClientRect().height).toBeGreaterThan(80 * 24);
             expect(el.getBoundingClientRect().height).toBeGreaterThan(content.getBoundingClientRect().height);
             expect(getComputedStyle(part(el, 'skip-link')).display).toBe('none');
+            expect(getComputedStyle(part(el, 'skip-landmark')).display).toBe('none');
         });
 
         it('prints a wide frame whole too', async () => {
@@ -2819,6 +2863,118 @@ describe('Feature | AppFrame', () => {
             part(el, 'skip-link').focus();
             const results = await axe.run(el.parentElement);
             expect(results.violations).toEqual([]);
+        });
+
+        describe('a page whose shell is the frame, checked as a whole', () => {
+            // axe asks whether all content of a page is in a landmark (the rule "region") only when
+            // it is given the whole document. It lets a skip link stand outside of the landmarks,
+            // and knows one by its place: in front of the first link of the page that leads
+            // elsewhere. Here that link is in a shadow root, in an el-nav-item, and so is the skip
+            // link of the frame: neither is in front of the other in the document.
+            const shell = async ({ width = 1000, attributes = '', navigation = 'label="Main"' } = {}) => {
+                const wrapper = await fixture(`
+                    <div style="${theme}">
+                        <el-app-frame style="position: relative; width: ${width}px; height: 600px" ${attributes}>
+                            <header slot="header">Notes</header>
+                            <el-nav slot="navigation" ${navigation}>
+                                <el-nav-item href="#inbox" current="true">Inbox</el-nav-item>
+                                <el-nav-item href="#drafts">Drafts</el-nav-item>
+                            </el-nav>
+                            <main id="shell-${++ids}">
+                                <h1>Title</h1>
+                                <p>Text</p>
+                                <a href="https://example.com/">Elsewhere</a>
+                            </main>
+                            <footer slot="footer">Footer</footer>
+                        </el-app-frame>
+                    </div>
+                `);
+                wrappers.push(wrapper);
+                await rendered();
+                await rendered();
+                return wrapper;
+            };
+            /** The findings of axe for the whole page, with its default rules, and what it has passed. */
+            const audit = async (wrapper) => {
+                // Nothing but the shell is on the page while it is checked.
+                const others = [...document.body.children].filter((child) => child !== wrapper);
+                for (const other of others) other.remove();
+                try {
+                    const results = await axe.run(document);
+                    return {
+                        findings: results.violations.map(
+                            (violation) =>
+                                `${violation.id}: ${violation.nodes.map((node) => node.target.flat().join(' ')).join(', ')}`,
+                        ),
+                        passed: results.passes.map((pass) => pass.id),
+                    };
+                } finally {
+                    document.body.prepend(...others);
+                }
+            };
+
+            it('uses axe-core 4.14', () => {
+                expect(axe.version).toMatch(/^4\.14\./);
+            });
+
+            it('has no finding where the frame is wide', async () => {
+                const wrapper = await shell();
+                const frameOfPage = wrapper.querySelector('el-app-frame');
+                // The first link of the page that leads elsewhere is in a shadow root.
+                expect(frameOfPage.wide).toBe(true);
+                expect(wrapper.querySelector('a').closest('main')).not.toBeNull();
+                expect(wrapper.querySelector('el-nav-item').shadowRoot.querySelector('a[href]')).not.toBeNull();
+
+                const { findings, passed } = await audit(wrapper);
+
+                expect(findings).toEqual([]);
+                // And the rules have looked at the page.
+                for (const rule of ['region', 'landmark-unique', 'landmark-no-duplicate-banner', 'bypass']) {
+                    expect(passed, rule).toContain(rule);
+                }
+            });
+
+            it('has no finding where the frame is narrow, with the navigation in its drawer and as a bar', async () => {
+                for (const attributes of ['', 'narrow-navigation="bar"']) {
+                    const wrapper = await shell({ width: 400, attributes });
+                    expect(wrapper.querySelector('el-app-frame').wide, attributes).toBe(false);
+
+                    const { findings, passed } = await audit(wrapper);
+
+                    expect(findings, attributes).toEqual([]);
+                    expect(passed, attributes).toContain('region');
+                    wrapper.remove();
+                }
+            });
+
+            it('has no finding with a navigation of the page that has no name', async () => {
+                const { findings, passed } = await audit(await shell({ navigation: '' }));
+
+                expect(findings).toEqual([]);
+                expect(passed).toContain('landmark-unique');
+            });
+
+            it('has no finding while the skip link shows', async () => {
+                const wrapper = await shell();
+                part(wrapper.querySelector('el-app-frame'), 'skip-link').focus();
+
+                expect((await audit(wrapper)).findings).toEqual([]);
+            });
+
+            it('tells its landmark from a navigation of the same name by the name the page gives it', async () => {
+                // Two navigations of one name are one too many for axe (landmark-unique).
+                const same = await shell({ navigation: 'label="Skip link"' });
+                expect((await audit(same)).findings.map((finding) => finding.split(':')[0])).toEqual([
+                    'landmark-unique',
+                ]);
+                same.remove();
+
+                const named = await shell({
+                    navigation: 'label="Skip link"',
+                    attributes: 'skip-landmark-label="To the content"',
+                });
+                expect((await audit(named)).findings).toEqual([]);
+            });
         });
     });
 });

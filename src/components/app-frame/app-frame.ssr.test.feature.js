@@ -31,6 +31,7 @@ function serverRender(attributes, children) {
     const properties = {};
     if (attributes['wide-from']) properties.wideFrom = attributes['wide-from'];
     if (attributes['skip-label']) properties.skipLabel = attributes['skip-label'];
+    if (attributes['skip-landmark-label']) properties.skipLandmarkLabel = attributes['skip-landmark-label'];
     if (attributes['wide-only']) properties.wideOnly = attributes['wide-only'];
     if (attributes['narrow-only']) properties.narrowOnly = attributes['narrow-only'];
     if (attributes.resizable) properties.resizable = attributes.resizable;
@@ -141,7 +142,13 @@ describe('Feature | AppFrame | server-rendered', () => {
     });
 
     it('gives an empty region no room, and has a skip link that works, before the element is defined', () => {
-        const el = mount(serverRender({ 'skip-label': 'Zum Inhalt' }, `<main id="only"><p>Content</p></main>`), 1000);
+        const el = mount(
+            serverRender(
+                { 'skip-label': 'Zum Inhalt', 'skip-landmark-label': 'Sprunglink' },
+                `<main id="only"><p>Content</p></main>`,
+            ),
+            1000,
+        );
         const link = part(el, 'skip-link');
 
         expect(customElements.get('el-app-frame')).toBeUndefined();
@@ -151,6 +158,12 @@ describe('Feature | AppFrame | server-rendered', () => {
         expect(link.getAttribute('href')).toBe('#only');
         expect(link.textContent.trim()).toBe('Zum Inhalt');
         expect(document.querySelector(link.getAttribute('href'))).toBe(el.querySelector('main'));
+        // The link lies in a landmark with the name of the page, and that landmark takes no room.
+        const landmark = part(el, 'skip-landmark');
+        expect(landmark.localName).toBe('nav');
+        expect(landmark.getAttribute('aria-label')).toBe('Sprunglink');
+        expect(link.parentElement).toBe(landmark);
+        expect(landmark.getBoundingClientRect().height).toBe(0);
     });
 
     it('has the widths the page has kept for its columns before the element is defined', () => {

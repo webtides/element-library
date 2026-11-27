@@ -12,6 +12,7 @@ describe('Unit | AppFrame', () => {
         const el = new AppFrame();
         expect(el.properties()).toEqual({
             skipLabel: 'Skip to content',
+            skipLandmarkLabel: 'Skip link',
             wideFrom: '48rem',
             narrowOnly: '',
             wideOnly: '',

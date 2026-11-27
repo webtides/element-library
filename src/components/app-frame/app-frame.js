@@ -56,7 +56,8 @@ const ECHO = 200;
  * landmarks, and slots them: `<header slot="header">`, `<nav slot="navigation" aria-label="…">`,
  * `<main id="…">`, `<aside slot="aside">`, `<footer slot="footer">`. The frame adds the layout,
  * the room for the notch and the home indicator of a phone, and a link that skips to the content
- * as the first stop of the Tab key.
+ * as the first stop of the Tab key. That link lies in the one landmark the frame has of its own,
+ * a navigation the page names (`skip-landmark-label`): content of a page belongs into a landmark.
  *
  * From the width `wide-from` names, the navigation and the aside are columns beside the content,
  * and each scrolls on its own. Where the frame is narrow, the content and the aside are one
@@ -101,6 +102,7 @@ const ECHO = 200;
  * @slot footer - The region at the lower edge. Left out while it is empty.
  *
  * @csspart base - The frame: the grid of the regions.
+ * @csspart skip-landmark - The landmark the skip link lies in: a `<nav>`.
  * @csspart skip-link - The link that skips to the content. It shows while it has the focus.
  * @csspart header - The region at the top. Its surface reaches under the status bar of a phone.
  * @csspart navigation - The region at the start side, where the frame is wide.
@@ -136,6 +138,9 @@ const ECHO = 200;
  *
  * @property {string} skipLabel - The text of the link that skips to the content. Default
  *   `'Skip to content'`.
+ * @property {string} skipLandmarkLabel - The name of the landmark that link lies in, a
+ *   navigation, for assistive technology. It has to differ from the names of the other
+ *   navigations of the page. Default `'Skip link'`.
  * @property {'30rem'|'40rem'|'48rem'|'64rem'|'80rem'} wideFrom - The width of the frame from
  *   which the navigation and the aside are columns beside the content. One of the steps the
  *   stylesheet knows, another value is the default. Default `'48rem'`.
@@ -285,6 +290,7 @@ export default class AppFrame extends TemplateElement {
     properties() {
         return {
             skipLabel: 'Skip to content',
+            skipLandmarkLabel: 'Skip link',
             wideFrom: DEFAULT_STEP,
             narrowOnly: '',
             wideOnly: '',
@@ -1027,8 +1033,14 @@ export default class AppFrame extends TemplateElement {
             .map(([region, size]) => `--_el-app-frame-${region}-size: ${Math.round(Number(size))}px;`)
             .join(' ');
 
+        // The link lies in a landmark of the frame: a tool that checks a page finds the content
+        // outside of one otherwise, and it cannot see that this is a skip link, which may stand
+        // alone. It knows one by its place in front of the first link that leads elsewhere, and a
+        // link in a shadow root is in front of nothing in the document.
         return html`
-            <a part="skip-link" class="skip" href="#${id || ''}">${this.skipLabel}</a>
+            <nav part="skip-landmark" class="skip-landmark" aria-label="${this.skipLandmarkLabel}">
+                <a part="skip-link" class="skip" href="#${id || ''}">${this.skipLabel}</a>
+            </nav>
             <div
                 part="base"
                 ref="base"

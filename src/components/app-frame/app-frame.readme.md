@@ -41,6 +41,7 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `skip-label` | `string` | `'Skip to content'` | The text of the link that skips to the content. |
+| `skip-landmark-label` | `string` | `'Skip link'` | The name of the landmark that link lies in, a navigation, for assistive technology. It has to differ from the names of the other navigations of the page. |
 | `wide-from` | `'30rem' \| '40rem' \| '48rem' \| '64rem' \| '80rem'` | `'48rem'` | The width of the frame from which the navigation and the aside are columns beside the content. Another value is the default. |
 | `narrow-only` | `string` | `''` | The regions that are there only where the frame is narrow: `header`, `navigation`, `aside`, `footer`, with a space between them. |
 | `wide-only` | `string` | `''` | The regions that are there only where the frame is wide, named the same way. |
@@ -89,6 +90,7 @@ _None._
 | Name                  | Description                                                                            |
 | --------------------- | -------------------------------------------------------------------------------------- |
 | `base`                | The frame: the grid of the regions.                                                    |
+| `skip-landmark`       | The landmark the skip link lies in: a `<nav>`.                                         |
 | `skip-link`           | The link that skips to the content. It shows while it has the focus.                   |
 | `header`              | The region at the top. Its surface reaches under the status bar of a phone.            |
 | `navigation`          | The region at the start side, where the frame is wide.                                 |
@@ -129,8 +131,9 @@ The frame knows regions, not what they mean: the footer is a bar of destinations
 | `aside`      | `<aside slot="aside">`                   | complementary           |
 | `footer`     | `<footer slot="footer">`                 | contentinfo             |
 
-- The frame adds no landmark of its own. A component that is a navigation itself, an `el-breadcrumb` for example, goes into the slot without a `nav` around it: the landmark would be there twice.
-- A page with two navigations gives each a name (`aria-label`), so a screen reader can tell them apart.
+- The frame adds no landmark for a region. A component that is a navigation itself, an `el-breadcrumb` for example, goes into the slot without a `nav` around it: the landmark would be there twice.
+- The frame has one landmark of its own: a navigation around its [link that skips to the content](#the-link-that-skips-to-the-content), with the name `skip-landmark-label` gives it.
+- A page with two navigations gives each a name (`aria-label`), so a screen reader can tell them apart. The navigation of the skip link is one of them, and has a name: a navigation of the page needs another one, or none.
 - The frame cannot make sure of the landmarks. A `<div slot="header">` is laid out as a header and is none.
 
 ## What scrolls
@@ -308,8 +311,13 @@ frame.addEventListener('app-frame-resize-end', ({ detail }) => {
 The first stop of the Tab key in the frame is a link that skips the header and the navigation. It is off the screen until it has the focus, and shows in the corner at the start then.
 
 - Its text is `skip-label`: `<el-app-frame skip-label="Zum Inhalt">`.
+- It lies in a landmark of the frame, a navigation (`<nav>`) with the name of `skip-landmark-label`, `Skip link` by default: `<el-app-frame skip-landmark-label="Sprunglink">`. Give it a name in the language of the page, and one that no other navigation of the page has. The landmark takes no room.
 - It leads to the `main` of the page, or to the first element in the default slot. Give that element an **id**: the link is a link to it (`href="#main"`), which works before the script has run. Without an id the link needs the script.
 - After it, the content is in view from its start, the keys scroll it, and the Tab key goes on with the first control in it. The address of the page stays as it is.
+
+**Why a landmark.** All content of a page belongs into a landmark, and a tool that checks a page says so (the rule `region` of axe). Such a tool lets a skip link stand alone, and knows one by its place: in front of the first link of the page that leads elsewhere. It compares the two in the document. The link of the frame is in a shadow root, and so is the first link of most views, in an `el-nav-item` or an `el-list-item`: neither is in front of the other, and the link was reported on every page with a frame. A link the page writes in front of the frame is reported for the same reason. A link in a landmark is content in a landmark, on every view.
+
+A page that had a skip link of its own for that reason, and hid the one of the frame (`el-app-frame::part(skip-link) { display: none }`), takes both out: it would have two skip links, or a landmark with nothing in it.
 
 ## On a phone
 
@@ -409,8 +417,9 @@ Without server rendering, the regions of the page are below each other until the
 
 ## Accessibility
 
-- The landmarks are the elements of the page, see above. The frame has none, and its parts have no role.
+- The landmarks of the regions are the elements of the page, see above. The frame has one of its own, the navigation around its skip link, and its other parts have no role.
 - The skip link is the first stop of the Tab key, and has a surface and a border of its own, without a theme as well.
+- A page whose shell is the frame, with a header, a navigation and a `main`, has no finding of the default rules of axe (4.14), checked as a whole document: `region`, `landmark-unique` and `landmark-no-duplicate-banner` among them.
 - The lines between the regions are borders. They stay where the user forces colours, and they are there without a theme then: nothing else tells two regions apart.
 - Without a theme the frame paints nothing: it reads as the page does, in a light and in a dark scheme.
 - Start and end follow the reading direction: in a text that runs from right to left the navigation is at the right.

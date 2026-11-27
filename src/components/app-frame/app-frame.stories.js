@@ -50,6 +50,7 @@ export default {
     args: {
         wideFrom: '48rem',
         skipLabel: 'Skip to content',
+        skipLandmarkLabel: 'Skip link',
     },
     argTypes: {
         wideFrom: { options: ['30rem', '40rem', '48rem', '64rem', '80rem'], control: { type: 'inline-radio' } },
@@ -137,10 +138,11 @@ const tasks = [
  * one at the end side. Where it is narrow, the places the user goes to all the time are a bar at
  * the lower edge.
  */
-const application = ({ wideFrom, skipLabel, style = '' }) => html`
+const application = ({ wideFrom, skipLabel, skipLandmarkLabel, style = '' }) => html`
     <el-app-frame
         wide-from="${wideFrom}"
         skip-label="${skipLabel}"
+        skip-landmark-label="${skipLandmarkLabel}"
         narrow-only="footer"
         navigation-label="Lists"
         wide-only="aside"
@@ -241,7 +243,7 @@ export const Application = {
             },
         },
     },
-    render: ({ wideFrom, skipLabel }) => application({ wideFrom, skipLabel }),
+    render: ({ wideFrom, skipLabel, skipLandmarkLabel }) => application({ wideFrom, skipLabel, skipLandmarkLabel }),
 };
 
 export const Phone = {
@@ -253,12 +255,12 @@ export const Phone = {
             },
         },
     },
-    render: ({ wideFrom, skipLabel }) => html`
+    render: ({ wideFrom, skipLabel, skipLandmarkLabel }) => html`
         <div style="display:flex;justify-content:center;padding:1rem">
             <div
                 style="width:390px;max-width:100%;border:1px solid var(--el-color-border, currentColor);border-radius:1.5rem;overflow:hidden"
             >
-                ${application({ wideFrom, skipLabel, style: 'position:relative;height:720px' })}
+                ${application({ wideFrom, skipLabel, skipLandmarkLabel, style: 'position:relative;height:720px' })}
             </div>
         </div>
     `,
@@ -380,6 +382,7 @@ export const Sidebar = {
         column: { options: ['list', 'rail'], control: { type: 'inline-radio' } },
         wideFrom: { table: { disable: true } },
         skipLabel: { table: { disable: true } },
+        skipLandmarkLabel: { table: { disable: true } },
     },
     parameters: {
         docs: {
