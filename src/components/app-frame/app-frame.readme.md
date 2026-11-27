@@ -52,7 +52,7 @@ A page that reaches under the notch and the home indicator of a phone says so in
 | `navigation-size` | `number` | `0` | The width of the navigation where the frame is wide, in pixels: the one the user has set, or the one the page has kept. `0` is the width of the stylesheet. |
 | `aside-size` | `number` | `0` | The width of the aside where the frame is wide, in pixels. `0` is the width of the stylesheet. |
 | `aside-label` | `string` | `'Aside'` | The name of the aside on the edge that sizes it. The edge of the navigation has `navigation-label`. |
-| `status-bar-tap` | `boolean` | `false` | Whether a tap on the status bar of an iPhone brings the content to its top. The document is one pixel higher than the viewport then, and scrolled down by it. |
+| `status-bar-tap` | `boolean` | `false` | Whether a tap on the status bar of an iPhone brings the content to its top. The document is one pixel higher than the viewport then, and snaps to that pixel. |
 
 #### Read-only properties
 
@@ -152,7 +152,12 @@ The window does not scroll in a frame. What follows from it:
 - **[`el-scroll-to`](../scroll-to/scroll-to.readme.md)** brings its target into view as anywhere.
 - **[`el-sticky`](../sticky/sticky.readme.md)** follows the scroll of the window and has nothing to do in a frame: the header of the frame stays in view by itself.
 - **A phone does not take its address bar in**, because that follows the scroll of the document. The frame is as high as what shows beside the bar, in both of its states.
-- **A tap on the status bar of an iPhone does nothing**, because iOS scrolls the document for it and never a region. `status-bar-tap` makes it work: see [A tap on the status bar](#a-tap-on-the-status-bar).
+- **A tap on the status bar of an iPhone does nothing**, because iOS scrolls the document for it and never a region. `status-bar-tap` makes it work: see [A tap on the status bar](#a-tap-on-the-status-bar). What iOS does not give there, measured on iOS 27 in Safari, in a `WKWebView` and in a web application on the home screen:
+    - **The frame hears a scroll, not a tap.** iOS has no event for the tap. Whatever else it does that takes the document to its top without telling the page looks the same: the `Home` key of a hardware keyboard, where Safari takes it and gives the page no `keydown`. The content goes to its top then as well, which is what that key asks for.
+    - **The next tap is heard a second and a half after the last one.** iOS is on its way to the top for that long, also for one pixel, and takes the document back there until it has arrived.
+    - **While the on-screen keyboard is open a tap is not heard**, and not for up to two seconds after it has gone: the browser moves the document for the keyboard, and the frame leaves the document to it.
+    - **For seven tenths of a second after a finger that dragged the page has left the screen** a tap is not heard, and the same after a wheel, a key and a viewport that changed its size. The page swings back for that long.
+    - **Where a script can scroll the document to zero, no tap is heard at all.** That is a browser that does not snap where the scroll of a script ends, or a page whose own rule for `scroll-snap-type` wins over the one of the frame. Nothing tells a router from the tap there, and the frame takes no scroll for one.
 
 ## A view of columns
 
@@ -344,7 +349,7 @@ In a web view of an application of your own, let the view end at the keyboard (i
 
 ## A tap on the status bar
 
-On an iPhone a tap on the status bar brings what scrolls back to its top. iOS does that for the document, in Safari and in a `WKWebView`, and never for a region of the page. It has no event for the tap either. In a frame the document has nothing to scroll, so the tap does nothing.
+On an iPhone a tap on the status bar brings what scrolls back to its top. iOS does that for the document, in Safari, in a `WKWebView` and in a web application on the home screen, and never for a region of the page. It has no event for the tap either. In a frame the document has nothing to scroll, so the tap does nothing.
 
 `status-bar-tap` makes it work:
 
@@ -352,17 +357,20 @@ On an iPhone a tap on the status bar brings what scrolls back to its top. iOS do
 <el-app-frame status-bar-tap="true">…</el-app-frame>
 ```
 
-- **How.** The frame makes the document one pixel higher than what the browser shows, and keeps it scrolled down by that pixel. The tap takes the document back to zero. The frame hears that scroll, scrolls its content to the top (`scroller`), and scrolls the document down by its pixel again. The frame is fixed to the viewport and does not move by the pixel.
+- **How.** The frame makes the document one pixel higher than what the browser shows, and the document rests scrolled down by that pixel: it snaps there. The tap takes the document to zero, past the snap. The frame hears that scroll and scrolls its content to the top (`scroller`), smoothly, or at once for a user who asks for less motion. When iOS has arrived, the frame puts the document back on its pixel. The frame is fixed to the viewport and does not move by the pixel, and nothing of it shows: no gap, no scrollbar, nothing that moves while the page loads.
 - **`app-frame-status-bar-tap`** is fired first. A listener that calls `preventDefault()` keeps the frame from scrolling: a [view of columns](#a-view-of-columns) brings its own columns to their tops.
-- **What is not taken for a tap:** a finger that drags the document, from the header or the footer, and the page that swings back after it; a keyboard that comes or goes; a viewport that changes its size. For seven tenths of a second after one of these a tap is not heard. A finger that scrolls the content moves no document, and a tap right after it counts.
-- **What is taken for one:** a script that scrolls the window to zero. `window.scrollTo(0, 0)` of a router after a change of the view brings the content to its top, which is what it is there for.
-- **Only on iOS, and only for a frame that fills the viewport.** No other browser has that tap, and there the attribute does nothing.
+- **A script is not taken for the tap.** Where a document snaps, the scroll of a script ends there as well: `window.scrollTo(0, 0)` of a router after a change of the view leaves the document on its pixel, and so does the place a router has kept for the way back. The scroll of the content is yours to keep and to bring back, with `scroller`.
+- **Nothing else is taken for it either:** a finger that drags the header, the footer or the content, also past its end, and the page that swings back after it; a wheel or a key over the header; a keyboard that comes or goes; a viewport that changes its size, as a phone that is turned. A finger that scrolls the content moves no document, and a tap right after it counts.
+- **Only on iOS, and only for a frame that fills the viewport.** No other browser has that tap, and there the attribute does nothing: the document is as high as the viewport and does not scroll, as without it.
 
 What it costs, and why it is not the default:
 
-- **The document scrolls, by one pixel.** `window.scrollY` is `1`, not `0`. A script of the page that reads it sees that.
-- **A finger that drags the header or the footer** pulls the page a little, as on any page whose document scrolls.
-- **While a dialog or a drawer is open** the page does not scroll, and the tap does nothing: the lock they put on the document holds the pixel too.
+- **The document scrolls by one pixel, and has that one place.** `window.scrollY` is `1`, not `0`, and a script that scrolls the window moves nothing.
+- **The frame writes a rule onto the `html` element** while it listens, `scroll-snap-type` in its `style` attribute: the browser reads that rule for the viewport from nowhere else. It puts back what the page had there. The element that makes the document higher is a child of the `body`, hidden from assistive technology, and not there on paper.
+- **A finger that drags the header or the footer** pulls the page a little, as on any page whose document scrolls. It goes back to its pixel by itself.
+- **While a dialog or a drawer is open** the page does not scroll, and the tap does nothing: the lock they put on the document holds the pixel too. The document is on its pixel when they have closed. A page that keeps its document from scrolling itself (`overflow: hidden` on `html`) has no tap for the same reason.
+
+What iOS does not give is listed under [What scrolls](#what-scrolls).
 
 ## Keyboard
 

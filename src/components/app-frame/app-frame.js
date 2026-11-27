@@ -26,10 +26,25 @@ const KEYBOARD = 80;
 
 /**
  * How long, in milliseconds, a scroll of the document is taken for the doing of something else
- * than a tap on the status bar: after a finger has left the screen, a keyboard has come or gone,
- * or the viewport has changed its size. A page that was dragged swings back for that long.
+ * than a tap on the status bar: after a finger that dragged the page has left the screen, after a
+ * wheel or a key, after a keyboard has come or gone, and after the viewport has changed its size.
+ * A page that was dragged swings back for that long.
  */
 const SETTLE = 700;
+
+/**
+ * How long, in milliseconds, a scroll of the document is taken to go on after it was last heard
+ * of, where the browser does not say when it is over (`scrollend`). iOS is on its way to the
+ * top for a second and a half after a tap on the status bar, and takes the document back there
+ * for as long.
+ */
+const LONGEST = 2000;
+
+/**
+ * How long, in milliseconds, after the frame has put the document on its pixel a scroll back to
+ * zero is the browser that takes the pixel away again, and no tap.
+ */
+const ECHO = 200;
 
 /**
  * The frame of an application: it fills what the browser shows and lays out five regions, a
@@ -60,7 +75,8 @@ const SETTLE = 700;
  *
  * With `status-bar-tap` a tap on the status bar of an iPhone brings the content to its top, as it
  * does in an application. iOS scrolls the document for that tap and never a region, so the frame
- * keeps the document scrolled by one pixel there, and hears it go back.
+ * keeps the document scrolled by one pixel there, and hears it go back. The document snaps to
+ * that pixel: a script of the page that scrolls the window does not move it, and is no tap.
  *
  * @element el-app-frame
  *
@@ -149,7 +165,7 @@ const SETTLE = 700;
  *   that sizes it. The edge of the navigation has `navigation-label`. Default `'Aside'`.
  * @property {boolean} statusBarTap - Whether a tap on the status bar of an iPhone brings the
  *   content to its top. The document of the page is one pixel higher than the viewport then, and
- *   scrolled down by it. Default `false`.
+ *   snaps to that pixel. Default `false`.
  */
 export default class AppFrame extends TemplateElement {
     /**
@@ -188,27 +204,52 @@ export default class AppFrame extends TemplateElement {
     _scrollerSize = 0;
 
     /**
+     * Whether an on-screen keyboard covers a part of the viewport, as the frame has said last
+     * (`:state(keyboard)`). Kept here, and not read back from the states of the element: WebKit
+     * forgets what was added to them a moment later (`states.has()` is `false`), while the state
+     * still matches.
+     * @private
+     */
+    _keyboard = false;
+
+    /**
      * Tells of a visual viewport that changes: an on-screen keyboard that comes or goes, or the
      * page that the browser moves behind it.
      * @private
+     * @param {Event} event
      */
-    _onViewport = () => {
-        // Not the doing of a tap on the status bar, whatever the document does next.
-        this._quiet();
+    _onViewport = (event) => {
+        // A viewport that changes its size is not the doing of a tap on the status bar, whatever
+        // the document does next. One that moves says nothing: it does so for that tap as well.
+        if (event.type === 'resize') this._quiet();
         this._syncViewport();
     };
 
     /**
      * What the frame keeps while it listens for a tap on the status bar: the element that makes
-     * the document one pixel higher than the viewport, how many fingers are on the screen, until
-     * when a scroll of the document is somebody else's, and the timer that scrolls it back.
+     * the document one pixel higher than the viewport, whether the document snaps to that pixel
+     * and what the page had in the place of that rule, whether a script can move the document all
+     * the same, how many fingers are on the screen, until when a scroll of the document is
+     * somebody else's, whether the document is scrolling and when it was last heard of, when the
+     * frame has put it on its pixel last, and the timer that does so.
      * @private
-     * @type {{ sentinel: HTMLElement, touches: number, dragged: boolean, quietUntil: number, tappedAt: number, timer: number } | undefined}
+     * @type {{ sentinel: HTMLElement, snaps: boolean, snapBefore: string, held: boolean, touches: number, dragged: boolean, quietUntil: number, scrolling: boolean, scrolledAt: number, armedAt: number, timer: number } | undefined}
      */
     _statusBar = undefined;
 
     /** @private */
     _onDocumentScroll = () => this._onStatusBarScroll();
+
+    /**
+     * The scroll of the document is over: it can have its pixel back.
+     * @private
+     */
+    _onDocumentScrollEnd = () => {
+        const state = this._statusBar;
+        if (!state) return;
+        state.scrolling = false;
+        if (window.scrollY < 1) this._arm();
+    };
 
     /**
      * A finger has come or gone. One that has dragged the document, from the header or the
@@ -225,6 +266,12 @@ export default class AppFrame extends TemplateElement {
         state.dragged = false;
         this._quiet();
     };
+
+    /**
+     * A wheel or a key: over the header they scroll the document, as the tap does.
+     * @private
+     */
+    _onInput = () => this._quiet();
 
     constructor() {
         super({
@@ -466,7 +513,8 @@ export default class AppFrame extends TemplateElement {
             document.documentElement.clientHeight - viewport.height > KEYBOARD;
 
         if (!covered) {
-            if (!this._internals.states.has('keyboard')) return;
+            if (!this._keyboard) return;
+            this._keyboard = false;
             this._internals.states.delete('keyboard');
             this.style.removeProperty('--_el-app-frame-visible-start');
             this.style.removeProperty('--_el-app-frame-visible-size');
@@ -477,8 +525,11 @@ export default class AppFrame extends TemplateElement {
             return;
         }
 
+        // The browser moves the page behind the keyboard, to show the field: it is free to.
+        this._snap(false);
         this.style.setProperty('--_el-app-frame-visible-start', `${viewport.offsetTop}px`);
         this.style.setProperty('--_el-app-frame-visible-size', `${viewport.height}px`);
+        this._keyboard = true;
         this._internals.states.add('keyboard');
         this._showFocus();
     }
@@ -506,9 +557,9 @@ export default class AppFrame extends TemplateElement {
      *
      * iOS scrolls the document to its top for that tap, and a frame leaves the document nothing
      * to scroll. So an element makes the document one pixel higher than what the browser shows,
-     * and the frame keeps the document scrolled down by that pixel. The frame is fixed to the
-     * viewport and does not move with it. A tap takes the document back to zero, which the frame
-     * hears.
+     * and the document rests scrolled down by that pixel: it snaps there. The frame is fixed to
+     * the viewport and does not move with it. A tap takes the document back to zero, past the
+     * snap, which the frame hears.
      * @private
      */
     _syncStatusBar() {
@@ -517,18 +568,22 @@ export default class AppFrame extends TemplateElement {
 
         if (!wanted) {
             const { sentinel, timer } = this._statusBar;
+            this._snap(false);
             this._statusBar = undefined;
             clearTimeout(timer);
             sentinel.remove();
             window.removeEventListener('scroll', this._onDocumentScroll);
+            window.removeEventListener('scrollend', this._onDocumentScrollEnd);
             for (const type of ['touchstart', 'touchend', 'touchcancel']) {
                 window.removeEventListener(type, this._onTouch, true);
             }
+            for (const type of ['wheel', 'keydown']) window.removeEventListener(type, this._onInput, true);
             return;
         }
 
-        // An element of its own tree, so its rule for paper needs no stylesheet of the page: on
-        // paper there is no viewport, and it would add a sheet.
+        // An element of its own tree, so its rules need no stylesheet of the page. On paper there
+        // is no viewport, and it would add a sheet. The element in it is where the document
+        // snaps to: one pixel down.
         const sentinel = document.createElement('div');
         sentinel.setAttribute('data-el-app-frame-sentinel', '');
         sentinel.setAttribute('aria-hidden', 'true');
@@ -542,22 +597,74 @@ export default class AppFrame extends TemplateElement {
                 visibility: hidden;
                 pointer-events: none;
             }
+            div {
+                position: absolute;
+                inset-block-start: 1px;
+                inset-inline-start: 0;
+                inline-size: 1px;
+                block-size: 1px;
+                scroll-snap-align: start;
+            }
             @media print {
                 :host {
                     display: none;
                 }
             }
-        </style>`;
+        </style><div></div>`;
         document.body.append(sentinel);
 
-        this._statusBar = { sentinel, touches: 0, dragged: false, quietUntil: 0, tappedAt: 0, timer: 0 };
+        this._statusBar = {
+            sentinel,
+            snaps: false,
+            snapBefore: '',
+            held: false,
+            touches: 0,
+            dragged: false,
+            quietUntil: 0,
+            scrolling: false,
+            scrolledAt: 0,
+            armedAt: 0,
+            timer: 0,
+        };
         window.addEventListener('scroll', this._onDocumentScroll, { passive: true });
+        window.addEventListener('scrollend', this._onDocumentScrollEnd);
         for (const type of ['touchstart', 'touchend', 'touchcancel']) {
             window.addEventListener(type, this._onTouch, { capture: true, passive: true });
         }
+        for (const type of ['wheel', 'keydown']) {
+            window.addEventListener(type, this._onInput, { capture: true, passive: true });
+        }
+        this._snap(true);
         // The browser may put the scroll of a page back while it loads: not a tap either.
         this._quiet();
         this._arm();
+    }
+
+    /**
+     * Makes the document snap to its one pixel, or lets it go.
+     *
+     * What snaps is where a scroll ends, also the one of a script: `window.scrollTo(0, 0)` of a
+     * router leaves the document on its pixel. And a finger that has dragged the page lets it go
+     * back there. The tap on the status bar is the one scroll iOS does not snap.
+     *
+     * The rule is one for the element of the document, the only place the browser reads it for
+     * the viewport: the frame writes it there, and puts back what the page had.
+     * @private
+     * @param {boolean} on
+     */
+    _snap(on) {
+        const state = this._statusBar;
+        if (!state || state.snaps === on) return;
+        state.snaps = on;
+
+        const root = document.documentElement;
+        if (on) {
+            state.snapBefore = root.style.scrollSnapType;
+            root.style.scrollSnapType = 'y mandatory';
+            return;
+        }
+        root.style.scrollSnapType = state.snapBefore;
+        if (root.getAttribute('style') === '') root.removeAttribute('style');
     }
 
     /**
@@ -576,12 +683,28 @@ export default class AppFrame extends TemplateElement {
      */
     _isMoved() {
         const { touches, quietUntil } = this._statusBar;
-        return touches > 0 || performance.now() < quietUntil || this._internals.states.has('keyboard');
+        return touches > 0 || performance.now() < quietUntil || this._keyboard;
     }
 
     /**
-     * Scrolls the document down by its one pixel, once nothing else moves it. Until then it looks
-     * again: a finger can stay on the screen for long.
+     * Whether the document is scrolling: it has scrolled, and the browser has not said that this
+     * is over. A browser that never says so is given the time the longest scroll takes.
+     * @private
+     * @returns {boolean}
+     */
+    _isScrolling() {
+        const { scrolling, scrolledAt } = this._statusBar;
+        return scrolling && performance.now() - scrolledAt < LONGEST;
+    }
+
+    /**
+     * Scrolls the document down by its one pixel, once nothing else moves it and its scroll is
+     * over: iOS takes the document back to the top for as long as it is on its way there. Until
+     * then it looks again: a finger can stay on the screen for long.
+     *
+     * And it asks what tells the tap from a script: whether a script can scroll the document to
+     * zero. Where the browser snaps the scroll of a script, it cannot. Where it can, the two look
+     * the same, and the frame takes no scroll for the tap.
      * @private
      */
     _arm() {
@@ -589,33 +712,45 @@ export default class AppFrame extends TemplateElement {
         if (!state) return;
         clearTimeout(state.timer);
 
-        if (this._isMoved()) {
-            const wait = Math.max(state.quietUntil - performance.now(), 0) + 50;
+        const now = performance.now();
+        if (this._isMoved() || this._isScrolling()) {
+            const scrolls = this._isScrolling() ? state.scrolledAt + LONGEST - now : 0;
+            const wait = Math.max(state.quietUntil - now, scrolls, 150) + 50;
             state.timer = setTimeout(() => this._arm(), wait);
             return;
         }
-        if (window.scrollY < 1) window.scrollTo(0, 1);
+        this._snap(true);
+        state.armedAt = now;
+        // At once, also where the page asks for a scroll that takes its time.
+        if (window.scrollY < 1) window.scrollTo({ top: 1, behavior: 'instant' });
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        state.held = window.scrollY >= 1;
+        if (!state.held) window.scrollTo({ top: 1, behavior: 'instant' });
     }
 
     /**
      * The document has scrolled. At zero, with nothing else that moves it, the user has tapped
      * the status bar: the content goes to its top, as the document of a page would.
      *
-     * A script of the page that scrolls the window to zero looks the same, and is taken the same:
-     * a router that sets the scroll back after a change of the view brings the content to its top.
+     * A script of the page does not get the document there, a router that sets the scroll of the
+     * window back after a change of the view for one: the document snaps to its pixel.
      * @private
      */
     _onStatusBarScroll() {
         const state = this._statusBar;
         if (!state) return;
+        const now = performance.now();
         // The document moves under a finger: a drag, and no tap when the finger has gone.
         if (state.touches > 0) state.dragged = true;
+        // The tap is the first thing a document at rest does. What follows it is iOS on its way
+        // to the top, which takes the document back there until it has arrived.
+        const first = !this._isScrolling();
+        state.scrolling = true;
+        state.scrolledAt = now;
         if (window.scrollY >= 1) return;
 
-        const now = performance.now();
-        const tapped = !this._isMoved() && now - state.tappedAt > SETTLE;
-        if (tapped) {
-            state.tappedAt = now;
+        const taken = now - state.armedAt < ECHO;
+        if (first && !taken && state.held && !this._isMoved()) {
             // Built by hand: dispatch() of element-js does not say whether a listener has
             // prevented the default.
             const event = new CustomEvent(Events.STATUS_BAR_TAP, { bubbles: true, composed: true, cancelable: true });
@@ -625,7 +760,7 @@ export default class AppFrame extends TemplateElement {
                 this.scroller?.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
             }
         }
-        // Back by the pixel, for the next tap.
+        // Back by the pixel, for the next tap, once this scroll is over.
         clearTimeout(state.timer);
         state.timer = setTimeout(() => this._arm(), 50);
     }
